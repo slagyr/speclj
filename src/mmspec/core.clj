@@ -26,7 +26,15 @@
 (defmacro after-all [& body]
   `(new-after-all (fn [] ~@body)))
 
+(defmacro with [name & body]
+  `(do
+    (if ~(resolve name)
+      (println (str "WARNING: the symbol #'" ~(name name) " is already declared")))
+    (let [~'with-component (new-with '~name (fn [] ~@body))]
+      (def ~(symbol name) ~'with-component)
+      ~'with-component)))
+
 (defmacro should [expr]
-;  (println expr)
+  ;  (println expr)
   `(if-not ~expr
     (throw (Exception. (str "Expected " '~expr " to be truthy")))))

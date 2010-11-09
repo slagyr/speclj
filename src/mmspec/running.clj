@@ -1,7 +1,8 @@
 (ns mmspec.running
   (:use
     [mmspec.exec :only (pass-result fail-result)]
-    [mmspec.reporting :only (report-runs report-pass report-fail active-reporter)]))
+    [mmspec.reporting :only (report-runs report-pass report-fail active-reporter)]
+    [mmspec.components :only [reset-with]]))
 
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))
@@ -10,7 +11,8 @@
   (let [description @(.description characteristic)]
     (eval-components @(.befores description))
     ((.body characteristic))
-    (eval-components @(.afters description))))
+    (eval-components @(.afters description))
+    (doseq [with @(.withs description)] (reset-with with))))
 
 (defn- do-characteristic [characteristic reporter]
   (try

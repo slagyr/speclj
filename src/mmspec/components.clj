@@ -1,9 +1,9 @@
 (ns mmspec.components)
 
-(deftype Description [name charcteristics befores afters before-alls after-alls])
+(deftype Description [name charcteristics befores afters before-alls after-alls withs])
 
 (defn new-description [name]
-  (Description. name (atom []) (atom []) (atom []) (atom []) (atom [])))
+  (Description. name (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (defn- install-characteristic [characteristic description]
   (swap! (.description characteristic) (fn [_] description))
@@ -46,7 +46,7 @@
 (deftype After [body]
   SpecComponent
   (install [this description]
-    (swap! (.afters description) (fn [_] (conj _ this)))))
+    (swap! (.afters description) conj this)))
 
 (defn new-after [body]
   (After. body))
@@ -54,7 +54,7 @@
 (deftype BeforeAll [body]
   SpecComponent
   (install [this description]
-    (swap! (.before-alls description) (fn [_] (conj _ this)))))
+    (swap! (.before-alls description) conj this)))
 
 (defn new-before-all [body]
   (BeforeAll. body))
@@ -62,7 +62,23 @@
 (deftype AfterAll [body]
   SpecComponent
   (install [this description]
-    (swap! (.after-alls description) (fn [_] (conj _ this)))))
+    (swap! (.after-alls description) conj this)))
 
 (defn new-after-all [body]
   (AfterAll. body))
+
+(deftype With [var body value]
+  SpecComponent
+  (install [this description]
+    (swap! (.withs description) conj this))
+  clojure.lang.IDeref
+  (deref [this]
+    (if (= ::none @value)
+      (swap! value (fn [_] (body))))
+    @value))
+
+(defn reset-with [with]
+  (swap! (.value with) (fn [_] ::none)))
+
+(defn new-with [var body]
+  (With. var body (atom ::none)))
