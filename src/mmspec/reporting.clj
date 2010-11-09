@@ -25,6 +25,7 @@
             (println (str id ")"))
             (println (.name description) (.name characteristic) "FAILED")
             (println (.getMessage (.failure result)))
+;            (.printStackTrace (.failure result))
             (println)))))))
 
 (def *reporter* (ConsoleReporter.))

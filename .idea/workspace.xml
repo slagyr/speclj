@@ -63,16 +63,16 @@
       <file leaf-file-name="running.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/running.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="53" selection-start="571" selection-end="571" vertical-scroll-proportion="0.0">
+            <state line="30" column="89" selection-start="1077" selection-end="1077" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="reporting.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="reporting.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/reporting.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="20" selection-start="773" selection-end="773" vertical-scroll-proportion="0.6893617">
+            <state line="27" column="29" selection-start="782" selection-end="782" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -90,7 +90,7 @@
       <file leaf-file-name="core.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="35" selection-start="265" selection-end="265" vertical-scroll-proportion="0.0">
+            <state line="3" column="22" selection-start="94" selection-end="94" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -99,16 +99,25 @@
       <file leaf-file-name="components.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="60" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0">
+            <state line="2" column="79" selection-start="103" selection-end="103" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_test.clj" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="reporting_test.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/mmspec/reporting_test.clj">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="core_test.clj" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="21" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0">
+            <state line="33" column="49" selection-start="1309" selection-end="1309" vertical-scroll-proportion="0.61702126">
               <folding />
             </state>
           </provider>
@@ -125,12 +134,15 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/mmspec/run_result.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/exec.clj" />
+        <option value="$PROJECT_DIR$/test/mmspec/reporting_test.clj" />
+        <option value="$PROJECT_DIR$/test/mmspec/description-test.clj" />
+        <option value="$PROJECT_DIR$/test/mmspec/core-test.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/reporting.clj" />
         <option value="$PROJECT_DIR$/src/mmspec/core.clj" />
         <option value="$PROJECT_DIR$/src/mmspec/components.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/exec.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/running.clj" />
         <option value="$PROJECT_DIR$/test/mmspec/core_test.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/reporting.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/running.clj" />
       </list>
     </option>
   </component>
@@ -203,6 +215,10 @@
               <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mmspec" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -264,6 +280,28 @@
       <setting name="vmparams" value="" />
       <setting name="params" value="" />
       <setting name="workDir" value="$PROJECT_DIR$/test/mmspec" />
+      <setting name="repl" value="false" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="core-test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+      <module name="Mmspec" />
+      <setting name="path" value="$PROJECT_DIR$/test/mmspec/core-test.clj" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="$PROJECT_DIR$/test/mmspec" />
+      <setting name="repl" value="false" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="components" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+      <module name="Mmspec" />
+      <setting name="path" value="$PROJECT_DIR$/src/mmspec/components.clj" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="$PROJECT_DIR$/src/mmspec" />
       <setting name="repl" value="false" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
@@ -443,8 +481,10 @@
         <option name="Maven.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
-    <list size="1">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Clojure Script.core_test" />
+      <item index="1" class="java.lang.String" itemvalue="Clojure Script.core-test" />
+      <item index="2" class="java.lang.String" itemvalue="Clojure Script.components" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -482,6 +522,7 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -545,20 +586,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="60" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="35" selection-start="265" selection-end="265" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/mmspec/exec.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="14" selection-start="192" selection-end="192" vertical-scroll-proportion="0.0">
@@ -566,23 +593,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/running.clj">
+    <entry file="file://$PROJECT_DIR$/test/mmspec/reporting_test.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="53" selection-start="571" selection-end="571" vertical-scroll-proportion="0.0">
+        <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
+    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar!/java/lang/Exception.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="21" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar!/java/lang/Throwable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="22" selection-start="94" selection-end="94" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mmspec/reporting.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="20" selection-start="773" selection-end="773" vertical-scroll-proportion="0.6893617">
+        <state line="27" column="29" selection-start="782" selection-end="782" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/running.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="89" selection-start="1077" selection-end="1077" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="79" selection-start="103" selection-end="103" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="49" selection-start="1309" selection-end="1309" vertical-scroll-proportion="0.61702126">
           <folding />
         </state>
       </provider>

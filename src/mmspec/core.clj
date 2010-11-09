@@ -1,22 +1,32 @@
 (ns mmspec.core
   (:use
     [mmspec.running :only (submit-description)]
-    [mmspec.components :only (install)])
-  (:import
-    [mmspec.components Description Characteristic]))
+    [mmspec.components]))
 
 (declare *description*)
 
 (defmacro it [name & body]
-  `(Characteristic. ~name (atom nil) (fn [] ~@body)))
+  `(new-characteristic ~name (fn [] ~@body)))
 
 (defn describe [name & parts]
-  (let [description (Description. name (atom []) (atom []))]
+  (let [description (new-description name)]
     (binding [*description* description]
       (doseq [part parts] (install part description))
       (submit-description description))))
 
+(defmacro before [& body]
+  `(new-before (fn [] ~@body)))
+
+(defmacro after [& body]
+  `(new-after (fn [] ~@body)))
+
+(defmacro before-all [& body]
+  `(new-before-all (fn [] ~@body)))
+
+(defmacro after-all [& body]
+  `(new-after-all (fn [] ~@body)))
+
 (defmacro should [expr]
-  (println expr)
+;  (println expr)
   `(if-not ~expr
     (throw (Exception. (str "Expected " '~expr " to be truthy")))))
