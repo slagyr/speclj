@@ -1,12 +1,15 @@
 (ns mmspec.exec)
 
-(deftype RunResult [characteristic failure])
+(deftype RunResult [characteristic seconds failure])
 
-(defn pass-result [characteristic]
-  (RunResult. characteristic nil))
+(defn pass-result [characteristic seconds]
+  (RunResult. characteristic seconds nil))
 
-(defn fail-result [characteristic failure]
-  (RunResult. characteristic failure))
+(defn fail-result [characteristic seconds failure]
+  (RunResult. characteristic seconds failure))
 
 (defn pass? [result]
   (nil? (.failure result)))
+
+(defn fail? [result]
+  (.failure result))

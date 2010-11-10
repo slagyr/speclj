@@ -29,7 +29,7 @@
 (defmacro with [name & body]
   `(do
     (if ~(resolve name)
-      (println (str "WARNING: the symbol #'" ~(name name) " is already declared")))
+      (println (str "WARNING: the symbol #'" ~(name name) " is already declared")))  ;TODO MDM Need to report this warning
     (let [~'with-component (new-with '~name (fn [] ~@body))]
       (def ~(symbol name) ~'with-component)
       ~'with-component)))

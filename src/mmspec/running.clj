@@ -4,6 +4,9 @@
     [mmspec.reporting :only (report-runs report-pass report-fail active-reporter)]
     [mmspec.components :only [reset-with]]))
 
+(defn secs-since [start]
+  (/ (double (- (System/nanoTime) start)) 1000000000.0))
+
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))
 
@@ -15,13 +18,14 @@
     (doseq [with @(.withs description)] (reset-with with))))
 
 (defn- do-characteristic [characteristic reporter]
-  (try
-    (eval-characteristic characteristic)
-    (report-pass reporter)
-    (pass-result characteristic)
-    (catch Exception e
-      (report-fail reporter)
-      (fail-result characteristic e))))
+  (let [start-time (System/nanoTime)]
+    (try
+      (eval-characteristic characteristic)
+      (report-pass reporter)
+      (pass-result characteristic (secs-since start-time))
+      (catch Exception e
+        (report-fail reporter)
+        (fail-result characteristic (secs-since start-time) e)))))
 
 (defn- do-characteristics [characteristics description reporter]
   (doall
@@ -50,13 +54,20 @@
   Runner
   (run [this description reporter]
     (let [run-results (do-description description reporter)]
-      (swap! results (fn [_] into _ run-results))))
+      (swap! results into run-results)))
   (report [this reporter]
-    (report-runs reporter results)))
+    (report-runs reporter @results)))
 
-(declare *runner*)
+(defn new-multi-runner []
+  (MultiRunner. (atom [])))
+
+(def *runner* (new-multi-runner))
 
 (defn submit-description [description]
   (if (bound? #'*runner*)
     (run *runner* description (active-reporter))
     (run (SingleRunner.) description (active-reporter))))
+
+(defn summarize-runs []
+  (report *runner* (active-reporter)))
+

@@ -60,10 +60,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="running.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="running.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/running.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="52" selection-start="565" selection-end="565" vertical-scroll-proportion="0.35744682">
+            <state line="7" column="43" selection-start="274" selection-end="274" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -72,7 +72,7 @@
       <file leaf-file-name="reporting.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/reporting.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="24" selection-start="891" selection-end="893" vertical-scroll-proportion="0.0">
+            <state line="47" column="34" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -81,7 +81,7 @@
       <file leaf-file-name="exec.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/exec.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="14" selection-start="192" selection-end="192" vertical-scroll-proportion="0.0">
+            <state line="14" column="20" selection-start="349" selection-end="349" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -90,7 +90,7 @@
       <file leaf-file-name="core.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="60" selection-start="862" selection-end="862" vertical-scroll-proportion="0.0">
+            <state line="31" column="122" selection-start="840" selection-end="840" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -99,7 +99,7 @@
       <file leaf-file-name="components.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="80" column="40" selection-start="2237" selection-end="2237" vertical-scroll-proportion="0.0">
+            <state line="6" column="97" selection-start="225" selection-end="225" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -114,10 +114,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_test.clj" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="core_test.clj" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="30" selection-start="2132" selection-end="2132" vertical-scroll-proportion="0.0">
+            <state line="51" column="17" selection-start="1609" selection-end="1609" vertical-scroll-proportion="0.49403748">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SpecFailure.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/mmspec/SpecFailure.clj">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="23" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -143,15 +152,17 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/mmspec/run_result.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/exec.clj" />
         <option value="$PROJECT_DIR$/test/mmspec/reporting_test.clj" />
         <option value="$PROJECT_DIR$/test/mmspec/description-test.clj" />
         <option value="$PROJECT_DIR$/test/mmspec/core-test.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/reporting.clj" />
-        <option value="$PROJECT_DIR$/src/mmspec/core.clj" />
-        <option value="$PROJECT_DIR$/test/mmspec/core_test.clj" />
         <option value="$PROJECT_DIR$/src/mmspec/components.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/spec_failure.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/SpecFailure.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/core.clj" />
         <option value="$PROJECT_DIR$/src/mmspec/running.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/exec.clj" />
+        <option value="$PROJECT_DIR$/src/mmspec/reporting.clj" />
+        <option value="$PROJECT_DIR$/test/mmspec/core_test.clj" />
       </list>
     </option>
   </component>
@@ -525,7 +536,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="874" extended-state="0" />
+    <frame x="0" y="22" width="1920" height="1174" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -541,9 +552,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.6618037" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18589744" sideWeight="0.58444023" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32891247" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4089184" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -595,13 +606,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/exec.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="14" selection-start="192" selection-end="192" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/mmspec/reporting_test.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
@@ -623,13 +627,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/reporting.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="24" selection-start="891" selection-end="893" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/clojure-1.2.0.jar!/clojure/lang/IRef.class">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -644,30 +641,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
+    <entry file="file://$PROJECT_DIR$/src/mmspec/SpecFailure.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="60" selection-start="862" selection-end="862" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="30" selection-start="2132" selection-end="2132" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="40" selection-start="2237" selection-end="2237" vertical-scroll-proportion="0.0">
+        <state line="4" column="23" selection-start="139" selection-end="139" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mmspec/running.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="52" selection-start="565" selection-end="565" vertical-scroll-proportion="0.35744682">
+        <state line="7" column="43" selection-start="274" selection-end="274" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/exec.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="20" selection-start="349" selection-end="349" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/reporting.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="34" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/core.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="122" selection-start="840" selection-end="840" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mmspec/components.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="97" selection-start="225" selection-end="225" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/mmspec/core_test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="17" selection-start="1609" selection-end="1609" vertical-scroll-proportion="0.49403748">
           <folding />
         </state>
       </provider>

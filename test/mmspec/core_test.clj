@@ -1,6 +1,7 @@
 (ns mmspec.core-test
   (:use
-    [mmspec.core]))
+    [mmspec.core]
+    [mmspec.running :only (summarize-runs)]))
 
 (describe "The basic spec structure"
   (it "uses a call to describe to begin a description")
@@ -53,7 +54,7 @@
 (describe "setting up state for descriptions"
   (it "can be achieved using the 'with' form")
   (with bibelot (String. "shiney"))
- 
+
   (it ": 'with' forms can be dereferenced in your characteristics"
     (should (= "shiney" @bibelot)))
 
@@ -64,6 +65,7 @@
     (swap! *bauble* (fn [_] @bibelot)))
 
   (it ": ... such that each characteristic gets a fresh evaluation"
-    (should (not (identical? @*bauble* @bibelot))))
-  )
+    (should (not (identical? @*bauble* @bibelot)))))
+
+(summarize-runs)
 
