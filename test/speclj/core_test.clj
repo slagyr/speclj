@@ -1,7 +1,7 @@
-(ns mmspec.core-test
+(ns speclj.core-test
   (:use
-    [mmspec.core]
-    [mmspec.running :only (summarize-runs)]))
+    [speclj.core]
+    [speclj.running :only (summarize-runs)]))
 
 (describe "The basic spec structure"
   (it "uses a call to describe to begin a description")

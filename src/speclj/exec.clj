@@ -1,4 +1,4 @@
-(ns mmspec.exec)
+(ns speclj.exec)
 
 (deftype RunResult [characteristic seconds failure])
 

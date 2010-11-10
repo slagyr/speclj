@@ -1,4 +1,4 @@
-(ns mmspec.components)
+(ns speclj.components)
 
 (deftype Description [name charcteristics befores afters before-alls after-alls withs])
 

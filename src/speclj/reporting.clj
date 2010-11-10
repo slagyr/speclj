@@ -1,6 +1,6 @@
-(ns mmspec.reporting
+(ns speclj.reporting
   (:use
-    [mmspec.exec :only (pass? fail?)]))
+    [speclj.exec :only (pass? fail?)]))
 
 (defprotocol Reporter
   (report-pass [this])

@@ -1,7 +1,7 @@
-(ns mmspec.core
+(ns speclj.core
   (:use
-    [mmspec.running :only (submit-description)]
-    [mmspec.components]))
+    [speclj.running :only (submit-description)]
+    [speclj.components]))
 
 (declare *description*)
 

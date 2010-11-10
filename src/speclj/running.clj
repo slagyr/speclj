@@ -1,8 +1,8 @@
-(ns mmspec.running
+(ns speclj.running
   (:use
-    [mmspec.exec :only (pass-result fail-result)]
-    [mmspec.reporting :only (report-runs report-pass report-fail active-reporter)]
-    [mmspec.components :only [reset-with]]))
+    [speclj.exec :only (pass-result fail-result)]
+    [speclj.reporting :only (report-runs report-pass report-fail active-reporter)]
+    [speclj.components :only [reset-with]]))
 
 (defn secs-since [start]
   (/ (double (- (System/nanoTime) start)) 1000000000.0))
