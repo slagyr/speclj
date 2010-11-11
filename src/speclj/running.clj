@@ -61,13 +61,15 @@
 (defn new-multi-runner []
   (MultiRunner. (atom [])))
 
-(def *runner* (new-multi-runner))
+(def default-runner (new-multi-runner))
+(declare *runner*)
+
+(defn active-runner []
+  (if (bound? #'*runner*)
+    *runner*
+    default-runner))
 
 (defn submit-description [description]
-  (if (bound? #'*runner*)
-    (run *runner* description (active-reporter))
-    (run (SingleRunner.) description (active-reporter))))
+  (run (active-runner) description (active-reporter)))
 
-(defn summarize-runs []
-  (report *runner* (active-reporter)))
 

@@ -7,13 +7,19 @@
   (report-fail [this])
   (report-runs [this results]))
 
+(defn failure-source [exception]
+  (let [source (nth (.getStackTrace exception) 0)]
+    (str (.getAbsolutePath (java.io.File. (.getFileName source))) ":" (.getLineNumber source))))
+
 (defn- print-failure [id result]
   (let [characteristic (.characteristic result)
-        description @(.description characteristic)]
+        description @(.description characteristic)
+        failure (.failure result)]
     (println)
     (println (str id ")"))
-    (println (.name description) (.name characteristic) "FAILED")
-    (println (.getMessage (.failure result)))))
+    (println (str "'" (.name description) (.name characteristic) "' FAILED"))
+    (println (.getMessage failure))
+    (println (failure-source failure))))
 
 (defn- print-failures [results]
   (println)
@@ -33,18 +39,10 @@
   (println)
   (println "Finished in" (.format seconds-format (tally-time results)) "seconds"))
 
-(defn- tally [results]
-  (loop [results results all 0 fail 0]
-    (if (not (seq results))
-      {:all all :fail fail}
-      (cond
-        (fail? (first results)) (recur (rest results) (inc all) (inc fail))
-        :else (recur (rest results) (inc all) fail)))))
-
 (defn- print-tally [results]
   (println)
-  (let [tally (tally results)]
-    (print (:all tally) "examples," (:fail tally) "failures")))
+  (let [fails (reduce #(if (fail? %2) (inc %) %) 0 results)]
+    (print (count results) "examples," fails "failures")))
 
 (deftype ConsoleReporter []
   Reporter

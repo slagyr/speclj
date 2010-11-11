@@ -1,7 +1,6 @@
 (ns speclj.core-test
   (:use
-    [speclj.core]
-    [speclj.running :only (summarize-runs)]))
+    [speclj.core]))
 
 (describe "The basic spec structure"
   (it "uses a call to describe to begin a description")
@@ -67,5 +66,5 @@
   (it ": ... such that each characteristic gets a fresh evaluation"
     (should (not (identical? @*bauble* @bibelot)))))
 
-(summarize-runs)
+(conclude-single-file-run)
 
