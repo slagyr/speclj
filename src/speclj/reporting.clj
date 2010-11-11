@@ -19,7 +19,9 @@
     (println (str id ")"))
     (println (str "'" (.name description) (.name characteristic) "' FAILED"))
     (println (.getMessage failure))
-    (println (failure-source failure))))
+    (println (failure-source failure))
+;    (.printStackTrace failure)
+    ))
 
 (defn- print-failures [results]
   (println)
@@ -55,7 +57,24 @@
     (print-duration results)
     (print-tally results)))
 
-(def *reporter* (ConsoleReporter.))
+(defn new-console-reporter []
+  (ConsoleReporter.))
+
+(deftype SilentReporter [passes fails results]
+  Reporter
+  (report-pass [this]
+    (print "."))
+  (report-fail [this]
+    (print "F"))
+  (report-runs [this results]
+    (print-failures results)
+    (print-duration results)
+    (print-tally results)))
+
+(defn new-silent-reporter []
+  (SilentReporter. (atom 0) (atom 0) (atom nil)))
+
+(def *reporter* (new-console-reporter))
 
 (defn active-reporter []
   *reporter*)

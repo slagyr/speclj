@@ -10,22 +10,37 @@
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))
 
-(defn- eval-characteristic [characteristic]
-  (let [description @(.description characteristic)]
-    (eval-components @(.befores description))
-    ((.body characteristic))
-    (eval-components @(.afters description))
-    (doseq [with @(.withs description)] (reset-with with))))
+(defn nested-fns [base fns]
+  (if (seq fns)
+    (partial (first fns) (nested-fns base (rest fns)))
+    base))
+
+(defn- eval-characteristic [befores body afters]
+  (eval-components befores)
+  (body)
+  (eval-components afters))
+
+(defn- reset-withs [withs]
+  (doseq [with withs] (reset-with with)))
 
 (defn- do-characteristic [characteristic reporter]
-  (let [start-time (System/nanoTime)]
+  (let [description @(.description characteristic)
+        befores @(.befores description)
+        body (nested-fns (.body characteristic) (map #(.body %) @(.arounds description)))
+        afters @(.afters description)
+        withs @(.withs description)
+        start-time (System/nanoTime)]
     (try
-      (eval-characteristic characteristic)
-      (report-pass reporter)
-      (pass-result characteristic (secs-since start-time))
+      (eval-characteristic befores body afters)
+      (let [result (pass-result characteristic (secs-since start-time))]
+        (report-pass reporter)
+        result)
       (catch Exception e
-        (report-fail reporter)
-        (fail-result characteristic (secs-since start-time) e)))))
+        (let [result (fail-result characteristic (secs-since start-time) e)]
+          (report-fail reporter)
+          result))
+      (finally
+        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
 
 (defn- do-characteristics [characteristics description reporter]
   (doall

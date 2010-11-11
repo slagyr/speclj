@@ -66,5 +66,16 @@
   (it ": ... such that each characteristic gets a fresh evaluation"
     (should (not (identical? @*bauble* @bibelot)))))
 
+(def gewgaw 0)
+(describe "around forms"
+  (it "allows characteristics to be wrapped by other forms")
+  (around [spec]
+    (binding [gewgaw 42]
+      (spec)))
+
+  (it ": characteristcs will be evaluated within around form"
+    (should (= 42 gewgaw)))
+  )
+
 (conclude-single-file-run)
 

@@ -1,9 +1,9 @@
 (ns speclj.components)
 
-(deftype Description [name charcteristics befores afters before-alls after-alls withs])
+(deftype Description [name charcteristics befores afters arounds before-alls after-alls withs])
 
 (defn new-description [name]
-  (Description. name (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+  (Description. name (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (defn- install-characteristic [characteristic description]
   (swap! (.description characteristic) (fn [_] description))
@@ -50,6 +50,14 @@
 
 (defn new-after [body]
   (After. body))
+
+(deftype Around [body]
+  SpecComponent
+  (install [this description]
+    (swap! (.arounds description) conj this)))
+
+(defn new-around [body]
+  (Around. body))
 
 (deftype BeforeAll [body]
   SpecComponent
