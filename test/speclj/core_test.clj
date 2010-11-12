@@ -74,8 +74,7 @@
       (spec)))
 
   (it ": characteristcs will be evaluated within around form"
-    (should (= 42 gewgaw)))
+    (should= 42 gewgaw))
   )
 
 (conclude-single-file-run)
-

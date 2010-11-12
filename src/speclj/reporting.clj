@@ -1,6 +1,8 @@
 (ns speclj.reporting
   (:use
-    [speclj.exec :only (pass? fail?)]))
+    [speclj.exec :only (pass? fail?)])
+  (:import
+    (speclj SpecFailure)))
 
 (defprotocol Reporter
   (report-pass [this])
@@ -19,15 +21,15 @@
     (println (str id ")"))
     (println (str "'" (.name description) (.name characteristic) "' FAILED"))
     (println (.getMessage failure))
-    (println (failure-source failure))
-;    (.printStackTrace failure)
-    ))
+    (if (= SpecFailure (class failure))
+      (println (failure-source failure))
+      (.printStackTrace failure System/out))))
 
 (defn- print-failures [results]
   (println)
-  (let [failures (filter fail? results)]
-    (doseq [failure failures id (range 1 (inc (count failures)))]
-      (print-failure id failure))))
+  (let [failures (vec (filter fail? results))]
+    (dotimes [i (count failures)]
+      (print-failure (inc i) (nth failures i)))))
 
 (defn- tally-time [results]
   (loop [tally 0.0 results results]
@@ -44,7 +46,7 @@
 (defn- print-tally [results]
   (println)
   (let [fails (reduce #(if (fail? %2) (inc %) %) 0 results)]
-    (print (count results) "examples," fails "failures")))
+    (println (count results) "examples," fails "failures")))
 
 (deftype ConsoleReporter []
   Reporter
@@ -62,14 +64,9 @@
 
 (deftype SilentReporter [passes fails results]
   Reporter
-  (report-pass [this]
-    (print "."))
-  (report-fail [this]
-    (print "F"))
-  (report-runs [this results]
-    (print-failures results)
-    (print-duration results)
-    (print-tally results)))
+  (report-pass [this])
+  (report-fail [this])
+  (report-runs [this results]))
 
 (defn new-silent-reporter []
   (SilentReporter. (atom 0) (atom 0) (atom nil)))
