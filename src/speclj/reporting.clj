@@ -19,7 +19,7 @@
         failure (.failure result)]
     (println)
     (println (str id ")"))
-    (println (str "'" (.name description) (.name characteristic) "' FAILED"))
+    (println (str "'" (.name description) " " (.name characteristic) "' FAILED"))
     (println (.getMessage failure))
     (if (= SpecFailure (class failure))
       (println (failure-source failure))

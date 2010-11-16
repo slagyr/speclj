@@ -69,46 +69,55 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="running_test.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="running_test.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/speclj/running_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="22" selection-start="202" selection-end="202" vertical-scroll-proportion="0.16400911">
+            <state line="36" column="31" selection-start="1039" selection-end="1066" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="reporting.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
+      <file leaf-file-name="vigilant_runner.clj" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="68" column="31" selection-start="1958" selection-end="1958" vertical-scroll-proportion="0.0">
+            <state line="54" column="17" selection-start="1365" selection-end="1365" vertical-scroll-proportion="0.3328823">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="reporting_test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/reporting_test.clj">
+      <file leaf-file-name="vigilant_runner_test.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
+            <state line="97" column="41" selection-start="4251" selection-end="4251" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
+      <file leaf-file-name="tree.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/speclj/runner/tree.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="121" selection-start="907" selection-end="907" vertical-scroll-proportion="0.0">
+            <state line="14" column="41" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/core_test.clj">
+      <file leaf-file-name="tree-test.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/speclj/runner/tree-test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="77" column="80" selection-start="2404" selection-end="2404" vertical-scroll-proportion="0.0">
+            <state line="37" column="9" selection-start="842" selection-end="842" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/speclj/runner/test.clj">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="181" column="3" selection-start="6571" selection-end="6571" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -117,34 +126,7 @@
       <file leaf-file-name="running.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="72" selection-start="1149" selection-end="1149" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="should_test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/should_test.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="45" selection-start="850" selection-end="850" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="util.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/util.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="48" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_help.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/test_help.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="29" selection-start="1041" selection-end="1041" vertical-scroll-proportion="0.0">
+            <state line="56" column="2" selection-start="1915" selection-end="1976" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -160,22 +142,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/mmspec/SpecFailure.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/SpecFailure.clj" />
-        <option value="$PROJECT_DIR$/test/speclj/running-test.clj" />
-        <option value="$PROJECT_DIR$/test/speclj/should-test.clj" />
-        <option value="$PROJECT_DIR$/test/speclj/test_help.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/components.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/util.clj" />
-        <option value="$PROJECT_DIR$/test/speclj/should_test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/SpecFailure.java" />
         <option value="$PROJECT_DIR$/src/speclj/runner.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/core.clj" />
         <option value="$PROJECT_DIR$/test/speclj/core_test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/main.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
         <option value="$PROJECT_DIR$/src/speclj/running.clj" />
         <option value="$PROJECT_DIR$/test/speclj/running_test.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/watching_runner.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/runner/watching_runner_test.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/should_test.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/tree.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/runner/tree-test.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/test.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/core.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj" />
       </list>
     </option>
   </component>
@@ -266,11 +248,55 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="runner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="speclj" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="runner" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -292,13 +318,35 @@
     <property name="dynamic.classpath" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
   </component>
-  <component name="RunManager" selected="Clojure Script.running_test">
-    <configuration default="false" name="running-test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+  <component name="RunManager" selected="Clojure Script.vigilant_runner_test">
+    <configuration default="false" name="watching_runner_test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
       <module name="speclj" />
-      <setting name="path" value="$PROJECT_DIR$/test/speclj/running-test.clj" />
+      <setting name="path" value="$PROJECT_DIR$/test/speclj/runner/watching_runner_test.clj" />
       <setting name="vmparams" value="" />
       <setting name="params" value="" />
-      <setting name="workDir" value="$PROJECT_DIR$/test/speclj" />
+      <setting name="workDir" value="$PROJECT_DIR$/test/speclj/runner" />
+      <setting name="repl" value="false" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="vigilant_runner_test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+      <module name="speclj" />
+      <setting name="path" value="$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="$PROJECT_DIR$/test/speclj/runner" />
+      <setting name="repl" value="false" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="tree-test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+      <module name="speclj" />
+      <setting name="path" value="$PROJECT_DIR$/test/speclj/runner/tree-test.clj" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="$PROJECT_DIR$/test/speclj/runner" />
       <setting name="repl" value="false" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
@@ -315,34 +363,12 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="running_test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+    <configuration default="false" name="test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
       <module name="speclj" />
-      <setting name="path" value="$PROJECT_DIR$/test/speclj/running_test.clj" />
+      <setting name="path" value="$PROJECT_DIR$/src/speclj/runner/test.clj" />
       <setting name="vmparams" value="" />
       <setting name="params" value="" />
-      <setting name="workDir" value="$PROJECT_DIR$/test/speclj" />
-      <setting name="repl" value="false" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="core_test" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
-      <module name="speclj" />
-      <setting name="path" value="$PROJECT_DIR$/test/speclj/core_test.clj" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="$PROJECT_DIR$/test/speclj" />
-      <setting name="repl" value="false" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="reporting" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
-      <module name="speclj" />
-      <setting name="path" value="$PROJECT_DIR$/src/speclj/reporting.clj" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="$PROJECT_DIR$/src/speclj" />
+      <setting name="workDir" value="$PROJECT_DIR$/src/speclj/runner" />
       <setting name="repl" value="false" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
@@ -523,11 +549,11 @@
       </method>
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Clojure Script.running-test" />
-      <item index="1" class="java.lang.String" itemvalue="Clojure Script.should_test" />
-      <item index="2" class="java.lang.String" itemvalue="Clojure Script.running_test" />
-      <item index="3" class="java.lang.String" itemvalue="Clojure Script.core_test" />
-      <item index="4" class="java.lang.String" itemvalue="Clojure Script.reporting" />
+      <item index="0" class="java.lang.String" itemvalue="Clojure Script.watching_runner_test" />
+      <item index="1" class="java.lang.String" itemvalue="Clojure Script.vigilant_runner_test" />
+      <item index="2" class="java.lang.String" itemvalue="Clojure Script.tree-test" />
+      <item index="3" class="java.lang.String" itemvalue="Clojure Script.should_test" />
+      <item index="4" class="java.lang.String" itemvalue="Clojure Script.test" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -560,7 +586,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="874" extended-state="6" />
+    <frame x="0" y="22" width="1920" height="1174" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -575,9 +601,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18462643" sideWeight="0.62068963" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13728632" sideWeight="0.7286528" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37002653" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2647059" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -623,39 +649,9 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/project.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="170" selection-end="170" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/clojure-1.2.0.jar!/clojure/core.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2383" column="10" selection-start="75811" selection-end="75811" vertical-scroll-proportion="0.16856492" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/exec.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="20" selection-start="349" selection-end="349" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/components.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar!/java/lang/Throwable.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/SpecFailure.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="13" selection-start="110" selection-end="110" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/speclj/should_test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="45" selection-start="850" selection-end="850" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/util.clj">
@@ -670,19 +666,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/speclj/reporting_test.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/speclj/core_test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="80" selection-start="2404" selection-end="2404" vertical-scroll-proportion="0.0">
+        <state line="5" column="5" selection-start="83" selection-end="83" vertical-scroll-proportion="0.08275862">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
+    <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="121" selection-start="907" selection-end="907" vertical-scroll-proportion="0.0">
+        <state line="21" column="46" selection-start="644" selection-end="644" vertical-scroll-proportion="0.546697">
           <folding />
         </state>
       </provider>
@@ -694,23 +685,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
+    <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="31" selection-start="1958" selection-end="1958" vertical-scroll-proportion="0.0">
+        <state line="56" column="2" selection-start="1915" selection-end="1976" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
+    <entry file="file://$PROJECT_DIR$/test/speclj/should_test.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="72" selection-start="1149" selection-end="1149" vertical-scroll-proportion="0.0">
+        <state line="32" column="46" selection-start="993" selection-end="993" vertical-scroll-proportion="0.51962113">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/speclj/core_test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="80" selection-start="2404" selection-end="2404" vertical-scroll-proportion="0.85385656">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/speclj/running_test.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="22" selection-start="202" selection-end="202" vertical-scroll-proportion="0.16400911">
+        <state line="36" column="31" selection-start="1039" selection-end="1066" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/runner/test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="181" column="3" selection-start="6571" selection-end="6571" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/speclj/runner/tree-test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="9" selection-start="842" selection-end="842" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/runner/tree.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="41" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="95" selection-start="1881" selection-end="1881" vertical-scroll-proportion="0.8930988">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="97" column="41" selection-start="4251" selection-end="4251" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="17" selection-start="1365" selection-end="1365" vertical-scroll-proportion="0.3328823">
           <folding />
         </state>
       </provider>

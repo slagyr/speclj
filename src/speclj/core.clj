@@ -49,7 +49,7 @@
 (defmacro should-not= [expr1 expr2]
   `(let [expected# ~expr1 actual# ~expr2]
     (if (= expected# actual#)
-      (throw (SpecFailure. (str "Expected: <" expected# ">" endl "not to =: <" actual# "> (using =)"))))))
+      (throw (SpecFailure. (str "Expected: <" expected# ">" endl "not to =: <" actual# ">"))))))
                                                                   
 (defn conclude-single-file-run []
   (if (identical? (speclj.running/active-runner) speclj.running/default-runner)
