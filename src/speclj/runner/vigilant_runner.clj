@@ -14,18 +14,18 @@
   (run [this description reporter])
   (report [this reporter])
   Object
-  (toString [this] (str "on " dir endl @listing)))
+  (toString [this] (str "on " dir endl "listing: " (apply str (interleave (repeat endl) @listing)))))
 
 (defn new-vigilant-runner [dir]
   (VigilantRunner. (atom {}) dir))
 
 (deftype FileTracker [mod-time dependencies]
   Object
-  (toString [this] (str "mod-time: " mod-time " dependencies: " dependencies endl)))
+  (toString [this] (str "mod-time: " mod-time " dependencies: " dependencies)))
 
 (defn new-file-tracker
   [mod-time dependencies]
-    (FileTracker. mod-time dependencies))
+  (FileTracker. mod-time dependencies))
 
 ; Resolving ns names ---------------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@
 (defn- dependencies-of [file]
   (if-let [ns-form (read-ns-form file)]
     (let [dependency-names (dependencies-in-ns ns-form)]
-      (filter (complement nil?) (map #(ns-to-file %) dependency-names)))
+      (vec (filter (complement nil?) (map #(ns-to-file %) dependency-names))))
     []))
 
 (declare update-tracking-for-files)
@@ -107,11 +107,23 @@
   (let [all-files (file-seq (.dir runner))]
     (filter #(re-matches clj-file-regex (.getName %)) all-files)))
 
-(defn- new-or-modified? [file listing]
-  (let [tracker (get listing file)]
-    (or (nil? tracker) (modified? file tracker))))
+(defn- dependency? [listing file]
+  (some
+    (fn [tracker] (some (partial = file) (.dependencies tracker)))
+    (vals listing)))  
+
+(defn- clean-deleted-files
+  ([listing] (clean-deleted-files listing (filter #(not (.exists %)) (keys listing))))
+  ([listing files-to-delete]
+    (if (not (seq files-to-delete))
+      listing
+      (let [dependencies (reduce #(into %1 (.dependencies (get listing %2))) [] files-to-delete)
+            listing (apply dissoc listing files-to-delete)
+            unused-dependencies (filter #(not (dependency? listing %)) dependencies)]
+        (clean-deleted-files listing unused-dependencies)))))
 
 (defn updated-files [runner]
+  (swap! (.listing runner) clean-deleted-files)
   (let [observed-files (set (clj-files runner))
         listing @(.listing runner)
         tracked-files (set (keys listing))

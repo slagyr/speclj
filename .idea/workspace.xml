@@ -78,19 +78,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vigilant_runner.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="vigilant_runner.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="119" column="53" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.8807947">
+            <state line="112" column="4" selection-start="3830" selection-end="3830" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vigilant_runner_test.clj" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="vigilant_runner_test.clj" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="75" column="55" selection-start="2642" selection-end="2642" vertical-scroll-proportion="-2.4615386">
+            <state line="98" column="36" selection-start="3929" selection-end="3929" vertical-scroll-proportion="0.5910596">
               <folding />
             </state>
           </provider>
@@ -129,8 +129,8 @@
         <option value="$PROJECT_DIR$/test/speclj/runner/tree-test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/runner/test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/core.clj" />
-        <option value="$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj" />
       </list>
     </option>
   </component>
@@ -677,16 +677,16 @@
         <state line="56" column="2" selection-start="1915" selection-end="1976" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
+    <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="55" selection-start="2642" selection-end="2642" vertical-scroll-proportion="-2.4615386">
+        <state line="112" column="4" selection-start="3830" selection-end="3830" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
+    <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="53" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.8807947">
+        <state line="98" column="36" selection-start="3929" selection-end="3929" vertical-scroll-proportion="0.5910596">
           <folding />
         </state>
       </provider>

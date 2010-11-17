@@ -69,11 +69,42 @@
           test-file (write-tmp-file "test/core-test.clj" "(ns (:use [core]))")]
       (track-file @runner test-file)
       (tweak-mod-time @runner src-file dec)
-      (tweak-mod-time @runner test-file dec))   
+      (tweak-mod-time @runner test-file dec))
     (let [updates (updated-files @runner)]
       (should= 2 (count updates))
       (should= "core-test.clj" (.getName (first (next updates))))
       (should= "core.clj" (.getName (first updates)))))
+
+  (it "stops tracking files that have been deleted, along with their dependencies"
+    (let [src-file1 (write-tmp-file "src/src1.clj" "")
+          src-file2 (write-tmp-file "src/src2.clj" "")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns (:use [src1][src2]))")
+          test-file2 (write-tmp-file "test/test2.clj" "(ns (:use [src2]))")]
+      (track-file @runner test-file1 test-file2)
+      (should-not= nil (get @(.listing @runner) test-file1))
+      (should-not= nil (get @(.listing @runner) test-file2))
+      (should-not= nil (get @(.listing @runner) src-file1))
+      (should-not= nil (get @(.listing @runner) src-file2))
+      (.delete test-file1)
+      (should= 0 (count (updated-files @runner)))
+      (should= nil (get @(.listing @runner) test-file1))
+      (should= nil (get @(.listing @runner) src-file1))
+      (should-not= nil (get @(.listing @runner) test-file2))
+      (should-not= nil (get @(.listing @runner) src-file2))))
+
+  (it "stops tracking files that have been deleted, along with their NESTED dependencies"
+    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns (:use [src2]))")
+          src-file2 (write-tmp-file "src/src2.clj" "")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns (:use [src1]))")]
+      (track-file @runner test-file1)
+      (should-not= nil (get @(.listing @runner) test-file1))
+      (should-not= nil (get @(.listing @runner) src-file1))
+      (should-not= nil (get @(.listing @runner) src-file2))
+      (.delete test-file1)
+      (should= 0 (count (updated-files @runner)))
+      (should= nil (get @(.listing @runner) test-file1))
+      (should= nil (get @(.listing @runner) src-file1))
+      (should= nil (get @(.listing @runner) src-file2))))
 
   (it "pulls no ns form a file that doens't contain one"
     (should= nil (read-ns-form (write-tmp-file "test/one.clj" "()")))
@@ -83,23 +114,21 @@
   (it "pulls read ns form from files"
     (should= '(ns blah) (read-ns-form (write-tmp-file "test/one.clj" "(ns blah)")))
     (should= '(ns foo) (read-ns-form (write-tmp-file "test/one.clj" "; blah\n(ns foo)")))
-    (should= '(ns blah (:use [foo])(:require [bar])) (read-ns-form (write-tmp-file "test/one.clj" "(ns blah (:use [foo])(:require [bar]))"))))
-
-  ;;; Check deleted filed get untracked
+    (should= '(ns blah (:use [foo]) (:require [bar])) (read-ns-form (write-tmp-file "test/one.clj" "(ns blah (:use [foo])(:require [bar]))"))))
 
   (it "pulls dependencies out of ns form"
     (should= '#{blah} (dependencies-in-ns '(ns foo (:use [blah]))))
     (should= '#{bar} (dependencies-in-ns '(ns foo (:use [bar]))))
     (should= '#{fizz} (dependencies-in-ns '(ns foo (:use fizz))))
     (should= '#{fizz} (dependencies-in-ns '(ns foo (:require fizz))))
-    (should= '#{one two three} (dependencies-in-ns '(ns foo (:use [one][two][three]))))
-    (should= '#{one two three} (dependencies-in-ns '(ns foo (:require [one][two][three]))))
+    (should= '#{one two three} (dependencies-in-ns '(ns foo (:use [one] [two] [three]))))
+    (should= '#{one two three} (dependencies-in-ns '(ns foo (:require [one] [two] [three]))))
     (should= '#{root.one root.two} (dependencies-in-ns '(ns foo (:use [root [one] [two]]))))
     (should= '#{root.one root.two} (dependencies-in-ns '(ns foo (:require [root [one] [two]]))))
-    (should= '#{one two} (dependencies-in-ns '(ns foo (:use [one :only (foo)][two :except (bar)]))))
-    (should= '#{one two} (dependencies-in-ns '(ns foo (:require [one :as o][two :as t]))))
-    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:use [one [two :only (foo)][three :except (bar)]]))))
-    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:require [one [two :as t][three :as tr]]))))
+    (should= '#{one two} (dependencies-in-ns '(ns foo (:use [one :only (foo)] [two :except (bar)]))))
+    (should= '#{one two} (dependencies-in-ns '(ns foo (:require [one :as o] [two :as t]))))
+    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:use [one [two :only (foo)] [three :except (bar)]]))))
+    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:require [one [two :as t] [three :as tr]]))))
     (should= '#{root.one.child.grandchild root.two} (dependencies-in-ns '(ns foo (:use [root [one [child [grandchild]]] [two]]))))
     )
 
