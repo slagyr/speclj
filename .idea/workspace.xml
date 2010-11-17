@@ -81,7 +81,7 @@
       <file leaf-file-name="vigilant_runner.clj" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="77" column="31" selection-start="2519" selection-end="2519" vertical-scroll-proportion="0.046357617">
+            <state line="119" column="53" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.8807947">
               <folding />
             </state>
           </provider>
@@ -91,33 +91,6 @@
         <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
           <provider selected="true" editor-type-id="text-editor">
             <state line="75" column="55" selection-start="2642" selection-end="2642" vertical-scroll-proportion="-2.4615386">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tree.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/runner/tree.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="41" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tree-test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/runner/tree-test.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="9" selection-start="842" selection-end="842" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/runner/test.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="181" column="3" selection-start="6571" selection-end="6571" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -699,21 +672,6 @@
         <state line="36" column="31" selection-start="1039" selection-end="1066" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/runner/tree.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="41" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/speclj/runner/tree-test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="9" selection-start="842" selection-end="842" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/runner/test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="181" column="3" selection-start="6571" selection-end="6571" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="56" column="2" selection-start="1915" selection-end="1976" vertical-scroll-proportion="0.0" />
@@ -728,7 +686,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="31" selection-start="2519" selection-end="2519" vertical-scroll-proportion="0.046357617">
+        <state line="119" column="53" selection-start="4126" selection-end="4126" vertical-scroll-proportion="0.8807947">
           <folding />
         </state>
       </provider>
