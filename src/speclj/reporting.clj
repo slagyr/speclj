@@ -5,8 +5,8 @@
     (speclj SpecFailure)))
 
 (defprotocol Reporter
-  (report-pass [this])
-  (report-fail [this])
+  (report-pass [this characteristic])
+  (report-fail [this characteristic])
   (report-runs [this results]))
 
 (defn failure-source [exception]
@@ -50,9 +50,9 @@
 
 (deftype ConsoleReporter []
   Reporter
-  (report-pass [this]
+  (report-pass [this characteristic]
     (print "."))
-  (report-fail [this]
+  (report-fail [this characteristic]
     (print "F"))
   (report-runs [this results]
     (print-failures results)
@@ -64,8 +64,8 @@
 
 (deftype SilentReporter [passes fails results]
   Reporter
-  (report-pass [this])
-  (report-fail [this])
+  (report-pass [this characteristic])
+  (report-fail [this characteristic])
   (report-runs [this results]))
 
 (defn new-silent-reporter []
@@ -75,15 +75,3 @@
 
 (defn active-reporter []
   *reporter*)
-
-;..F.........
-;
-;1)
-;'PrimeFactors should factor 3' FAILED
-;expected: [2],
-;     got: [3] (using ==)
-;/Users/micahmartin/Projects/kata/prime_factors_kata/spec/prime_factors_spec.rb:22:
-;
-;Finished in 0.316175 seconds
-;
-;12 examples, 1 failure

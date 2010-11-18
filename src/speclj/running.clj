@@ -33,11 +33,11 @@
     (try
       (eval-characteristic befores body afters)
       (let [result (pass-result characteristic (secs-since start-time))]
-        (report-pass reporter)
+        (report-pass reporter characteristic)
         result)
       (catch Exception e
         (let [result (fail-result characteristic (secs-since start-time) e)]
-          (report-fail reporter)
+          (report-fail reporter characteristic)
           result))
       (finally
         (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
@@ -47,7 +47,7 @@
     (for [characteristic characteristics]
       (do-characteristic characteristic reporter))))
 
-(defn- do-description [description reporter]
+(defn do-description [description reporter]
   (eval-components @(.before-alls description))
   (let [results (do-characteristics @(.charcteristics description) description reporter)]
     (eval-components @(.after-alls description))

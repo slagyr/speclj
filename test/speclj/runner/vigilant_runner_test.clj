@@ -25,7 +25,7 @@
   (let [listing (.listing runner)
         tracker (get @listing file)]
     (if tracker
-      (swap! listing assoc file (new-file-tracker (tweak (.mod-time tracker)) (.dependencies tracker))))))
+      (swap! listing assoc file (new-file-tracker (.ns tracker) (tweak (.mod-time tracker)) (.dependencies tracker))))))
 
 (defn fake-ns-to-file [ns]
   (file src-dir (ns-to-filename ns)))
@@ -40,7 +40,7 @@
     (should= 0 (count (updated-files @runner))))
 
   (it "detects changes on first check"
-    (write-tmp-file "test/one.clj" "()")
+    (write-tmp-file "test/one.clj" "(ns one)")
     (let [updates (updated-files @runner)]
       (should= 1 (count updates))
       (should= "one.clj" (.getName (first updates)))))
@@ -53,21 +53,21 @@
       (should= "one.clj" (.getName (first updates)))))
 
   (it "detects changes on changed files"
-    (let [tmp-file (write-tmp-file "test/one.clj" "()")]
-      (track-file @runner tmp-file)
+    (let [tmp-file (write-tmp-file "test/one.clj" "(ns one)")]
+      (track-files @runner tmp-file)
       (tweak-mod-time @runner tmp-file dec))
     (let [updates (updated-files @runner)]
       (should= 1 (count updates))
       (should= "one.clj" (.getName (first updates)))))
 
   (it "doesn't detect changes on unchanged files"
-    (track-file @runner (write-tmp-file "test/one.clj" "()"))
+    (track-files @runner (write-tmp-file "test/one.clj" "(ns one)"))
     (should= 0 (count (updated-files @runner))))
 
   (it "detects file dependencies based on :use"
-    (let [src-file (write-tmp-file "src/core.clj" "")
-          test-file (write-tmp-file "test/core-test.clj" "(ns (:use [core]))")]
-      (track-file @runner test-file)
+    (let [src-file (write-tmp-file "src/core.clj" "(ns core)")
+          test-file (write-tmp-file "test/core-test.clj" "(ns core-test (:use [core]))")]
+      (track-files @runner test-file)
       (tweak-mod-time @runner src-file dec)
       (tweak-mod-time @runner test-file dec))
     (let [updates (updated-files @runner)]
@@ -76,11 +76,11 @@
       (should= "core.clj" (.getName (first updates)))))
 
   (it "stops tracking files that have been deleted, along with their dependencies"
-    (let [src-file1 (write-tmp-file "src/src1.clj" "")
-          src-file2 (write-tmp-file "src/src2.clj" "")
-          test-file1 (write-tmp-file "test/test1.clj" "(ns (:use [src1][src2]))")
-          test-file2 (write-tmp-file "test/test2.clj" "(ns (:use [src2]))")]
-      (track-file @runner test-file1 test-file2)
+    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1)")
+          src-file2 (write-tmp-file "src/src2.clj" "(ns src2)")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src1][src2]))")
+          test-file2 (write-tmp-file "test/test2.clj" "(ns test2 (:use [src2]))")]
+      (track-files @runner test-file1 test-file2)
       (should-not= nil (get @(.listing @runner) test-file1))
       (should-not= nil (get @(.listing @runner) test-file2))
       (should-not= nil (get @(.listing @runner) src-file1))
@@ -93,10 +93,10 @@
       (should-not= nil (get @(.listing @runner) src-file2))))
 
   (it "stops tracking files that have been deleted, along with their NESTED dependencies"
-    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns (:use [src2]))")
-          src-file2 (write-tmp-file "src/src2.clj" "")
-          test-file1 (write-tmp-file "test/test1.clj" "(ns (:use [src1]))")]
-      (track-file @runner test-file1)
+    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1 (:use [src2]))")
+          src-file2 (write-tmp-file "src/src2.clj" "(ns src2)")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src1]))")]
+      (track-files @runner test-file1)
       (should-not= nil (get @(.listing @runner) test-file1))
       (should-not= nil (get @(.listing @runner) src-file1))
       (should-not= nil (get @(.listing @runner) src-file2))
@@ -105,6 +105,17 @@
       (should= nil (get @(.listing @runner) test-file1))
       (should= nil (get @(.listing @runner) src-file1))
       (should= nil (get @(.listing @runner) src-file2))))
+
+  (it "finds dependents of a given file"
+    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1)")
+          src-file2 (write-tmp-file "src/src2.clj" "(ns src2)")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src1][src2]))")
+          test-file2 (write-tmp-file "test/test2.clj" "(ns test2 (:use [src2]))")]
+      (track-files @runner test-file1 test-file2)
+      (should= [] (dependents-of @(.listing @runner) test-file1))
+      (should= [] (dependents-of @(.listing @runner) test-file2))
+      (should= [test-file1] (dependents-of @(.listing @runner) src-file1))
+      (should= #{test-file1 test-file2} (set (dependents-of @(.listing @runner) src-file2)))))
 
   (it "pulls no ns form a file that doens't contain one"
     (should= nil (read-ns-form (write-tmp-file "test/one.clj" "()")))
