@@ -5,6 +5,7 @@
     (speclj SpecFailure)))
 
 (defprotocol Reporter
+  (report-description [this description])
   (report-pass [this characteristic])
   (report-fail [this characteristic])
   (report-runs [this results]))
@@ -13,7 +14,7 @@
   (let [source (nth (.getStackTrace exception) 0)]
     (str (.getAbsolutePath (java.io.File. (.getFileName source))) ":" (.getLineNumber source))))
 
-(defn- print-failure [id result]
+(defn print-failure [id result]
   (let [characteristic (.characteristic result)
         description @(.description characteristic)
         failure (.failure result)]
@@ -25,7 +26,7 @@
       (println (failure-source failure))
       (.printStackTrace failure System/out))))
 
-(defn- print-failures [results]
+(defn print-failures [results]
   (println)
   (let [failures (vec (filter fail? results))]
     (dotimes [i (count failures)]
@@ -50,6 +51,7 @@
 
 (deftype ConsoleReporter []
   Reporter
+  (report-description [this description])
   (report-pass [this characteristic]
     (print "."))
   (report-fail [this characteristic]
@@ -64,6 +66,7 @@
 
 (deftype SilentReporter [passes fails results]
   Reporter
+  (report-description [this description])
   (report-pass [this characteristic])
   (report-fail [this characteristic])
   (report-runs [this results]))

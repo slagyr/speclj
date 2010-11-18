@@ -63,7 +63,7 @@
       <file leaf-file-name="main.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="0" selection-start="617" selection-end="617" vertical-scroll-proportion="0.0">
+            <state line="3" column="27" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -78,19 +78,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vigilant_runner.clj" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
+      <file leaf-file-name="vigilant.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="0" selection-start="373" selection-end="373" vertical-scroll-proportion="0.2733485">
+            <state line="0" column="26" selection-start="26" selection-end="26" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vigilant_runner_test.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
+      <file leaf-file-name="vigilant_test.clj" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_test.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="146" column="14" selection-start="7104" selection-end="7104" vertical-scroll-proportion="-10.423077">
+            <state line="3" column="27" selection-start="83" selection-end="83" vertical-scroll-proportion="0.047058824">
               <folding />
             </state>
           </provider>
@@ -108,7 +108,7 @@
       <file leaf-file-name="running.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="53" selection-start="1130" selection-end="1130" vertical-scroll-proportion="-15.692307">
+            <state line="50" column="31" selection-start="1770" selection-end="1770" vertical-scroll-proportion="-7.3846154">
               <folding />
             </state>
           </provider>
@@ -126,7 +126,16 @@
       <file leaf-file-name="reporting.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="35" selection-start="202" selection-end="202" vertical-scroll-proportion="-3.6923077">
+            <state line="80" column="0" selection-start="2338" selection-end="2338" vertical-scroll-proportion="-25.653847">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="console.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/speclj/reporter/console.clj">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -142,8 +151,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/speclj/SpecFailure.java" />
-        <option value="$PROJECT_DIR$/src/speclj/runner.clj" />
         <option value="$PROJECT_DIR$/test/speclj/core_test.clj" />
         <option value="$PROJECT_DIR$/test/speclj/running_test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/runner/watching_runner.clj" />
@@ -152,12 +159,14 @@
         <option value="$PROJECT_DIR$/src/speclj/runner/tree.clj" />
         <option value="$PROJECT_DIR$/test/speclj/runner/tree-test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/runner/test.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/main.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/core.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj" />
         <option value="$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj" />
         <option value="$PROJECT_DIR$/src/speclj/running.clj" />
         <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/core.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/runner/vigilant.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/main.clj" />
+        <option value="$PROJECT_DIR$/test/speclj/runner/vigilant_test.clj" />
       </list>
     </option>
   </component>
@@ -586,8 +595,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="874" extended-state="0" />
-    <editor active="false" />
+    <frame x="0" y="22" width="1920" height="1174" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -601,9 +610,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18390805" sideWeight="0.6551724" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13675214" sideWeight="0.7533207" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33554375" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24003795" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -684,37 +693,9 @@
         <state line="36" column="31" selection-start="1039" selection-end="1066" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="0" selection-start="617" selection-end="617" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_runner_test.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="14" selection-start="7104" selection-end="7104" vertical-scroll-proportion="-10.423077">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/components.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="53" selection-start="1130" selection-end="1130" vertical-scroll-proportion="-15.692307">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="35" selection-start="202" selection-end="202" vertical-scroll-proportion="-3.6923077">
           <folding />
         </state>
       </provider>
@@ -726,9 +707,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant_runner.clj">
+    <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="0" selection-start="373" selection-end="373" vertical-scroll-proportion="0.2733485">
+        <state line="50" column="31" selection-start="1770" selection-end="1770" vertical-scroll-proportion="-7.3846154">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="80" column="0" selection-start="2338" selection-end="2338" vertical-scroll-proportion="-25.653847">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/reporter/console.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/runner/vigilant.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="26" selection-start="26" selection-end="26" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="27" selection-start="115" selection-end="115" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/speclj/runner/vigilant_test.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="27" selection-start="83" selection-end="83" vertical-scroll-proportion="0.047058824">
           <folding />
         </state>
       </provider>

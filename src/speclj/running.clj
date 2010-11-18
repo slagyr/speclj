@@ -1,7 +1,7 @@
 (ns speclj.running
   (:use
     [speclj.exec :only (pass-result fail-result)]
-    [speclj.reporting :only (report-runs report-pass report-fail active-reporter)]
+    [speclj.reporting :only (report-runs report-pass report-fail report-description active-reporter)]
     [speclj.components :only [reset-with]]))
 
 (defn secs-since [start]
@@ -48,6 +48,7 @@
       (do-characteristic characteristic reporter))))
 
 (defn do-description [description reporter]
+  (report-description reporter description)
   (eval-components @(.before-alls description))
   (let [results (do-characteristics @(.charcteristics description) description reporter)]
     (eval-components @(.after-alls description))
