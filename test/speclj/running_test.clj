@@ -1,12 +1,14 @@
 (ns speclj.running-test
   (:use
     [speclj.core]
-    [speclj.running :only (new-multi-runner *runner*)]
-    [speclj.reporting :only (new-silent-reporter *reporter*)])
+    [speclj.running :only (*runner*)]
+    [speclj.run.standard :only (new-standard-runner)]
+    [speclj.reporting :only (*reporter*)]
+    [speclj.report.silence :only (new-silent-reporter)])
   (:import (speclj SpecFailure)))
 
 (describe "MultiRunner"
-  (with runner (new-multi-runner))
+  (with runner (new-standard-runner))
   (around [_]
     (binding [*runner* @runner
               *reporter* (new-silent-reporter)]

@@ -1,8 +1,17 @@
 (ns speclj.running
   (:use
     [speclj.exec :only (pass-result fail-result)]
-    [speclj.reporting :only (report-runs report-pass report-fail report-description active-reporter)]
-    [speclj.components :only [reset-with]]))
+    [speclj.reporting :only (active-reporter report-runs report-pass report-fail report-description)]
+    [speclj.components :only (reset-with)]))
+
+(def default-runner (atom nil))
+(declare *runner*)
+(defn active-runner []
+  (if (bound? #'*runner*)
+    *runner*
+    (if-let [runner @default-runner]
+      runner
+      (throw (Exception. "*runner* is unbound and no default value has been provided")))))
 
 (defn secs-since [start]
   (/ (double (- (System/nanoTime) start)) 1000000000.0))
@@ -57,33 +66,6 @@
 (defprotocol Runner
   (run [this description reporter])
   (report [this reporter]))
-
-(deftype SingleRunner []
-  Runner
-  (run [this description reporter]
-    (let [results (do-description description reporter)]
-      (report-runs reporter results)))
-  (report [this reporter]
-    ))
-
-(deftype MultiRunner [results]
-  Runner
-  (run [this description reporter]
-    (let [run-results (do-description description reporter)]
-      (swap! results into run-results)))
-  (report [this reporter]
-    (report-runs reporter @results)))
-
-(defn new-multi-runner []
-  (MultiRunner. (atom [])))
-
-(def default-runner (new-multi-runner))
-(declare *runner*)
-
-(defn active-runner []
-  (if (bound? #'*runner*)
-    *runner*
-    default-runner))
 
 (defn submit-description [description]
   (run (active-runner) description (active-reporter)))

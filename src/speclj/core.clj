@@ -3,6 +3,9 @@
     [speclj.running :only (submit-description)]
     [speclj.components]
     [speclj.util :only (endl)])
+  (:require
+    [speclj.run.standard]
+    [speclj.report.console])
   (:import [speclj SpecFailure]))
 
 (defmacro it [name & body]
