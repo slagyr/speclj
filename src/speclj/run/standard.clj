@@ -1,7 +1,8 @@
 (ns speclj.run.standard
   (:use
     [speclj.running :only (do-description report default-runner *runner* clj-files-in)]
-    [speclj.reporting :only (report-runs active-reporter)])
+    [speclj.reporting :only (report-runs active-reporter)]
+    [speclj.exec :only (fail-count)])
   (:import
     [speclj.running Runner]))
 
@@ -12,7 +13,8 @@
       (binding [*runner* this]
         (doseq [file files]
           (load-string (slurp (.getCanonicalPath file))))))
-    (report this reporter))
+    (report this reporter)
+    (fail-count @results))
   
   (run-description [this description reporter]
     (let [run-results (do-description description reporter)]

@@ -1,4 +1,6 @@
-(ns speclj.main)
+(ns speclj.main
+  (:use
+    [speclj.running :only (run-directories report)]))
 
 (def default-config {
   :spec-dirs ["spec"]
@@ -13,7 +15,7 @@
     :else (assoc config :spec-dirs (conj (vec (:spec-dirs config)) arg))))
 
 (defn parse-args [& args]
-  (loop [config {} args args]
+  (loop [config {} args (filter identity args)]
     (if (not (seq args))
       (merge default-config config)
       (recur (parse-arg config (first args)) (rest args)))))
@@ -35,7 +37,12 @@
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
 
 (defn run [& args]
-  (println "run args: " args))
+  (let [config (apply parse-args args)
+        runner (load-runner (:runner config))
+        reporter (load-reporter (:reporter config))
+        spec-dirs (:spec-dirs config)
+        fail-count (run-directories runner spec-dirs reporter)]
+    (System/exit fail-count)))
 
 (if *command-line-args*
   (run *command-line-args*))

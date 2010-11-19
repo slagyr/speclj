@@ -13,3 +13,6 @@
 
 (defn fail? [result]
   (.failure result))
+
+(defn fail-count [results]
+  (reduce #(if (fail? %2) (inc %) %) 0 results))
