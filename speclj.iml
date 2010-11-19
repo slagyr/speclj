@@ -35,7 +35,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/test" />
+          <root url="file://$MODULE_DIR$/spec" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

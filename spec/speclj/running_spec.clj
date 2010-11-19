@@ -1,10 +1,10 @@
-(ns speclj.running-test
+(ns speclj.running-spec
   (:use
     [speclj.core]
     [speclj.running :only (*runner*)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.reporting :only (*reporter*)]
-    [speclj.report.silence :only (new-silent-reporter)])
+    [speclj.report.silent :only (new-silent-reporter)])
   (:import (speclj SpecFailure)))
 
 (describe "MultiRunner"

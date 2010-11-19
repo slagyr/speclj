@@ -1,21 +1,41 @@
-(ns speclj.runner
-  (:use
-    [speclj.running :only (report *runner*)]
-    [speclj.reporting :only (active-reporter)]
-    [speclj.run.standard :only (new-standard-runner)]
-    [speclj.run.vigilance :only (watch)])
-  (:import (java.io File)))
+(ns speclj.main)
 
-(defn find-test-files [dirname]
-  (let [files (file-seq (File. dirname))
-        file-regex #".*\.clj"]
-    (filter #(re-matches file-regex (.getName %)) files)))
+(def default-config {
+  :spec-dirs ["spec"]
+  :runner "standard"
+  :reporter "console"
+  })
 
-;(binding [*runner* (new-standard-runner)]
-;  (doseq [file (find-test-files (first *command-line-args*))]
-;    (load-string (slurp (.getCanonicalPath file))))
-;  (report *runner* (active-reporter))
-;  )
+(defn- parse-arg [config arg]
+  (cond
+    (.startsWith arg "--runner=") (assoc config :runner (.substring arg (count "--runner=")))
+    (.startsWith arg "--reporter=") (assoc config :reporter (.substring arg (count "--reporter=")))
+    :else (assoc config :spec-dirs (conj (vec (:spec-dirs config)) arg))))
 
+(defn parse-args [& args]
+  (loop [config {} args args]
+    (if (not (seq args))
+      (merge default-config config)
+      (recur (parse-arg config (first args)) (rest args)))))
 
-(watch (first *command-line-args*))
+(defn load-runner [name]
+  (let [ns-name (symbol (str "speclj.run." name))
+        ctor-name (symbol (str ns-name "/new-" name "-runner"))
+        expr `(do (require '~ns-name)(~ctor-name))]
+    (try
+      (eval expr)
+      (catch Exception e (throw (Exception. (str "Failed to load runner: " name) e))))))
+
+(defn load-reporter [name]
+  (let [ns-name (symbol (str "speclj.report." name))
+        ctor-name (symbol (str ns-name "/new-" name "-reporter"))
+        expr `(do (require '~ns-name)(~ctor-name))]
+    (try
+      (eval expr)
+      (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
+
+(defn run [& args]
+  (println "run args: " args))
+
+(if *command-line-args*
+  (run *command-line-args*))

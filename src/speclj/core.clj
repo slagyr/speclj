@@ -1,6 +1,7 @@
 (ns speclj.core
   (:use
-    [speclj.running :only (submit-description)]
+    [speclj.running :only (submit-description default-runner active-runner report)]
+    [speclj.reporting :only (active-reporter)]
     [speclj.components]
     [speclj.util :only (endl)])
   (:require
@@ -53,7 +54,41 @@
   `(let [expected# ~expr1 actual# ~expr2]
     (if (= expected# actual#)
       (throw (SpecFailure. (str "Expected: <" expected# ">" endl "not to =: <" actual# ">"))))))
-                                                                  
+
+(defmacro should-fail
+  ([] `(should-fail "Forced failure"))
+  ([message] `(throw (SpecFailure. ~message))))
+
+(defn -create-should-throw-failure [expected actual expr]
+  (let [expected-name (.getName expected)
+        expected-gaps (apply str (repeat (count expected-name) " "))
+        actual-string (if actual (.toString actual) "<nothing thrown>")]
+    (SpecFailure. (str "Expected " expected-name " thrown from: " expr endl
+                       "         " expected-gaps "     but got: " actual-string))))
+
+(defmacro should-throw
+  ([expr] `(should-throw Throwable ~expr))
+  ([throwable-type expr]
+    `(try
+      ~expr
+      (throw (-create-should-throw-failure ~throwable-type nil '~expr))
+      (catch Throwable e#
+        (cond
+          (.isInstance SpecFailure e#) (throw e#)
+          (not (.isInstance ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~expr))
+          :else e#))))
+  ([throwable-type message expr]
+    `(let [e# (should-throw ~throwable-type ~expr)]
+      (try
+        (should= ~message (.getMessage e#))
+        (catch SpecFailure f# (throw (SpecFailure. (str "Expected exception message didn't match" endl (.getMessage f#)))))))))
+
+(defmacro should-not-throw [expr]
+  `(try
+    ~expr
+    (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~expr endl
+      "                     but got: " (.toString e#)))))))
+
 (defn conclude-single-file-run []
-  (if (identical? (speclj.running/active-runner) speclj.running/default-runner)
-    (speclj.running/report (speclj.running/active-runner) (speclj.reporting/active-reporter))))
+  (if (identical? (active-runner) @default-runner)
+    (report (active-runner) (active-reporter))))

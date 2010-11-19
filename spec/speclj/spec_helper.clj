@@ -1,4 +1,4 @@
-(ns speclj.test-help
+(ns speclj.spec-helper
   (:import [speclj SpecFailure]))
 
 (defmacro run-result [& body]

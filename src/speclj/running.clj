@@ -2,7 +2,9 @@
   (:use
     [speclj.exec :only (pass-result fail-result)]
     [speclj.reporting :only (active-reporter report-runs report-pass report-fail report-description)]
-    [speclj.components :only (reset-with)]))
+    [speclj.components :only (reset-with)])
+  (:import
+    [java.io File]))
 
 (def default-runner (atom nil))
 (declare *runner*)
@@ -64,10 +66,16 @@
     results))
 
 (defprotocol Runner
-  (run [this description reporter])
+  (run-directories [this directories reporter])
+  (run-description [this description reporter])
   (report [this reporter]))
 
 (defn submit-description [description]
-  (run (active-runner) description (active-reporter)))
+  (run-description (active-runner) description (active-reporter)))
+
+(def clj-file-regex #".*\.clj")
+(defn clj-files-in [& dirs]
+  (let [files (reduce #(into %1 (file-seq (File. %2))) [] dirs)]
+    (filter #(re-matches clj-file-regex (.getName %)) files)))
 
 

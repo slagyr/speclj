@@ -1,4 +1,4 @@
-(ns speclj.reporting-test
+(ns speclj.reporting-spec
   (:use
     [speclj.core]
     [speclj.reporting]))
