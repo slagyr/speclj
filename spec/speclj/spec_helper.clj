@@ -1,5 +1,7 @@
 (ns speclj.spec-helper
-  (:import [speclj SpecFailure]))
+  (:import
+    [speclj SpecFailure]
+    [java.io File]))
 
 (defmacro run-result [& body]
   `(try
@@ -30,3 +32,11 @@
     (if (not (= SpecFailure (class result#)))
       (throw (SpecFailure. (str "Expected a failure but got: " result#)))
       (.getMessage result#))))
+
+(defn find-dir
+  ([name] (find-dir (File. (.getCanonicalPath (File. ""))) name))
+  ([file name]
+    (let [examples (File. file name)]
+      (if (.exists examples)
+        examples
+        (find-dir (.getParentFile file) name)))))

@@ -59,12 +59,12 @@
   ([] `(should-fail "Forced failure"))
   ([message] `(throw (SpecFailure. ~message))))
 
-(defn -create-should-throw-failure [expected actual expr]
-  (let [expected-name (.getName expected)
-        expected-gaps (apply str (repeat (count expected-name) " "))
-        actual-string (if actual (.toString actual) "<nothing thrown>")]
-    (SpecFailure. (str "Expected " expected-name " thrown from: " expr endl
-                       "         " expected-gaps "     but got: " actual-string))))
+(defmacro -create-should-throw-failure [expected actual expr]
+  `(let [expected-name# (.getName ~expected)
+         expected-gaps# (apply str (repeat (count expected-name#) " "))
+         actual-string# (if ~actual (.toString ~actual) "<nothing thrown>")]
+    (SpecFailure. (str "Expected " expected-name# " thrown from: " ~expr endl
+      "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
   ([expr] `(should-throw Throwable ~expr))
