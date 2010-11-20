@@ -23,7 +23,7 @@
 (defn load-runner [name]
   (let [ns-name (symbol (str "speclj.run." name))
         ctor-name (symbol (str ns-name "/new-" name "-runner"))
-        expr `(do (require '~ns-name)(~ctor-name))]
+        expr `(do (require '~ns-name) (~ctor-name))]
     (try
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load runner: " name) e))))))
@@ -31,7 +31,7 @@
 (defn load-reporter [name]
   (let [ns-name (symbol (str "speclj.report." name))
         ctor-name (symbol (str ns-name "/new-" name "-reporter"))
-        expr `(do (require '~ns-name)(~ctor-name))]
+        expr `(do (require '~ns-name) (~ctor-name))]
     (try
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
@@ -45,4 +45,8 @@
     (System/exit fail-count)))
 
 (if *command-line-args*
-  (run *command-line-args*))
+  (let [args *command-line-args*]
+    (binding [*command-line-args* nil]
+      (apply run args))))
+
+

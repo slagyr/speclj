@@ -14,7 +14,7 @@
     (println (str id ")"))
     (println (str "'" (.name description) " " (.name characteristic) "' FAILED"))
     (println (.getMessage failure))
-    (if (= SpecFailure (class failure))
+    (if (.isInstance SpecFailure failure)
       (println (failure-source failure))
       (.printStackTrace failure System/out))))
 
@@ -35,17 +35,20 @@
   (let [fails (reduce #(if (fail? %2) (inc %) %) 0 results)]
     (println (count results) "examples," fails "failures")))
 
+(defn print-summary [results]
+  (print-failures results)
+  (print-duration results)
+  (print-tally results))
+
 (deftype ConsoleReporter []
   Reporter
   (report-description [this description])
-  (report-pass [this characteristic]
-    (print "."))
-  (report-fail [this characteristic]
-    (print "F"))
+  (report-pass [this result]
+    (print ".") (flush))
+  (report-fail [this result]
+    (print "F") (flush))
   (report-runs [this results]
-    (print-failures results)
-    (print-duration results)
-    (print-tally results)))
+    (print-summary results)))
 
 (defn new-console-reporter []
   (ConsoleReporter.))

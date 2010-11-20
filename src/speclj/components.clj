@@ -32,8 +32,9 @@
   (install [this description]
     (install-characteristic this description)))
 
-(defn new-characteristic [name body]
-  (Characteristic. name (atom nil) body))
+(defn new-characteristic
+  ([name body] (Characteristic. name (atom nil) body))
+  ([name description body] (Characteristic. name (atom description) body)))
 
 (deftype Before [body]
   SpecComponent

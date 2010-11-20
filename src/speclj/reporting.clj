@@ -13,7 +13,9 @@
 
 (defn failure-source [exception]
   (let [source (nth (.getStackTrace exception) 0)]
-    (str (.getAbsolutePath (java.io.File. (.getFileName source))) ":" (.getLineNumber source))))
+    (if-let [filename (.getFileName source)]
+      (str (.getCanonicalPath (java.io.File. filename)) ":" (.getLineNumber source))
+      "Unknown source")))
 
 (defn tally-time [results]
   (loop [tally 0.0 results results]
@@ -23,6 +25,6 @@
 
 (defprotocol Reporter
   (report-description [this description])
-  (report-pass [this characteristic])
-  (report-fail [this characteristic])
+  (report-pass [this result])
+  (report-fail [this result])
   (report-runs [this results]))

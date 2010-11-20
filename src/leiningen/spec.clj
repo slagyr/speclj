@@ -8,5 +8,6 @@
     [java.io File]))
 
 (defn spec [project & args]
-  (let [exec-form `(~'do (~'use 'speclj.main)(~'run '~@args))]
-    (eval-in-project project exec-form nil nil nil)))
+;  (let [exec-form `(~'do (~'use 'speclj.main)(~'run '~@args))]
+;    (eval-in-project project exec-form nil nil nil)))
+    (eval-in-project project `(~'run ~@args) nil nil `(use 'speclj.main)))

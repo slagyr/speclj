@@ -44,11 +44,11 @@
     (try
       (eval-characteristic befores body afters)
       (let [result (pass-result characteristic (secs-since start-time))]
-        (report-pass reporter characteristic)
+        (report-pass reporter result)
         result)
       (catch Exception e
         (let [result (fail-result characteristic (secs-since start-time) e)]
-          (report-fail reporter characteristic)
+          (report-fail reporter result)
           result))
       (finally
         (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
