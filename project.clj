@@ -1,7 +1,14 @@
-(defproject speclj "1.0.0"
+(require 'speclj.version)
+
+(defproject speclj speclj.version/string
   :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
-  :dependencies [[org.clojure/clojure "1.2.0"]
-                 [mmargs "1.2.0"]]
-  :repositories { "localShared" "file://m2"}
+  :license {:name "MIT"
+            :url "file://LICENSE"
+            :distribution :repo
+            :comments "Copyright © 2010 Micah Martin All Rights Reserved."}
+  :dependencies [[org.clojure/clojure "1.2.0"]]
   :test-path "spec/"
-  :main speclj.main)
+  :main speclj.main
+  :aot [speclj.running speclj.reporting]
+;  :java-source-path "src/"
+  )
