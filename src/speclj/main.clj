@@ -1,24 +1,75 @@
 (ns speclj.main
   (:use
-    [speclj.running :only (run-directories report)]))
+    [speclj.running :only (run-directories report)]
+    [speclj.util :only (endl)])
+  (:require
+    [speclj.version])
+  (:import
+    [mmargs Arguments]))
 
 (def default-config {
-  :spec-dirs ["spec"]
+  :specs ["spec"]
   :runner "standard"
-  :reporter "console"
+  :reporter "progress"
   })
 
-(defn- parse-arg [config arg]
+(def invoke-method "clj speclj.main")
+
+(def arg-spec (Arguments.))
+(doto arg-spec
+  (.addMultiParameter "specs" "directories specifying which specs to run.")
+  (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner." endl
+    endl
+    "Builtin runners:" endl
+    "standard               : (default) Runs all the specs once" endl
+    "vigilant               : Watches for file changes and re-runs affected specs (used by autotest)" endl))
+  (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*." endl
+    endl
+    "Builtin reporters:" endl
+    "silent                 : No output" endl
+    "progress               : (default) Text-based progress bar" endl
+    "specdoc                : Code example doc strings" endl))
+  (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
+  (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
+  (.addSwitchOption "v" "version" "Shows the current speclj version.")
+  (.addSwitchOption "h" "help" "You're looking at it.")
+  )
+
+(defn- resolve-aliases [options]
   (cond
-    (.startsWith arg "--runner=") (assoc config :runner (.substring arg (count "--runner=")))
-    (.startsWith arg "--reporter=") (assoc config :reporter (.substring arg (count "--reporter=")))
-    :else (assoc config :spec-dirs (conj (vec (:spec-dirs config)) arg))))
+    (:format options) (recur (dissoc (assoc options :reporter (:format options)) :format))
+    (:autotest options) (recur (dissoc (assoc options :runner "vigilant" :reporter "specdoc") :autotest))
+    :else options))
+
+(defn exit [code]
+  (System/exit code))
+
+(defn usage [errors]
+  (if (seq errors)
+    (do
+      (println "ERROR!!!")
+      (doseq [error (seq errors)]
+        (println error))))
+  (println)
+  (println "Usage: " invoke-method (.argString arg-spec))
+  (println)
+  (println (.parametersString arg-spec))
+  (println (.optionsString arg-spec))
+  (if (seq errors)
+    (exit -1)
+    (exit 0)))
+
+(defn print-version []
+  (println speclj.version/summary)
+  (exit 0))
 
 (defn parse-args [& args]
-  (loop [config {} args (filter identity args)]
-    (if (not (seq args))
-      (merge default-config config)
-      (recur (parse-arg config (first args)) (rest args)))))
+  (let [parse-result (.parse arg-spec (into-array String args))
+        options (reduce (fn [result entry] (assoc result (keyword (.getKey entry)) (.getValue entry))) {} parse-result)
+        options (resolve-aliases options)]
+    (if-let [errors (options :*errors)]
+      (usage errors)
+      (merge default-config options))))
 
 (defn load-runner [name]
   (let [ns-name (symbol (str "speclj.run." name))
@@ -36,13 +87,19 @@
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
 
-(defn run [& args]
-  (let [config (apply parse-args args)
-        runner (load-runner (:runner config))
+(defn run-specs [config]
+  (let [runner (load-runner (:runner config))
         reporter (load-reporter (:reporter config))
-        spec-dirs (:spec-dirs config)
+        spec-dirs (:specs config)
         fail-count (run-directories runner spec-dirs reporter)]
-    (System/exit fail-count)))
+    (exit fail-count)))
+
+(defn run [& args]
+  (let [config (apply parse-args args)]
+    (cond
+      (:version config) (print-version)
+      (:help config) (usage nil)
+      :else (run-specs config))))
 
 (if *command-line-args*
   (let [args *command-line-args*]

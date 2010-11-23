@@ -24,6 +24,7 @@
       tally)))
 
 (defprotocol Reporter
+  (report-message [reporter message])
   (report-description [this description])
   (report-pass [this result])
   (report-fail [this result])

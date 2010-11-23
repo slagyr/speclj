@@ -1,7 +1,7 @@
-(ns speclj.report.verbose-spec
+(ns speclj.report.specdoc-spec
   (:use
     [speclj.core]
-    [speclj.report.verbose :only (new-verbose-reporter)]
+    [speclj.report.specdoc :only (new-specdoc-reporter)]
     [speclj.reporting]
     [speclj.exec :only (pass-result fail-result)]
     [speclj.components :only (new-description new-characteristic)]
@@ -14,10 +14,10 @@
 (defn to-s [output]
   (String. (.toByteArray output)))
 
-(describe "Verbose Reporter"
+(describe "Speccdoc Reporter"
   (with output (ByteArrayOutputStream.))
   (with writer (OutputStreamWriter. @output))
-  (with reporter (new-verbose-reporter))
+  (with reporter (new-specdoc-reporter))
   (with description (new-description "Verbosity"))
   (around [spec] (binding [*out* @writer] (spec)))
 

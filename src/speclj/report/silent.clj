@@ -6,9 +6,10 @@
 
 (deftype SilentReporter [passes fails results]
   Reporter
+  (report-message [this message])
   (report-description [this description])
-  (report-pass [this characteristic])
-  (report-fail [this characteristic])
+  (report-pass [this result])
+  (report-fail [this result])
   (report-runs [this results]))
 
 (defn new-silent-reporter []

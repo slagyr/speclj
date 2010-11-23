@@ -6,7 +6,7 @@
     [speclj.util :only (endl)])
   (:require
     [speclj.run.standard]
-    [speclj.report.console])
+    [speclj.report.progress])
   (:import [speclj SpecFailure]))
 
 (defmacro it [name & body]

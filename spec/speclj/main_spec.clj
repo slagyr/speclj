@@ -1,27 +1,39 @@
 (ns speclj.main-spec
   (:use
     [speclj.core]
-    [speclj.main])
+    [speclj.main]
+    [speclj.util :only (endl)])
   (:require
     [speclj.run.standard]
     [speclj.run.vigilant]
-    [speclj.report.console]
-    [speclj.report.silent]))
+    [speclj.report.progress]
+    [speclj.report.silent]
+    [speclj.version])
+  (:import
+    [java.io ByteArrayOutputStream OutputStreamWriter]))
+
+
+(defn to-s [output]
+  (String. (.toByteArray output)))
 
 (describe "speclj main"
+  (with output (ByteArrayOutputStream.))
+  (with writer (OutputStreamWriter. @output))
+  (around [spec] (binding [*out* @writer] (spec)))
+  (around [spec] (binding [exit identity] (spec)))
 
   (it "has default configuration"
-    (should= ["spec"] (:spec-dirs default-config))
-    (should= "console" (:reporter default-config))
+    (should= ["spec"] (:specs default-config))
+    (should= "progress" (:reporter default-config))
     (should= "standard" (:runner default-config)))
 
   (it "parses no arguments"
     (should= default-config (parse-args)))
 
   (it "parses non-option arguments as spec dirs"
-    (should= ["one"] (:spec-dirs (parse-args "one")))
-    (should= ["one" "two"] (:spec-dirs (parse-args "one" "two")))
-    (should= ["one" "two" "three"] (:spec-dirs (parse-args "one" "two" "three"))))
+    (should= ["one"] (:specs (parse-args "one")))
+    (should= ["one" "two"] (:specs (parse-args "one" "two")))
+    (should= ["one" "two" "three"] (:specs (parse-args "one" "two" "three"))))
 
   (it "parses the runner argument"
     (should= "fridge" (:runner (parse-args "--runner=fridge")))
@@ -44,10 +56,10 @@
   (it "throws exception with unrecognized runner"
     (should-throw Exception "Failed to load runner: blah" (load-runner "blah")))
 
-  (it "dynaimcally loads ConsoleReporter"
-    (let [reporter (load-reporter "console")]
+  (it "dynaimcally loads ProgressReporter"
+    (let [reporter (load-reporter "progress")]
       (should-not= nil reporter)
-      (should= speclj.report.console.ConsoleReporter (class reporter))))
+      (should= speclj.report.progress.ProgressReporter (class reporter))))
 
   (it "dynaimcally loads SilentReporter"
     (let [reporter (load-reporter "silent")]
@@ -56,7 +68,37 @@
 
   (it "throws exception with unrecognized reporter"
     (should-throw Exception "Failed to load reporter: blah" (load-reporter "blah")))
-  )
 
+  (it "uses formatter as an alias to reporter"
+    (let [options (parse-args "--format" "silent")]
+      (should= "silent" (:reporter options))))      
+
+  (it "parses the --version switch"
+    (should= nil (:version (parse-args "")))
+    (should= "on" (:version (parse-args "--version")))
+    (should= "on" (:version (parse-args "-v"))))
+
+  (it "handles the --version switch"
+    (should= 0 (run "--version"))
+    (should= (str "speclj " speclj.version/string endl) (to-s @output)))
+
+  (it "parses the --help switch"
+    (should= nil (:help (parse-args "")))
+    (should= "on" (:help (parse-args "--help")))
+    (should= "on" (:help (parse-args "-h"))))
+
+  (it "handles the --version switch"
+    (should= 0 (run "--help"))
+    (should-not= -1 (.indexOf (to-s @output) "Usage")))
+
+  (it "parses and translates the --autotest option"
+    (let [options (parse-args "--autotest")]
+      (should= "vigilant" (:runner options))
+      (should= "specdoc" (:reporter options)))
+    (let [options (parse-args "-a")]
+      (should= "vigilant" (:runner options))
+      (should= "specdoc" (:reporter options))))
+          
+  )
 
 (conclude-single-file-run)

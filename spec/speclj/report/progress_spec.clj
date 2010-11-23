@@ -1,7 +1,7 @@
-(ns speclj.report.console-spec
+(ns speclj.report.progress-spec
   (:use
     [speclj.core]
-    [speclj.report.console :only (new-console-reporter)]
+    [speclj.report.progress :only (new-progress-reporter)]
     [speclj.reporting]
     [speclj.exec :only (pass-result fail-result)]
     [speclj.components :only (new-description new-characteristic)]
@@ -13,10 +13,10 @@
 (defn to-s [output]
   (String. (.toByteArray output)))
 
-(describe "Console Reporter"
+(describe "Progress Reporter"
   (with output (ByteArrayOutputStream.))
   (with writer (OutputStreamWriter. @output))
-  (with reporter (new-console-reporter))
+  (with reporter (new-progress-reporter))
   (around [spec] (binding [*out* @writer] (spec)))
 
   (it "reports pass"
@@ -63,17 +63,17 @@
       (should= "1)" (lines 2))
       (should= "'Crazy flips' FAILED" (lines 3))
       (should= "Expected flips" (lines 4))
-;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/console_spec.clj:54" (lines 5))
+;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:54" (lines 5))
       (should= "" (lines 6))
       (should= "2)" (lines 7))
       (should= "'Crazy spins' FAILED" (lines 8))
       (should= "Expected spins" (lines 9))
-;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/console_spec.clj:55" (lines 10))
+;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:55" (lines 10))
       (should= "" (lines 11))
       (should= "3)" (lines 12))
       (should= "'Crazy dives' FAILED" (lines 13))
       (should= "Expected dives" (lines 14))
-;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/console_spec.clj:56" (lines 15))
+;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (lines 15))
       (should= "" (lines 16))
       (should= "Finished in 0.32100 seconds" (lines 17))
       (should= "" (lines 18))

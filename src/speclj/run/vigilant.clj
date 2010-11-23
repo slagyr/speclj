@@ -2,7 +2,7 @@
   (:use
     [speclj.running :only (do-description report *runner* clj-files-in)]
     [speclj.util]
-    [speclj.reporting :only (report-runs active-reporter)]
+    [speclj.reporting :only (report-runs active-reporter *reporter* report-message)]
     [clojure.set :only (difference union)])
   (:import
     [speclj.running Runner]
@@ -140,14 +140,18 @@
 
 ; Main -----------------------------------------------------------------------------------------------------------------
 
-(defn- tick [runner directories]
+(defn- tick [runner reporter directories]
   (clean-deleted-files runner)
-  (binding [*runner* runner]
+  (binding [*runner* runner *reporter* reporter]
     (if-let [updates (seq (updated-files runner directories))]
       (try
+        (report-message *reporter* (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
         (apply track-files runner updates)
         (let [listing @(.listing runner)
               files-to-reload (reduce #(into %1 (dependents-of listing %2)) updates updates)]
+          (report-message *reporter* "reloading files:")
+          (doseq [file files-to-reload] (report-message *reporter* (str "  " (.getCanonicalPath file))))
+          (report-message *reporter* "")
           (apply reload-files runner files-to-reload))
         (report runner (active-reporter))
         (catch Exception e (.printStackTrace e)))))
@@ -157,8 +161,10 @@
   Runner
   (run-directories [this directories reporter]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
-          runnable (fn [] (tick this directories))]
-      (.scheduleWithFixedDelay scheduler runnable 0 1 TimeUnit/SECONDS)))
+          runnable (fn [] (tick this reporter directories))]
+      (.scheduleWithFixedDelay scheduler runnable 0 1 TimeUnit/SECONDS)
+      (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
+      0))
   (run-description [this description reporter]
     (let [run-results (do-description description reporter)]
       (swap! results into run-results)))

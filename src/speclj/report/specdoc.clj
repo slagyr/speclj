@@ -1,15 +1,17 @@
-(ns speclj.report.verbose
+(ns speclj.report.specdoc
   (:use
     [speclj.reporting :only (failure-source tally-time default-reporter)]
     [speclj.exec :only (pass? fail?)]
-    [speclj.report.console :only (print-summary)]
+    [speclj.report.progress :only (print-summary)]
     [speclj.util :only (endl)])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))
 
-(deftype VerboseReporter []
+(deftype SpecdocReporter []
   Reporter
+  (report-message [this message]
+    (println message))
   (report-description [this description]
     (println)
     (println (.name description)))
@@ -20,5 +22,5 @@
   (report-runs [this results]
     (print-summary results)))
 
-(defn new-verbose-reporter []
-  (VerboseReporter.))
+(defn new-specdoc-reporter []
+  (SpecdocReporter.))

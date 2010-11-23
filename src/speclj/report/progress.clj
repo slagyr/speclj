@@ -1,4 +1,4 @@
-(ns speclj.report.console
+(ns speclj.report.progress
   (:use
     [speclj.reporting :only (failure-source tally-time default-reporter)]
     [speclj.exec :only (pass? fail?)])
@@ -40,8 +40,10 @@
   (print-duration results)
   (print-tally results))
 
-(deftype ConsoleReporter []
+(deftype ProgressReporter []
   Reporter
+  (report-message [this message]
+    (println message))
   (report-description [this description])
   (report-pass [this result]
     (print ".") (flush))
@@ -50,7 +52,7 @@
   (report-runs [this results]
     (print-summary results)))
 
-(defn new-console-reporter []
-  (ConsoleReporter.))
+(defn new-progress-reporter []
+  (ProgressReporter.))
 
-(swap! default-reporter (fn [_] (new-console-reporter)))
+(swap! default-reporter (fn [_] (new-progress-reporter)))

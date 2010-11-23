@@ -26,7 +26,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/clojure-contrib-1.2.0.jar!/" />
+          <root url="file://$MODULE_DIR$/spec" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -35,7 +35,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/spec" />
+          <root url="jar://$MODULE_DIR$/lib/mmargs-1.2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
