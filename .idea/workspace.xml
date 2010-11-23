@@ -2,24 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="92049f6f-a13c-41db-a1c6-8945dfe47517" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/util.clj" afterPath="$PROJECT_DIR$/src/speclj/util.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/reporting.clj" afterPath="$PROJECT_DIR$/src/speclj/reporting.clj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/leiningen/spec.clj" afterPath="$PROJECT_DIR$/src/leiningen/spec.clj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/speclj/report/verbose.clj" afterPath="$PROJECT_DIR$/src/speclj/report/specdoc.clj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/main.clj" afterPath="$PROJECT_DIR$/src/speclj/main.clj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/LICENSE" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project.clj" afterPath="$PROJECT_DIR$/project.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/core.clj" afterPath="$PROJECT_DIR$/src/speclj/core.clj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/LICENSE" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/main_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spec/speclj/report/console_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/report/progress_spec.clj" />
       <change type="MOVED" beforePath="$PROJECT_DIR$/spec/speclj/report/verbose_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/speclj.iml" afterPath="$PROJECT_DIR$/speclj.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/speclj/version.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/report/silent.clj" afterPath="$PROJECT_DIR$/src/speclj/report/silent.clj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/speclj/report/console.clj" afterPath="$PROJECT_DIR$/src/speclj/report/progress.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/main_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/run/vigilant.clj" afterPath="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/spec/speclj/report/console_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/report/progress_spec.clj" />
     </list>
     <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="$USER_HOME_GRIFFON$/" />
@@ -106,10 +98,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.clj" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="main.clj" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="95" column="191" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.0">
+            <state line="62" column="29" selection-start="2052" selection-end="2052" vertical-scroll-proportion="0.205298">
               <folding />
             </state>
           </provider>
@@ -151,10 +143,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.061459668">
+            <state line="4" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -186,7 +178,6 @@
         <option value="$PROJECT_DIR$/src/speclj/version.clj" />
         <option value="$PROJECT_DIR$/src/leiningen/spec.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/main.clj" />
         <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
         <option value="$PROJECT_DIR$/src/speclj/report/progress.clj" />
         <option value="$PROJECT_DIR$/src/speclj/report/silent.clj" />
@@ -195,6 +186,7 @@
         <option value="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
         <option value="$PROJECT_DIR$/src/speclj/core.clj" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/speclj/main.clj" />
       </list>
     </option>
   </component>
@@ -799,13 +791,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="191" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/run/standard.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -864,7 +849,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.061459668">
+        <state line="4" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="62" column="29" selection-start="2052" selection-end="2052" vertical-scroll-proportion="0.205298">
           <folding />
         </state>
       </provider>

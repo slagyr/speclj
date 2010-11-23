@@ -1,4 +1,5 @@
 (ns speclj.main
+  (:gen-class)
   (:use
     [speclj.running :only (run-directories report)]
     [speclj.util :only (endl)])
@@ -13,7 +14,7 @@
   :reporter "progress"
   })
 
-(def invoke-method "clj speclj.main")
+(def invoke-method "java -cp [...] speclj.main")
 
 (def arg-spec (Arguments.))
 (doto arg-spec
@@ -101,9 +102,5 @@
       (:help config) (usage nil)
       :else (run-specs config))))
 
-(if *command-line-args*
-  (let [args *command-line-args*]
-    (binding [*command-line-args* nil]
-      (apply run args))))
-
-
+(defn -main [& args]
+  (apply run args))
