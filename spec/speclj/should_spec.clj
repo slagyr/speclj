@@ -9,6 +9,10 @@
     (should-pass! (should true))
     (should-fail! (should false)))
 
+  (it "should-not tests falsy"
+    (should-fail! (should-not true))
+    (should-pass! (should-not false)))
+
   (it "should= tests equality"
     (should-pass! (should= 1 1))
     (should-pass! (should= "hello" "hello"))
@@ -18,6 +22,10 @@
   (it "should failure message is nice"
     (should= "Expected truthy but was: <false>" (failure-message (should false)))
     (should= "Expected truthy but was: <>" (failure-message (should nil))))
+
+  (it "should failure message is nice"
+    (should= "Expected falsy but was: <true>" (failure-message (should-not true)))
+    (should= "Expected falsy but was: <1>" (failure-message (should-not 1))))
 
   (it "should= failure message is nice"
     (should=

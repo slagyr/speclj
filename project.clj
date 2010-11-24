@@ -2,7 +2,7 @@
 
 (defproject speclj speclj.version/string
   :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
-  :license {:name "MIT"
+  :license {:name "The MIT License"
             :url "file://LICENSE"
             :distribution :repo
             :comments "Copyright © 2010 Micah Martin All Rights Reserved."}

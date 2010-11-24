@@ -45,6 +45,12 @@
     (if-not value#
       (throw (SpecFailure. (str "Expected truthy but was: <" value# ">"))))))
 
+
+(defmacro should-not [expr]
+  `(let [value# ~expr]
+    (if value#
+      (throw (SpecFailure. (str "Expected falsy but was: <" value# ">"))))))
+
 (defmacro should= [expr1 expr2]
   `(let [expected# ~expr1 actual# ~expr2]
     (if (not (= expected# actual#))
