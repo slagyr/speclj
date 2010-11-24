@@ -7,8 +7,9 @@
             :distribution :repo
             :comments "Copyright © 2010 Micah Martin All Rights Reserved."}
   :dependencies [[org.clojure/clojure "1.2.0"]]
+  :dev-dependencies [[lein-clojars "0.6.0"]]
   :test-path "spec/"
   :main speclj.main
   :aot [speclj.running speclj.reporting]
-;  :java-source-path "src/"
+  :java-source-path "src/"
   )

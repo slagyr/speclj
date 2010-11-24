@@ -11,10 +11,10 @@
 (deftype SpecdocReporter []
   Reporter
   (report-message [this message]
-    (println message))
+    (println message)(flush))
   (report-description [this description]
     (println)
-    (println (.name description)))
+    (println (.name description))(flush))
   (report-pass [this result]
     (println (str "- " (.name (.characteristic result))))(flush))
   (report-fail [this result]

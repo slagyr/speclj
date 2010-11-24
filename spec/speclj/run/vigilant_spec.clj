@@ -73,6 +73,13 @@
       (should= "core-test.clj" (.getName (first (next updates))))
       (should= "core.clj" (.getName (first updates)))))
 
+  (it "tracks empty files"
+    (let [test-file (write-tmp-file "test/core-test.clj" "")]
+      (track-files @runner test-file)
+      (let [tracker (get @(.listing @runner) test-file)]
+        (should-not= nil tracker)
+        (should= nil (.ns tracker)))))
+
   (it "stops tracking files that have been deleted, along with their dependencies"
     (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1)")
           src-file2 (write-tmp-file "src/src2.clj" "(ns src2)")
@@ -116,6 +123,9 @@
       (should= [] (dependents-of @(.listing @runner) test-file2))
       (should= [test-file1] (dependents-of @(.listing @runner) src-file1))
       (should= #{test-file1 test-file2} (set (dependents-of @(.listing @runner) src-file2)))))
+  
+  (it "finds transitive depedants of a file"
+    (should-fail))
 
   (it "pulls no ns form a file that doens't contain one"
     (should= nil (read-ns-form (write-tmp-file "test/one.clj" "()")))

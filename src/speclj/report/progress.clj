@@ -43,7 +43,7 @@
 (deftype ProgressReporter []
   Reporter
   (report-message [this message]
-    (println message))
+    (println message)(flush))
   (report-description [this description])
   (report-pass [this result]
     (print ".") (flush))
