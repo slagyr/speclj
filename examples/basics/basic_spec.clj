@@ -9,4 +9,4 @@
   (it "is not false"
     (should-not false)))
 
-(conclude-single-file-run)
+(run-specs)

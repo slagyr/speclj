@@ -4,7 +4,7 @@
 
 (def major 1)
 (def minor 0)
-(def tiny  1)
+(def tiny  2)
 (def pre   nil)
 (def string (str/join "." (filter identity [major minor tiny])))
 (def summary (str "speclj " string))

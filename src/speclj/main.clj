@@ -88,7 +88,7 @@
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
 
-(defn run-specs [config]
+(defn do-specs [config]
   (let [runner (load-runner (:runner config))
         reporter (load-reporter (:reporter config))
         spec-dirs (:specs config)
@@ -100,7 +100,7 @@
     (cond
       (:version config) (print-version)
       (:help config) (usage nil)
-      :else (run-specs config))))
+      :else (do-specs config))))
 
 (defn -main [& args]
   (apply run args))

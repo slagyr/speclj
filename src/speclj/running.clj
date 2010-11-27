@@ -2,7 +2,8 @@
   (:use
     [speclj.exec :only (pass-result fail-result)]
     [speclj.reporting :only (active-reporter report-runs report-pass report-fail report-description)]
-    [speclj.components :only (reset-with)])
+    [speclj.components :only (reset-with)]
+    [speclj.util :only (secs-since)])
   (:import
     [java.io File]))
 
@@ -14,9 +15,6 @@
     (if-let [runner @default-runner]
       runner
       (throw (Exception. "*runner* is unbound and no default value has been provided")))))
-
-(defn secs-since [start]
-  (/ (double (- (System/nanoTime) start)) 1000000000.0))
 
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))

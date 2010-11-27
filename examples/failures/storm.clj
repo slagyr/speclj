@@ -29,4 +29,4 @@
     (should-throw Exception "Howdy" (throw (Exception. "Hiya")))))
 
 
-(conclude-single-file-run)
+(run-specs)

@@ -37,4 +37,4 @@
 
   )
 
-(conclude-single-file-run)
+(run-specs)

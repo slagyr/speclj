@@ -48,13 +48,25 @@
     (and (vector? arg) (or (nil? (second arg)) (keyword? (second arg)))) (compose-ns prefix (first arg))
     :else (map #(ns-for-part (compose-ns prefix (first arg)) %) (rest arg))))
 
-(defn- dependencies-in-ns-part [args]
+(defn- depending-names-of-part [args]
   (map #(ns-for-part nil %) (rest args)))
 
-(defn dependencies-in-ns [ns-form]
+(defn depending-names-of [ns-form]
   (let [dependency-parts (filter #(and (list? %) (#{:use :require} (first %))) ns-form)
-        ns-list (map #(dependencies-in-ns-part %) dependency-parts)]
+        ns-list (map #(depending-names-of-part %) dependency-parts)]
     (set (flatten ns-list))))
+
+(defn- depending-files-of [ns-form]
+  (if ns-form
+    (let [dependency-names (depending-names-of ns-form)
+          dependency-filenames (map #(ns-to-file %) dependency-names)]
+      (vec (filter identity dependency-filenames)))
+    []))
+
+(defn- ns-of [ns-form]
+  (if ns-form
+    (second ns-form)
+    nil))
 
 ; File tracking --------------------------------------------------------------------------------------------------------
 
@@ -75,107 +87,117 @@
         no-update-required (not (or (nil? tracker) (modified? file tracker)))]
     (if no-update-required
       [listing batch]
-      (if ns-form
-        (let [dependency-names (dependencies-in-ns ns-form)
-              dependency-filenames (map #(ns-to-file %) dependency-names)
-              dependencies (vec (filter (complement nil?) dependency-filenames))
-              [listing batch] (update-tracking-for-files listing dependencies batch)
-              file-ns (second ns-form)
-              updated-tracker (new-file-tracker file-ns (.lastModified file) dependencies)]
-          [(assoc listing file updated-tracker) batch])
-        [(assoc listing file (new-file-tracker nil (.lastModified file) [])) batch]))))
+      (let [dependencies (depending-files-of ns-form)
+            [listing batch] (update-tracking-for-files listing dependencies batch)
+            ns (ns-of ns-form)
+            updated-tracker (new-file-tracker ns (.lastModified file) dependencies)]
+        [(assoc listing file updated-tracker) batch]))))
 
-  (defn- update-tracking-for-files
-    ([listing files] ((update-tracking-for-files listing files #{}) 0))
-    ([listing files batch]
-      (loop [[listing batch] [listing batch] files files]
-        (if (not (seq files))
-          [listing batch]
-          (let [file (first files)]
-            (if (contains? batch file)
-              (recur [listing batch] (rest files))
-              (recur (update-tracking-for-file listing file (conj batch file)) (rest files))))))))
+(defn- update-tracking-for-files
+  ([listing files] (nth (update-tracking-for-files listing files #{}) 0))
+  ([listing files batch]
+    (loop [[listing batch] [listing batch] files files]
+      (if (not (seq files))
+        [listing batch]
+        (let [file (first files)]
+          (if (contains? batch file)
+            (recur [listing batch] (rest files))
+            (recur (update-tracking-for-file listing file (conj batch file)) (rest files))))))))
 
-  ; Dependencies ---------------------------------------------------------------------------------------------------------
+; Tracker Dependencies -------------------------------------------------------------------------------------------------
 
-  (defn- depends-on? [dependency listing dependent]
-    (some (partial = dependency) (.dependencies (get listing dependent))))
+(defn- depends-on? [dependency listing dependent]
+  (some (partial = dependency) (.dependencies (get listing dependent))))
 
-  (defn- has-dependent? [listing file]
-    (some #(depends-on? file listing %) (keys listing)))
+(defn- has-dependent? [listing file]
+  (some #(depends-on? file listing %) (keys listing)))
 
-  (defn dependents-of [listing file]
-    (vec (filter #(depends-on? file listing %) (keys listing))))
+(defn- with-dependency [new-dependents dependents file tracker]
+  (if (some dependents (.dependencies tracker))
+    (conj new-dependents file)
+    new-dependents))
 
-  ; High level -----------------------------------------------------------------------------------------------------------
+(defn dependents-of
+  ([listing files] (dependents-of listing (set files) #{}))
+  ([listing files dependents]
+    (loop [files files dependents dependents]
+      (let [new-dependents (reduce (fn [new-dependents [file tracker]] (with-dependency new-dependents files file tracker)) #{} listing)]
+        (if (seq new-dependents)
+          (recur new-dependents (into dependents new-dependents))
+          dependents)))))
 
-  (defn track-files [runner & files]
-    (swap! (.listing runner) #(update-tracking-for-files % files)))
 
-  (defn updated-files [runner directories]
-    (let [observed-files (set (apply clj-files-in directories))
-          listing @(.listing runner)
-          tracked-files (set (keys listing))
-          new-files (difference observed-files tracked-files)
-          modified-files (filter #(modified? % (get listing %)) tracked-files)]
-      (concat new-files modified-files)))
+; High level -----------------------------------------------------------------------------------------------------------
 
-  (defn clean-deleted-files
-    ([runner] (swap! (.listing runner)
-      (fn [listing] (clean-deleted-files listing (filter #(not (.exists %)) (keys listing))))))
-    ([listing files-to-delete]
-      (if (not (seq files-to-delete))
-        listing
-        (let [dependencies (reduce #(into %1 (.dependencies (get listing %2))) [] files-to-delete)
-              listing (apply dissoc listing files-to-delete)
-              unused-dependencies (filter #(not (has-dependent? listing %)) dependencies)]
-          (clean-deleted-files listing unused-dependencies)))))
+(defn track-files [runner & files]
+  (swap! (.listing runner) #(update-tracking-for-files % files)))
 
-  (defn reload-files [runner & files]
-    (let [listing @(.listing runner)
-          trackers (vec (filter identity (map listing files)))
-          nses (vec (filter identity (map #(.ns %) trackers)))]
-      (if (seq nses)
-        (do
-          (doseq [ns nses] (remove-ns ns))
-          (dosync (alter @#'clojure.core/*loaded-libs* difference (set nses)))
-          (apply require nses)))))
+(defn updated-files [runner directories]
+  (let [observed-files (set (apply clj-files-in directories))
+        listing @(.listing runner)
+        tracked-files (set (keys listing))
+        new-files (difference observed-files tracked-files)
+        modified-files (filter #(modified? % (get listing %)) tracked-files)]
+    (concat new-files modified-files)))
 
-  ; Main -----------------------------------------------------------------------------------------------------------------
+(defn clean-deleted-files
+  ([runner] (swap! (.listing runner)
+    (fn [listing] (clean-deleted-files listing (filter #(not (.exists %)) (keys listing))))))
+  ([listing files-to-delete]
+    (if (not (seq files-to-delete))
+      listing
+      (let [dependencies (reduce #(into %1 (.dependencies (get listing %2))) [] files-to-delete)
+            listing (apply dissoc listing files-to-delete)
+            unused-dependencies (filter #(not (has-dependent? listing %)) dependencies)]
+        (clean-deleted-files listing unused-dependencies)))))
 
-  (defn- tick [runner reporter directories]
-    (clean-deleted-files runner)
-    (binding [*runner* runner *reporter* reporter]
+(defn reload-files [runner & files]
+  (let [listing @(.listing runner)
+        trackers (vec (filter identity (map listing files)))
+        nses (vec (filter identity (map #(.ns %) trackers)))]
+    (if (seq nses)
+      (do
+        (doseq [ns nses] (remove-ns ns))
+        (dosync (alter @#'clojure.core/*loaded-libs* difference (set nses)))
+        (apply require nses)))))
+
+; Main -----------------------------------------------------------------------------------------------------------------
+
+(defn- tick [runner reporter directories]
+  (clean-deleted-files runner)
+  (binding [*runner* runner *reporter* reporter]
+    (let [start-time (System/nanoTime)]
       (if-let [updates (seq (updated-files runner directories))]
         (try
           (report-message *reporter* (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
           (apply track-files runner updates)
           (let [listing @(.listing runner)
-                files-to-reload (reduce #(into %1 (dependents-of listing %2)) updates updates)]
+                files-to-reload (into (dependents-of listing updates) updates)]
+            (report-message *reporter* (str "took " (str-time-since start-time) " to determine which files to reload."))
             (report-message *reporter* "reloading files:")
             (doseq [file files-to-reload] (report-message *reporter* (str "  " (.getCanonicalPath file))))
             (apply reload-files runner files-to-reload))
           (report runner (active-reporter))
-          (catch Exception e (.printStackTrace e)))))
-    (swap! (.results runner) (fn [_] [])))
+          (catch Exception e (.printStackTrace e))))))
+  (swap! (.results runner) (fn [_] [])))
 
-  (deftype VigilantRunner [listing results]
-    Runner
-    (run-directories [this directories reporter]
-      (let [scheduler (ScheduledThreadPoolExecutor. 1)
-            runnable (fn [] (tick this reporter directories))]
-        (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
-        (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
-        0))
-    (run-description [this description reporter]
-      (let [run-results (do-description description reporter)]
-        (swap! results into run-results)))
-    (report [this reporter]
-      (report-runs reporter @results))
+(deftype VigilantRunner [listing results]
+  Runner
+  (run-directories [this directories reporter]
+    (let [scheduler (ScheduledThreadPoolExecutor. 1)
+          runnable (fn [] (tick this reporter directories))]
+      (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
+      (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
+      0))
+  (run-description [this description reporter]
+    (let [run-results (do-description description reporter)]
+      (swap! results into run-results)))
+  (report [this reporter]
+    (report-runs reporter @results))
 
-    Object
-    (toString [this] (str "listing: " (apply str (interleave (repeat endl) @listing)))))
+  Object
+  (toString [this] (str "listing: " (apply str (interleave (repeat endl) @listing)))))
 
-  (defn new-vigilant-runner []
-    (VigilantRunner. (atom {}) (atom [])))
+(defn new-vigilant-runner []
+  (VigilantRunner. (atom {}) (atom [])))
 

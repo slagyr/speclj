@@ -119,13 +119,20 @@
           test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src1][src2]))")
           test-file2 (write-tmp-file "test/test2.clj" "(ns test2 (:use [src2]))")]
       (track-files @runner test-file1 test-file2)
-      (should= [] (dependents-of @(.listing @runner) test-file1))
-      (should= [] (dependents-of @(.listing @runner) test-file2))
-      (should= [test-file1] (dependents-of @(.listing @runner) src-file1))
-      (should= #{test-file1 test-file2} (set (dependents-of @(.listing @runner) src-file2)))))
+      (should= #{} (dependents-of @(.listing @runner) [test-file1]))
+      (should= #{} (dependents-of @(.listing @runner) [test-file2]))
+      (should= #{test-file1} (dependents-of @(.listing @runner) [src-file1]))
+      (should= #{test-file1 test-file2} (dependents-of @(.listing @runner) [src-file2]))))
   
-  (it "finds transitive depedants of a file"
-    (should-fail))
+  (it "finds transitive depedants/dependencies of a file"
+    (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1)")
+          src-file2 (write-tmp-file "src/src2.clj" "(ns src2 (:use [src1]))")
+          test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src2]))")]
+      (track-files @runner test-file1 test-file1)
+      (should= 3 (count @(.listing @runner)))
+      (should= #{} (dependents-of @(.listing @runner) [test-file1]))
+      (should= #{test-file1} (dependents-of @(.listing @runner) [src-file2]))
+      (should= #{test-file1 src-file2} (dependents-of @(.listing @runner) [src-file1]))))
 
   (it "pulls no ns form a file that doens't contain one"
     (should= nil (read-ns-form (write-tmp-file "test/one.clj" "()")))
@@ -138,19 +145,19 @@
     (should= '(ns blah (:use [foo]) (:require [bar])) (read-ns-form (write-tmp-file "test/one.clj" "(ns blah (:use [foo])(:require [bar]))"))))
 
   (it "pulls dependencies out of ns form"
-    (should= '#{blah} (dependencies-in-ns '(ns foo (:use [blah]))))
-    (should= '#{bar} (dependencies-in-ns '(ns foo (:use [bar]))))
-    (should= '#{fizz} (dependencies-in-ns '(ns foo (:use fizz))))
-    (should= '#{fizz} (dependencies-in-ns '(ns foo (:require fizz))))
-    (should= '#{one two three} (dependencies-in-ns '(ns foo (:use [one] [two] [three]))))
-    (should= '#{one two three} (dependencies-in-ns '(ns foo (:require [one] [two] [three]))))
-    (should= '#{root.one root.two} (dependencies-in-ns '(ns foo (:use [root [one] [two]]))))
-    (should= '#{root.one root.two} (dependencies-in-ns '(ns foo (:require [root [one] [two]]))))
-    (should= '#{one two} (dependencies-in-ns '(ns foo (:use [one :only (foo)] [two :exclude (bar)]))))
-    (should= '#{one two} (dependencies-in-ns '(ns foo (:require [one :as o] [two :as t]))))
-    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:use [one [two :only (foo)] [three :exclude (bar)]]))))
-    (should= '#{one.two one.three} (dependencies-in-ns '(ns foo (:require [one [two :as t] [three :as tr]]))))
-    (should= '#{root.one.child.grandchild root.two} (dependencies-in-ns '(ns foo (:use [root [one [child [grandchild]]] [two]]))))
+    (should= '#{blah} (depending-names-of '(ns foo (:use [blah]))))
+    (should= '#{bar} (depending-names-of '(ns foo (:use [bar]))))
+    (should= '#{fizz} (depending-names-of '(ns foo (:use fizz))))
+    (should= '#{fizz} (depending-names-of '(ns foo (:require fizz))))
+    (should= '#{one two three} (depending-names-of '(ns foo (:use [one] [two] [three]))))
+    (should= '#{one two three} (depending-names-of '(ns foo (:require [one] [two] [three]))))
+    (should= '#{root.one root.two} (depending-names-of '(ns foo (:use [root [one] [two]]))))
+    (should= '#{root.one root.two} (depending-names-of '(ns foo (:require [root [one] [two]]))))
+    (should= '#{one two} (depending-names-of '(ns foo (:use [one :only (foo)] [two :exclude (bar)]))))
+    (should= '#{one two} (depending-names-of '(ns foo (:require [one :as o] [two :as t]))))
+    (should= '#{one.two one.three} (depending-names-of '(ns foo (:use [one [two :only (foo)] [three :exclude (bar)]]))))
+    (should= '#{one.two one.three} (depending-names-of '(ns foo (:require [one [two :as t] [three :as tr]]))))
+    (should= '#{root.one.child.grandchild root.two} (depending-names-of '(ns foo (:use [root [one [child [grandchild]]] [two]]))))
     )
 
   (it "converts ns names into filenames"
@@ -162,4 +169,4 @@
 
   )
 
-(conclude-single-file-run)
+(run-specs)

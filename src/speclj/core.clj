@@ -40,26 +40,28 @@
       (def ~(symbol name) with-component#)
       with-component#)))
 
+(defn -to-s [thing]
+  (if (nil? thing) "nil" (str "<" thing ">")))
+
 (defmacro should [expr]
   `(let [value# ~expr]
     (if-not value#
-      (throw (SpecFailure. (str "Expected truthy but was: <" value# ">"))))))
-
+      (throw (SpecFailure. (str "Expected truthy but was: " (-to-s value#) ""))))))
 
 (defmacro should-not [expr]
   `(let [value# ~expr]
     (if value#
-      (throw (SpecFailure. (str "Expected falsy but was: <" value# ">"))))))
+      (throw (SpecFailure. (str "Expected falsy but was: " (-to-s value#)))))))
 
 (defmacro should= [expr1 expr2]
   `(let [expected# ~expr1 actual# ~expr2]
     (if (not (= expected# actual#))
-      (throw (SpecFailure. (str "Expected: <" expected# ">" endl "     got: <" actual# "> (using =)"))))))
+      (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
 
 (defmacro should-not= [expr1 expr2]
   `(let [expected# ~expr1 actual# ~expr2]
     (if (= expected# actual#)
-      (throw (SpecFailure. (str "Expected: <" expected# ">" endl "not to =: <" actual# ">"))))))
+      (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
 
 (defmacro should-fail
   ([] `(should-fail "Forced failure"))
@@ -95,6 +97,6 @@
     (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~expr endl
       "                     but got: " (.toString e#)))))))
 
-(defn conclude-single-file-run []
+(defn run-specs []
   (if (identical? (active-runner) @default-runner)
     (report (active-runner) (active-reporter))))

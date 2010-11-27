@@ -80,4 +80,4 @@
       (should= "3 examples, 3 failures" (lines 19))))
   )
 
-(conclude-single-file-run)
+(run-specs)

@@ -1,7 +1,8 @@
 (ns speclj.report.progress
   (:use
     [speclj.reporting :only (failure-source tally-time default-reporter)]
-    [speclj.exec :only (pass? fail?)])
+    [speclj.exec :only (pass? fail?)]
+    [speclj.util :only (seconds-format)])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))
@@ -23,8 +24,6 @@
   (let [failures (vec (filter fail? results))]
     (dotimes [i (count failures)]
       (print-failure (inc i) (nth failures i)))))
-
-(def seconds-format (java.text.DecimalFormat. "0.00000"))
 
 (defn- print-duration [results]
   (println)

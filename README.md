@@ -22,7 +22,7 @@ Checkout this example.  Below we'll look at it piece by piece.
 	  (it "is not false"
 	    (should-not false)))
 
-	(conclude-single-file-run)
+	(run-specs)
 
 ### speclj.core namespace
 Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.
@@ -46,9 +46,9 @@ Assertions.  All assertions begin with `should`.  `should` and `should-not` are 
 	(should-not ...)
 	
 ### What's that thing at the end?
-At the very end of the file is an invocation of `(conclude-single-file-run)`.  This is a benign call that will execute all the specs if the file is evaluated in isolation.  It provides a convenience that editors and IDEs don't provide yet for speclj. 
+At the very end of the file is an invocation of `(run-specs)`.  This is a benign call that will execute all the specs if the file is evaluated in isolation.  It provides a convenience that editors and IDEs don't provide yet for speclj.
 	
-	(conclude-single-file-run)
+	(run-specs)
 
 # Contributing
 Clone the master branch, build, and run all the tests: 

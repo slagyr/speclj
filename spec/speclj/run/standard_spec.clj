@@ -23,4 +23,4 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporter))))
 
-(conclude-single-file-run)
+(run-specs)

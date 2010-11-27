@@ -77,4 +77,4 @@
     (should= 42 gewgaw))
   )
 
-(conclude-single-file-run)
+(run-specs)

@@ -21,16 +21,17 @@
 
   (it "should failure message is nice"
     (should= "Expected truthy but was: <false>" (failure-message (should false)))
-    (should= "Expected truthy but was: <>" (failure-message (should nil))))
+    (should= "Expected truthy but was: nil" (failure-message (should nil))))
 
   (it "should failure message is nice"
     (should= "Expected falsy but was: <true>" (failure-message (should-not true)))
     (should= "Expected falsy but was: <1>" (failure-message (should-not 1))))
 
   (it "should= failure message is nice"
-    (should=
-      (str "Expected: <1>" endl "     got: <2> (using =)")
-      (failure-message (should= 1 2))))
+    (should= (str "Expected: <1>" endl "     got: <2> (using =)") (failure-message (should= 1 2))))
+
+  (it "nil is printed as 'nil' instead of blank"
+    (should= (str "Expected: <1>" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
 
   (it "should_not= tests inequality"
     (should-pass! (should-not= 1 2))
@@ -84,4 +85,4 @@
             (failure-message (should-not-throw (throw (Throwable. "error"))))))
   )
 
-(conclude-single-file-run)
+(run-specs)
