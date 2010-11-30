@@ -33,6 +33,10 @@
   (it "nil is printed as 'nil' instead of blank"
     (should= (str "Expected: <1>" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
 
+  (it "prints lazy seqs nicely"
+    (should= (str "Expected: <(1 2 3)>" endl "     got: <(3 2 1)> (using =)")
+             (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
+
   (it "should_not= tests inequality"
     (should-pass! (should-not= 1 2))
     (should-fail! (should-not= 1 1)))
@@ -74,7 +78,7 @@
     (should-fail! (should-throw Exception "My message" (throw (Exception. "Not my message"))))
     (should-fail! (should-throw Exception "My message" (throw (Error. "My message"))))
     (should-fail! (should-throw Exception "My message" (+ 1 1)))
-    (should= (str "Expected exception message didn't match" endl "Expected: <My message>" endl "     got: <Not my message> (using =)")
+    (should= (str "Expected exception message didn't match" endl "Expected: <\"My message\">" endl "     got: <\"Not my message\"> (using =)")
              (failure-message (should-throw Exception "My message" (throw (Exception. "Not my message"))))))
 
   (it "should-not-throw tests that nothing was thrown"

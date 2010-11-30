@@ -73,7 +73,7 @@
       with-component#)))
 
 (defn -to-s [thing]
-  (if (nil? thing) "nil" (str "<" thing ">")))
+  (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
