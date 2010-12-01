@@ -13,12 +13,6 @@
     (should-fail! (should-not true))
     (should-pass! (should-not false)))
 
-  (it "should= tests equality"
-    (should-pass! (should= 1 1))
-    (should-pass! (should= "hello" "hello"))
-    (should-fail! (should= 1 2))
-    (should-fail! (should= "hello" "goodbye")))
-
   (it "should failure message is nice"
     (should= "Expected truthy but was: <false>" (failure-message (should false)))
     (should= "Expected truthy but was: nil" (failure-message (should nil))))
@@ -27,11 +21,29 @@
     (should= "Expected falsy but was: <true>" (failure-message (should-not true)))
     (should= "Expected falsy but was: <1>" (failure-message (should-not 1))))
 
+  (it "should= tests equality"
+    (should-pass! (should= 1 1))
+    (should-pass! (should= "hello" "hello"))
+    (should-fail! (should= 1 2))
+    (should-fail! (should= "hello" "goodbye")))
+
+  (it "should= checks equality of doubles within a delta"
+    (should-pass! (should= 1.0 1.0 0.1))
+    (should-pass! (should= 1.0 1.09 0.1))
+    (should-pass! (should= 1.0 0.91 0.1))
+    (should-fail! (should= 1.0 1.2 0.1))
+    (should-pass! (should= 3.141592 3.141592 0.000001))
+    (should-pass! (should= 3.141592 3.141593 0.000001))
+    (should-fail! (should= 3.141592 3.141594 0.000001)))
+
   (it "should= failure message is nice"
     (should= (str "Expected: <1>" endl "     got: <2> (using =)") (failure-message (should= 1 2))))
 
   (it "nil is printed as 'nil' instead of blank"
     (should= (str "Expected: <1>" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
+
+  (it "should= failure message with delta is nice"
+    (should= (str "Expected: <1>" endl "     got: <2> (using delta: 0.1)") (failure-message (should= 1 2 0.1))))
 
   (it "prints lazy seqs nicely"
     (should= (str "Expected: <(1 2 3)>" endl "     got: <(3 2 1)> (using =)")
@@ -87,6 +99,7 @@
     (should= (str "Expected nothing thrown from: (throw (Throwable. \"error\"))" endl
                   "                     but got: java.lang.Throwable: error")
             (failure-message (should-not-throw (throw (Throwable. "error"))))))
+
   )
 
 (run-specs)

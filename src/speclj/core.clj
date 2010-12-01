@@ -66,8 +66,8 @@
   (it \"know the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   `(do
-;    (if ~(resolve name)
-;      (println (str "WARNING: the symbol #'" '~(name name) " is already declared"))) ;TODO MDM Need to report this warning
+    ;    (if ~(resolve name)
+    ;      (println (str "WARNING: the symbol #'" '~(name name) " is already declared"))) ;TODO MDM Need to report this warning
     (let [with-component# (new-with '~name (fn [] ~@body))]
       (def ~(symbol name) with-component#)
       with-component#)))
@@ -91,10 +91,14 @@
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expexcted value as the first parameter."
-  [expected-form actual-form]
-  `(let [expected# ~expected-form actual# ~actual-form]
-    (if (not (= expected# actual#))
-      (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
+  ([expected-form actual-form]
+    `(let [expected# ~expected-form actual# ~actual-form]
+      (if (not (= expected# actual#))
+        (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
+  ([expected-form actual-form delta-form]
+    `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
+      (if (> (.abs (- (BigDecimal. expected#) (BigDecimal. actual#))) (.abs (BigDecimal. delta#)))
+        (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
 
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpexcted value as the first parameter."
@@ -117,8 +121,8 @@
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
-  When an class is passed, it assets that the thrown Exception is an instance of the class.
-  When a string is also passed, it asserts that the message of the Exception is equal to the string."
+When an class is passed, it assets that the thrown Exception is an instance of the class.
+When a string is also passed, it asserts that the message of the Exception is equal to the string."
   ([form] `(should-throw Throwable ~form))
   ([throwable-type form]
     `(try
@@ -145,7 +149,7 @@
 
 (defn run-specs []
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
-  runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
-  are evaluated by evaluation the file as a script."
+runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
+are evaluated by evaluation the file as a script."
   (if (identical? (active-runner) @default-runner)
     (report (active-runner) (active-reporter))))
