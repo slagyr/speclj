@@ -1,7 +1,7 @@
 (ns speclj.main
   (:gen-class)
   (:use
-    [speclj.running :only (run-directories report)]
+    [speclj.running :only (run-directories run-and-report)]
     [speclj.util :only (endl)])
   (:require
     [speclj.version])

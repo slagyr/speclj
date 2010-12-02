@@ -18,7 +18,7 @@
   (with output (ByteArrayOutputStream.))
   (with writer (OutputStreamWriter. @output))
   (with reporter (new-specdoc-reporter))
-  (with description (new-description "Verbosity"))
+  (with description (new-description "Verbosity" *ns*))
   (around [spec] (binding [*out* @writer] (spec)))
 
   (it "reports descriptions"

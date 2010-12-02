@@ -1,6 +1,6 @@
 (ns speclj.core
   (:use
-    [speclj.running :only (submit-description default-runner active-runner report)]
+    [speclj.running :only (submit-description default-runner active-runner run-and-report)]
     [speclj.reporting :only (active-reporter)]
     [speclj.components]
     [speclj.util :only (endl)])
@@ -16,14 +16,22 @@
   [name & body]
   `(new-characteristic ~name (fn [] ~@body)))
 
-(defn describe
+(declare *parent-description*)
+(defmacro describe
   "body => & spec-components
 
   Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
   [name & components]
-  (let [description (new-description name)]
-    (doseq [component components] (install component description))
-    (submit-description description)))
+  `(let [description# (new-description ~name *ns*)]
+    (binding [*parent-description* description#]
+      (doseq [component# (list ~@components)]
+        (install component# description#)))
+    (if (not (bound? #'*parent-description*))
+      (submit-description (active-runner) description#))
+    description#))
+
+(defmacro context [name & components]
+  `(describe ~name ~@components))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
@@ -69,7 +77,8 @@
     ;    (if ~(resolve name)
     ;      (println (str "WARNING: the symbol #'" '~(name name) " is already declared"))) ;TODO MDM Need to report this warning
     (let [with-component# (new-with '~name (fn [] ~@body))]
-      (def ~(symbol name) with-component#)
+      ;      (def ~(symbol name) with-component#)
+      (declare ~(symbol name))
       with-component#)))
 
 (defn -to-s [thing]
@@ -97,7 +106,7 @@
         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-      (if (> (.abs (- (BigDecimal. expected#) (BigDecimal. actual#))) (.abs (BigDecimal. delta#)))
+      (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
 
 (defmacro should-not=
@@ -152,4 +161,4 @@ When a string is also passed, it asserts that the message of the Exception is eq
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
 are evaluated by evaluation the file as a script."
   (if (identical? (active-runner) @default-runner)
-    (report (active-runner) (active-reporter))))
+    (run-and-report (active-runner) (active-reporter))))

@@ -1,6 +1,6 @@
 (ns speclj.run.vigilant
   (:use
-    [speclj.running :only (do-description report *runner* clj-files-in)]
+    [speclj.running :only (do-description run-and-report run-description *runner* clj-files-in)]
     [speclj.util]
     [speclj.reporting :only (report-runs active-reporter *reporter* report-message)]
     [clojure.set :only (difference union)])
@@ -177,7 +177,7 @@
             (report-message *reporter* "reloading files:")
             (doseq [file files-to-reload] (report-message *reporter* (str "  " (.getCanonicalPath file))))
             (apply reload-files runner files-to-reload))
-          (report runner (active-reporter))
+          (run-and-report runner (active-reporter))
           (catch Exception e (.printStackTrace e))))))
   (swap! (.results runner) (fn [_] [])))
 
@@ -189,10 +189,15 @@
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))
+
+  (submit-description [this description]
+    (run-description this description (active-reporter)))
+
   (run-description [this description reporter]
     (let [run-results (do-description description reporter)]
       (swap! results into run-results)))
-  (report [this reporter]
+
+  (run-and-report [this reporter]
     (report-runs reporter @results))
 
   Object

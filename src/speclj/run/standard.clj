@@ -1,29 +1,40 @@
 (ns speclj.run.standard
   (:use
-    [speclj.running :only (do-description report default-runner *runner* clj-files-in)]
+    [speclj.running :only (do-description run-and-report run-description default-runner *runner* clj-files-in)]
     [speclj.reporting :only (report-runs *reporter*)]
     [speclj.exec :only (fail-count)])
   (:import
     [speclj.running Runner]))
 
-(deftype StandardRunner [results]
+(defn- load-spec [spec-file]
+  (let [src (slurp (.getCanonicalPath spec-file))
+        rdr (-> (java.io.StringReader. src) (clojure.lang.LineNumberingPushbackReader.))]
+    (clojure.lang.Compiler/load rdr (.getParent spec-file) (.getName spec-file))))
+
+(deftype StandardRunner [descriptions results]
   Runner
   (run-directories [this directories reporter]
     (let [files (apply clj-files-in directories)]
       (binding [*runner* this *reporter* reporter]
         (doseq [file files]
-          (load-string (slurp (.getCanonicalPath file))))))
-    (report this reporter)
+          ;          (load-string (slurp (.getCanonicalPath file))))))
+          (load-spec file))))
+    (run-and-report this reporter)
     (fail-count @results))
-  
+
+  (submit-description [this description]
+    (swap! descriptions conj description))
+
   (run-description [this description reporter]
     (let [run-results (do-description description reporter)]
       (swap! results into run-results)))
 
-  (report [this reporter]
+  (run-and-report [this reporter]
+    (doseq [description @descriptions]
+      (run-description this description reporter))
     (report-runs reporter @results)))
 
 (defn new-standard-runner []
-  (StandardRunner. (atom [])))
+  (StandardRunner. (atom []) (atom [])))
 
 (swap! default-runner (fn [_] (new-standard-runner)))

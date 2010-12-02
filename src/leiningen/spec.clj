@@ -1,6 +1,6 @@
 (ns leiningen.spec
   (:use
-    [speclj.running :only (*runner* report)]
+    [speclj.running :only (*runner* run-and-report)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.reporting :only (active-reporter)]
     [leiningen.compile :only [eval-in-project]])

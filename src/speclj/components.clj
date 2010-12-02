@@ -1,10 +1,5 @@
 (ns speclj.components)
 
-(deftype Description [name charcteristics befores afters arounds before-alls after-alls withs])
-
-(defn new-description [name]
-  (Description. name (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
-
 (defn- install-characteristic [characteristic description]
   (swap! (.description characteristic) (fn [_] description))
   (swap! (.charcteristics description) (fn [_] (conj _ characteristic))))
@@ -25,12 +20,26 @@
 (extend-type clojure.lang.Seqable
   SpecComponent
   (install [this description]
-    (doseq [characteristic (seq this)] (install-characteristic characteristic description))))
+    (doseq [component (seq this)] (install component description))))
+
+(deftype Description [name ns parent children charcteristics befores afters arounds before-alls after-alls withs]
+  SpecComponent
+  (install [this description]
+    (reset! (.parent this) description)
+    (swap! (.children description) conj this))
+  Object
+  (toString [this] (str "Description: " \" name \")))
+
+(defn new-description [name ns]
+  (Description. name ns (atom nil) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (deftype Characteristic [name description body]
   SpecComponent
   (install [this description]
-    (install-characteristic this description)))
+    (reset! (.description this) description)
+    (swap! (.charcteristics description) conj this))
+  Object
+  (toString [this] (str \" name \")))
 
 (defn new-characteristic
   ([name body] (Characteristic. name (atom nil) body))
@@ -39,7 +48,7 @@
 (deftype Before [body]
   SpecComponent
   (install [this description]
-    (swap! (.befores description) (fn [_] (conj _ this)))))
+    (swap! (.befores description) conj this)))
 
 (defn new-before [body]
   (Before. body))
@@ -76,18 +85,18 @@
 (defn new-after-all [body]
   (AfterAll. body))
 
-(deftype With [var body value]
+(deftype With [name body value]
   SpecComponent
   (install [this description]
     (swap! (.withs description) conj this))
   clojure.lang.IDeref
   (deref [this]
     (if (= ::none @value)
-      (swap! value (fn [_] (body))))
+      (reset! value (body)))
     @value))
 
 (defn reset-with [with]
-  (swap! (.value with) (fn [_] ::none)))
+  (reset! (.value with) ::none))
 
-(defn new-with [var body]
-  (With. var body (atom ::none)))
+(defn new-with [name body]
+  (With. name body (atom ::none)))

@@ -47,7 +47,7 @@
 
 
   (it "reports failing run results"
-    (let [description (new-description "Crazy")
+    (let [description (new-description "Crazy" *ns*)
           char1 (new-characteristic "flips" description "flip")
           char2 (new-characteristic "spins" description "spin")
           char3 (new-characteristic "dives" description "dive")
