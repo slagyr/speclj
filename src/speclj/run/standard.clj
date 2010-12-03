@@ -1,8 +1,9 @@
 (ns speclj.run.standard
   (:use
-    [speclj.running :only (do-description run-and-report run-description default-runner *runner* clj-files-in)]
-    [speclj.reporting :only (report-runs *reporter*)]
-    [speclj.exec :only (fail-count)])
+    [speclj.running :only (do-description run-and-report run-description clj-files-in)]
+    [speclj.reporting :only (report-runs)]
+    [speclj.exec :only (fail-count)]
+    [speclj.config :only (default-runner *runner* *reporter*)])
   (:import
     [speclj.running Runner]))
 

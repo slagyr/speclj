@@ -1,7 +1,7 @@
 (ns speclj.core
   (:use
-    [speclj.running :only (submit-description default-runner active-runner run-and-report)]
-    [speclj.reporting :only (active-reporter)]
+    [speclj.running :only (submit-description run-and-report)]
+    [speclj.config :only (active-reporter active-runner default-runner)]
     [speclj.components]
     [speclj.util :only (endl)])
   (:require

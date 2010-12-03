@@ -1,20 +1,26 @@
 (ns speclj.report.progress
   (:use
-    [speclj.reporting :only (failure-source tally-time default-reporter)]
+    [speclj.reporting :only (failure-source tally-time red green)]
     [speclj.exec :only (pass? fail?)]
-    [speclj.util :only (seconds-format)])
+    [speclj.util :only (seconds-format)]
+    [speclj.config :only (default-reporter)])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))
 
+(defn full-name [characteristic]
+  (loop [context @(.parent characteristic) name (.name characteristic)]
+    (if context
+      (recur @(.parent context) (str (.name context) " " name))
+      name)))
+
 (defn print-failure [id result]
   (let [characteristic (.characteristic result)
-        description @(.description characteristic)
         failure (.failure result)]
     (println)
     (println (str id ")"))
-    (println (str "'" (.name description) " " (.name characteristic) "' FAILED"))
-    (println (.getMessage failure))
+    (println (red (str "'" (full-name characteristic) "' FAILED")))
+    (println (red (.getMessage failure)))
     (if (.isInstance SpecFailure failure)
       (println (failure-source failure))
       (.printStackTrace failure System/out))))
@@ -31,8 +37,9 @@
 
 (defn- print-tally [results]
   (println)
-  (let [fails (reduce #(if (fail? %2) (inc %) %) 0 results)]
-    (println (count results) "examples," fails "failures")))
+  (let [fails (reduce #(if (fail? %2) (inc %) %) 0 results)
+        color-fn (if (= 0 fails) green red)]
+    (println (color-fn (str (count results) " examples, " fails " failures")))))
 
 (defn print-summary [results]
   (print-failures results)
@@ -45,9 +52,9 @@
     (println message)(flush))
   (report-description [this description])
   (report-pass [this result]
-    (print ".") (flush))
+    (print (green ".")) (flush))
   (report-fail [this result]
-    (print "F") (flush))
+    (print (red "F")) (flush))
   (report-runs [this results]
     (print-summary results)))
 

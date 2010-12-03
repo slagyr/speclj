@@ -4,7 +4,10 @@
 
 (def major 1)
 (def minor 1)
-(def tiny  0)
-(def pre   nil)
-(def string (str/join "." (filter identity [major minor tiny])))
+(def tiny 0)
+(def snapshot true)
+(def string
+  (str
+    (str/join "." (filter identity [major minor tiny]))
+    (if snapshot "-SNAPSHOT" "")))
 (def summary (str "speclj " string))

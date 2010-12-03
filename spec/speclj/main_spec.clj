@@ -8,7 +8,8 @@
     [speclj.run.vigilant]
     [speclj.report.progress]
     [speclj.report.silent]
-    [speclj.version])
+    [speclj.version]
+    [speclj.config :as config])
   (:import
     [java.io ByteArrayOutputStream OutputStreamWriter]))
 
@@ -98,6 +99,15 @@
     (let [options (parse-args "-a")]
       (should= "vigilant" (:runner options))
       (should= "specdoc" (:reporter options))))
+
+  (it "parses the --color switch"
+    (should= nil (:color (parse-args "")))
+    (should= "on" (:color (parse-args "--color")))
+    (should= "on" (:color (parse-args "-c"))))
+
+  (it "builds var mappings from config"
+    (with-bindings (config-mappings {:runner "standard" :reporter "progress" :color true})
+      (should= true config/*color?*)))
           
   )
 

@@ -3,7 +3,7 @@
     [speclj.core]
     [speclj.run.standard]
     [speclj.running :only (run-directories)]
-    [speclj.reporting :only (active-reporter)]
+    [speclj.config :only (active-reporter)]
     [speclj.report.silent :only (new-silent-reporter)]
     [speclj.spec-helper :only (find-dir)])
   (:import

@@ -2,7 +2,8 @@
   (:gen-class)
   (:use
     [speclj.running :only (run-directories run-and-report)]
-    [speclj.util :only (endl)])
+    [speclj.util :only (endl)]
+    [speclj.config])
   (:require
     [speclj.version])
   (:import
@@ -31,6 +32,7 @@
     "progress               : (default) Text-based progress bar" endl
     "specdoc                : Code example doc strings" endl))
   (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
+  (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
   (.addSwitchOption "h" "help" "You're looking at it.")
@@ -88,12 +90,15 @@
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
 
+(defn config-mappings [config]
+  {#'*runner* (load-runner (:runner config))
+   #'*reporter* (load-reporter (:reporter config))
+   #'*specs* (:specs config)
+   #'*color?* (:color config)})
+
 (defn do-specs [config]
-  (let [runner (load-runner (:runner config))
-        reporter (load-reporter (:reporter config))
-        spec-dirs (:specs config)
-        fail-count (run-directories runner spec-dirs reporter)]
-    (exit fail-count)))
+  (with-bindings (config-mappings config)
+    (exit (run-directories *runner* *specs* *reporter*))))
 
 (defn run [& args]
   (let [config (apply parse-args args)]

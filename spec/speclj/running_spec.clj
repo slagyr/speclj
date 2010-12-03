@@ -1,9 +1,9 @@
 (ns speclj.running-spec
   (:use
     [speclj.core]
-    [speclj.running :only (*runner* run-and-report)]
+    [speclj.running :only (run-and-report)]
     [speclj.run.standard :only (new-standard-runner)]
-    [speclj.reporting :only (*reporter*)]
+    [speclj.config :only (*reporter* *runner*)]
     [speclj.report.silent :only (new-silent-reporter)])
   (:import (speclj SpecFailure)))
 

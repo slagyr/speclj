@@ -1,15 +1,7 @@
 (ns speclj.reporting
   (:use
-    [speclj.exec :only (pass? fail?)]))
-
-(def default-reporter(atom nil))
-(declare *reporter*)
-(defn active-reporter []
-  (if (bound? #'*reporter*)
-    *reporter*
-    (if-let [reporter @default-reporter]
-      reporter
-      (throw (Exception. "*reporter* is unbound and no default value has been provided")))))
+    [speclj.exec :only (pass? fail?)]
+    [speclj.config :only (*reporter* *color?*)]))
 
 (defn failure-source [exception]
   (let [source (nth (.getStackTrace exception) 0)]
@@ -29,3 +21,13 @@
   (report-pass [this result])
   (report-fail [this result])
   (report-runs [this results]))
+
+(defn- stylizer [code]
+  (fn [text]
+    (if *color?*
+      (str "\u001b[" code "m" text "\u001b[0m")
+      text)))
+
+(def red (stylizer "31"))
+(def green (stylizer "32"))
+(def grey (stylizer "90"))

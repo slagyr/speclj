@@ -1,9 +1,10 @@
 (ns speclj.run.vigilant
   (:use
-    [speclj.running :only (do-description run-and-report run-description *runner* clj-files-in)]
+    [speclj.running :only (do-description run-and-report run-description clj-files-in)]
     [speclj.util]
-    [speclj.reporting :only (report-runs active-reporter *reporter* report-message)]
-    [clojure.set :only (difference union)])
+    [speclj.reporting :only (report-runs report-message)]
+    [clojure.set :only (difference union)]
+    [speclj.config :only (active-runner active-reporter config-bindings *specs*)])
   (:import
     [speclj.running Runner]
     [java.io PushbackReader FileReader File]
@@ -163,29 +164,32 @@
 
 ; Main -----------------------------------------------------------------------------------------------------------------
 
-(defn- tick [runner reporter directories]
-  (clean-deleted-files runner)
-  (binding [*runner* runner *reporter* reporter]
-    (let [start-time (System/nanoTime)]
-      (if-let [updates (seq (updated-files runner directories))]
+(defn- tick [configuration]
+  (with-bindings configuration
+    (let [runner (active-runner)
+          reporter (active-reporter)
+          start-time (System/nanoTime)]
+      (clean-deleted-files runner)
+      (if-let [updates (seq (updated-files runner *specs*))]
         (try
-          (report-message *reporter* (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
+          (report-message reporter (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
           (apply track-files runner updates)
           (let [listing @(.listing runner)
                 files-to-reload (into (dependents-of listing updates) updates)]
-            (report-message *reporter* (str "took " (str-time-since start-time) " to determine which files to reload."))
-            (report-message *reporter* "reloading files:")
-            (doseq [file files-to-reload] (report-message *reporter* (str "  " (.getCanonicalPath file))))
+            (report-message reporter (str "took " (str-time-since start-time) " to determine which files to reload."))
+            (report-message reporter "reloading files:")
+            (doseq [file files-to-reload] (report-message reporter (str "  " (.getCanonicalPath file))))
             (apply reload-files runner files-to-reload))
-          (run-and-report runner (active-reporter))
-          (catch Exception e (.printStackTrace e))))))
-  (swap! (.results runner) (fn [_] [])))
+          (run-and-report runner reporter)
+          (catch Exception e (.printStackTrace e))))
+      (swap! (.results runner) (fn [_] [])))))
 
 (deftype VigilantRunner [listing results]
   Runner
   (run-directories [this directories reporter]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
-          runnable (fn [] (tick this reporter directories))]
+          configuration (config-bindings)
+          runnable (fn [] (tick configuration))]
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))

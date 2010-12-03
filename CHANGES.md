@@ -1,5 +1,6 @@
 # 1.1.0
 
+* colorize output
 * standard runner won't evaluate specs until they're all loaded
 * `with` components are only bound within their context
 * nested describe/context

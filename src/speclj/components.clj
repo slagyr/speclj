@@ -1,9 +1,5 @@
 (ns speclj.components)
 
-(defn- install-characteristic [characteristic description]
-  (swap! (.description characteristic) (fn [_] description))
-  (swap! (.charcteristics description) (fn [_] (conj _ characteristic))))
-
 (defprotocol SpecComponent
   (install [this description]))
 
@@ -33,10 +29,10 @@
 (defn new-description [name ns]
   (Description. name ns (atom nil) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
-(deftype Characteristic [name description body]
+(deftype Characteristic [name parent body]
   SpecComponent
   (install [this description]
-    (reset! (.description this) description)
+    (reset! (.parent this) description)
     (swap! (.charcteristics description) conj this))
   Object
   (toString [this] (str \" name \")))

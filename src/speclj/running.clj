@@ -1,20 +1,12 @@
 (ns speclj.running
   (:use
     [speclj.exec :only (pass-result fail-result)]
-    [speclj.reporting :only (active-reporter report-runs report-pass report-fail report-description)]
+    [speclj.reporting :only (report-runs report-pass report-fail report-description)]
     [speclj.components :only (reset-with)]
-    [speclj.util :only (secs-since)])
+    [speclj.util :only (secs-since)]
+    [speclj.config :only (*runner* active-reporter)])
   (:import
     [java.io File]))
-
-(def default-runner (atom nil))
-(declare *runner*)
-(defn active-runner []
-  (if (bound? #'*runner*)
-    *runner*
-    (if-let [runner @default-runner]
-      runner
-      (throw (Exception. "*runner* is unbound and no default value has been provided")))))
 
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))
@@ -41,7 +33,7 @@
       components)))
 
 (defn- do-characteristic [characteristic reporter]
-  (let [description @(.description characteristic)
+  (let [description @(.parent characteristic)
         befores (collect-components #(deref (.befores %)) description)
         arounds (collect-components #(deref (.arounds %)) description)
         body (nested-fns (.body characteristic) (map #(.body %) arounds))
