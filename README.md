@@ -9,7 +9,7 @@ You will need [Leiningen][https://github.com/technomancy/leiningen] version 1.3 
 
 Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
 
-	:dev-dependencies [[speclj "1.0.3"]]
+	:dev-dependencies [[speclj "1.1.0"]]
 	:test-path "spec/"
 	
 ## Manual installation	
