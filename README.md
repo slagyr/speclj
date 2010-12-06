@@ -71,6 +71,11 @@ There are several ways to make assertions.  They are documented on the wiki: [Sh
 	
 # Running Specs
 
+## With Leiningen
+Speclj includes a Leiningen task to execute `speclj.main`.
+
+    $ lein spec
+
 ## Running All Specs at Once
 The command below will run all the specs found in `"spec"` directory.
 
