@@ -1,5 +1,6 @@
 # 1.1.0
 
+* fixed problem where vigilant runner would crash with :reload or :verbose in ns
 * colorize output
 * standard runner won't evaluate specs until they're all loaded
 * `with` components are only bound within their context

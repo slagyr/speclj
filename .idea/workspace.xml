@@ -3,26 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="92049f6f-a13c-41db-a1c6-8945dfe47517" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CHANGES.md" afterPath="$PROJECT_DIR$/CHANGES.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/reporting.clj" afterPath="$PROJECT_DIR$/src/speclj/reporting.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/leiningen/spec.clj" afterPath="$PROJECT_DIR$/src/leiningen/spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/main.clj" afterPath="$PROJECT_DIR$/src/speclj/main.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/running.clj" afterPath="$PROJECT_DIR$/src/speclj/running.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TODO.md" afterPath="$PROJECT_DIR$/TODO.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spec/speclj/reporting_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/core.clj" afterPath="$PROJECT_DIR$/src/speclj/core.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/components.clj" afterPath="$PROJECT_DIR$/src/speclj/components.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/report/progress.clj" afterPath="$PROJECT_DIR$/src/speclj/report/progress.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/report/progress_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/report/progress_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/run/standard_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/run/standard_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/main_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/run/standard.clj" afterPath="$PROJECT_DIR$/src/speclj/run/standard.clj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/run/vigilant.clj" afterPath="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/version.clj" afterPath="$PROJECT_DIR$/src/speclj/version.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/speclj/running_spec.clj" afterPath="$PROJECT_DIR$/spec/speclj/running_spec.clj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/speclj/config.clj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/report/specdoc.clj" afterPath="$PROJECT_DIR$/src/speclj/report/specdoc.clj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="$USER_HOME_GRIFFON$/" />
@@ -82,91 +65,28 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="24" selection-start="2576" selection-end="2576" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="vigilant.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/run/vigilant.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="159" column="194" selection-start="6153" selection-end="6153" vertical-scroll-proportion="0.0">
+            <state line="51" column="37" selection-start="1801" selection-end="1801" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/config.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="72" selection-start="776" selection-end="776" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="reporting_spec.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/speclj/reporting_spec.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="194" selection-start="721" selection-end="721" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="spec.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/leiningen/spec.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TODO.md" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/TODO.md">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="18" selection-start="89" selection-end="89" vertical-scroll-proportion="0.07643312">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CHANGES.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="CHANGES.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CHANGES.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="3" selection-start="12" selection-end="12" vertical-scroll-proportion="0.0">
+            <state line="2" column="80" selection-start="11" selection-end="89" vertical-scroll-proportion="0.049792532">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="specdoc.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/report/specdoc.clj">
+      <file leaf-file-name="vigilant_spec.clj" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="195" selection-start="1415" selection-end="1415" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="specdoc_spec.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="200" selection-start="2085" selection-end="2085" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="components.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/components.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="22" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0">
+            <state line="161" column="19" selection-start="8164" selection-end="8164" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -182,7 +102,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/speclj/run/standard.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
         <option value="$PROJECT_DIR$/src/speclj/main.clj" />
         <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
@@ -193,10 +112,11 @@
         <option value="$PROJECT_DIR$/src/speclj/report/specdoc.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj" />
         <option value="$PROJECT_DIR$/src/speclj/config.clj" />
-        <option value="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/reporting_spec.clj" />
         <option value="$PROJECT_DIR$/src/leiningen/spec.clj" />
         <option value="$PROJECT_DIR$/TODO.md" />
+        <option value="$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
         <option value="$PROJECT_DIR$/CHANGES.md" />
       </list>
     </option>
@@ -240,6 +160,8 @@
     </navigator>
     <panes>
       <pane id="Favorites" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -416,8 +338,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -434,9 +354,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -445,18 +365,7 @@
       <recent name="$PROJECT_DIR$/examples/prime_factors" />
     </key>
   </component>
-  <component name="RunManager" selected="Clojure Script.specdoc_spec">
-    <configuration default="false" name="running_spec" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
-      <module name="speclj" />
-      <setting name="path" value="$PROJECT_DIR$/spec/speclj/running_spec.clj" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="$PROJECT_DIR$/spec/speclj" />
-      <setting name="repl" value="false" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Clojure Script.vigilant_spec">
     <configuration default="false" name="main_spec" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
       <module name="speclj" />
       <setting name="path" value="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
@@ -501,6 +410,31 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="vigilant_spec" type="ClojureScriptRunConfiguration" factoryName="Clojure Script" temporary="true">
+      <module name="speclj" />
+      <setting name="path" value="$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="$PROJECT_DIR$/spec/speclj/run" />
+      <setting name="repl" value="false" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="true" type="ClojureScriptRunConfiguration" factoryName="Clojure Script">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="" />
+      <setting name="repl" value="false" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
     <configuration default="true" type="RSpecRunConfigurationType" factoryName="RSpec">
       <predefined_log_file id="RUBY_RSPEC" enabled="true" />
       <module name="" />
@@ -520,20 +454,6 @@
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ClojureScriptRunConfiguration" factoryName="Clojure Script">
-      <module name="" />
-      <setting name="path" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="" />
-      <setting name="repl" value="false" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -676,11 +596,11 @@
       </method>
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Clojure Script.running_spec" />
-      <item index="1" class="java.lang.String" itemvalue="Clojure Script.main_spec" />
-      <item index="2" class="java.lang.String" itemvalue="Clojure Script.reporting_spec" />
-      <item index="3" class="java.lang.String" itemvalue="Clojure Script.progress_spec" />
-      <item index="4" class="java.lang.String" itemvalue="Clojure Script.specdoc_spec" />
+      <item index="0" class="java.lang.String" itemvalue="Clojure Script.main_spec" />
+      <item index="1" class="java.lang.String" itemvalue="Clojure Script.reporting_spec" />
+      <item index="2" class="java.lang.String" itemvalue="Clojure Script.progress_spec" />
+      <item index="3" class="java.lang.String" itemvalue="Clojure Script.specdoc_spec" />
+      <item index="4" class="java.lang.String" itemvalue="Clojure Script.vigilant_spec" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -713,12 +633,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1920" height="1174" extended-state="6" />
+    <frame x="0" y="22" width="1440" height="874" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.45635673" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -729,11 +648,12 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18376069" sideWeight="0.62333965" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24640805" sideWeight="0.6777188" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.370019" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31299734" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.45635673" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32732448" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -776,114 +696,90 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/speclj/run/standard.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="201" selection-start="305" selection-end="305" vertical-scroll-proportion="0.17877094">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spec/speclj/main_spec.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="100" column="196" selection-start="3580" selection-end="3580" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="62" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="23" column="62" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/report/progress.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="26" selection-start="357" selection-end="357" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="11" column="26" selection-start="357" selection-end="357" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/speclj/report/progress_spec.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="89" selection-start="843" selection-end="843" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="25" column="89" selection-start="843" selection-end="843" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/running.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="0" selection-start="1010" selection-end="1010" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="35" column="0" selection-start="1010" selection-end="1010" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/components.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="22" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="22" selection-start="22" selection-end="22" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/speclj/report/specdoc_spec.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="200" selection-start="2085" selection-end="2085" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="53" column="200" selection-start="2085" selection-end="2085" vertical-scroll-proportion="1.316294" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/report/specdoc.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="195" selection-start="1415" selection-end="1415" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="40" column="195" selection-start="1415" selection-end="1415" vertical-scroll-proportion="1.5335463" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="24" selection-start="2576" selection-end="2576" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="76" column="24" selection-start="2576" selection-end="2576" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/config.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="72" selection-start="776" selection-end="776" vertical-scroll-proportion="0.0">
+        <state line="26" column="72" selection-start="776" selection-end="776" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/speclj/reporting_spec.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="194" selection-start="721" selection-end="721" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/leiningen/spec.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TODO.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="18" selection-start="89" selection-end="89" vertical-scroll-proportion="0.14634146" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="163" column="56" selection-start="6898" selection-end="6898" vertical-scroll-proportion="1.0513918">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/speclj/run/vigilant_spec.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="161" column="19" selection-start="8164" selection-end="8164" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/run/vigilant.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="159" column="194" selection-start="6153" selection-end="6153" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spec/speclj/reporting_spec.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="194" selection-start="721" selection-end="721" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/leiningen/spec.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.0">
+        <state line="51" column="37" selection-start="1801" selection-end="1801" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CHANGES.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="3" selection-start="12" selection-end="12" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TODO.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="18" selection-start="89" selection-end="89" vertical-scroll-proportion="0.07643312">
+        <state line="2" column="80" selection-start="11" selection-end="89" vertical-scroll-proportion="0.049792532">
           <folding />
         </state>
       </provider>

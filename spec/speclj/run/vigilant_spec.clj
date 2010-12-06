@@ -158,6 +158,8 @@
     (should= '#{one.two one.three} (depending-names-of '(ns foo (:use [one [two :only (foo)] [three :exclude (bar)]]))))
     (should= '#{one.two one.three} (depending-names-of '(ns foo (:require [one [two :as t] [three :as tr]]))))
     (should= '#{root.one.child.grandchild root.two} (depending-names-of '(ns foo (:use [root [one [child [grandchild]]] [two]]))))
+    (should= '#{fizz} (depending-names-of '(ns foo (:require [fizz] :reload))))
+    (should= '#{fizz} (depending-names-of '(ns foo (:use [fizz] :verbose))))
     )
 
   (it "converts ns names into filenames"

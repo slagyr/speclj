@@ -50,7 +50,7 @@
     :else (map #(ns-for-part (compose-ns prefix (first arg)) %) (rest arg))))
 
 (defn- depending-names-of-part [args]
-  (map #(ns-for-part nil %) (rest args)))
+  (map #(ns-for-part nil %) (filter (complement keyword?) (rest args))))
 
 (defn depending-names-of [ns-form]
   (let [dependency-parts (filter #(and (list? %) (#{:use :require} (first %))) ns-form)
@@ -157,8 +157,7 @@
         trackers (vec (filter identity (map listing files)))
         nses (vec (filter identity (map #(.ns %) trackers)))]
     (if (seq nses)
-      (do
-        (doseq [ns nses] (remove-ns ns))
+      (do `(doseq [ns nses] (remove-ns ns))
         (dosync (alter @#'clojure.core/*loaded-libs* difference (set nses)))
         (apply require nses)))))
 
