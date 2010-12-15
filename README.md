@@ -21,6 +21,7 @@ Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec
 
 # Usage
 
+## File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.  
 
 	| sample_project
@@ -35,8 +36,8 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 	       	| (All your other test code)
 	
 		
-## Speclj 101
-Checkout this example.  Below we'll look at it piece by piece.
+## A Sample Spec File
+Checkout this example spec file. It would be located at `sample_project/spec/sample/core_spec.clj`.  Below we'll look at it piece by piece.
 
 	(ns sample.core-spec
 	  (:use 
