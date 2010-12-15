@@ -21,11 +21,27 @@ Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec
 
 # Usage
 
+All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.  
+
+	| sample_project
+	|-- project.clj
+	|-- src
+	    |-- sample
+	        |-- core.clj
+	        | (All your other source code)
+	|-- spec
+	    |-- sample
+	        |-- core_spec.clj
+	       	| (All your other test code)
+	
+		
 ## Speclj 101
 Checkout this example.  Below we'll look at it piece by piece.
 
-	(ns basics-spec
-	  (:use [speclj.core]))
+	(ns sample.core-spec
+	  (:use 
+		[speclj.core]
+		[sample.core]))
 
 	(describe "Truth"
 
@@ -38,9 +54,11 @@ Checkout this example.  Below we'll look at it piece by piece.
 	(run-specs)
 
 ### speclj.core namespace
-Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.
+Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
 
-	(:use [speclj.core])
+	(:use 
+		[speclj.core]
+		[sample.core])
 
 ### describe
 `describe` is the outer most container for specs.  It takes a `String` name and any number of _spec components_.
