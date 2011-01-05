@@ -35,13 +35,15 @@
 (defn- do-characteristic [characteristic reporter]
   (let [description @(.parent characteristic)
         befores (collect-components #(deref (.befores %)) description)
-        arounds (collect-components #(deref (.arounds %)) description)
-        body (nested-fns (.body characteristic) (map #(.body %) arounds))
         afters (collect-components #(deref (.afters %)) description)
+        core-body (.body characteristic)
+        before-and-after-body (fn [] (eval-characteristic befores core-body afters))
+        arounds (collect-components #(deref (.arounds %)) description)
+        full-body (nested-fns before-and-after-body (map #(.body %) arounds))
         withs (collect-components #(deref (.withs %)) description)
         start-time (System/nanoTime)]
     (try
-      (eval-characteristic befores body afters)
+      (full-body)
       (let [result (pass-result characteristic (secs-since start-time))]
         (report-pass reporter result)
         result)

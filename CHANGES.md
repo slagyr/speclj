@@ -1,3 +1,7 @@
+# 1.2.0
+
+* around components now execute around befores and afters
+
 # 1.1.0
 
 * fixed problem where vigilant runner would crash with :reload or :verbose in ns

@@ -69,12 +69,17 @@
 (def *gewgaw* 0)
 (describe "around forms"
   (it "allows characteristics to be wrapped by other forms")
-  (around [spec]
+  (around [it]
     (binding [*gewgaw* 42]
-      (spec)))
+      (it)))
 
   (it ": characteristcs will be evaluated within around form"
     (should= 42 *gewgaw*))
+
+  (context "with before and after"
+      (before (should= 42 *gewgaw*))
+      (it "executes around all of them")
+    )
   )
 
 (def frippery (atom []))
