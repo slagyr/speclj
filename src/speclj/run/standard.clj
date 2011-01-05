@@ -15,7 +15,8 @@
 (deftype StandardRunner [descriptions results]
   Runner
   (run-directories [this directories reporter]
-    (let [files (apply clj-files-in directories)]
+    (let [files (apply clj-files-in directories)
+          files (sort files)]
       (binding [*runner* this *reporter* reporter]
         (doseq [file files]
           ;          (load-string (slurp (.getCanonicalPath file))))))

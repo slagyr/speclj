@@ -154,10 +154,14 @@
 
 (defn reload-files [runner & files]
   (let [listing @(.listing runner)
+        _ (println "listing: " listing)
         trackers (vec (filter identity (map listing files)))
+        _ (println "trackers: " trackers)
         nses (vec (filter identity (map #(.ns %) trackers)))]
+(println "nses: " nses)
     (if (seq nses)
-      (do `(doseq [ns nses] (remove-ns ns))
+      (do
+        (doseq [ns nses] (remove-ns ns))
         (dosync (alter @#'clojure.core/*loaded-libs* difference (set nses)))
         (apply require nses)))))
 
@@ -174,7 +178,8 @@
           (report-message reporter (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
           (apply track-files runner updates)
           (let [listing @(.listing runner)
-                files-to-reload (into (dependents-of listing updates) updates)]
+                files-to-reload (into (dependents-of listing updates) updates)
+                files-to-reload (sort files-to-reload)]
             (report-message reporter (str "took " (str-time-since start-time) " to determine which files to reload."))
             (report-message reporter "reloading files:")
             (doseq [file files-to-reload] (report-message reporter (str "  " (.getCanonicalPath file))))

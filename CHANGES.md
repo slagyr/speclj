@@ -1,7 +1,9 @@
 # 1.2.0
 
 * around components now execute around befores and afters
-* removed AOT compilation of clojure src which caused problems on other versions of clojure.
+* removed AOT compilation of clojure src which caused problems on other versions of clojure
+* fixed typo that prevented src from properly reloaded by Vigilant Runner
+* spec files are sorted before running
 
 # 1.1.0
 

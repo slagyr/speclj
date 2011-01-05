@@ -123,12 +123,12 @@
       (should= #{} (dependents-of @(.listing @runner) [test-file2]))
       (should= #{test-file1} (dependents-of @(.listing @runner) [src-file1]))
       (should= #{test-file1 test-file2} (dependents-of @(.listing @runner) [src-file2]))))
-  
+
   (it "finds transitive depedants/dependencies of a file"
     (let [src-file1 (write-tmp-file "src/src1.clj" "(ns src1)")
           src-file2 (write-tmp-file "src/src2.clj" "(ns src2 (:use [src1]))")
           test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src2]))")]
-      (track-files @runner test-file1 test-file1)
+      (track-files @runner test-file1)
       (should= 3 (count @(.listing @runner)))
       (should= #{} (dependents-of @(.listing @runner) [test-file1]))
       (should= #{test-file1} (dependents-of @(.listing @runner) [src-file2]))
@@ -168,6 +168,17 @@
     (should= "foo/bar.clj" (ns-to-filename "foo.bar"))
     (should= "foo_bar.clj" (ns-to-filename "foo-bar"))
     (should= "foo_bar/fizz_bang.clj" (ns-to-filename "foo-bar.fizz-bang")))
+
+;  (it "reloads files"
+;    (let [src-file (write-tmp-file "src/src1.clj" "(ns src1) (def foo :foo) (println :haha)")
+;          test-file1 (write-tmp-file "test/test1.clj" "(ns test1 (:use [src1]))")]
+;      (track-files @runner test-file1)
+;      (apply reload-files @runner (keys @(.listing @runner)))
+;      (eval '(require 'src1))
+;      (should= :foo (eval 'src1/foo))
+;      (write-tmp-file "src/src1.clj" "(ns src1)")
+;      (apply reload-files @runner (keys @(.listing @runner)))
+;      (should= false (bound? (eval 'src1/foo)))))
 
   )
 
