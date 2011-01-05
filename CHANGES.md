@@ -1,6 +1,7 @@
 # 1.2.0
 
 * around components now execute around befores and afters
+* removed AOT compilation of clojure src which caused problems on other versions of clojure.
 
 # 1.1.0
 
