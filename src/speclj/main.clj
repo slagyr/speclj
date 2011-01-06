@@ -1,5 +1,4 @@
 (ns speclj.main
-  (:gen-class)
   (:use
     [speclj.running :only (run-directories run-and-report)]
     [speclj.util :only (endl)]
