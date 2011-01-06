@@ -182,7 +182,7 @@
             (doseq [file files-to-reload] (report-message reporter (str "  " (.getCanonicalPath file))))
             (apply reload-files runner files-to-reload))
           (run-and-report runner reporter)
-          (catch Exception e (.printStackTrace e))))
+          (catch Exception e (print-stack-trace e *out*))))
       (swap! (.results runner) (fn [_] [])))))
 
 (deftype VigilantRunner [listing results]
@@ -190,7 +190,7 @@
   (run-directories [this directories reporter]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
           configuration (config-bindings)
-          runnable (fn [] (try (tick configuration) (catch Exception e (print-stack-trace e))))]
+          runnable (fn [] (tick configuration))]
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))

@@ -96,7 +96,7 @@
    #'*reporter* (load-reporter (:reporter config))
    #'*specs* (:specs config)
    #'*color?* (:color config)
-   #'*full-stack-trace?* (:stacktrace config)})
+   #'*full-stack-trace?* (not (nil? (:stacktrace config)))})
 
 (defn do-specs [config]
   (with-bindings (config-mappings config)

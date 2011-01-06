@@ -22,6 +22,8 @@
 
 (def *color?* false)
 
+(def *full-stack-trace?* false)
+
 (defn config-bindings
   "Retuns a map of vars to values for all the ear-muffed vars in the speclj.config namespace.
   Can be used in (with-bindings ...) call to load a configuration state"
@@ -31,5 +33,3 @@
         non-config-keys (filter #(not (.startsWith (name %) "*")) (keys all-vars))
         config-vars (apply dissoc all-vars non-config-keys)]
     (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
-
-(def *full-stack-trace?* false)

@@ -115,6 +115,8 @@
     (should= "on" (:stacktrace (parse-args "-b"))))
 
   (it "set stacktrace in config"
+    (with-bindings (config-mappings {:runner "standard" :reporter "progress"})
+      (should= false config/*full-stack-trace?*))
     (with-bindings (config-mappings {:runner "standard" :reporter "progress" :stacktrace true})
       (should= true config/*full-stack-trace?*)))
           
