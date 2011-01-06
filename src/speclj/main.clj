@@ -3,7 +3,8 @@
   (:use
     [speclj.running :only (run-directories run-and-report)]
     [speclj.util :only (endl)]
-    [speclj.config])
+    [speclj.config]
+    [speclj.reporting :only (print-stack-trace)])
   (:require
     [speclj.version])
   (:import
@@ -32,6 +33,7 @@
     "progress               : (default) Text-based progress bar" endl
     "specdoc                : Code example doc strings" endl))
   (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
+  (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
@@ -94,11 +96,16 @@
   {#'*runner* (load-runner (:runner config))
    #'*reporter* (load-reporter (:reporter config))
    #'*specs* (:specs config)
-   #'*color?* (:color config)})
+   #'*color?* (:color config)
+   #'*full-stack-trace?* (:stacktrace config)})
 
 (defn do-specs [config]
   (with-bindings (config-mappings config)
-    (exit (run-directories *runner* *specs* *reporter*))))
+    (try
+      (exit (run-directories *runner* *specs* *reporter*))
+      (catch Exception e
+        (print-stack-trace e *err*)
+        (exit -1)))))
 
 (defn run [& args]
   (let [config (apply parse-args args)]

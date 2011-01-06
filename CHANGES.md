@@ -4,6 +4,7 @@
 * removed AOT compilation of clojure src which caused problems on other versions of clojure
 * fixed typo that prevented src from properly reloaded by Vigilant Runner
 * spec files are sorted before running
+* stack traces are elided and a switch was added to output full stack traces
 
 # 1.1.0
 

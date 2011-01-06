@@ -31,3 +31,5 @@
         non-config-keys (filter #(not (.startsWith (name %) "*")) (keys all-vars))
         config-vars (apply dissoc all-vars non-config-keys)]
     (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
+
+(def *full-stack-trace?* false)

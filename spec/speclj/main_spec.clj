@@ -108,6 +108,15 @@
   (it "builds var mappings from config"
     (with-bindings (config-mappings {:runner "standard" :reporter "progress" :color true})
       (should= true config/*color?*)))
+
+  (it "parses the --stacktrace switch"
+    (should= nil (:stacktrace (parse-args "")))
+    (should= "on" (:stacktrace (parse-args "--stacktrace")))
+    (should= "on" (:stacktrace (parse-args "-b"))))
+
+  (it "set stacktrace in config"
+    (with-bindings (config-mappings {:runner "standard" :reporter "progress" :stacktrace true})
+      (should= true config/*full-stack-trace?*)))
           
   )
 

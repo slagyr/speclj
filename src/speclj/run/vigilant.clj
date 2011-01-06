@@ -2,7 +2,7 @@
   (:use
     [speclj.running :only (do-description run-and-report run-description clj-files-in)]
     [speclj.util]
-    [speclj.reporting :only (report-runs report-message)]
+    [speclj.reporting :only (report-runs report-message print-stack-trace)]
     [clojure.set :only (difference union)]
     [speclj.config :only (active-runner active-reporter config-bindings *specs*)])
   (:import
@@ -154,11 +154,8 @@
 
 (defn reload-files [runner & files]
   (let [listing @(.listing runner)
-        _ (println "listing: " listing)
         trackers (vec (filter identity (map listing files)))
-        _ (println "trackers: " trackers)
         nses (vec (filter identity (map #(.ns %) trackers)))]
-(println "nses: " nses)
     (if (seq nses)
       (do
         (doseq [ns nses] (remove-ns ns))
@@ -193,7 +190,7 @@
   (run-directories [this directories reporter]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
           configuration (config-bindings)
-          runnable (fn [] (tick configuration))]
+          runnable (fn [] (try (tick configuration) (catch Exception e (print-stack-trace e))))]
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))

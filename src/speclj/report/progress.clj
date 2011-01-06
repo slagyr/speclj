@@ -1,6 +1,6 @@
 (ns speclj.report.progress
   (:use
-    [speclj.reporting :only (failure-source tally-time red green)]
+    [speclj.reporting :only (failure-source tally-time red green print-stack-trace)]
     [speclj.exec :only (pass? fail?)]
     [speclj.util :only (seconds-format)]
     [speclj.config :only (default-reporter)])
@@ -23,7 +23,8 @@
     (println (red (.getMessage failure)))
     (if (.isInstance SpecFailure failure)
       (println (failure-source failure))
-      (.printStackTrace failure System/out))))
+      (print-stack-trace failure *out*)
+      )))
 
 (defn print-failures [results]
   (println)
