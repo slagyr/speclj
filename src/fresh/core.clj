@@ -5,7 +5,7 @@
 ; Copied from https://github.com/slagyr/fresh so speclj can remain without dependencies.
 ;
 ; *********************************************************************************************************************
-
+  
 (ns fresh.core
   (:use
     [clojure.java.io :only (file)])
@@ -19,7 +19,8 @@
   "Returns a seq of all clojure source files contained in the given directories."
   [& dirs]
   (let [files (reduce #(into %1 (file-seq (file %2))) [] dirs)]
-    (filter #(re-matches clj-file-regex (.getName %)) files)))
+    (filter #(re-matches clj-file-regex (.getName %))
+            (remove #(.isHidden %) files))))
 
 ;; Resolving ns names ---------------------------------------------------------------------------------------------------
 ;
