@@ -76,7 +76,7 @@
         (should= "1)" (lines 2))
         (should= (red "'Crazy flips' FAILED") (lines 3))
         (should= (red "Expected flips") (lines 4))
-        ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:54" (lines 5))
+;        (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:67" (lines 5))
         (should= "" (lines 6))
         (should= "2)" (lines 7))
         (should= (red "'Crazy spins' FAILED") (lines 8))

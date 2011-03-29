@@ -1,12 +1,21 @@
 (ns speclj.reporting
   (:use
     [speclj.exec :only (pass? fail?)]
-    [speclj.config :only (*reporter* *color?* *full-stack-trace?*)]))
+    [speclj.config :only (*reporter* *color?* *full-stack-trace?*)]
+    [clojure.string :as string :only (split)]))
+
+(defn- classname->filename [classname]
+  (let [root-name (first (split classname #"\$"))]
+    (str
+      (string/replace root-name "." (System/getProperty "file.separator"))
+      ".clj")))
 
 (defn failure-source [exception]
-  (let [source (nth (.getStackTrace exception) 0)]
-    (if-let [filename (.getFileName source)]
-      (str (.getCanonicalPath (java.io.File. filename)) ":" (.getLineNumber source))
+  (let [source (nth (.getStackTrace exception) 0)
+        classname (.getClassName source)
+        filename (classname->filename classname)]
+    (if-let [url (.getResource (clojure.lang.RT/baseLoader) filename)]
+      (str (.getFile url) ":" (.getLineNumber source))
       "Unknown source")))
 
 (defn tally-time [results]

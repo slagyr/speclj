@@ -1,3 +1,8 @@
+# 1.2.1
+
+* fix file path displayed with failed spec
+* refactored Vigilant running to use fresh library (embedded locally)
+
 # 1.2.0
 
 * around components now execute around befores and afters
