@@ -1,7 +1,7 @@
 (ns speclj.core
   (:use
     [speclj.running :only (submit-description run-and-report)]
-    [speclj.config :only (active-reporter active-runner default-runner)]
+    [speclj.config :only (active-reporter active-runner default-runner config-mappings default-config)]
     [speclj.components]
     [speclj.util :only (endl)])
   (:require
@@ -156,9 +156,12 @@ When a string is also passed, it asserts that the message of the Exception is eq
     (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
       "                     but got: " (.toString e#)))))))
 
-(defn run-specs []
+(defn run-specs [& configurations]
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
 are evaluated by evaluation the file as a script."
-  (if (identical? (active-runner) @default-runner)
-    (run-and-report (active-runner) (active-reporter))))
+  (when (identical? (active-runner) @default-runner) ; Solo file run.
+    (let [config (apply hash-map configurations)
+          config (merge (dissoc default-config :runner) config)]
+      (with-bindings (config-mappings config)
+        (run-and-report (active-runner) (active-reporter))))))

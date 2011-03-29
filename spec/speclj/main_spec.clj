@@ -4,10 +4,10 @@
     [speclj.main]
     [speclj.util :only (endl)])
   (:require
-    [speclj.run.standard]
-    [speclj.run.vigilant]
-    [speclj.report.progress]
-    [speclj.report.silent]
+;    [speclj.run.standard]
+;    [speclj.run.vigilant]
+;    [speclj.report.progress]
+;    [speclj.report.silent]
     [speclj.version]
     [speclj.config :as config])
   (:import
@@ -24,12 +24,12 @@
   (around [spec] (binding [exit identity] (spec)))
 
   (it "has default configuration"
-    (should= ["spec"] (:specs default-config))
-    (should= "progress" (:reporter default-config))
-    (should= "standard" (:runner default-config)))
+    (should= ["spec"] (:specs config/default-config))
+    (should= "progress" (:reporter config/default-config))
+    (should= "standard" (:runner config/default-config)))
 
   (it "parses no arguments"
-    (should= default-config (parse-args)))
+    (should= config/default-config (parse-args)))
 
   (it "parses non-option arguments as spec dirs"
     (should= ["one"] (:specs (parse-args "one")))
@@ -43,32 +43,6 @@
   (it "parses the reporter argument"
     (should= "april" (:reporter (parse-args "--reporter=april")))
     (should= "mary-jane" (:reporter (parse-args "--reporter=mary-jane"))))
-
-  (it "dynaimcally loads StandardRunner"
-    (let [runner (load-runner "standard")]
-      (should-not= nil runner)
-      (should= speclj.run.standard.StandardRunner (class runner))))
-
-  (it "dynaimcally loads VigilantRunner"
-    (let [runner (load-runner "vigilant")]
-      (should-not= nil runner)
-      (should= speclj.run.vigilant.VigilantRunner (class runner))))
-
-  (it "throws exception with unrecognized runner"
-    (should-throw Exception "Failed to load runner: blah" (load-runner "blah")))
-
-  (it "dynaimcally loads ProgressReporter"
-    (let [reporter (load-reporter "progress")]
-      (should-not= nil reporter)
-      (should= speclj.report.progress.ProgressReporter (class reporter))))
-
-  (it "dynaimcally loads SilentReporter"
-    (let [reporter (load-reporter "silent")]
-      (should-not= nil reporter)
-      (should= speclj.report.silent.SilentReporter (class reporter))))
-
-  (it "throws exception with unrecognized reporter"
-    (should-throw Exception "Failed to load reporter: blah" (load-reporter "blah")))
 
   (it "uses formatter as an alias to reporter"
     (let [options (parse-args "--format" "silent")]
@@ -106,7 +80,7 @@
     (should= "on" (:color (parse-args "-c"))))
 
   (it "builds var mappings from config"
-    (with-bindings (config-mappings {:runner "standard" :reporter "progress" :color true})
+    (with-bindings (config/config-mappings {:runner "standard" :reporter "progress" :color true})
       (should= true config/*color?*)))
 
   (it "parses the --stacktrace switch"
@@ -115,9 +89,9 @@
     (should= "on" (:stacktrace (parse-args "-b"))))
 
   (it "set stacktrace in config"
-    (with-bindings (config-mappings {:runner "standard" :reporter "progress"})
+    (with-bindings (config/config-mappings {:runner "standard" :reporter "progress"})
       (should= false config/*full-stack-trace?*))
-    (with-bindings (config-mappings {:runner "standard" :reporter "progress" :stacktrace true})
+    (with-bindings (config/config-mappings {:runner "standard" :reporter "progress" :stacktrace true})
       (should= true config/*full-stack-trace?*)))
           
   )

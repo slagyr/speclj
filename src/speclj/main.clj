@@ -9,12 +9,6 @@
   (:import
     [mmargs Arguments]))
 
-(def default-config {
-  :specs ["spec"]
-  :runner "standard"
-  :reporter "progress"
-  })
-
 (def invoke-method "java -cp [...] speclj.main")
 
 (def arg-spec (Arguments.))
@@ -74,29 +68,6 @@
     (if-let [errors (options :*errors)]
       (usage errors)
       (merge default-config options))))
-
-(defn load-runner [name]
-  (let [ns-name (symbol (str "speclj.run." name))
-        ctor-name (symbol (str ns-name "/new-" name "-runner"))
-        expr `(do (require '~ns-name) (~ctor-name))]
-    (try
-      (eval expr)
-      (catch Exception e (throw (Exception. (str "Failed to load runner: " name) e))))))
-
-(defn load-reporter [name]
-  (let [ns-name (symbol (str "speclj.report." name))
-        ctor-name (symbol (str ns-name "/new-" name "-reporter"))
-        expr `(do (require '~ns-name) (~ctor-name))]
-    (try
-      (eval expr)
-      (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
-
-(defn config-mappings [config]
-  {#'*runner* (load-runner (:runner config))
-   #'*reporter* (load-reporter (:reporter config))
-   #'*specs* (:specs config)
-   #'*color?* (:color config)
-   #'*full-stack-trace?* (not (nil? (:stacktrace config)))})
 
 (defn do-specs [config]
   (with-bindings (config-mappings config)
