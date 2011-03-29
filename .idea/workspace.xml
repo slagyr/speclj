@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="92049f6f-a13c-41db-a1c6-8945dfe47517" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/core.clj" afterPath="$PROJECT_DIR$/src/speclj/core.clj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CHANGES.md" afterPath="$PROJECT_DIR$/CHANGES.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TODO.md" afterPath="$PROJECT_DIR$/TODO.md" />
     </list>
     <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="$USER_HOME_GRIFFON$/" />
@@ -66,7 +67,7 @@
       <file leaf-file-name="TODO.md" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TODO.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="46" selection-start="323" selection-end="323" vertical-scroll-proportion="0.0">
+            <state line="7" column="18" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -99,10 +100,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="core.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="164" column="69" selection-start="7026" selection-end="7026" vertical-scroll-proportion="0.8761062">
+            <state line="162" column="46" selection-start="6889" selection-end="6889" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -135,10 +136,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CHANGES.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="CHANGES.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CHANGES.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="7" selection-start="7" selection-end="7" vertical-scroll-proportion="0.0">
+            <state line="1" column="0" selection-start="8" selection-end="8" vertical-scroll-proportion="0.017699115">
               <folding />
             </state>
           </provider>
@@ -167,13 +168,13 @@
         <option value="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
         <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/report/progress_spec.clj" />
-        <option value="$PROJECT_DIR$/TODO.md" />
-        <option value="$PROJECT_DIR$/CHANGES.md" />
         <option value="$PROJECT_DIR$/spec/speclj/config_spec.clj" />
         <option value="$PROJECT_DIR$/src/speclj/main.clj" />
         <option value="$PROJECT_DIR$/src/speclj/config.clj" />
         <option value="$PROJECT_DIR$/spec/speclj/main_spec.clj" />
         <option value="$PROJECT_DIR$/src/speclj/core.clj" />
+        <option value="$PROJECT_DIR$/TODO.md" />
+        <option value="$PROJECT_DIR$/CHANGES.md" />
       </list>
     </option>
   </component>
@@ -864,20 +865,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CHANGES.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="7" selection-start="7" selection-end="7" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TODO.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="46" selection-start="323" selection-end="323" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/main.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="24" selection-start="254" selection-end="254" vertical-scroll-proportion="0.0">
@@ -922,7 +909,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/speclj/core.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="164" column="69" selection-start="7026" selection-end="7026" vertical-scroll-proportion="0.8761062">
+        <state line="162" column="46" selection-start="6889" selection-end="6889" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TODO.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="18" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CHANGES.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="8" selection-end="8" vertical-scroll-proportion="0.017699115">
           <folding />
         </state>
       </provider>

@@ -1,5 +1,6 @@
 # 1.2.1
 
+* options for (run-specs)
 * fix file path displayed with failed spec
 * refactored Vigilant running to use fresh library (embedded locally)
 

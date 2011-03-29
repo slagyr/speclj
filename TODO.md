@@ -6,5 +6,4 @@
 * mocks
 * report runs to growl, for vigilant runner
 * limelight runner
-* options for (run-specs)
 * should-be-same or some assertion that checks object reference equality
