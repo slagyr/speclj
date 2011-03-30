@@ -8,6 +8,11 @@
   (it "characteristics use 'should' forms to make assertions"
     (should (= 1 1))))
 
+(describe "some assertions"
+  (it "checks identity"
+    (should-be-same "foo" "foo")
+    (should-not-be-same 1 1)))
+
 (def bauble (atom 2))
 
 (describe "before and after forms"

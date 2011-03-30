@@ -1,5 +1,7 @@
-# 1.2.1
+# 1.3.0
 
+* should-be-same or some assertion that checks object reference equality
+* allow runners to run files, not just directories
 * options for (run-specs)
 * fix file path displayed with failed spec
 * refactored Vigilant running to use fresh library (embedded locally)

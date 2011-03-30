@@ -47,7 +47,7 @@
 
   (it "prints lazy seqs nicely"
     (should= (str "Expected: <(1 2 3)>" endl "     got: <(3 2 1)> (using =)")
-             (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
+      (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
 
   (it "should_not= tests inequality"
     (should-pass! (should-not= 1 2))
@@ -58,10 +58,30 @@
       (str "Expected: <1>" endl "not to =: <1>")
       (failure-message (should-not= 1 1))))
 
+  (it "should-be-same tests identity"
+    (should-pass! (should-be-same "foo" "foo"))
+    (should-pass! (should-be-same 1 1))
+    (should-fail! (should-be-same [] ()))
+    (should-fail! (should-be-same 1 1.0)))
+
+  (it "should-be-same failure message is nice"
+    (should= (str "         Expected: <1>" endl "to be the same as: <2> (using identical?)")
+      (failure-message (should-be-same 1 2))))
+
+  (it "should-not-be-same tests identity"
+    (should-fail! (should-not-be-same "foo" "foo"))
+    (should-fail! (should-not-be-same 1 1))
+    (should-pass! (should-not-be-same [] ()))
+    (should-pass! (should-not-be-same 1 1.0)))
+
+  (it "should-not-be-same failure message is nice"
+    (should= (str "             Expected: <1>" endl "not to be the same as: <1> (using identical?)")
+      (failure-message (should-not-be-same 1 1))))
+
   (it "should-fail is an automatic failure"
     (should-fail! (should-fail))
     (should= "Forced failure" (failure-message (should-fail))))
-  
+
   (it "should-fail can take a string as the error message"
     (should-fail! (should-fail "some message"))
     (should= "some message" (failure-message (should-fail "some message"))))
@@ -70,8 +90,8 @@
     (should-pass! (should-throw (throw (Throwable. "error"))))
     (should-fail! (should-throw (+ 1 1)))
     (should= (str "Expected java.lang.Throwable thrown from: (+ 1 1)" endl
-                  "                                 but got: <nothing thrown>")
-             (failure-message (should-throw (+ 1 1)))))
+      "                                 but got: <nothing thrown>")
+      (failure-message (should-throw (+ 1 1)))))
 
   (it "should-throw can test an expected throwable type"
     (should-pass! (should-throw NullPointerException (throw (NullPointerException.))))
@@ -79,11 +99,11 @@
     (should-fail! (should-throw NullPointerException (throw (Exception.))))
     (should-fail! (should-throw NullPointerException (+ 1 1)))
     (should= (str "Expected java.lang.NullPointerException thrown from: (+ 1 1)" endl
-                  "                                            but got: <nothing thrown>")
-             (failure-message (should-throw NullPointerException (+ 1 1))))
+      "                                            but got: <nothing thrown>")
+      (failure-message (should-throw NullPointerException (+ 1 1))))
     (should= (str "Expected java.lang.NullPointerException thrown from: (throw (Exception. \"some message\"))" endl
-                  "                                            but got: java.lang.Exception: some message")
-             (failure-message (should-throw NullPointerException (throw (Exception. "some message"))))))
+      "                                            but got: java.lang.Exception: some message")
+      (failure-message (should-throw NullPointerException (throw (Exception. "some message"))))))
 
   (it "should-throw can test the message of the exception"
     (should-pass! (should-throw Exception "My message" (throw (Exception. "My message"))))
@@ -91,14 +111,14 @@
     (should-fail! (should-throw Exception "My message" (throw (Error. "My message"))))
     (should-fail! (should-throw Exception "My message" (+ 1 1)))
     (should= (str "Expected exception message didn't match" endl "Expected: <\"My message\">" endl "     got: <\"Not my message\"> (using =)")
-             (failure-message (should-throw Exception "My message" (throw (Exception. "Not my message"))))))
+      (failure-message (should-throw Exception "My message" (throw (Exception. "Not my message"))))))
 
   (it "should-not-throw tests that nothing was thrown"
     (should-pass! (should-not-throw (+ 1 1)))
     (should-fail! (should-not-throw (throw (Throwable. "error"))))
     (should= (str "Expected nothing thrown from: (throw (Throwable. \"error\"))" endl
-                  "                     but got: java.lang.Throwable: error")
-            (failure-message (should-not-throw (throw (Throwable. "error"))))))
+      "                     but got: java.lang.Throwable: error")
+      (failure-message (should-not-throw (throw (Throwable. "error"))))))
 
   )
 

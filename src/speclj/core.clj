@@ -116,6 +116,20 @@
     (if (= expected# actual#)
       (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
 
+(defmacro should-be-same
+  "Asserts that two forms evaluate to the same object, with the expexcted value as the first parameter."
+  [expected-form actual-form]
+  `(let [expected# ~expected-form actual# ~actual-form]
+    (if (not (identical? expected# actual#))
+      (throw (SpecFailure. (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
+
+(defmacro should-not-be-same
+  "Asserts that two forms evaluate to different objects, with the unexpexcted value as the first parameter."
+  [expected-form actual-form]
+  `(let [expected# ~expected-form actual# ~actual-form]
+    (if (identical? expected# actual#)
+      (throw (SpecFailure. (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
+
 (defmacro should-fail
   "Forces a failure. An optional message may be passed in."
   ([] `(should-fail "Forced failure"))
@@ -161,7 +175,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
 are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
 
-  (run-specs :stacktrace true :color false :reporter \"specdoc\")"
+(run-specs :stacktrace true :color false :reporter \"specdoc\")"
   (when (identical? (active-runner) @default-runner) ; Solo file run?
     (let [config (apply hash-map configurations)
           config (merge (dissoc default-config :runner) config)]

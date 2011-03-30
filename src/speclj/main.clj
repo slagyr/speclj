@@ -13,7 +13,7 @@
 
 (def arg-spec (Arguments.))
 (doto arg-spec
-  (.addMultiParameter "specs" "directories specifying which specs to run.")
+  (.addMultiParameter "specs" "directories/files specifying which specs to run.")
   (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner." endl
     endl
     "Builtin runners:" endl
