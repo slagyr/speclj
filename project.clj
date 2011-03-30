@@ -6,7 +6,7 @@
             :url "file://LICENSE"
             :distribution :repo
             :comments "Copyright © 2010 Micah Martin All Rights Reserved."}
-  :dependencies [[org.clojure/clojure "1.2.0"]]
+  :dependencies [[org.clojure/clojure "1.3.0"]]
   :dev-dependencies [[lein-clojars "0.6.0"]]
   :test-path "spec/"
   :java-source-path "src/"
