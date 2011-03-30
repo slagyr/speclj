@@ -11,7 +11,7 @@
 (describe "some assertions"
   (it "checks identity"
     (should-be-same "foo" "foo")
-    (should-not-be-same 1 1)))
+    (should-not-be-same 1 2)))
 
 (def bauble (atom 2))
 

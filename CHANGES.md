@@ -1,5 +1,6 @@
 # 1.3.0
 
+* using raw Runtime.exec in 'lein spec' command to avoid ant's output mangling and lag.
 * should-be-same or some assertion that checks object reference equality
 * allow runners to run files, not just directories
 * options for (run-specs)

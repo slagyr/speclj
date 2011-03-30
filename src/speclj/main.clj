@@ -9,22 +9,19 @@
   (:import
     [mmargs Arguments]))
 
-(def invoke-method "java -cp [...] speclj.main")
+(def speclj-invocation (or (System/getProperty "speclj.invocation") "java -cp [...] speclj.main"))
 
 (def arg-spec (Arguments.))
 (doto arg-spec
   (.addMultiParameter "specs" "directories/files specifying which specs to run.")
-  (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner." endl
-    endl
-    "Builtin runners:" endl
-    "standard               : (default) Runs all the specs once" endl
-    "vigilant               : Watches for file changes and re-runs affected specs (used by autotest)" endl))
-  (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*." endl
-    endl
-    "Builtin reporters:" endl
-    "silent                 : No output" endl
-    "progress               : (default) Text-based progress bar" endl
-    "specdoc                : Code example doc strings" endl))
+  (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner. Builtin runners:" endl
+    "  standard               : (default) Runs all the specs once" endl
+    "  vigilant               : Watches for file changes and re-runs affected specs (used by autotest)" endl))
+  (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*.
+    Builtin reporters:" endl
+    "  silent                 : No output" endl
+    "  progress               : (default) Text-based progress bar" endl
+    "  specdoc                : Code example doc strings" endl))
   (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
@@ -49,7 +46,7 @@
       (doseq [error (seq errors)]
         (println error))))
   (println)
-  (println "Usage: " invoke-method (.argString arg-spec))
+  (println "Usage: " speclj-invocation (.argString arg-spec))
   (println)
   (println (.parametersString arg-spec))
   (println (.optionsString arg-spec))
