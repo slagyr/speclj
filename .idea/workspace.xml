@@ -4,6 +4,7 @@
     <list default="true" id="92049f6f-a13c-41db-a1c6-8945dfe47517" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project.clj" afterPath="$PROJECT_DIR$/project.clj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/speclj/version.clj" afterPath="$PROJECT_DIR$/src/speclj/version.clj" />
     </list>
     <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="$USER_HOME_GRIFFON$/" />
@@ -72,10 +73,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="project.clj" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="project.clj" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project.clj">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="42" selection-start="391" selection-end="391" vertical-scroll-proportion="0.14159292">
+            <state line="7" column="39" selection-start="312" selection-end="312" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="version.clj" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/speclj/version.clj">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="12" selection-start="89" selection-end="89" vertical-scroll-proportion="0.088495575">
               <folding />
             </state>
           </provider>
@@ -135,15 +145,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.clj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/speclj/config.clj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="92" selection-start="2015" selection-end="2015" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="CHANGES.md" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CHANGES.md">
           <provider selected="true" editor-type-id="text-editor">
@@ -167,7 +168,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/examples/prime_factors/prime_factors.clj" />
         <option value="$PROJECT_DIR$/src/speclj/report/silent.clj" />
         <option value="$PROJECT_DIR$/src/speclj/run/vigilant.clj" />
         <option value="$PROJECT_DIR$/src/speclj/reporting.clj" />
@@ -183,6 +183,7 @@
         <option value="$PROJECT_DIR$/src/leiningen/spec.clj" />
         <option value="$PROJECT_DIR$/CHANGES.md" />
         <option value="$PROJECT_DIR$/project.clj" />
+        <option value="$PROJECT_DIR$/src/speclj/version.clj" />
       </list>
     </option>
   </component>
@@ -828,13 +829,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/speclj/reporting.clj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="32" selection-start="216" selection-end="216" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/speclj/report/progress_spec.clj">
       <provider selected="true" editor-type-id="text-editor">
         <state line="101" column="0" selection-start="4031" selection-end="4031" vertical-scroll-proportion="0.0">
@@ -935,7 +929,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/project.clj">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="42" selection-start="391" selection-end="391" vertical-scroll-proportion="0.14159292">
+        <state line="7" column="39" selection-start="312" selection-end="312" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/speclj/version.clj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="12" selection-start="89" selection-end="89" vertical-scroll-proportion="0.088495575">
           <folding />
         </state>
       </provider>
