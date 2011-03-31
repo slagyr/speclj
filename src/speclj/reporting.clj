@@ -16,7 +16,7 @@
         filename (classname->filename classname)]
     (if-let [url (.getResource (clojure.lang.RT/baseLoader) filename)]
       (str (.getFile url) ":" (.getLineNumber source))
-      "Unknown source")))
+      (str filename ":" (.getLineNumber source)))))
 
 (defn tally-time [results]
   (loop [tally 0.0 results results]

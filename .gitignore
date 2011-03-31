@@ -3,3 +3,4 @@ lib
 classes
 out
 *.jar
+.idea
