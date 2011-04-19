@@ -1,6 +1,6 @@
 (ns leiningen.spec
   (:use
-    [leiningen.compile :only [eval-in-project]]
+;    [leiningen.compile :only [eval-in-project]]
     [leiningen.classpath :only [get-classpath-string]])
   (:import
     [java.io BufferedInputStream]))
