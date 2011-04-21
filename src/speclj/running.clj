@@ -1,7 +1,7 @@
 (ns speclj.running
   (:use
-    [speclj.exec :only (pass-result fail-result)]
-    [speclj.reporting :only (report-runs report-pass report-fail report-description)]
+    [speclj.exec :only (pass-result fail-result pending-result)]
+    [speclj.reporting :only (report-runs report-pass report-fail report-description report-pending)]
     [speclj.components :only (reset-with)]
     [speclj.util :only (secs-since)]
     [speclj.config :only (*runner* active-reporter)])
@@ -43,10 +43,15 @@
         withs (collect-components #(deref (.withs %)) description)
         start-time (System/nanoTime)]
     (try
-      (full-body)
-      (let [result (pass-result characteristic (secs-since start-time))]
-        (report-pass reporter result)
-        result)
+      (if (.pending characteristic)
+        (let [result (pending-result characteristic (secs-since start-time))]
+          (report-pending reporter result)
+          result)
+        (do 
+          (full-body)
+          (let [result (pass-result characteristic (secs-since start-time))]
+            (report-pass reporter result)
+            result)))
       (catch Exception e
         (let [result (fail-result characteristic (secs-since start-time) e)]
           (report-fail reporter result)

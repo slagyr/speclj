@@ -28,6 +28,7 @@
   (report-message [reporter message])
   (report-description [this description])
   (report-pass [this result])
+  (report-pending [this result])
   (report-fail [this result])
   (report-runs [this results]))
 
@@ -39,6 +40,7 @@
 
 (def red (stylizer "31"))
 (def green (stylizer "32"))
+(def yellow (stylizer "33"))
 (def grey (stylizer "90"))
 
 (defn- elide-level? [stack-element]

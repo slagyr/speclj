@@ -8,6 +8,9 @@
 (defn fail-result [characteristic seconds failure]
   (RunResult. characteristic seconds failure))
 
+(defn pending-result [characteristic seconds]
+  (RunResult. characteristic seconds nil))
+
 (defn pass? [result]
   (nil? (.failure result)))
 

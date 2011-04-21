@@ -30,6 +30,15 @@
       (report-pass @reporter nil)
       (should= (green ".") (to-s @output))))
 
+  (it "reports pending"
+    (report-pending @reporter nil)
+    (should= "." (to-s @output)))
+
+  (it "reports pending in yellow with color"
+    (binding [*color?* true]
+      (report-pending @reporter nil)
+      (should= (yellow ".") (to-s @output))))
+
   (it "reports fail"
     (report-fail @reporter nil)
     (should= "F" (to-s @output)))

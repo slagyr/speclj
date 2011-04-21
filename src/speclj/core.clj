@@ -9,6 +9,10 @@
     [speclj.report.progress])
   (:import [speclj SpecFailure]))
 
+(defmacro pending
+  [name & body]
+  `(pending-characteristic ~name))
+
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
 

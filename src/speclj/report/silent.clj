@@ -9,6 +9,7 @@
   (report-message [this message])
   (report-description [this description])
   (report-pass [this result])
+  (report-pending [this result])
   (report-fail [this result])
   (report-runs [this results]))
 

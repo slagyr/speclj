@@ -1,6 +1,6 @@
 (ns speclj.report.progress
   (:use
-    [speclj.reporting :only (failure-source tally-time red green print-stack-trace)]
+    [speclj.reporting :only (failure-source tally-time red green yellow print-stack-trace)]
     [speclj.exec :only (pass? fail?)]
     [speclj.util :only (seconds-format)]
     [speclj.config :only (default-reporter)])
@@ -54,6 +54,8 @@
   (report-description [this description])
   (report-pass [this result]
     (print (green ".")) (flush))
+  (report-pending [this result]
+    (print (yellow ".")) (flush))
   (report-fail [this result]
     (print (red "F")) (flush))
   (report-runs [this results]

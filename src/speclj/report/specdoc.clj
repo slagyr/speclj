@@ -1,6 +1,6 @@
 (ns speclj.report.specdoc
   (:use
-    [speclj.reporting :only (failure-source tally-time green red)]
+    [speclj.reporting :only (failure-source tally-time green red yellow)]
     [speclj.exec :only (pass? fail?)]
     [speclj.report.progress :only (print-summary)]
     [speclj.util :only (endl)]
@@ -33,6 +33,10 @@
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
       (println (green (str (indent (dec level)) "- " (.name characteristic)))) (flush)))
+  (report-pending [this result]
+    (let [characteristic (.characteristic result)
+          level (level-of characteristic)]
+      (println (yellow (str (indent (dec level)) "- " (.name characteristic)))) (flush)))
   (report-fail [this result]
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
