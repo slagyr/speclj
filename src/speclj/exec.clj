@@ -21,5 +21,9 @@
 (defmethod fail? FailResult [result] true)
 (defmethod fail? :default [result] false)
 
+(defmulti pending? type)
+(defmethod pending? PendingResult [result] true)
+(defmethod pending? :default [result] false)
+
 (defn fail-count [results]
   (reduce #(if (fail? %2) (inc %) %) 0 results))

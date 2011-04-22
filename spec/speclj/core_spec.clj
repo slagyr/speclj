@@ -3,7 +3,7 @@
     [speclj.core]))
 
 (describe "The basic spec structure"
-  (it "uses a call to describe to begin a description")
+  (pending "uses a call to describe to begin a description")
   (it "contains 0 to many 'it' forms to specify characteristics")
   (it "characteristics use 'should' forms to make assertions"
     (should (= 1 1))))

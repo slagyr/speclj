@@ -1,9 +1,9 @@
 (ns speclj.report.progress-spec
   (:use
     [speclj.core]
-    [speclj.report.progress :only (new-progress-reporter full-name)]
+    [speclj.report.progress :only (new-progress-reporter full-name print-summary)]
     [speclj.reporting]
-    [speclj.exec :only (pass-result fail-result)]
+    [speclj.exec :only (pass-result fail-result pending-result)]
     [speclj.components :only (new-description new-characteristic install)]
     [speclj.config :only (*color?*)]
     [clojure.string :only (split-lines)])
@@ -32,12 +32,12 @@
 
   (it "reports pending"
     (report-pending @reporter nil)
-    (should= "." (to-s @output)))
+    (should= "*" (to-s @output)))
 
   (it "reports pending in yellow with color"
     (binding [*color?* true]
       (report-pending @reporter nil)
-      (should= (yellow ".") (to-s @output))))
+      (should= (yellow "*") (to-s @output))))
 
   (it "reports fail"
     (report-fail @reporter nil)
@@ -100,6 +100,16 @@
         (should= "Finished in 0.32100 seconds" (lines 17))
         (should= "" (lines 18))
         (should= (red "3 examples, 3 failures") (lines 19)))))
+
+  (it "reports pending run results"
+    (binding [*color?* true]
+      (let [result1 (pass-result nil 0.1)
+            result2 (pass-result nil 0.02)
+            result3 (pending-result nil 0.003)
+            results [result1 result2 result3]
+            _ (print-summary results)
+            lines (split-lines (to-s @output))]
+        (should= (yellow "3 examples, 0 failures, 1 pending") (last lines)))))
 
   (it "can calculate the full name of a characteristic"
     (let [outer (new-description "Outer" *ns*)
