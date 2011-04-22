@@ -2,7 +2,8 @@
   (:use
     [speclj.exec :only (pass? fail?)]
     [speclj.config :only (*reporter* *color?* *full-stack-trace?*)]
-    [clojure.string :as string :only (split)]))
+    [clojure.string :as string :only (split)])
+  (:import [speclj.exec PassResult FailResult PendingResult]))
 
 (defn- classname->filename [classname]
   (let [root-name (first (split classname #"\$"))]
@@ -31,6 +32,14 @@
   (report-pending [this result])
   (report-fail [this result])
   (report-runs [this results]))
+
+(defmulti report-run (fn [result reporter] (type result)))
+(defmethod report-run PassResult [result reporter]
+  (report-pass reporter result))
+(defmethod report-run FailResult [result reporter]
+  (report-fail reporter result))
+(defmethod report-run PendingResult [result reporter]
+  (report-pending reporter result))
 
 (defn- stylizer [code]
   (fn [text]

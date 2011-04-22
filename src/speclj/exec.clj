@@ -1,21 +1,25 @@
 (ns speclj.exec)
 
-(deftype RunResult [characteristic seconds failure])
+(deftype PassResult [characteristic seconds])
+(deftype FailResult [characteristic seconds failure])
+(deftype PendingResult [characteristic seconds])
 
 (defn pass-result [characteristic seconds]
-  (RunResult. characteristic seconds nil))
+  (PassResult. characteristic seconds))
 
 (defn fail-result [characteristic seconds failure]
-  (RunResult. characteristic seconds failure))
+  (FailResult. characteristic seconds failure))
 
 (defn pending-result [characteristic seconds]
-  (RunResult. characteristic seconds nil))
+  (PendingResult. characteristic seconds))
 
-(defn pass? [result]
-  (nil? (.failure result)))
+(defmulti pass? type)
+(defmethod pass? PassResult [result] true)
+(defmethod pass? :default [result] false)
 
-(defn fail? [result]
-  (.failure result))
+(defmulti fail? type)
+(defmethod fail? FailResult [result] true)
+(defmethod fail? :default [result] false)
 
 (defn fail-count [results]
   (reduce #(if (fail? %2) (inc %) %) 0 results))

@@ -2,6 +2,7 @@
   (:use
     [speclj.core]
     [speclj.running :only (run-and-report)]
+    [speclj.exec :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.config :only (*reporter* *runner*)]
     [speclj.report.silent :only (new-silent-reporter)])
@@ -27,7 +28,7 @@
           result (first results)]
       (should= 1 (count results))
       (should= "has a pass" (.name (.characteristic result)))
-      (should= nil (.failure result))))
+      (should-not (fail? result))))
 
   (it "tracks one fail"
     (eval
@@ -73,7 +74,7 @@
       (let [results @(.results *runner*)
             result (first results)]
         (should= 1 (count results))
-        (should= nil (.failure result)))))
+        (should-not (fail? result)))))
 
   )
 

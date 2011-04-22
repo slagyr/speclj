@@ -1,7 +1,7 @@
 (ns speclj.running
   (:use
     [speclj.exec :only (pass-result fail-result pending-result)]
-    [speclj.reporting :only (report-runs report-pass report-fail report-description report-pending)]
+    [speclj.reporting :only (report-runs report-run report-description)]
     [speclj.components :only (reset-with)]
     [speclj.util :only (secs-since)]
     [speclj.config :only (*runner* active-reporter)])
@@ -32,6 +32,12 @@
       (recur @(.parent description) (concat (getter description) components))
       components)))
 
+(defn- report-result [result-constructor characteristic start-time reporter failure]
+  (let [present-args (filter identity [characteristic (secs-since start-time) failure])
+        result (apply result-constructor present-args)]
+    (report-run result reporter)
+    result))
+
 (defn- do-characteristic [characteristic reporter]
   (let [description @(.parent characteristic)
         befores (collect-components #(deref (.befores %)) description)
@@ -44,18 +50,12 @@
         start-time (System/nanoTime)]
     (try
       (if (.pending characteristic)
-        (let [result (pending-result characteristic (secs-since start-time))]
-          (report-pending reporter result)
-          result)
-        (do 
+        (report-result pending-result characteristic start-time reporter nil)
+        (do
           (full-body)
-          (let [result (pass-result characteristic (secs-since start-time))]
-            (report-pass reporter result)
-            result)))
+          (report-result pass-result characteristic start-time reporter nil)))
       (catch Exception e
-        (let [result (fail-result characteristic (secs-since start-time) e)]
-          (report-fail reporter result)
-          result))
+        (report-result fail-result characteristic start-time reporter e))
       (finally
         (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
 
