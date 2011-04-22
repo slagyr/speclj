@@ -5,7 +5,7 @@
 (def major 1)
 (def minor 3)
 (def tiny 1)
-(def snapshot false)
+(def snapshot true)
 (def string
   (str
     (str/join "." (filter identity [major minor tiny]))
