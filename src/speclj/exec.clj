@@ -2,7 +2,7 @@
 
 (deftype PassResult [characteristic seconds])
 (deftype FailResult [characteristic seconds failure])
-(deftype PendingResult [characteristic seconds])
+(deftype PendingResult [characteristic seconds exception])
 
 (defn pass-result [characteristic seconds]
   (PassResult. characteristic seconds))
@@ -10,8 +10,8 @@
 (defn fail-result [characteristic seconds failure]
   (FailResult. characteristic seconds failure))
 
-(defn pending-result [characteristic seconds]
-  (PendingResult. characteristic seconds))
+(defn pending-result [characteristic seconds exception]
+  (PendingResult. characteristic seconds exception))
 
 (defmulti pass? type)
 (defmethod pass? PassResult [result] true)

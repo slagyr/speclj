@@ -1,14 +1,14 @@
 (ns speclj.report.progress-spec
   (:use
     [speclj.core]
-    [speclj.report.progress :only (new-progress-reporter full-name print-summary)]
+    [speclj.report.progress :only (new-progress-reporter full-name print-summary print-pendings)]
     [speclj.reporting]
     [speclj.exec :only (pass-result fail-result pending-result)]
     [speclj.components :only (new-description new-characteristic install)]
     [speclj.config :only (*color?*)]
     [clojure.string :only (split-lines)])
   (:import
-    [speclj SpecFailure]
+    [speclj SpecFailure SpecPending]
     [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
@@ -60,12 +60,11 @@
             results [result1 result2 result3]
             _ (report-runs @reporter results)
             lines (split-lines (to-s @output))]
-        (should= 5 (count lines))
+        (should= 4 (count lines))
         (should= "" (lines 0))
         (should= "" (lines 1))
         (should= "Finished in 0.12300 seconds" (lines 2))
-        (should= "" (lines 3))
-        (should= (green "3 examples, 0 failures") (lines 4)))))
+        (should= (green "3 examples, 0 failures") (lines 3)))))
 
   (it "reports failing run results"
     (binding [*color?* true]
@@ -79,42 +78,57 @@
             results [result1 result2 result3]
             _ (report-runs @reporter results)
             lines (split-lines (to-s @output))]
-        (should= 20 (count lines))
+        (should= 18 (count lines))
         (should= "" (lines 0))
-        (should= "" (lines 1))
-        (should= "1)" (lines 2))
-        (should= (red "'Crazy flips' FAILED") (lines 3))
-        (should= (red "Expected flips") (lines 4))
-;        (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:67" (lines 5))
-        (should= "" (lines 6))
-        (should= "2)" (lines 7))
-        (should= (red "'Crazy spins' FAILED") (lines 8))
-        (should= (red "Expected spins") (lines 9))
+        (should= "Failures:" (lines 2))
+        (should= "" (lines 3))
+        (should= "  1) Crazy flips" (lines 4))
+        (should= (red "     Expected flips") (lines 5))
+        ;        (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:67" (lines 6))
+        (should= "" (lines 7))
+        (should= "  2) Crazy spins" (lines 8))
+        (should= (red "     Expected spins") (lines 9))
         ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:55" (lines 10))
         (should= "" (lines 11))
-        (should= "3)" (lines 12))
-        (should= (red "'Crazy dives' FAILED") (lines 13))
-        (should= (red "Expected dives") (lines 14))
-        ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (lines 15))
-        (should= "" (lines 16))
-        (should= "Finished in 0.32100 seconds" (lines 17))
-        (should= "" (lines 18))
-        (should= (red "3 examples, 3 failures") (lines 19)))))
+        (should= "  3) Crazy dives" (lines 12))
+        (should= (red "     Expected dives") (lines 13))
+        ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (lines 14))
+        (should= "" (lines 15))
+        (should= "Finished in 0.32100 seconds" (lines 16))
+        (should= (red "3 examples, 3 failures") (lines 17)))))
 
   (it "reports pending run results"
     (binding [*color?* true]
-      (let [result1 (pass-result nil 0.1)
-            result2 (pass-result nil 0.02)
-            result3 (pending-result nil 0.003)
+      (let [description (new-description "Crazy" *ns*)
+            char1 (new-characteristic "flips" description "flip")
+            result1 (pass-result char1 0.1)
+            result2 (pass-result char1 0.02)
+            result3 (pending-result char1 0.003 (SpecPending. "Blah"))
             results [result1 result2 result3]
             _ (print-summary results)
             lines (split-lines (to-s @output))]
         (should= (yellow "3 examples, 0 failures, 1 pending") (last lines)))))
 
+  (it "reports pending summary"
+    (let [description (new-description "Crazy" *ns*)
+          char1 (new-characteristic "flips" description "flip")
+          result1 (pending-result char1 0.3 (SpecPending. "Not Yet Implemented"))
+          _ (print-pendings [result1])
+          lines (split-lines (to-s @output))]
+      (should= 6 (count lines))
+      (should= "" (nth lines 0))
+      (should= "Pending:" (nth lines 1))
+      (should= "" (nth lines 2))
+      (should= (yellow "  Crazy flips") (nth lines 3))
+      (should= (grey "    ; Not Yet Implemented") (nth lines 4))
+;      (should= (grey "    ; /Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:117") (nth lines 5))
+      ))
+
   (it "can calculate the full name of a characteristic"
     (let [outer (new-description "Outer" *ns*)
           inner (new-description "Inner" *ns*)
           char (new-characteristic "char" inner "char")]
+      (throw (Exception. "Fooey!"))
       (install inner outer)
       (should= "Outer Inner char" (full-name char))))
   )

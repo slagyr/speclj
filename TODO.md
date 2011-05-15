@@ -1,5 +1,6 @@
 # Features to add
 
+* around-all and with-all components
 * pending examples (examples without any body)
 * tag examples. declared in describe blocks. filtered on run.
 * exclude hidden files in runs (https://github.com/slagyr/speclj/pull/4)

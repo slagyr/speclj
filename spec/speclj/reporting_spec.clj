@@ -23,6 +23,9 @@
     (it "prints in green"
       (should= "\u001b[32mtext\u001b[0m" (green "text")))
 
+    (it "prints in yellow"
+      (should= "\u001b[33mtext\u001b[0m" (yellow "text")))
+
     (it "prints in grey"
       (should= "\u001b[90mtext\u001b[0m" (grey "text")))
     )
@@ -75,6 +78,18 @@ Caused by: java.lang.Exception: Cause
           ]))
       (print-stack-trace exception output)
       (should= expected (.toString output))))
+
+    (it "prefixes lines of text"
+      (should= "--foo" (prefix "--" "foo"))
+      (should= "++bar" (prefix "++" "bar"))
+      (should= "=foobar" (prefix "=" "foo" "bar"))
+      (should= "--foo\n--bar" (prefix "--" "foo\nbar")))
+
+    (it "can indent"
+      (should= "  foo" (indent 2 "foo"))
+      (should= "    bar" (indent 4 "bar"))
+      (should= "  foo\n  bar" (indent 2 "foo\nbar"))
+      (should= "    foo\n    bar" (indent 4 "foo\nbar")))
   )
 )
 

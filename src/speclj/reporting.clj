@@ -2,8 +2,10 @@
   (:use
     [speclj.exec :only (pass? fail?)]
     [speclj.config :only (*reporter* *color?* *full-stack-trace?*)]
-    [clojure.string :as string :only (split)])
-  (:import [speclj.exec PassResult FailResult PendingResult]))
+    [clojure.string :as string :only (split join)])
+  (:import
+    [speclj.exec PassResult FailResult PendingResult]
+    [java.io PrintWriter StringWriter]))
 
 (defn- classname->filename [classname]
   (let [root-name (first (split classname #"\$"))]
@@ -86,9 +88,27 @@
     (println (.toString exception)))
   (print-stack-levels exception))
 
+(defn stack-trace [exception]
+  (let [output (StringWriter.)]
+    (binding [*out* (PrintWriter. output)]
+      (if *full-stack-trace?*
+        (.printStackTrace exception *out*)
+        (print-exception nil exception)))
+    (.toString output)))
+
 (defn print-stack-trace [exception writer]
   (if *full-stack-trace?*
-    (.printStackTrace exception (java.io.PrintWriter. writer))
+    (.printStackTrace exception (PrintWriter. writer))
     (binding [*out* writer]
       (print-exception nil exception))))
+
+(defn prefix [pre & args]
+  (let [value (apply str args)
+        lines (split value #"[\r\n]+")
+        prefixed-lines (map #(str pre %) lines)]
+    (join (System/getProperty "line.separator") prefixed-lines)))
+
+(defn indent [n & args]
+  (let [indention (reduce (fn [p _] (str " " p)) "" (range n))]
+    (apply prefix indention args)))
 

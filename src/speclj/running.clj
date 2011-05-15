@@ -6,6 +6,7 @@
     [speclj.util :only (secs-since)]
     [speclj.config :only (*runner* active-reporter)])
   (:import
+    [speclj SpecPending]
     [java.io File]))
 
 (defn- eval-components [components]
@@ -50,7 +51,7 @@
         start-time (System/nanoTime)]
     (try
       (if (.pending characteristic)
-        (report-result pending-result characteristic start-time reporter nil)
+        (report-result pending-result characteristic start-time reporter (SpecPending. "Not Yet Implemented"))
         (do
           (full-body)
           (report-result pass-result characteristic start-time reporter nil)))

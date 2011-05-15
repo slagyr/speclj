@@ -5,7 +5,7 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](ht
 # Installation
 
 ## With Leiningen
-You will need [Leiningen][https://github.com/technomancy/leiningen] version 1.4 or later.
+You will need [Leiningen](https://github.com/technomancy/leiningen) version 1.4 or later.
 
 Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
 
