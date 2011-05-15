@@ -1,3 +1,12 @@
+# 1.4.0
+
+* added pending macro to mark characteristics as pending
+* empty characteristics are now considered pending
+* xit is a shortcut to mark a characteristic as pending
+* added shortcuts for runners and reporters
+* renamed specdoc to documentation
+* output improved
+
 # 1.3.0
 
 * using raw Runtime.exec in 'lein spec' command to avoid ant's output mangling and lag.
