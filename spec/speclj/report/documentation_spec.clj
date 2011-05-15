@@ -1,15 +1,15 @@
-(ns speclj.report.specdoc-spec
+(ns speclj.report.documentation-spec
   (:use
     [speclj.core]
-    [speclj.report.specdoc :only (new-specdoc-reporter)]
+    [speclj.report.documentation :only (new-documentation-reporter)]
     [speclj.reporting]
-    [speclj.exec :only (pass-result fail-result)]
+    [speclj.exec :only (pass-result fail-result pending-result)]
     [speclj.components :only (new-description new-characteristic pending-characteristic install)]
     [clojure.string :only (split-lines)]
     [speclj.util :only (endl)]
     [speclj.config :only (*color?*)])
   (:import
-    [speclj SpecFailure]
+    [speclj SpecFailure SpecPending]
     [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
@@ -18,7 +18,7 @@
 (describe "Speccdoc Reporter"
   (with output (ByteArrayOutputStream.))
   (with writer (OutputStreamWriter. @output))
-  (with reporter (new-specdoc-reporter))
+  (with reporter (new-documentation-reporter))
   (with description (new-description "Verbosity" *ns*))
   (around [spec] (binding [*out* @writer
                            *color?* true] (spec)))
@@ -35,10 +35,9 @@
 
   (it "reports pending"
     (let [characteristic (pending-characteristic "pending!")
-          result (pass-result characteristic 1)]
+          result (pending-result characteristic 1 (SpecPending. "some reason for pendiness"))]
       (report-pending @reporter result)
-      (should= (str (yellow "- pending!") endl) (to-s @output))))
-
+      (should= (str (yellow "- pending! (PENDING: some reason for pendiness)") endl) (to-s @output))))
 
   (it "reports fail"
     (let [characteristic (new-characteristic "says fail" @description "fail")

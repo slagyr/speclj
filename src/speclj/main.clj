@@ -15,13 +15,12 @@
 (doto arg-spec
   (.addMultiParameter "specs" "directories/files specifying which specs to run.")
   (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner. Builtin runners:" endl
-    "  standard               : (default) Runs all the specs once" endl
-    "  vigilant               : Watches for file changes and re-runs affected specs (used by autotest)" endl))
-  (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*.
-    Builtin reporters:" endl
-    "  silent                 : No output" endl
-    "  progress               : (default) Text-based progress bar" endl
-    "  specdoc                : Code example doc strings" endl))
+    "  [s]tandard:  (default) Runs all the specs once" endl
+    "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+  (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Builtin reporters:" endl
+    "  [d]ocumentation:  (description/context and characteristic names)" endl
+    "  [p]rogress:       (default - dots)" endl
+    "  [s]ilent:         (no output)" endl))
   (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
@@ -33,7 +32,12 @@
 (defn- resolve-aliases [options]
   (cond
     (:format options) (recur (dissoc (assoc options :reporter (:format options)) :format))
-    (:autotest options) (recur (dissoc (assoc options :runner "vigilant" :reporter "specdoc") :autotest))
+    (:autotest options) (recur (dissoc (assoc options :runner "vigilant" :reporter "documentation") :autotest))
+    (= "d" (:reporter options)) (recur (assoc options :reporter "documentation"))
+    (= "p" (:reporter options)) (recur (assoc options :reporter "progress"))
+    (= "s" (:reporter options)) (recur (assoc options :reporter "silent"))
+    (= "s" (:runner options)) (recur (assoc options :runner "standard"))
+    (= "v" (:runner options)) (recur (assoc options :runner "vigilant"))
     :else options))
 
 (defn exit [code]

@@ -69,10 +69,10 @@
   (it "parses and translates the --autotest option"
     (let [options (parse-args "--autotest")]
       (should= "vigilant" (:runner options))
-      (should= "specdoc" (:reporter options)))
+      (should= "documentation" (:reporter options)))
     (let [options (parse-args "-a")]
       (should= "vigilant" (:runner options))
-      (should= "specdoc" (:reporter options))))
+      (should= "documentation" (:reporter options))))
 
   (it "parses the --color switch"
     (should= nil (:color (parse-args "")))
@@ -93,6 +93,15 @@
       (should= false config/*full-stack-trace?*))
     (with-bindings (config/config-mappings {:runner "standard" :reporter "progress" :stacktrace true})
       (should= true config/*full-stack-trace?*)))
+
+  (it "resolves reporter aliases"
+    (should= "silent" (:reporter (parse-args "-f" "s")))
+    (should= "progress" (:reporter (parse-args "-f" "p")))
+    (should= "documentation" (:reporter (parse-args "-f" "d"))))
+
+  (it "resolves runner aliases"
+    (should= "standard" (:runner (parse-args "-r" "s")))
+    (should= "vigilant" (:runner (parse-args "-r" "v"))))
           
   )
 

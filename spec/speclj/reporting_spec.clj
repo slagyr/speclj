@@ -86,10 +86,10 @@ Caused by: java.lang.Exception: Cause
       (should= "--foo\n--bar" (prefix "--" "foo\nbar")))
 
     (it "can indent"
-      (should= "  foo" (indent 2 "foo"))
-      (should= "    bar" (indent 4 "bar"))
-      (should= "  foo\n  bar" (indent 2 "foo\nbar"))
-      (should= "    foo\n    bar" (indent 4 "foo\nbar")))
+      (should= "  foo" (indent 1 "foo"))
+      (should= "   bar" (indent 1.5 "bar"))
+      (should= "  foo\n  bar" (indent 1 "foo\nbar"))
+      (should= "    foo\n    bar" (indent 2 "foo\nbar")))
   )
 )
 

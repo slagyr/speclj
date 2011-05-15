@@ -18,11 +18,11 @@
   (let [characteristic (.characteristic result)
         failure (.failure result)]
     (println)
-    (println (indent 2 id ") " (full-name characteristic)))
-    (println (red (indent 5 (.getMessage failure))))
+    (println (indent 1 id ") " (full-name characteristic)))
+    (println (red (indent 2.5 (.getMessage failure))))
     (if (.isInstance SpecFailure failure)
-      (println (grey (indent 5 "; " (failure-source failure))))
-      (println (grey (indent 5 (prefix "; " (stack-trace failure))))))))
+      (println (grey (indent 2.5 "; " (failure-source failure))))
+      (println (grey (indent 2.5 (prefix "; " (stack-trace failure))))))))
 
 (defn print-failures [failures]
   (when (seq failures)

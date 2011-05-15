@@ -1,6 +1,6 @@
-(ns speclj.report.specdoc
+(ns speclj.report.documentation
   (:use
-    [speclj.reporting :only (failure-source tally-time green red yellow)]
+    [speclj.reporting :only (failure-source tally-time green red yellow indent)]
     [speclj.exec :only (pass? fail?)]
     [speclj.report.progress :only (print-summary)]
     [speclj.util :only (endl)]
@@ -15,13 +15,7 @@
       (recur @(.parent component) (inc level))
       level)))
 
-(defn indent [level]
-  (loop [level level indention ""]
-    (if (< 0 level)
-      (recur (dec level) (str "  " indention))
-      indention)))
-
-(deftype SpecdocReporter []
+(deftype DocumentationReporter []
   Reporter
   (report-message [this message]
     (println message) (flush))
@@ -32,17 +26,17 @@
   (report-pass [this result]
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
-      (println (green (str (indent (dec level)) "- " (.name characteristic)))) (flush)))
+      (println (green (indent (dec level) "- " (.name characteristic)))) (flush)))
   (report-pending [this result]
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
-      (println (yellow (str (indent (dec level)) "- " (.name characteristic)))) (flush)))
+      (println (yellow (indent (dec level) "- " (.name characteristic) " (PENDING: " (.getMessage (.exception result)) ")"))) (flush)))
   (report-fail [this result]
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
-      (println (red (str (indent (dec level)) "- " (.name characteristic) " (FAILED)"))) (flush)))
+      (println (red (indent (dec level) "- " (.name characteristic) " (FAILED)"))) (flush)))
   (report-runs [this results]
     (print-summary results)))
 
-(defn new-specdoc-reporter []
-  (SpecdocReporter.))
+(defn new-documentation-reporter []
+  (DocumentationReporter.))

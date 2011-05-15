@@ -109,6 +109,7 @@
     (join (System/getProperty "line.separator") prefixed-lines)))
 
 (defn indent [n & args]
-  (let [indention (reduce (fn [p _] (str " " p)) "" (range n))]
+  (let [spaces (int (* n 2.0))
+        indention (reduce (fn [p _] (str " " p)) "" (range spaces))]
     (apply prefix indention args)))
 

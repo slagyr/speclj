@@ -128,7 +128,6 @@
     (let [outer (new-description "Outer" *ns*)
           inner (new-description "Inner" *ns*)
           char (new-characteristic "char" inner "char")]
-      (throw (Exception. "Fooey!"))
       (install inner outer)
       (should= "Outer Inner char" (full-name char))))
   )
