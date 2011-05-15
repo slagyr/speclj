@@ -4,7 +4,7 @@
     [speclj.report.documentation :only (new-documentation-reporter)]
     [speclj.reporting]
     [speclj.exec :only (pass-result fail-result pending-result)]
-    [speclj.components :only (new-description new-characteristic pending-characteristic install)]
+    [speclj.components :only (new-description new-characteristic install)]
     [clojure.string :only (split-lines)]
     [speclj.util :only (endl)]
     [speclj.config :only (*color?*)])
@@ -34,7 +34,7 @@
       (should= (str (green "- says pass") endl) (to-s @output))))
 
   (it "reports pending"
-    (let [characteristic (pending-characteristic "pending!")
+    (let [characteristic (new-characteristic "pending!" `(pending))
           result (pending-result characteristic 1 (SpecPending. "some reason for pendiness"))]
       (report-pending @reporter result)
       (should= (str (yellow "- pending! (PENDING: some reason for pendiness)") endl) (to-s @output))))

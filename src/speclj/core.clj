@@ -7,11 +7,8 @@
   (:require
     [speclj.run.standard]
     [speclj.report.progress])
-  (:import [speclj SpecFailure]))
-
-(defmacro pending
-  [name & body]
-  `(pending-characteristic ~name))
+  (:import
+    [speclj SpecFailure SpecPending]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -173,6 +170,13 @@ When a string is also passed, it asserts that the message of the Exception is eq
     ~form
     (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
       "                     but got: " (.toString e#)))))))
+
+(defmacro pending
+  "When added to a characteristic, it is markes as pending.  If a message is provided it will be printed
+  in the run report"
+  ([] `(pending "Not Yet Implemented"))
+  ([message]
+    `(throw (SpecPending. ~message))))
 
 (defn run-specs [& configurations]
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default

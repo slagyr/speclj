@@ -75,6 +75,7 @@
     (try
       (exit (run-directories *runner* *specs* *reporter*))
       (catch Exception e
+        (.printStackTrace e)
         (print-stack-trace e *err*)
         (exit -1)))))
 

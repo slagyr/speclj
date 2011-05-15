@@ -50,11 +50,11 @@
         withs (collect-components #(deref (.withs %)) description)
         start-time (System/nanoTime)]
     (try
-      (if (.pending characteristic)
-        (report-result pending-result characteristic start-time reporter (SpecPending. "Not Yet Implemented"))
-        (do
-          (full-body)
-          (report-result pass-result characteristic start-time reporter nil)))
+      (do
+        (full-body)
+        (report-result pass-result characteristic start-time reporter nil))
+      (catch SpecPending p
+        (report-result pending-result characteristic start-time reporter p))
       (catch Exception e
         (report-result fail-result characteristic start-time reporter e))
       (finally

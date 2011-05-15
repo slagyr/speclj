@@ -29,7 +29,7 @@
 (defn new-description [name ns]
   (Description. name ns (atom nil) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
-(deftype Characteristic [name parent body pending]
+(deftype Characteristic [name parent body]
   SpecComponent
   (install [this description]
     (reset! (.parent this) description)
@@ -37,12 +37,9 @@
   Object
   (toString [this] (str \" name \")))
 
-(defn pending-characteristic
-  ([name] (Characteristic. name (atom nil) (fn [] true) true)))
-
 (defn new-characteristic
-  ([name body] (Characteristic. name (atom nil) body false))
-  ([name description body] (Characteristic. name (atom description) body false)))
+  ([name body] (Characteristic. name (atom nil) body))
+  ([name description body] (Characteristic. name (atom description) body)))
 
 (deftype Before [body]
   SpecComponent
