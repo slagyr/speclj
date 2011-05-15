@@ -15,7 +15,14 @@
 
   Declares a new characteristic (example in rspec)."
   [name & body]
-  `(new-characteristic ~name (fn [] ~@body)))
+  (if (seq body)
+    `(new-characteristic ~name (fn [] ~@body))
+    `(new-characteristic ~name (fn [] (pending)))))
+
+(defmacro xit
+  "Syntactic shortcut to make the characteristic pending."
+  [name & body]
+  `(it ~name (pending) ~@body))
 
 (declare *parent-description*)
 (defmacro describe

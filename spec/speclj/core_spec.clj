@@ -3,9 +3,8 @@
     [speclj.core]))
 
 (describe "The basic spec structure"
-  (it "uses a call to describe to begin a description"
-    (pending "Some Reason!"))
-  (it "contains 0 to many 'it' forms to specify characteristics")
+  (it "uses a call to describe to begin a description" :filler)
+  (it "contains 0 to many 'it' forms to specify characteristics" :filler)
   (it "characteristics use 'should' forms to make assertions"
     (should (= 1 1))))
 
@@ -17,10 +16,10 @@
 (def bauble (atom 2))
 
 (describe "before and after forms"
-  (it "allow forms that are evaluated before to each characteristic")
+  (it "allow forms that are evaluated before to each characteristic" :filler)
   (before (swap! bauble inc))
 
-  (it "allow forms that are evaluated after to each characteristic")
+  (it "allow forms that are evaluated after to each characteristic" :filler)
   (after (swap! bauble (fn [i] (- i 2))))
 
   (it "lead the bauble to be incremented to 1"
@@ -36,10 +35,10 @@
     (should (= 41 @bauble))))
 
 (describe "before-all and after-all variants"
-  (it "allow begin forms to be evaluated only once before all the characteristics")
+  (it "allow begin forms to be evaluated only once before all the characteristics" :filler)
   (before-all (reset! bauble 42))
 
-  (it "allow after forms to be evaluated only once after all the characteristics")
+  (it "allow after forms to be evaluated only once after all the characteristics" :filler)
   (after-all (swap! bauble inc))
 
   (it ": cause a value of 42 once"
@@ -57,7 +56,7 @@
     (should (= 44 @bauble))))
 
 (describe "setting up state for descriptions"
-  (it "can be achieved using the 'with' form")
+  (it "can be achieved using the 'with' form" :filler)
   (with bibelot (String. "shiney"))
 
   (it ": 'with' forms can be dereferenced in your characteristics"
@@ -74,7 +73,7 @@
 
 (def *gewgaw* 0)
 (describe "around forms"
-  (it "allows characteristics to be wrapped by other forms")
+  (it "allows characteristics to be wrapped by other forms" :filler)
   (around [it]
     (binding [*gewgaw* 42]
       (it)))
@@ -84,14 +83,14 @@
 
   (context "with before and after"
       (before (should= 42 *gewgaw*))
-      (it "executes around all of them")
+      (it "executes around all of them" :filler)
     )
   )
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
 (context "context"
-  (it "is an alias for describe")
+  (it "is an alias for describe" :filler)
 
   (before-all (swap! frippery conj :before-all-1))
   (after-all (swap! frippery conj :after-all-1))
