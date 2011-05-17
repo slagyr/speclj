@@ -8,9 +8,10 @@
     [speclj.running Runner]))
 
 (defn- load-spec [spec-file]
+  (try
   (let [src (slurp (.getCanonicalPath spec-file))
         rdr (-> (java.io.StringReader. src) (clojure.lang.LineNumberingPushbackReader.))]
-    (clojure.lang.Compiler/load rdr (.getParent spec-file) (.getName spec-file))))
+    (clojure.lang.Compiler/load rdr (.getParent spec-file) (.getName spec-file)))))
 
 (deftype StandardRunner [descriptions results]
   Runner
@@ -19,7 +20,6 @@
           files (sort files)]
       (binding [*runner* this *reporter* reporter]
         (doseq [file files]
-          ;          (load-string (slurp (.getCanonicalPath file))))))
           (load-spec file))))
     (run-and-report this reporter)
     (fail-count @results))

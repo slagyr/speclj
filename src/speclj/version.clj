@@ -3,9 +3,9 @@
     [clojure.string :as str]))
 
 (def major 1)
-(def minor 3)
-(def tiny 1)
-(def snapshot true)
+(def minor 4)
+(def tiny 0)
+(def snapshot false)
 (def string
   (str
     (str/join "." (filter identity [major minor tiny]))
