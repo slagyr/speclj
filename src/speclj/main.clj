@@ -14,17 +14,18 @@
 (def arg-spec (Arguments.))
 (doto arg-spec
   (.addMultiParameter "specs" "directories/files specifying which specs to run.")
-  (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner. Builtin runners:" endl
-    "  [s]tandard:  (default) Runs all the specs once" endl
-    "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+  (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
+  (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
+  (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addValueOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Builtin reporters:" endl
     "  [d]ocumentation:  (description/context and characteristic names)" endl
     "  [p]rogress:       (default - dots)" endl
     "  [s]ilent:         (no output)" endl))
   (.addValueOption "f" "format" "FORMAT" "An alias for reporter.")
-  (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
-  (.addSwitchOption "c" "color" "Show colored (red/green) output.")
-  (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
+  (.addValueOption "r" "runner" "RUNNER" (str "Use a custom Runner. Builtin runners:" endl
+    "  [s]tandard:  (default) Runs all the specs once" endl
+    "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+  (.addMultiOption "t" "tag" "TAG" "Run only the characteristics with the specified tag.\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
   (.addSwitchOption "h" "help" "You're looking at it.")
   )
@@ -38,6 +39,7 @@
     (= "s" (:reporter options)) (recur (assoc options :reporter "silent"))
     (= "s" (:runner options)) (recur (assoc options :runner "standard"))
     (= "v" (:runner options)) (recur (assoc options :runner "vigilant"))
+    (:tag options) (recur (dissoc (assoc options :tags (:tag options)) :tag))
     :else options))
 
 (defn exit [code]

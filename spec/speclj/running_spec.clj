@@ -4,7 +4,7 @@
     [speclj.running :only (run-and-report)]
     [speclj.exec :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
-    [speclj.config :only (*reporter* *runner*)]
+    [speclj.config :only (*reporter* *runner* *tag-filter*)]
     [speclj.report.silent :only (new-silent-reporter)])
   (:import (speclj SpecFailure)))
 
@@ -76,6 +76,19 @@
         (should= 1 (count results))
         (should-not (fail? result)))))
 
-  )
+  (it "only executed contexts that pass the tag filter"
+    (let [spec
+          (eval
+            `(describe "Dummy" (tags :one)
+              (it "one tag" :filler)
+              (context "Fool" (tags :two)
+                (it "one, two tag" :filler))))]
+      (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
+        (run-and-report *runner* *reporter*))
+      (let [results @(.results *runner*)]
+        (should= 1 (count results))
+        (should= "one, two tag" (.name (.characteristic (first results)))))))
 
-(run-specs)
+    )
+
+  (run-specs)

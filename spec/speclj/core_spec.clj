@@ -71,6 +71,21 @@
   (it ": ... such that each characteristic gets a fresh evaluation"
     (should (not (identical? @bauble @bibelot)))))
 
+(describe "with-all form"
+  (with-all widget (reset! bauble 0))
+  (with gadget (+ @widget (swap! bauble inc)))
+
+  (it "will execute before the first characteristic"
+    (should= 1 @gadget)
+    (should= 0 @widget)
+    (should= 1 @bauble))
+
+  (it "only executes once"
+    (should= 2 @gadget)
+    (should= 0 @widget)
+    (should= 2 @bauble))
+  )
+
 (def *gewgaw* 0)
 (describe "around forms"
   (it "allows characteristics to be wrapped by other forms" :filler)
@@ -86,6 +101,41 @@
       (it "executes around all of them" :filler)
     )
   )
+
+;(def widget (atom 5))
+;(describe "around-all form"
+;  (around-all [context]
+;    (binding [*gewgaw* (swap! widget inc)]
+;      (context)))
+;
+;  (it "executes before all the specs"
+;    (should= 6 @widget)
+;    (should= 6 *gewgaw*))
+;
+;  (it "only executes onece"
+;    (should= 6 @widget)
+;    (should= 6 *gewgaw*))
+;
+;  (context "nested"
+;
+;    (around-all [context]
+;      (binding [*gewgaw* (swap! widget #(* 3 %))]
+;        (context)))
+;
+;    (around-all [context]
+;      (binding [*gewgaw* (swap! widget #(/ % 2))]
+;        (context)))
+;
+;    (it "will all execute before the characteristics"
+;      (should= 9 @widget)
+;      (should= 9 *gewgaw*))
+;
+;    (it "and still only execure once"
+;      (should= 9 @widget)
+;      (should= 9 *gewgaw*))
+;
+;    )
+;  )
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
@@ -174,5 +224,22 @@
   (it "executes all the afters"
     (should= [] @bauble)))
 
+(describe "Tags"
+  (tags :one)
+  (it "tag :one" :filler)
 
-(run-specs)
+  (context "child"
+    (tags "two")
+    (it "tag :one :two" :filler)
+
+    (context "grand-child"
+      (tags 'three)
+      (it "tag: :one :two :three" :filler)))
+
+  (context "child2"
+    (tags :four :five)
+    (it "tag :one :three :four" :filler))
+  )
+
+(run-specs :tags [])
+;(run-specs)

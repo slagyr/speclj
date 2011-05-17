@@ -24,10 +24,13 @@
 
 (def *full-stack-trace?* false)
 
+(def *tag-filter* {:include #{} :exclude #{}})
+
 (def default-config {
   :specs ["spec"]
   :runner "standard"
   :reporter "progress"
+  :tags []
   })
 
 (defn config-bindings
@@ -56,9 +59,19 @@
       (eval expr)
       (catch Exception e (throw (Exception. (str "Failed to load reporter: " name) e))))))
 
+(defn parse-tags [values]
+  (loop [result {:includes #{} :excludes #{}} values values]
+    (if (seq values)
+      (let [value (name (first values))]
+        (if (= \~ (first value))
+          (recur (update-in result [:excludes] conj (keyword (apply str (rest value)))) (rest values))
+          (recur (update-in result [:includes] conj (keyword value)) (rest values))))
+      result)))
+
 (defn config-mappings [config]
   {#'*runner* (if (:runner config) (load-runner (:runner config)) (active-runner))
    #'*reporter* (if (:reporter config) (load-reporter (:reporter config)) (active-reporter))
    #'*specs* (:specs config)
    #'*color?* (:color config)
-   #'*full-stack-trace?* (not (nil? (:stacktrace config)))})
+   #'*full-stack-trace?* (not (nil? (:stacktrace config)))
+   #'*tag-filter* (parse-tags (:tags config))})

@@ -79,15 +79,24 @@
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
 
   (with meaning 42)
-  (it \"know the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   `(do
-    ;    (if ~(resolve name)
-    ;      (println (str "WARNING: the symbol #'" '~(name name) " is already declared"))) ;TODO MDM Need to report this warning
     (let [with-component# (new-with '~name (fn [] ~@body))]
-      ;      (def ~(symbol name) with-component#)
       (declare ~(symbol name))
       with-component#)))
+
+(defmacro with-all
+  "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
+   the last of which will be the value of the dereferenced symbol.
+
+  (with-all meaning 42)
+  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  [name & body]
+  `(do
+    (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
+      (declare ~(symbol name))
+      with-all-component#)))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -185,12 +194,21 @@ When a string is also passed, it asserts that the message of the Exception is eq
   ([message]
     `(throw (SpecPending. ~message))))
 
+(defn tags
+  "Add tags to the containing context.  All values passed will be converted into keywords.  Contexts can be filtered
+  at runtime by their tags.
+
+  (tags :one :two)"
+  [& values]
+  (let [tag-kws (map keyword values)]
+    (map new-tag tag-kws)))
+
 (defn run-specs [& configurations]
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
 are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
 
-(run-specs :stacktrace true :color false :reporter \"specdoc\")"
+(run-specs :stacktrace true :color false :reporter \"documentation\")"
   (when (identical? (active-runner) @default-runner) ; Solo file run?
     (let [config (apply hash-map configurations)
           config (merge (dissoc default-config :runner) config)]

@@ -6,6 +6,7 @@
 * added shortcuts for runners and reporters
 * renamed specdoc to documentation
 * output improved
+* with-all spec component
 
 # 1.3.0
 

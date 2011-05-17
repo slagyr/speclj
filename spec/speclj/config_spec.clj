@@ -34,6 +34,22 @@
 
   (it "throws exception with unrecognized reporter"
     (should-throw Exception "Failed to load reporter: blah" (load-reporter "blah")))
+
+  (it "converts tag input to includes/excludes"
+    (should= {:includes #{} :excludes #{}} (parse-tags []))
+    (should= {:includes #{:one} :excludes #{}} (parse-tags [:one]))
+    (should= {:includes #{:one} :excludes #{}} (parse-tags ["one"]))
+    (should= {:includes #{:one :two} :excludes #{}} (parse-tags ["one" 'two]))
+    (should= {:includes #{} :excludes #{:one}} (parse-tags ["~one"]))
+    (should= {:includes #{} :excludes #{:one :two}} (parse-tags ["~one" "~two"]))
+    (should= {:includes #{:two} :excludes #{:one}} (parse-tags ["~one" "two"])))
+
+  (it "should translate tags in config-bindings"
+    (let [mappings (config-mappings (assoc default-config :tags ["one" "~two"]))]
+      (should=
+        {:includes #{:one} :excludes #{:two}}
+        (get mappings #'*tag-filter*))))
+
   )
 
 (run-specs)

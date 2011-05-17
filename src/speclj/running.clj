@@ -4,7 +4,8 @@
     [speclj.reporting :only (report-runs report-run report-description)]
     [speclj.components :only (reset-with)]
     [speclj.util :only (secs-since)]
-    [speclj.config :only (*runner* active-reporter)])
+    [speclj.config :only (*runner* active-reporter)]
+    [speclj.tags :only (tags-for tag-sets-for pass-tag-filter? context-with-tags-seq)])
   (:import
     [speclj SpecPending]
     [java.io File]))
@@ -66,21 +67,36 @@
       (do-characteristic characteristic reporter))))
 
 (defn- withs-mapping [description]
-  (let [withs @(.withs description)
+  (let [withs (concat @(.withs description) @(.with-alls description))
         ns (.ns description)]
     (reduce #(assoc %1 (ns-resolve ns (.name %2)) %2) {} withs)))
 
+(declare do-description)
+
+(defn- do-child-contexts [context results reporter]
+  (loop [results results contexts @(.children context)]
+    (if (seq contexts)
+      (recur (concat results (do-description (first contexts) reporter)) (rest contexts))
+      (do
+        (eval-components @(.after-alls context))
+        results))))
+
+(defn- results-for-context [context reporter]
+  (if (pass-tag-filter? (tags-for context))
+    (do-characteristics @(.charcteristics context) reporter)
+    []))
+
 (defn do-description [description reporter]
-  (report-description reporter description)
-  (eval-components @(.before-alls description))
-  (with-bindings (withs-mapping description)
-    (let [results (do-characteristics @(.charcteristics description) reporter)]
-      (loop [results results descriptions @(.children description)]
-        (if (seq descriptions)
-          (recur (concat results (do-description (first descriptions) reporter)) (rest descriptions))
-          (do
-            (eval-components @(.after-alls description))
-            results))))))
+  (let [tag-sets (tag-sets-for description)]
+    (when (some pass-tag-filter? tag-sets)
+      (report-description reporter description)
+      (eval-components @(.before-alls description))
+      (with-bindings (withs-mapping description)
+        (try
+          (let [results (results-for-context description reporter)]
+            (do-child-contexts description results reporter))
+          (finally
+            (reset-withs @(.with-alls description))))))))
 
 (defprotocol Runner
   (run-directories [this directories reporter])

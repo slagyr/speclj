@@ -102,6 +102,12 @@
   (it "resolves runner aliases"
     (should= "standard" (:runner (parse-args "-r" "s")))
     (should= "vigilant" (:runner (parse-args "-r" "v"))))
+
+  (it "parses the --tag option"
+    (should= ["one"] (:tags (parse-args "--tag=one")))
+    (should= ["one"] (:tags (parse-args "-t" "one")))
+    (should= ["one" "~two"] (:tags (parse-args "--tag=one" "--tag=~two")))
+    (should= ["one" "~two"] (:tags (parse-args "-t" "one" "-t" "~two"))))
           
   )
 

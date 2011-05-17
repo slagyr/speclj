@@ -18,7 +18,7 @@
   (install [this description]
     (doseq [component (seq this)] (install component description))))
 
-(deftype Description [name ns parent children charcteristics befores afters arounds before-alls after-alls withs]
+(deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]
   SpecComponent
   (install [this description]
     (reset! (.parent this) description)
@@ -27,7 +27,7 @@
   (toString [this] (str "Description: " \" name \")))
 
 (defn new-description [name ns]
-  (Description. name ns (atom nil) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (deftype Characteristic [name parent body]
   SpecComponent
@@ -87,7 +87,7 @@
     (swap! (.withs description) conj this))
   clojure.lang.IDeref
   (deref [this]
-    (if (= ::none @value)
+    (when (= ::none @value)
       (reset! value (body)))
     @value))
 
@@ -96,3 +96,24 @@
 
 (defn new-with [name body]
   (With. name body (atom ::none)))
+
+(deftype WithAll [name body value]
+  SpecComponent
+  (install [this description]
+    (swap! (.with-alls description) conj this))
+  clojure.lang.IDeref
+  (deref [this]
+    (when (= ::none @value)
+      (reset! value (body)))
+    @value))
+
+(defn new-with-all [name body]
+  (WithAll. name body (atom ::none)))
+
+(deftype Tag [name]
+  SpecComponent
+  (install [this description]
+    (swap! (.tags description) conj name)))
+
+(defn new-tag [name]
+  (Tag. name))
