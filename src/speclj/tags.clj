@@ -1,7 +1,8 @@
 (ns speclj.tags
   (:use
     [speclj.config :only (*tag-filter*)]
-    [clojure.set :only (union intersection)]))
+    [clojure.set :only (union intersection)]
+    [clojure.string :only (join)]))
 
 (defn pass-includes? [includes tags]
   (if (empty? includes)
@@ -34,3 +35,14 @@
 (defn context-with-tags-seq [context]
   (let [context-seq (tree-seq #(not (nil? %)) #(deref (.children %)) context)]
     (map #(hash-map :context % :tag-set (tags-for %)))))
+
+(defn describe-filter
+  ([] (describe-filter *tag-filter*))
+  ([filter]
+    (let [includes (seq (map name (:includes filter)))
+          excludes (seq (map name (:excludes filter)))]
+    (if (or includes excludes)
+      (str "Filtering tags."
+        (when includes (str " Including: " (join ", " includes) "."))
+        (when excludes (str " Excluding: " (join ", " excludes) ".")))
+      nil))))

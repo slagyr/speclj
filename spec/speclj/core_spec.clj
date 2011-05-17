@@ -241,5 +241,5 @@
     (it "tag :one :three :four" :filler))
   )
 
-(run-specs :tags [])
+(run-specs :tags ["two"])
 ;(run-specs)

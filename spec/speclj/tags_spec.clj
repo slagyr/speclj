@@ -34,9 +34,12 @@
     (should= true (pass-tag-filter? {:includes #{} :excludes #{:four}} [:one :two :three]))
     (should= false (pass-tag-filter? {:includes #{} :excludes #{:one}} [:one :two :three])))
 
-  (if "describes the filter"
+  (it "describes the filter"
     (should= nil (describe-filter {:includes #{} :excludes #{}}))
-    (should= nil (describe-filter {:includes #{} :excludes #{}})))
+    (should= "Filtering tags. Including: one." (.trim (describe-filter {:includes #{:one} :excludes #{}})))
+    (should= "Filtering tags. Excluding: one." (.trim (describe-filter {:includes #{} :excludes #{:one}})))
+    (should= "Filtering tags. Including: one, two." (.trim (describe-filter {:includes #{:one :two} :excludes #{}})))
+    (should= "Filtering tags. Including: one. Excluding: two." (.trim (describe-filter {:includes #{:one} :excludes #{:two}}))))
 
   (context "with fake runner/reporter"
     (around [_]

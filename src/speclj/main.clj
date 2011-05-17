@@ -3,7 +3,8 @@
     [speclj.running :only (run-directories run-and-report)]
     [speclj.util :only (endl)]
     [speclj.config]
-    [speclj.reporting :only (print-stack-trace)])
+    [speclj.reporting :only (print-stack-trace report-message)]
+    [speclj.tags :only (describe-filter)])
   (:require
     [speclj.version])
   (:import
@@ -75,6 +76,8 @@
 (defn do-specs [config]
   (with-bindings (config-mappings config)
     (try
+      (if-let [filter-msg (describe-filter)]
+        (report-message *reporter* filter-msg))
       (exit (run-directories *runner* *specs* *reporter*))
       (catch Exception e
         (.printStackTrace e)
