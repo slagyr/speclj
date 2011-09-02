@@ -38,12 +38,18 @@
           exception (Exception. "Test Exception")
           expected "java.lang.Exception: Test Exception
 \tat my_code$start.invoke(my_file.clj:123)
+\tat clojure_my_code.invoke(my_file.clj:666)
+\tat speclj-my-code.invoke(my_file.clj:666)
+\tat java_my_code.invoke(my_file.clj:666)
 \t... 4 stack levels elided ...
 \tat my_code$end.invoke(my_file.clj:124)
 "]
       (.setStackTrace exception
         (into-array [
           (StackTraceElement. "my_code$start" "invoke" "my_file.clj" 123)
+          (StackTraceElement. "clojure_my_code" "invoke" "my_file.clj" 666)
+          (StackTraceElement. "speclj-my-code" "invoke" "my_file.clj" 666)
+          (StackTraceElement. "java_my_code" "invoke" "my_file.clj" 666)
           (StackTraceElement. "speclj.running$eval_characteristic" "invoke" "running.clj" 22)
           (StackTraceElement. "clojure.lang.RT" "load" "RT.java" 412)
           (StackTraceElement. "clojure.core$load$fn__4511" "invoke" "core.clj" 4905)
