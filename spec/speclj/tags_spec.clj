@@ -73,6 +73,6 @@
 
   )
 
-blah
+; blah
 
 (run-specs)

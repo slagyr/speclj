@@ -57,9 +57,9 @@
 (defn- elide-level? [stack-element]
   (let [classname (.getClassName stack-element)]
     (or
-      (.startsWith classname "clojure")
-      (.startsWith classname "speclj")
-      (.startsWith classname "java"))))
+      (.startsWith classname "clojure.")
+      (.startsWith classname "speclj.")
+      (.startsWith classname "java."))))
 
 
 (defn- print-elides [n]
