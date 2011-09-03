@@ -70,9 +70,6 @@
         (should= #{:one :six} (nth tag-sets 4))))
 
     )
-
   )
-
-; blah
 
 (run-specs)

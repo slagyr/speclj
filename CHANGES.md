@@ -1,3 +1,7 @@
+# X.X.X
+
+* Improved stacktrace eliding for pagages starting with clojure./java./speclj.
+
 # 1.4.0
 
 * added pending macro to mark characteristics as pending
@@ -10,7 +14,7 @@
 * tag examples. declared in describe blocks. filtered on run.
 * exclude hidden files in runs (https://github.com/slagyr/speclj/pull/4)
 
- # 1.3.0
+# 1.3.0
 
 * using raw Runtime.exec in 'lein spec' command to avoid ant's output mangling and lag.
 * should-be-same or some assertion that checks object reference equality
