@@ -4,7 +4,7 @@
     [speclj.exec :only (pass? fail?)]
     [speclj.report.progress :only (print-summary)]
     [speclj.util :only (endl)]
-    [speclj.config :only (default-reporter)])
+    [speclj.config :only (default-reporters)])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))

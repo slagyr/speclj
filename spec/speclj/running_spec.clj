@@ -4,7 +4,7 @@
     [speclj.running :only (run-and-report)]
     [speclj.exec :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
-    [speclj.config :only (*reporter* *runner* *tag-filter*)]
+    [speclj.config :only (*reporters* *runner* *tag-filter*)]
     [speclj.report.silent :only (new-silent-reporter)])
   (:import (speclj SpecFailure)))
 
@@ -14,7 +14,7 @@
   (with runner (new-standard-runner))
   (around [_]
     (binding [*runner* @runner
-              *reporter* (new-silent-reporter)
+              *reporters* [(new-silent-reporter)]
               *ns* (the-ns 'speclj.running-spec)]
       (_)))
 
@@ -23,7 +23,7 @@
       '(describe "Dummy"
         (it "has a pass"
           (should (= 1 1)))))
-    (run-and-report *runner* *reporter*)
+    (run-and-report *runner* *reporters*)
     (let [results @(.results *runner*)
           result (first results)]
       (should= 1 (count results))
@@ -35,7 +35,7 @@
       '(describe "Dummy"
         (it "has a fail"
           (should= 1 2))))
-    (run-and-report *runner* *reporter*)
+    (run-and-report *runner* *reporters*)
     (let [results @(.results *runner*)
           result (first results)]
       (should= 1 (count results))
@@ -50,7 +50,7 @@
         (it "changes the bauble"
           (reset! bauble :something)
           (should-fail))))
-    (run-and-report *runner* *reporter*)
+    (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
   (it "runs afters with error"
@@ -60,7 +60,7 @@
         (it "changes the bauble"
           (reset! bauble :something)
           (throw (Exception. "blah")))))
-    (run-and-report *runner* *reporter*)
+    (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
   (it "doesn't crash when declaring a with named the same as a pre-existing var"
@@ -70,7 +70,7 @@
             (it "uses the new value of bauble"
               (should= "foo" @bauble)))]
       (should-not-throw (eval spec))
-      (run-and-report *runner* *reporter*)
+      (run-and-report *runner* *reporters*)
       (let [results @(.results *runner*)
             result (first results)]
         (should= 1 (count results))
@@ -84,7 +84,7 @@
               (context "Fool" (tags :two)
                 (it "one, two tag" :filler))))]
       (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
-        (run-and-report *runner* *reporter*))
+        (run-and-report *runner* *reporters*))
       (let [results @(.results *runner*)]
         (should= 1 (count results))
         (should= "one, two tag" (.name (.characteristic (first results)))))))

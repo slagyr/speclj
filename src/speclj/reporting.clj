@@ -1,7 +1,7 @@
 (ns speclj.reporting
   (:use
     [speclj.exec :only (pass? fail?)]
-    [speclj.config :only (*reporter* *color?* *full-stack-trace?*)]
+    [speclj.config :only (*reporters* *color?* *full-stack-trace?*)]
     [clojure.string :as string :only (split join)])
   (:import
     [speclj.exec PassResult FailResult PendingResult]
@@ -35,13 +35,16 @@
   (report-fail [this result])
   (report-runs [this results]))
 
-(defmulti report-run (fn [result reporter] (type result)))
-(defmethod report-run PassResult [result reporter]
-  (report-pass reporter result))
-(defmethod report-run FailResult [result reporter]
-  (report-fail reporter result))
-(defmethod report-run PendingResult [result reporter]
-  (report-pending reporter result))
+(defmulti report-run (fn [result reporters] (type result)))
+(defmethod report-run PassResult [result reporters]
+  (doseq [reporter reporters]
+    (report-pass reporter result)))
+(defmethod report-run FailResult [result reporters]
+  (doseq [reporter reporters]
+    (report-fail reporter result)))
+(defmethod report-run PendingResult [result reporters]
+  (doseq [reporter reporters]
+    (report-pending reporter result)))
 
 (defn- stylizer [code]
   (fn [text]
@@ -112,4 +115,12 @@
   (let [spaces (int (* n 2.0))
         indention (reduce (fn [p _] (str " " p)) "" (range spaces))]
     (apply prefix indention args)))
+
+(defn report-description* [reporters description]
+  (doseq [reporter reporters]
+    (report-description reporter description)))
+
+(defn report-runs* [reporters results]
+  (doseq [reporter reporters]
+    (report-runs reporter results)))
 

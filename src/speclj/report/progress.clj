@@ -3,7 +3,7 @@
     [speclj.reporting :only (failure-source tally-time red green yellow grey stack-trace indent prefix)]
     [speclj.exec :only (pass? fail? pending?)]
     [speclj.util :only (seconds-format)]
-    [speclj.config :only (default-reporter)])
+    [speclj.config :only (default-reporters)])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))
@@ -21,8 +21,8 @@
     (println (indent 1 id ") " (full-name characteristic)))
     (println (red (indent 2.5 (.getMessage failure))))
     (if (.isInstance SpecFailure failure)
-      (println (grey (indent 2.5 "; " (failure-source failure))))
-      (println (grey (indent 2.5 (prefix "; " (stack-trace failure))))))))
+      (println (grey (indent 2.5 (failure-source failure))))
+      (println (grey (indent 2.5 (stack-trace failure)))))))
 
 (defn print-failures [failures]
   (when (seq failures)
@@ -97,4 +97,4 @@
 (defn new-progress-reporter []
   (ProgressReporter.))
 
-(swap! default-reporter (fn [_] (new-progress-reporter)))
+(reset! default-reporters [(new-progress-reporter)])

@@ -4,10 +4,10 @@
     [speclj.main]
     [speclj.util :only (endl)])
   (:require
-;    [speclj.run.standard]
-;    [speclj.run.vigilant]
-;    [speclj.report.progress]
-;    [speclj.report.silent]
+    ;    [speclj.run.standard]
+    ;    [speclj.run.vigilant]
+    ;    [speclj.report.progress]
+    ;    [speclj.report.silent]
     [speclj.version]
     [speclj.config :as config])
   (:import
@@ -25,7 +25,7 @@
 
   (it "has default configuration"
     (should= ["spec"] (:specs config/default-config))
-    (should= "progress" (:reporter config/default-config))
+    (should= ["progress"] (:reporters config/default-config))
     (should= "standard" (:runner config/default-config)))
 
   (it "parses no arguments"
@@ -38,15 +38,17 @@
 
   (it "parses the runner argument"
     (should= "fridge" (:runner (parse-args "--runner=fridge")))
-    (should= "freezer" (:runner (parse-args "--runner=freezer"))))
+    (should= "freezer" (:runner (parse-args "-r" "freezer"))))
 
   (it "parses the reporter argument"
-    (should= "april" (:reporter (parse-args "--reporter=april")))
-    (should= "mary-jane" (:reporter (parse-args "--reporter=mary-jane"))))
+    (should= ["april"] (:reporters (parse-args "--reporter=april")))
+    (should= ["mary-jane"] (:reporters (parse-args "-f" "mary-jane")))
+    (should= ["april" "mj"] (:reporters (parse-args "--reporter=april" "--reporter=mj")))
+    (should= ["mj" "april"] (:reporters (parse-args "-f" "mj" "-f" "april"))))
 
   (it "uses formatter as an alias to reporter"
-    (let [options (parse-args "--format" "silent")]
-      (should= "silent" (:reporter options))))      
+    (should= ["silent"] (:reporters (parse-args "--format" "silent")))
+    (should= ["silent" "progress"] (:reporters (parse-args "--format=silent" "--format=progress"))))
 
   (it "parses the --version switch"
     (should= nil (:version (parse-args "")))
@@ -69,10 +71,10 @@
   (it "parses and translates the --autotest option"
     (let [options (parse-args "--autotest")]
       (should= "vigilant" (:runner options))
-      (should= "documentation" (:reporter options)))
+      (should= ["documentation"] (:reporters options)))
     (let [options (parse-args "-a")]
       (should= "vigilant" (:runner options))
-      (should= "documentation" (:reporter options))))
+      (should= ["documentation"] (:reporters options))))
 
   (it "parses the --color switch"
     (should= nil (:color (parse-args "")))
@@ -95,9 +97,9 @@
       (should= true config/*full-stack-trace?*)))
 
   (it "resolves reporter aliases"
-    (should= "silent" (:reporter (parse-args "-f" "s")))
-    (should= "progress" (:reporter (parse-args "-f" "p")))
-    (should= "documentation" (:reporter (parse-args "-f" "d"))))
+    (should= ["silent"] (:reporters (parse-args "-f" "s")))
+    (should= ["progress"] (:reporters (parse-args "-f" "p")))
+    (should= ["documentation"] (:reporters (parse-args "-f" "d"))))
 
   (it "resolves runner aliases"
     (should= "standard" (:runner (parse-args "-r" "s")))
@@ -108,7 +110,7 @@
     (should= ["one"] (:tags (parse-args "-t" "one")))
     (should= ["one" "~two"] (:tags (parse-args "--tag=one" "--tag=~two")))
     (should= ["one" "~two"] (:tags (parse-args "-t" "one" "-t" "~two"))))
-          
+
   )
 
 (run-specs)

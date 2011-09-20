@@ -1,6 +1,7 @@
 # X.X.X
 
 * Improved stacktrace eliding for pagages starting with clojure./java./speclj.
+* Multiple runners supported
 
 # 1.4.0
 

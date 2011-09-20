@@ -3,7 +3,7 @@
     [speclj.core]
     [speclj.run.standard]
     [speclj.running :only (run-directories)]
-    [speclj.config :only (active-reporter)]
+    [speclj.config :only (active-reporters)]
     [speclj.report.silent :only (new-silent-reporter)]
     [speclj.spec-helper :only (find-dir)])
   (:import
@@ -15,12 +15,12 @@
 
 (describe "StandardRunner"
   (with runner (new-standard-runner))
-  (with reporter (new-silent-reporter))
+  (with reporters [(new-silent-reporter)])
 
   (it "returns 0 failures when all tests pass"
-    (should= 0 (run-directories @runner [prime-factors-dir] @reporter)))
+    (should= 0 (run-directories @runner [prime-factors-dir] @reporters)))
 
   (it "returns lots-o failures when running failure example"
-    (should= 8 (run-directories @runner [failures-dir] @reporter))))
+    (should= 8 (run-directories @runner [failures-dir] @reporters))))
 
 (run-specs)

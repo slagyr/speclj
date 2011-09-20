@@ -2,7 +2,7 @@
   (:use
     [speclj.core]
     [speclj.tags]
-    [speclj.config :only (*runner* *reporter*)]
+    [speclj.config :only (*runner* *reporters*)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.report.silent :only (new-silent-reporter)]))
 
@@ -44,7 +44,7 @@
   (context "with fake runner/reporter"
     (around [_]
       (binding [*runner* (new-standard-runner)
-                *reporter* (new-silent-reporter)
+                *reporters* (new-silent-reporter)
                 *ns* (the-ns 'speclj.tags-spec)]
         (_)))
 

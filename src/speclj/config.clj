@@ -1,13 +1,13 @@
 (ns speclj.config)
 
-(declare *reporter*)
-(def default-reporter (atom nil))
-(defn active-reporter []
-  (if (bound? #'*reporter*)
-    *reporter*
-    (if-let [reporter @default-reporter]
-      reporter
-      (throw (Exception. "*reporter* is unbound and no default value has been provided")))))
+(declare *reporters*)
+(def default-reporters (atom nil))
+(defn active-reporters []
+  (if (bound? #'*reporters*)
+    *reporters*
+    (if-let [reporters @default-reporters]
+      reporters
+      (throw (Exception. "*reporters* is unbound and no default value has been provided")))))
 
 (declare *runner*)
 (def default-runner (atom nil))
@@ -29,7 +29,7 @@
 (def default-config {
   :specs ["spec"]
   :runner "standard"
-  :reporter "progress"
+  :reporters ["progress"]
   :tags []
   })
 
@@ -70,7 +70,7 @@
 
 (defn config-mappings [config]
   {#'*runner* (if (:runner config) (load-runner (:runner config)) (active-runner))
-   #'*reporter* (if (:reporter config) (load-reporter (:reporter config)) (active-reporter))
+   #'*reporters* (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
    #'*specs* (:specs config)
    #'*color?* (:color config)
    #'*full-stack-trace?* (not (nil? (:stacktrace config)))

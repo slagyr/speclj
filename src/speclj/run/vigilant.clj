@@ -3,7 +3,7 @@
     [speclj.running :only (do-description run-and-report run-description clj-files-in)]
     [speclj.util]
     [speclj.reporting :only (report-runs report-message print-stack-trace)]
-    [speclj.config :only (active-runner active-reporter config-bindings *specs*)]
+    [speclj.config :only (active-runner active-reporters config-bindings *specs*)]
     [fresh.core :only (freshener)])
   (:import
     [speclj.running Runner]
@@ -12,7 +12,7 @@
 (def start-time (atom 0))
 
 (defn- report-update [report]
-  (let [reporter (active-reporter)
+  (let [reporter (active-reporters)
         reloads (:reloaded report)]
     (when (seq reloads)
       (report-message reporter (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
@@ -24,7 +24,7 @@
 (defn- tick [configuration]
   (with-bindings configuration
     (let [runner (active-runner)
-          reporter (active-reporter)]
+          reporter (active-reporters)]
       (try
         (reset! start-time (System/nanoTime))
         (@(.reloader runner))
@@ -45,7 +45,7 @@
       0))
 
   (submit-description [this description]
-    (run-description this description (active-reporter)))
+    (run-description this description (active-reporters)))
 
   (run-description [this description reporter]
     (let [run-results (do-description description reporter)]
