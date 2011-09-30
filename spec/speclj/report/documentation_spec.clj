@@ -3,7 +3,7 @@
     [speclj.core]
     [speclj.report.documentation :only (new-documentation-reporter)]
     [speclj.reporting]
-    [speclj.exec :only (pass-result fail-result pending-result)]
+    [speclj.results :only (pass-result fail-result pending-result)]
     [speclj.components :only (new-description new-characteristic install)]
     [clojure.string :only (split-lines)]
     [speclj.util :only (endl)]

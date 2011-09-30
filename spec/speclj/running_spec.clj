@@ -2,7 +2,7 @@
   (:use
     [speclj.core]
     [speclj.running :only (run-and-report)]
-    [speclj.exec :only (pass? fail?)]
+    [speclj.results :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.config :only (*reporters* *runner* *tag-filter*)]
     [speclj.report.silent :only (new-silent-reporter)])

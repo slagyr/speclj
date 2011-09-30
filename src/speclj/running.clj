@@ -1,6 +1,6 @@
 (ns speclj.running
   (:use
-    [speclj.exec :only (pass-result fail-result pending-result)]
+    [speclj.results :only (pass-result fail-result pending-result)]
     [speclj.reporting :only (report-runs* report-run report-description*)]
     [speclj.components :only (reset-with)]
     [speclj.util :only (secs-since)]

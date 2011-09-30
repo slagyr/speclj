@@ -1,7 +1,7 @@
 (ns speclj.report.documentation
   (:use
     [speclj.reporting :only (failure-source tally-time green red yellow indent)]
-    [speclj.exec :only (pass? fail?)]
+    [speclj.results :only (pass? fail?)]
     [speclj.report.progress :only (print-summary)]
     [speclj.util :only (endl)]
     [speclj.config :only (default-reporters)])

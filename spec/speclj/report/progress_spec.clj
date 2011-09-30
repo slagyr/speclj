@@ -3,7 +3,7 @@
     [speclj.core]
     [speclj.report.progress :only (new-progress-reporter full-name print-summary print-pendings)]
     [speclj.reporting]
-    [speclj.exec :only (pass-result fail-result pending-result)]
+    [speclj.results :only (pass-result fail-result pending-result)]
     [speclj.components :only (new-description new-characteristic install)]
     [speclj.config :only (*color?*)]
     [clojure.string :only (split-lines)])

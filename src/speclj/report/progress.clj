@@ -1,7 +1,7 @@
 (ns speclj.report.progress
   (:use
     [speclj.reporting :only (failure-source tally-time red green yellow grey stack-trace indent prefix)]
-    [speclj.exec :only (pass? fail? pending?)]
+    [speclj.results :only (pass? fail? pending? categorize)]
     [speclj.util :only (seconds-format)]
     [speclj.config :only (default-reporters)])
   (:import
@@ -45,21 +45,13 @@
   (println)
   (println "Finished in" (.format seconds-format (tally-time results)) "seconds"))
 
-(defn- categorize [results]
-  (reduce (fn [tally result]
-    (cond (pending? result) (update-in tally [:pending] conj result)
-      (fail? result) (update-in tally [:fail] conj result)
-      :else (update-in tally [:pass] conj result)))
-    {:pending [] :fail [] :pass []}
-    results))
-
 (defn color-fn-for [result-map]
   (cond (not= 0 (count (:fail result-map))) red
     (not= 0 (count (:pending result-map))) yellow
     :else green))
 
-(defn- describe-counts-for [result-map]
-  (let [tally (apply hash-map (interleave (keys result-map) (map count (vals result-map))))
+(defn describe-counts-for [result-map]
+  (let [tally (zipmap (keys result-map) (map count (vals result-map)))
         always-on-counts [(str (apply + (vals tally)) " examples")
                           (str (:fail tally) " failures")]]
     (apply str

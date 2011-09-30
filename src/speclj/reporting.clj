@@ -1,10 +1,10 @@
 (ns speclj.reporting
   (:use
-    [speclj.exec :only (pass? fail?)]
+    [speclj.results :only (pass? fail?)]
     [speclj.config :only (*reporters* *color?* *full-stack-trace?*)]
     [clojure.string :as string :only (split join)])
   (:import
-    [speclj.exec PassResult FailResult PendingResult]
+    [speclj.results PassResult FailResult PendingResult]
     [java.io PrintWriter StringWriter]))
 
 (defn- classname->filename [classname]

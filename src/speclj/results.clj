@@ -1,4 +1,4 @@
-(ns speclj.exec)
+(ns speclj.results)
 
 (deftype PassResult [characteristic seconds])
 (deftype FailResult [characteristic seconds failure])
@@ -27,3 +27,11 @@
 
 (defn fail-count [results]
   (reduce #(if (fail? %2) (inc %) %) 0 results))
+
+(defn categorize [results]
+  (reduce (fn [tally result]
+    (cond (pending? result) (update-in tally [:pending] conj result)
+      (fail? result) (update-in tally [:fail] conj result)
+      :else (update-in tally [:pass] conj result)))
+    {:pending [] :fail [] :pass []}
+    results))

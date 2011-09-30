@@ -2,7 +2,7 @@
   (:use
     [speclj.running :only (do-description run-and-report run-description clj-files-in)]
     [speclj.reporting :only (report-runs*)]
-    [speclj.exec :only (fail-count)]
+    [speclj.results :only (fail-count)]
     [speclj.config :only (default-runner *runner* *reporters*)])
   (:import
     [speclj.running Runner]))
