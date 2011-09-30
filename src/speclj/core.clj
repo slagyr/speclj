@@ -149,6 +149,16 @@
     (if (identical? expected# actual#)
       (throw (SpecFailure. (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
 
+(defmacro should-be-nil
+  "Asserts that the form evaluates to nil"
+  [form]
+  `(should= nil ~form))
+
+(defmacro should-not-be-nil
+  "Asserts that the form evaluates to a non-nil value"
+  [form]
+  `(should-not= nil ~form))
+
 (defmacro should-fail
   "Forces a failure. An optional message may be passed in."
   ([] `(should-fail "Forced failure"))
