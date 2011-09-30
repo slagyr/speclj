@@ -117,7 +117,7 @@ There are several options for the runners.  Use the `--help` options to see them
 * Email List: [http://groups.google.com/group/speclj](http://groups.google.com/group/speclj)
 
 # Contributing
-speclj uses [Leiningen][https://github.com/technomancy/leiningen] version 1.4.0.
+speclj uses [Leiningen](https://github.com/technomancy/leiningen) version 1.4.0.
 
 Clone the master branch, build, and run all the tests: 
 
