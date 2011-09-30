@@ -1,8 +1,9 @@
-# X.X.X
+# 1.5.0
 
 * Improved stacktrace eliding for pagages starting with clojure./java./speclj.
-* Multiple runners supported
+* Multiple reporters supported
 * new assertions: should-be-nil, should-not-be-nil (Thanks to pgr0ss)
+* made reporting functional resuable
 
 # 1.4.0
 
