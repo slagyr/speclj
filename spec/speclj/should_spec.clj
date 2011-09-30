@@ -78,6 +78,16 @@
     (should= (str "             Expected: <1>" endl "not to be the same as: <1> (using identical?)")
       (failure-message (should-not-be-same 1 1))))
 
+  (it "should-be-nil checks for equality with nil"
+    (should-pass! (should-be-nil nil))
+    (should-fail! (should-be-nil true))
+    (should-fail! (should-be-nil false)))
+
+  (it "should-not-be-nil checks for inequality with nil"
+    (should-fail! (should-not-be-nil nil))
+    (should-pass! (should-not-be-nil true))
+    (should-pass! (should-not-be-nil false)))
+
   (it "should-fail is an automatic failure"
     (should-fail! (should-fail))
     (should= "Forced failure" (failure-message (should-fail))))
