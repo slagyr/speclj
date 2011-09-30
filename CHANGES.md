@@ -2,7 +2,7 @@
 
 * Improved stacktrace eliding for pagages starting with clojure./java./speclj.
 * Multiple runners supported
-* new assertions: should-be-nil, should-not-be-nil
+* new assertions: should-be-nil, should-not-be-nil (Thanks to pgr0ss)
 
 # 1.4.0
 
