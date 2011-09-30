@@ -1,0 +1,3 @@
+language: clojure
+before_script: ""
+script: "lein deps && lein spec"
