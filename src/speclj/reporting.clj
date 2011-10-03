@@ -124,3 +124,7 @@
   (doseq [reporter reporters]
     (report-runs reporter results)))
 
+(defn report-message* [reporters message]
+  (doseq [reporter reporters]
+    (report-message reporter message)))
+

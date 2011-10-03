@@ -2,7 +2,7 @@
   (:use
     [speclj.running :only (do-description run-and-report run-description clj-files-in)]
     [speclj.util]
-    [speclj.reporting :only (report-runs report-message print-stack-trace)]
+    [speclj.reporting :only (report-runs report-message* print-stack-trace)]
     [speclj.config :only (active-runner active-reporters config-bindings *specs*)]
     [fresh.core :only (freshener)])
   (:import
@@ -15,10 +15,10 @@
   (let [reporter (active-reporters)
         reloads (:reloaded report)]
     (when (seq reloads)
-      (report-message reporter (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
-      (report-message reporter (str "took " (str-time-since @start-time) " to determine file statuses."))
-      (report-message reporter "reloading files:")
-      (doseq [file reloads] (report-message reporter (str "  " (.getCanonicalPath file))))))
+      (report-message* reporter (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
+      (report-message* reporter (str "took " (str-time-since @start-time) " to determine file statuses."))
+      (report-message* reporter "reloading files:")
+      (doseq [file reloads] (report-message* reporter (str "  " (.getCanonicalPath file))))))
   true)
 
 (defn- tick [configuration]
