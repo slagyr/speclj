@@ -2,7 +2,7 @@
 
 * Improved stacktrace eliding for pagages starting with clojure./java./speclj.
 * Multiple reporters supported
-* new assertions: should-be-nil, should-not-be-nil (Thanks to pgr0ss)
+* new assertions: should-be-nil, should-not-be-nil (Thanks to [pgr0ss](https://github.com/pgr0ss))
 * made reporting functional resuable
 
 # 1.4.0
@@ -43,7 +43,7 @@
 * nested describe/context
 * `after`s are invoked even after failures or errors
 * should= support for doubles (use delta)
-* Lazy seqs print nicely in output (@trptcolin)
+* Lazy seqs print nicely in output ([trptcolin](https://github.com/trptcolin))
 
 # 1.0.3
 
