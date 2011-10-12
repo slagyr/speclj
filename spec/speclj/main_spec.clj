@@ -76,6 +76,11 @@
       (should= "vigilant" (:runner options))
       (should= ["documentation"] (:reporters options))))
 
+  (it "allows adding extra reporters when using autotest"
+    (let [options (parse-args "-a" "-f" "progress")]
+      (should= "vigilant" (:runner options))
+      (should= ["documentation" "progress"] (sort (:reporters options)))))
+
   (it "parses the --color switch"
     (should= nil (:color (parse-args "")))
     (should= "on" (:color (parse-args "--color")))

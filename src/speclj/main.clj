@@ -46,8 +46,8 @@
 
 (defn- resolve-aliases [options]
   (cond
-    (:format options) (recur (dissoc (assoc options :reporter (:format options)) :format))
-    (:autotest options) (recur (dissoc (assoc options :runner "vigilant" :reporters (conj (:format options) "documentation")) :autotest))
+    (:format options) (recur (dissoc (assoc options :reporter (concat (:reporter options) (:format options))) :format))
+    (:autotest options) (recur (dissoc (assoc options :runner "vigilant" :reporter (concat (:reporter options) ["documentation"])) :autotest))
     (:reporter options) (recur (dissoc (assoc options :reporters (map resolve-reporter-alias (:reporter options))) :reporter))
     (= "s" (:runner options)) (recur (assoc options :runner "standard"))
     (= "v" (:runner options)) (recur (assoc options :runner "vigilant"))
