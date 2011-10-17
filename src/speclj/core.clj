@@ -26,19 +26,19 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
-(declare *parent-description*)
+(declare #^:dynamic *parent-description*)
 (defmacro describe
   "body => & spec-components
 
   Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
   [name & components]
   `(let [description# (new-description ~name *ns*)]
-    (binding [*parent-description* description#]
-      (doseq [component# (list ~@components)]
-        (install component# description#)))
-    (if (not (bound? #'*parent-description*))
-      (submit-description (active-runner) description#))
-    description#))
+     (binding [*parent-description* description#]
+       (doseq [component# (list ~@components)]
+         (install component# description#)))
+     (if (not (bound? #'*parent-description*))
+       (submit-description (active-runner) description#))
+     description#))
 
 (defmacro context [name & components]
   `(describe ~name ~@components))
@@ -83,10 +83,11 @@
   (with meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  `(do
-    (let [with-component# (new-with '~name (fn [] ~@body))]
-      (declare ~(symbol name))
-      with-component#)))
+  (let [var-name (with-meta (symbol name) {:dynamic true})]
+    `(do
+       (let [with-component# (new-with '~var-name (fn [] ~@body))]
+         (declare ~var-name)
+         with-component#))))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -96,9 +97,9 @@
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   `(do
-    (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
-      (declare ~(symbol name))
-      with-all-component#)))
+     (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
+       (declare ~(symbol name))
+       with-all-component#)))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -107,47 +108,47 @@
   "Asserts the truthy-ness of a form"
   [form]
   `(let [value# ~form]
-    (if-not value#
-      (throw (SpecFailure. (str "Expected truthy but was: " (-to-s value#) ""))))))
+     (if-not value#
+       (throw (SpecFailure. (str "Expected truthy but was: " (-to-s value#) ""))))))
 
 (defmacro should-not
   "Asserts the falsy-ness of a form"
   [form]
   `(let [value# ~form]
-    (if value#
-      (throw (SpecFailure. (str "Expected falsy but was: " (-to-s value#)))))))
+     (if value#
+       (throw (SpecFailure. (str "Expected falsy but was: " (-to-s value#)))))))
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expexcted value as the first parameter."
   ([expected-form actual-form]
     `(let [expected# ~expected-form actual# ~actual-form]
-      (if (not (= expected# actual#))
-        (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
+       (if (not (= expected# actual#))
+         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-      (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
-        (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
+       (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
+         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
 
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpexcted value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
-    (if (= expected# actual#)
-      (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
+     (if (= expected# actual#)
+       (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
 
 (defmacro should-be-same
   "Asserts that two forms evaluate to the same object, with the expexcted value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
-    (if (not (identical? expected# actual#))
-      (throw (SpecFailure. (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
+     (if (not (identical? expected# actual#))
+       (throw (SpecFailure. (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
 
 (defmacro should-not-be-same
   "Asserts that two forms evaluate to different objects, with the unexpexcted value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
-    (if (identical? expected# actual#)
-      (throw (SpecFailure. (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
+     (if (identical? expected# actual#)
+       (throw (SpecFailure. (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
 
 (defmacro should-be-nil
   "Asserts that the form evaluates to nil"
@@ -168,8 +169,8 @@
   `(let [expected-name# (.getName ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (.toString ~actual) "<nothing thrown>")]
-    (SpecFailure. (str "Expected " expected-name# " thrown from: " ~expr endl
-      "         " expected-gaps# "     but got: " actual-string#))))
+     (SpecFailure. (str "Expected " expected-name# " thrown from: " ~expr endl
+                     "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
@@ -178,26 +179,26 @@ When a string is also passed, it asserts that the message of the Exception is eq
   ([form] `(should-throw Throwable ~form))
   ([throwable-type form]
     `(try
-      ~form
-      (throw (-create-should-throw-failure ~throwable-type nil '~form))
-      (catch Throwable e#
-        (cond
-          (.isInstance SpecFailure e#) (throw e#)
-          (not (.isInstance ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
-          :else e#))))
+       ~form
+       (throw (-create-should-throw-failure ~throwable-type nil '~form))
+       (catch Throwable e#
+         (cond
+           (.isInstance SpecFailure e#) (throw e#)
+           (not (.isInstance ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
+           :else e#))))
   ([throwable-type message form]
     `(let [e# (should-throw ~throwable-type ~form)]
-      (try
-        (should= ~message (.getMessage e#))
-        (catch SpecFailure f# (throw (SpecFailure. (str "Expected exception message didn't match" endl (.getMessage f#)))))))))
+       (try
+         (should= ~message (.getMessage e#))
+         (catch SpecFailure f# (throw (SpecFailure. (str "Expected exception message didn't match" endl (.getMessage f#)))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
   `(try
-    ~form
-    (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
-      "                     but got: " (.toString e#)))))))
+     ~form
+     (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
+                                                "                     but got: " (.toString e#)))))))
 
 (defmacro pending
   "When added to a characteristic, it is markes as pending.  If a message is provided it will be printed

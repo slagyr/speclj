@@ -6,10 +6,10 @@
             :url "file://LICENSE"
             :distribution :repo
             :comments "Copyright © 2011 Micah Martin All Rights Reserved."}
-  :dependencies [[org.clojure/clojure "1.2.0"]
+  :dependencies [[org.clojure/clojure "1.3.0"]
                  [fresh "1.0.2"]
                  [mmargs "1.2.0"]]
-  :dev-dependencies [[lein-clojars "0.6.0"]]
+  :dev-dependencies []
   :test-path "spec/"
   :java-source-path "src/"
   :uberjar-exclusions [#"^clojure/.*"]
