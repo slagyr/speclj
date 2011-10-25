@@ -1,7 +1,7 @@
 (ns speclj.core
   (:use
     [speclj.running :only (submit-description run-and-report)]
-    [speclj.reporting :only (report-message)]
+    [speclj.reporting :only (report-message*)]
     [speclj.tags :only (describe-filter)]
     [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
     [speclj.components]
@@ -18,8 +18,8 @@
   Declares a new characteristic (example in rspec)."
   [name & body]
   (if (seq body)
-    `(new-characteristic ~name (fn [] ~@body))
-    `(new-characteristic ~name (fn [] (pending)))))
+    `(new-characteristic ~name (fn [] (eval '~(conj body `do))))
+    `(new-characteristic ~name '((pending)))))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
@@ -47,13 +47,13 @@
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-before (fn [] ~@body)))
+  `(new-before (fn [] (eval '~(conj body `do)))))
 
 (defmacro after
   "Declares a function that is invoked after each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-after (fn [] ~@body)))
+  `(new-after (fn [] (eval '~(conj body `do)))))
 
 (defmacro around
   "Declares a function that will be invoked around each characteristic of the containing describe scope.
@@ -62,7 +62,7 @@
   (around [it] (binding [*out* new-out] (it)))
   "
   [binding & body]
-  `(new-around (fn ~binding ~@body)))
+  `(new-around (fn ~binding (eval '~(conj body `do)))))
 
 (defmacro before-all
   "Declares a function that is invoked once before any characteristic in the containing describe scope is evaluated. The
@@ -83,11 +83,9 @@
   (with meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (let [var-name (with-meta (symbol name) {:dynamic true})]
-    `(do
-       (let [with-component# (new-with '~var-name (fn [] ~@body))]
-         (declare ~var-name)
-         with-component#))))
+  `(do
+     (declare ~(with-meta (symbol name) {:dynamic true}))
+     (new-with '~name (fn [] (apply eval '~body)))))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -97,9 +95,8 @@
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   `(do
-     (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
-       (declare ~(symbol name))
-       with-all-component#)))
+     (declare ~(with-meta (symbol name) {:dynamic true}))
+     (new-with-all '~name (fn [] (apply eval '~body)))))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -227,5 +224,5 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
           config (merge (dissoc default-config :runner) config)]
       (with-bindings (config-mappings config)
         (if-let [filter-msg (describe-filter)]
-          (report-message (active-reporters) filter-msg))
+          (report-message* (active-reporters) filter-msg))
         (run-and-report (active-runner) (active-reporters))))))

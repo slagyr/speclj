@@ -1,5 +1,6 @@
 # Features to add
 
+* support jav-opts in speclj task
 * refactor reporters to composite pattern
 * .spec config file: available to plugins
 * exceptions during a spec run should not abort the rest of the examples ???
