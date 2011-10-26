@@ -1,7 +1,7 @@
 (ns speclj.core
   (:use
     [speclj.running :only (submit-description run-and-report)]
-    [speclj.reporting :only (report-message)]
+    [speclj.reporting :only (report-message*)]
     [speclj.tags :only (describe-filter)]
     [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
     [speclj.components]
@@ -26,19 +26,78 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
+(defmacro with
+  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
+  describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
+
+  (with meaning 42)
+  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  [name & body]
+  `(new-with '~name (fn [] ~@body)))
+
+(defmacro with-all
+  "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
+   the last of which will be the value of the dereferenced symbol.
+
+  (with-all meaning 42)
+  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  [name & body]
+  `(new-with-all '~name (fn [] ~@body)))
+
+(declare describe)
+(declare context)
+
+(defn- is-describe? [form]
+  (and
+    (seq? form)
+    (symbol? (first form))
+    (or
+      (= #'describe (resolve (first form)))
+      (= #'context (resolve (first form))))))
+
+(defn- is-with? [form]
+  (and
+    (seq? form)
+    (symbol? (first form))
+    (or
+      (= #'with (resolve (first form)))
+      (= #'with-all (resolve (first form))))))
+
+(defn- with-names [components]
+  (loop [children components with-names []]
+    (if (not (seq children))
+      with-names
+      (let [form (first children)]
+        (cond
+          (is-describe? form) (recur (rest (rest form)) with-names)
+          (is-with? form) (recur (rest children) (conj with-names (second form)))
+          :else (recur (rest children) with-names))))))
+
+(defn- with-declarations [components]
+  (for [with-name (with-names components)]
+    `(declare ~(with-meta (symbol with-name) {:dynamic true}))))
+
+(defn- describe-creation [name components]
+  `(let [description# (new-description ~name *ns*)]
+     (binding [*parent-description* description#]
+       (doseq [component# (list ~@components)]
+         (install component# description#)))
+     description#))
+
 (declare #^:dynamic *parent-description*)
 (defmacro describe
   "body => & spec-components
 
   Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
   [name & components]
-  `(let [description# (new-description ~name *ns*)]
-     (binding [*parent-description* description#]
-       (doseq [component# (list ~@components)]
-         (install component# description#)))
-     (if (not (bound? #'*parent-description*))
-       (submit-description (active-runner) description#))
-     description#))
+  (if (bound? #'*parent-description*)     ; This doesn't work.  How do I know if I'm evaling a root level 'describe' macro?
+    (describe-creation name components)
+    (concat
+      `(do)
+      (with-declarations components)
+      `((let [description# ~(describe-creation name components)]
+          (submit-description (active-runner) description#)
+          description#)))))
 
 (defmacro context [name & components]
   `(describe ~name ~@components))
@@ -75,31 +134,6 @@
   evaluated.  The body may consist of any forms, presumably ones that perform side effects."
   [& body]
   `(new-after-all (fn [] ~@body)))
-
-(defmacro with
-  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing 
-  describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
-
-  (with meaning 42)
-  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
-  [name & body]
-  (let [var-name (with-meta (symbol name) {:dynamic true})]
-    `(do
-       (let [with-component# (new-with '~var-name (fn [] ~@body))]
-         (declare ~var-name)
-         with-component#))))
-
-(defmacro with-all
-  "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
-   the last of which will be the value of the dereferenced symbol.
-
-  (with-all meaning 42)
-  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
-  [name & body]
-  `(do
-     (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
-       (declare ~(symbol name))
-       with-all-component#)))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -227,5 +261,5 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
           config (merge (dissoc default-config :runner) config)]
       (with-bindings (config-mappings config)
         (if-let [filter-msg (describe-filter)]
-          (report-message (active-reporters) filter-msg))
+          (report-message* (active-reporters) filter-msg))
         (run-and-report (active-runner) (active-reporters))))))
