@@ -1,7 +1,7 @@
 (ns speclj.core
   (:use
     [speclj.running :only (submit-description run-and-report)]
-    [speclj.reporting :only (report-message)]
+    [speclj.reporting :only (report-message*)]
     [speclj.tags :only (describe-filter)]
     [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
     [speclj.components]
@@ -226,5 +226,5 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
           config (merge (dissoc default-config :runner) config)]
       (with-bindings (config-mappings config)
         (if-let [filter-msg (describe-filter)]
-          (report-message (active-reporters) filter-msg))
+          (report-message* (active-reporters) filter-msg))
         (run-and-report (active-runner) (active-reporters))))))
