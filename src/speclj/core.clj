@@ -96,10 +96,11 @@
   (with-all meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
+  (let [var-name (with-meta (symbol name) {:dynamic true})]
   `(do
-     (let [with-all-component# (new-with-all '~name (fn [] ~@body))]
-       (declare ~(symbol name))
-       with-all-component#)))
+     (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
+       (declare ~var-name)
+       with-all-component#))))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))

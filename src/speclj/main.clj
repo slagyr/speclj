@@ -54,7 +54,7 @@
     (:tag options) (recur (dissoc (assoc options :tags (:tag options)) :tag))
     :else options))
 
-(defn exit [code]
+(defn #^:dynamic exit [code]
   (System/exit code))
 
 (defn usage [errors]
