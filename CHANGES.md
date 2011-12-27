@@ -1,6 +1,7 @@
 # 2.0.0
 
-* Works with and requires Clojure 1.4.0
+* Works with Clojure 1.4.0
+* Does NOT work with Clojure 1.3 dues to bug: http://dev.clojure.org/jira/browse/CLJ-876
 
 # 1.5.0
 
