@@ -13,18 +13,6 @@
 (describe "Running"
   (with runner (new-standard-runner))
   (around [_]
-    (println "#'runner: " (meta #'runner))
-    (println "(deref #'runner): " (deref #'runner))
-    (println "runner: " runner)
-    (println "PUBLICS")
-    (prn (ns-publics 'speclj.running-spec))
-    (doseq [[key val] (ns-publics 'speclj.running-spec)]
-      (println key (deref val)))
-    (println *ns*)
-    (println "runner: " runner)
-    (println "(ns-resolve 'speclj.running-spec runner): " (ns-resolve 'speclj.running-spec 'runner))
-    (println "deref (ns-resolve 'speclj.running-spec runner): " (deref (ns-resolve 'speclj.running-spec 'runner)))
-    (println "@runner: " @runner)
     (binding [*runner* @runner
               *reporters* [(new-silent-reporter)]
               *ns* (the-ns 'speclj.running-spec)]

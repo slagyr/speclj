@@ -1,3 +1,7 @@
+# 2.0.0
+
+* Works with and requires Clojure 1.4.0
+
 # 1.5.0
 
 * Improved stacktrace eliding for pagages starting with clojure./java./speclj.

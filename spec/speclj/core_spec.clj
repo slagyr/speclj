@@ -86,7 +86,7 @@
     (should= 2 @bauble))
   )
 
-(def #^:dynamic *gewgaw* 0)
+(def #^{:dynamic true} *gewgaw* 0)
 (describe "around forms"
   (it "allows characteristics to be wrapped by other forms" :filler)
   (around [it]
