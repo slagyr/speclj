@@ -1,6 +1,6 @@
 (ns speclj.config)
 
-(declare *reporters*)
+(declare #^{:dynamic true} *reporters*)
 (def default-reporters (atom nil))
 (defn active-reporters []
   (if (bound? #'*reporters*)
@@ -9,7 +9,7 @@
       reporters
       (throw (Exception. "*reporters* is unbound and no default value has been provided")))))
 
-(declare *runner*)
+(declare #^{:dynamic true} *runner*)
 (def default-runner (atom nil))
 (defn active-runner []
   (if (bound? #'*runner*)
@@ -18,13 +18,13 @@
       runner
       (throw (Exception. "*runner* is unbound and no default value has been provided")))))
 
-(declare *specs*)
+(declare #^{:dynamic true} *specs*)
 
-(def *color?* false)
+(def #^{:dynamic true} *color?* false)
 
-(def *full-stack-trace?* false)
+(def #^{:dynamic true} *full-stack-trace?* false)
 
-(def *tag-filter* {:include #{} :exclude #{}})
+(def #^{:dynamic true} *tag-filter* {:include #{} :exclude #{}})
 
 (def default-config {
   :specs ["spec"]

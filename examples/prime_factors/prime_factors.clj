@@ -6,7 +6,7 @@
   (loop [factors [] divisor 2 n n]
     (if (<= n 1)
       factors
-      (if (= 0 (mod n divisor))
+      (if (zero? (mod n divisor))
         (recur (conj factors divisor) divisor (/ n divisor))
         (recur factors (inc divisor) n)))))
 
@@ -46,6 +46,5 @@
 ;    (let [mercene (int (- (Math/pow 2 19) 1))]
 ;      (should= [mercene] (factors-of mercene))))
   )
-
 
 (run-specs)
