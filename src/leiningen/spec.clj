@@ -1,6 +1,6 @@
 (ns leiningen.spec
   (:use
-;    [leiningen.compile :only [eval-in-project]]
+    [clojure.java.io :only [file]]
     [leiningen.classpath :only [get-classpath-string]])
   (:import
     [java.io BufferedInputStream]))
@@ -12,10 +12,10 @@
         (.write out b)
         (recur (.read input))))))
 
-(defn- java [jvm-args main-class args]
+(defn- java [jvm-args main-class args working-directory]
   (let [java-exe (str (System/getProperty "java.home") "/bin/java")
         command (into-array (concat [java-exe] jvm-args [main-class] args))
-        process (.exec (Runtime/getRuntime) command)
+        process (.exec (Runtime/getRuntime) command nil (file working-directory))
         output (BufferedInputStream. (.getInputStream process))
         output-thread (Thread. #(copy-bytes output System/out))
         error (BufferedInputStream. (.getErrorStream process))
@@ -31,4 +31,4 @@
   (let [speclj-args (cons "-c" args)
         classpath (get-classpath-string project)
         jvm-args ["-cp" classpath "-Dspeclj.invocation=lein spec"]]
-    (java jvm-args "speclj.main" speclj-args)))
+    (java jvm-args "speclj.main" speclj-args (:root project))))
