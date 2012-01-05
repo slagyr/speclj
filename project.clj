@@ -6,7 +6,7 @@
             :url "file://LICENSE"
             :distribution :repo
             :comments "Copyright © 2011 Micah Martin All Rights Reserved."}
-  :dependencies [[org.clojure/clojure "1.3.0"]
+  :dependencies [[org.clojure/clojure "1.4.0-alpha3"]
                  [fresh "1.0.2"]
                  [mmargs "1.2.0"]]
   :dev-dependencies []

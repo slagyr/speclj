@@ -90,8 +90,8 @@
   (let [tag-sets (tag-sets-for description)]
     (when (some pass-tag-filter? tag-sets)
       (report-description* reporters description)
-      (eval-components @(.before-alls description))
       (with-bindings (withs-mapping description)
+        (eval-components @(.before-alls description))
         (try
           (let [results (results-for-context description reporters)]
             (do-child-contexts description results reporters))

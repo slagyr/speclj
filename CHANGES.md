@@ -1,3 +1,7 @@
+# 2.0.1
+
+* before-all's can use values from with-all's
+
 # 2.0.0
 
 * Works with Clojure 1.4.0
