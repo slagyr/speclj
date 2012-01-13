@@ -4,4 +4,4 @@ classes
 out
 *.jar
 .idea
-.lein-deps-sum
+*.lein-deps-sum
