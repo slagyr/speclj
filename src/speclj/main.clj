@@ -3,7 +3,7 @@
     [speclj.running :only (run-directories run-and-report)]
     [speclj.util :only (endl)]
     [speclj.config]
-    [speclj.reporting :only (print-stack-trace report-message)]
+    [speclj.reporting :only (print-stack-trace report-message*)]
     [speclj.tags :only (describe-filter)])
   (:require
     [speclj.version])
@@ -88,7 +88,7 @@
   (with-bindings (config-mappings config)
     (try
       (if-let [filter-msg (describe-filter)]
-        (report-message *reporters* filter-msg))
+        (report-message* *reporters* filter-msg))
       (exit (run-directories *runner* *specs* *reporters*))
       (catch Exception e
         (.printStackTrace e)

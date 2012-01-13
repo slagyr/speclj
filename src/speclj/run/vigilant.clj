@@ -27,12 +27,8 @@
   true)
 
 (defn- reload-files [runner current-results]
-  (println "fails: " (map ns-to-file (ns-for-results @(.previous-failed runner))))
-  (println "reloads: " current-results)
-
   (let [previous-failed-files (map ns-to-file (ns-for-results @(.previous-failed runner)))
         files-to-reload (set (concat previous-failed-files current-results))]
-      (println "to reloads: " files-to-reload)
       (swap! (.file-listing runner) #(apply dissoc % previous-failed-files))
       (make-fresh (.file-listing runner) files-to-reload report-update)
     )

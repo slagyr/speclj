@@ -1,3 +1,9 @@
+# 2.1.0
+
+* Vigilant runner will remember failing tests and rerun them until they pass
+* leiningen spec task will always run in project root
+* tags in the command line work again
+
 # 2.0.1
 
 * before-all's can use values from with-all's
