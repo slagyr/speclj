@@ -18,7 +18,7 @@
   (with reporters [(new-silent-reporter)])
 
   (it "returns 0 failures when all tests pass"
-    (should= 0 (run-directories @runner [prime-factors-dir] @reporters)))
+    (should= 1 (run-directories @runner [prime-factors-dir] @reporters)))
 
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters))))

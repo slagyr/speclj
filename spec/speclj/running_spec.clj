@@ -1,7 +1,7 @@
 (ns speclj.running-spec
   (:use
     [speclj.core]
-    [speclj.running :only (run-and-report)]
+    [speclj.running :only (run-and-report clj-files-in)]
     [speclj.results :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.config :only (*reporters* *runner* *tag-filter*)]
@@ -89,6 +89,6 @@
         (should= 1 (count results))
         (should= "one, two tag" (.name (.characteristic (first results)))))))
 
-    )
+  )
 
-  (run-specs)
+(run-specs)
