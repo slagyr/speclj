@@ -107,6 +107,6 @@
 (def clj-file-regex #".*\.clj")
 (defn clj-files-in [& dirs]
   (let [files (reduce #(into %1 (file-seq (File. %2))) [] dirs)]
-    (filter #(re-matches clj-file-regex (.getName %)) files)))
+    (map #(.getCanonicalFile %) (filter #(re-matches clj-file-regex (.getName %)) files))))
 
 

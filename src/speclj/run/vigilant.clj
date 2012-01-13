@@ -12,28 +12,39 @@
 
 (def start-time (atom 0))
 
-(defn- report-update [msg report]
+(defn- ns-for-results [results]
+  (set (map #(str (.ns @(.. % characteristic parent))) results))
+  )
+
+(defn- report-update [report]
   (let [reporters (active-reporters)
         reloads (:reloaded report)]
     (when (seq reloads)
       (report-message* reporters (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
       (report-message* reporters (str "took " (str-time-since @start-time) " to determine file statuses."))
-      (report-message* reporters msg)
+      (report-message* reporters "reloading files:")
       (doseq [file reloads] (report-message* reporters (str "  " (.getCanonicalPath file))))))
   true)
 
-(defn- ns-for-results [results]
-  (set (map #(str (.ns @(.. % characteristic parent))) results))
-  )
+(defn- reload-files [runner current-results]
+  (println "fails: " (map ns-to-file (ns-for-results @(.previous-failed runner))))
+  (println "reloads: " current-results)
 
-(defn- reload-failed [previous-failed current-results]
-  (when-let [prev-fail previous-failed]
-    (let [ns-to-reload (clojure.set/difference (ns-for-results prev-fail) (ns-for-results current-results))]
-      (reset! start-time (System/nanoTime))
-      (make-fresh (atom {}) (map ns-to-file ns-to-reload) (partial report-update "reloading previously failed files:"))
-      )
+  (let [previous-failed-files (map ns-to-file (ns-for-results @(.previous-failed runner)))
+        files-to-reload (set (concat previous-failed-files current-results))]
+      (println "to reloads: " files-to-reload)
+      (swap! (.file-listing runner) #(apply dissoc % previous-failed-files))
+      (make-fresh (.file-listing runner) files-to-reload report-update)
     )
   )
+
+(defn- reload-report [runner report]
+  (let [reloads (:reloaded report)]
+    (when (seq reloads)
+      (reload-files runner reloads)
+      )
+    )
+  false)
 
 (defn- tick [configuration]
   (with-bindings configuration
@@ -41,21 +52,20 @@
           reporters (active-reporters)]
       (try
         (reset! start-time (System/nanoTime))
-        (@(.reloader runner))
+        (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories-to-load runner))) (partial reload-report runner))
         (when (seq @(.results runner))
-          (reload-failed (seq @(.previous-failed runner)) (seq @(.results runner)))
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
         (catch Exception e (print-stack-trace e *out*)))
       (reset! (.results runner) []))))
 
-(deftype VigilantRunner [reloader results previous-failed]
+(deftype VigilantRunner [file-listing results previous-failed directories-to-load]
   Runner
   (run-directories [this directories reporters]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
           configuration (config-bindings)
           runnable (fn [] (tick configuration))]
-      (reset! reloader (freshener #(set (apply clj-files-in directories)) (partial report-update "reloading files:")))
+      (reset! directories-to-load directories)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))
@@ -74,5 +84,5 @@
   (toString [this] (.toString this)))
 
 (defn new-vigilant-runner []
-  (VigilantRunner. (atom nil) (atom []) (atom [])))
+  (VigilantRunner. (atom {}) (atom []) (atom []) (atom nil)))
 

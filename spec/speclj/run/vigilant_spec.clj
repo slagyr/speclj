@@ -7,7 +7,6 @@
   (with runner (new-vigilant-runner))
 
   (it "can be created"
-    (should= nil @(.reloader @runner))
     (should= [] @(.results @runner)))
 
   )
