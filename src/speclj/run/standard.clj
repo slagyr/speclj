@@ -1,9 +1,11 @@
 (ns speclj.run.standard
   (:use
-    [speclj.running :only (do-description run-and-report run-description clj-files-in)]
+    [speclj.running :only (do-description run-and-report run-description)]
     [speclj.reporting :only (report-runs*)]
     [speclj.results :only (fail-count)]
-    [speclj.config :only (default-runner *runner* *reporters*)])
+    [speclj.config :only (default-runner *runner* *reporters*)]
+    [fresh.core :only (clj-files-in)]
+    [clojure.java.io :only (file)])
   (:import
     [speclj.running Runner]))
 
@@ -16,7 +18,8 @@
 (deftype StandardRunner [descriptions results]
   Runner
   (run-directories [this directories reporters]
-    (let [files (apply clj-files-in directories)
+    (let [dir-files (map file directories)
+          files (apply clj-files-in dir-files)
           files (sort files)]
       (binding [*runner* this *reporters* reporters]
         (doseq [file files]

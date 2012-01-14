@@ -104,9 +104,3 @@
   (run-description [this description reporters])
   (run-and-report [this reporters]))
 
-(def clj-file-regex #".*\.clj")
-(defn clj-files-in [& dirs]
-  (let [files (reduce #(into %1 (file-seq (File. %2))) [] dirs)]
-    (map #(.getCanonicalFile %) (filter #(re-matches clj-file-regex (.getName %)) files))))
-
-

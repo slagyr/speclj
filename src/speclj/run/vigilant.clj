@@ -1,11 +1,12 @@
 (ns speclj.run.vigilant
   (:use
-    [speclj.running :only (do-description run-and-report run-description clj-files-in)]
+    [speclj.running :only (do-description run-and-report run-description)]
     [speclj.util]
     [speclj.results :only (categorize)]
     [speclj.reporting :only (report-runs* report-message* print-stack-trace)]
     [speclj.config :only (active-runner active-reporters config-bindings *specs*)]
-    [fresh.core :only (freshener make-fresh ns-to-file)])
+    [fresh.core :only (freshener make-fresh ns-to-file clj-files-in)]
+    [clojure.java.io :only (file)])
   (:import
     [speclj.running Runner]
     [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
@@ -48,20 +49,21 @@
           reporters (active-reporters)]
       (try
         (reset! start-time (System/nanoTime))
-        (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories-to-load runner))) (partial reload-report runner))
+        (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories runner))) (partial reload-report runner))
         (when (seq @(.results runner))
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
         (catch Exception e (print-stack-trace e *out*)))
       (reset! (.results runner) []))))
 
-(deftype VigilantRunner [file-listing results previous-failed directories-to-load]
+(deftype VigilantRunner [file-listing results previous-failed directories]
   Runner
   (run-directories [this directories reporters]
     (let [scheduler (ScheduledThreadPoolExecutor. 1)
           configuration (config-bindings)
-          runnable (fn [] (tick configuration))]
-      (reset! directories-to-load directories)
+          runnable (fn [] (tick configuration))
+          dir-files (map file directories)]
+      (reset! (.directories this) dir-files)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))
@@ -81,4 +83,3 @@
 
 (defn new-vigilant-runner []
   (VigilantRunner. (atom {}) (atom []) (atom []) (atom nil)))
-
