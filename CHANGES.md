@@ -1,3 +1,7 @@
+# 2.1.1
+
+* 2.1.0 is broken for some reason
+
 # 2.1.0
 
 * Vigilant runner will remember failing tests and rerun them until they pass
