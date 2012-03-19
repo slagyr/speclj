@@ -41,8 +41,7 @@
   ([filter]
     (let [includes (seq (map name (:includes filter)))
           excludes (seq (map name (:excludes filter)))]
-    (if (or includes excludes)
+    (when (or includes excludes)
       (str "Filtering tags."
         (when includes (str " Including: " (join ", " includes) "."))
-        (when excludes (str " Excluding: " (join ", " excludes) ".")))
-      nil))))
+        (when excludes (str " Excluding: " (join ", " excludes) ".")))))))

@@ -4,6 +4,8 @@
     [speclj.results :only (pass? fail? pending? categorize)]
     [speclj.util :only (seconds-format)]
     [speclj.config :only (default-reporters)])
+  (:require
+    [clojure.string :as str])
   (:import
     [speclj.reporting Reporter]
     [speclj SpecFailure]))
@@ -54,11 +56,11 @@
   (let [tally (zipmap (keys result-map) (map count (vals result-map)))
         always-on-counts [(str (apply + (vals tally)) " examples")
                           (str (:fail tally) " failures")]]
-    (apply str
-      (interpose ", "
-        (if (> (:pending tally) 0)
-          (conj always-on-counts (str (:pending tally) " pending"))
-          always-on-counts)))))
+
+    (str/join ", "
+      (if (pos? (:pending tally))
+        (conj always-on-counts (str (:pending tally) " pending"))
+        always-on-counts))))
 
 (defn- print-tally [result-map]
   (let [color-fn (color-fn-for result-map)]

@@ -8,7 +8,7 @@
 (defn- copy-bytes [in out]
   (with-open [input in]
     (loop [b (.read input)]
-      (when (not (= -1 b))
+      (when-not (= -1 b)
         (.write out b)
         (recur (.read input))))))
 

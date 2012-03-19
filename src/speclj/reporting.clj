@@ -66,7 +66,7 @@
 
 
 (defn- print-elides [n]
-  (if (< 0 n)
+  (if (pos? n)
     (println "\t..." n "stack levels elided ...")))
 
 (declare print-exception)
@@ -79,7 +79,7 @@
           (recur (rest levels) (inc elides))
           (do
             (print-elides elides)
-            (println "\tat" (.toString level))
+            (println "\tat" (str level))
             (recur (rest levels) 0))))
       (print-elides elides)))
   (if-let [cause (.getCause exception)]
@@ -87,8 +87,8 @@
 
 (defn- print-exception [prefix exception]
   (if prefix
-    (println prefix (.toString exception))
-    (println (.toString exception)))
+    (println prefix (str exception))
+    (println (str exception)))
   (print-stack-levels exception))
 
 (defn stack-trace [exception]
@@ -97,7 +97,7 @@
       (if *full-stack-trace?*
         (.printStackTrace exception *out*)
         (print-exception nil exception)))
-    (.toString output)))
+    (str output)))
 
 (defn print-stack-trace [exception writer]
   (if *full-stack-trace?*

@@ -19,13 +19,13 @@
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
-    "  [d]ocumentation:  (description/context and characteristic names)" endl
-    "  [p]rogress:       (default - dots)" endl
-    "  [s]ilent:         (no output)" endl))
+                                               "  [d]ocumentation:  (description/context and characteristic names)" endl
+                                               "  [p]rogress:       (default - dots)" endl
+                                               "  [s]ilent:         (no output)" endl))
   (.addMultiOption "f" "format" "FORMAT" "An alias for reporter.")
   (.addValueOption "r" "runner" "RUNNER" (str "Specifies the spec runner.  Builtin runners:" endl
-    "  [s]tandard:  (default) Runs all the specs once" endl
-    "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+                                           "  [s]tandard:  (default) Runs all the specs once" endl
+                                           "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
   (.addMultiOption "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
   (.addSwitchOption "h" "help" "You're looking at it.")
@@ -58,11 +58,10 @@
   (System/exit code))
 
 (defn usage [errors]
-  (if (seq errors)
-    (do
-      (println "ERROR!!!")
-      (doseq [error (seq errors)]
-        (println error))))
+  (when (seq errors)
+    (println "ERROR!!!")
+    (doseq [error (seq errors)]
+      (println error)))
   (println)
   (println "Usage: " speclj-invocation (.argString arg-spec))
   (println)
