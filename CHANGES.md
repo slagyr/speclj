@@ -1,3 +1,7 @@
+# 2.1.2
+
+* Errors (as opposed to Exceptions) no longer abort test runs
+
 # 2.1.1
 
 * 2.1.0 is broken for some reason

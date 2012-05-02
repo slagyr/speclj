@@ -56,7 +56,7 @@
         (report-result pass-result characteristic start-time reporters nil))
       (catch SpecPending p
         (report-result pending-result characteristic start-time reporters p))
-      (catch Exception e
+      (catch Throwable e
         (report-result fail-result characteristic start-time reporters e))
       (finally
         (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
