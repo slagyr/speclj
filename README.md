@@ -105,6 +105,10 @@ The command below will start a process that will watch the source files and run 
 
 	$ java -cp <...> speclj.main -a
 	
+You can also run the watcher through Leiningen. The benefit of that is that the color of the output is preserved.
+
+	$ lein spec -a
+	
 ## Options
 There are several options for the runners.  Use the `--help` options to see them all.  Or visit [Command Line Options](https://github.com/slagyr/speclj/wiki/Command-Line-Options).
 
