@@ -4,7 +4,7 @@
 
 (def major 2)
 (def minor 1)
-(def tiny 2)
+(def tiny 3)
 (def snapshot false)
 (def string
   (str

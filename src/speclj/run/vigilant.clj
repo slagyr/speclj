@@ -53,7 +53,7 @@
         (when (seq @(.results runner))
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
-        (catch Exception e (print-stack-trace e *out*)))
+        (catch Throwable e (print-stack-trace e *out*)))
       (reset! (.results runner) []))))
 
 (deftype VigilantRunner [file-listing results previous-failed directories]

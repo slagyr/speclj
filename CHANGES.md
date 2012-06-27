@@ -1,3 +1,7 @@
+# 2.1.3
+
+* Throwables are now caught by vigilant runner when loading files.  Errors used to fail silently.
+
 # 2.1.2
 
 * Errors (as opposed to Exceptions) no longer abort test runs
