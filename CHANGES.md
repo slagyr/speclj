@@ -1,3 +1,7 @@
+# 2.2.0
+
+* Support for Leiningen 2
+
 # 2.1.3
 
 * Throwables are now caught by vigilant runner when loading files.  Errors used to fail silently.
