@@ -9,7 +9,7 @@ You will need [Leiningen](https://github.com/technomancy/leiningen) version 1.4 
 
 Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
 
-	:dev-dependencies [[speclj "1.2.0"]]
+	:dev-dependencies [[speclj "2.1.2"]]
 	:test-path "spec/"
 	
 ## Manual installation	
@@ -104,6 +104,10 @@ The command below will run all the specs found in `"spec"` directory.
 The command below will start a process that will watch the source files and run spec for any updated files.
 
 	$ java -cp <...> speclj.main -a
+	
+You can also run the watcher through Leiningen. The benefit of that is that the color of the output is preserved.
+
+	$ lein spec -a
 	
 ## Options
 There are several options for the runners.  Use the `--help` options to see them all.  Or visit [Command Line Options](https://github.com/slagyr/speclj/wiki/Command-Line-Options).
