@@ -35,9 +35,8 @@
 (defn- prepare [project]
   (try
     (require 'leiningen.core.eval)
-    ((ns-resolve 'leiningen.core.eval 'prep)
-       project)
-    (catch Exception e
+    ((ns-resolve 'leiningen.core.eval 'prep) project)
+    (catch java.io.FileNotFoundException e
       (require 'leiningen.classpath
                'leiningen.compile)
       ((ns-resolve 'leiningen.compile 'prep) project false))))
