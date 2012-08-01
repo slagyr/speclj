@@ -13,7 +13,7 @@ Include speclj in your `:dependencies` and `:plugins`, and also change the `:tes
 	:dependencies [[speclj "2.1.2"]
                    [org.clojure/clojure "1.4.0"]]
 	:plugins [[speclj "2.1.2"]]
-	:test-path "spec/"
+	:test-paths ["spec/"]
 
 ### Leiningen version 1.x
 Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
