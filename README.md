@@ -11,8 +11,8 @@ You will need [Leiningen](https://github.com/technomancy/leiningen) version 1.4 
 Include speclj in your `:dependencies` and `:plugins`, and also change the `:test-path` to `"spec/"`
 
 	:dependencies [[speclj "2.1.2"]
-                       [org.clojure/clojure "1.4.0"]]
-	:plugin [[speclj "2.1.2"]]
+                   [org.clojure/clojure "1.4.0"]]
+	:plugins [[speclj "2.1.2"]]
 	:test-path "spec/"
 
 ### Leiningen version 1.x
