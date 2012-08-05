@@ -1,4 +1,4 @@
-# speclj #
+# speclj [![Build Status](https://secure.travis-ci.org/slagyr/speclj.png?branch=master)](http://travis-ci.org/slagyr/speclj)
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](http://rspec.info/).
 
