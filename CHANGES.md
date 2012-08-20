@@ -1,3 +1,8 @@
+# 2.3.0
+
+* Includes lein template by @bcmcgavin to create new speclj projects. https://github.com/slagyr/speclj/pull/23
+* Updates 'lein spec' task by @mylesmegyesi to be compatible with lein2 deprecations. https://github.com/slagyr/speclj/pull/24
+
 # 2.2.0
 
 * Support for Leiningen 2
