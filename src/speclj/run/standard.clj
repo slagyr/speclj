@@ -35,6 +35,7 @@
       (swap! results into run-results)))
 
   (run-and-report [this reporters]
+    (reset! results [])
     (doseq [description @descriptions]
       (run-description this description reporters))
     (report-runs* reporters @results)))
@@ -42,4 +43,4 @@
 (defn new-standard-runner []
   (StandardRunner. (atom []) (atom [])))
 
-(swap! default-runner (fn [_] (new-standard-runner)))
+(reset! default-runner (new-standard-runner))

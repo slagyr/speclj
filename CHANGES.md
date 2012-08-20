@@ -2,6 +2,7 @@
 
 * Includes lein template by @bcmcgavin to create new speclj projects. https://github.com/slagyr/speclj/pull/23
 * Updates 'lein spec' task by @mylesmegyesi to be compatible with lein2 deprecations. https://github.com/slagyr/speclj/pull/24
+* Running specs in the REPL doesnt accumulate results any longer.
 
 # 2.2.0
 

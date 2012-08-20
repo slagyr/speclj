@@ -2,8 +2,8 @@
   (:use
     [speclj.core]
     [speclj.run.standard]
-    [speclj.running :only (run-directories)]
-    [speclj.config :only (active-reporters)]
+    [speclj.running :only (run-directories run-and-report)]
+    [speclj.config :only (active-reporters *runner*)]
     [speclj.report.silent :only (new-silent-reporter)]
     [speclj.spec-helper :only (find-dir)])
   (:import
@@ -21,6 +21,14 @@
     (should= 0 (run-directories @runner [prime-factors-dir] @reporters)))
 
   (it "returns lots-o failures when running failure example"
-    (should= 8 (run-directories @runner [failures-dir] @reporters))))
+    (should= 8 (run-directories @runner [failures-dir] @reporters)))
+
+  (it "resets the results on each run"
+    (binding [*runner* @runner]
+      (describe "Test Describe" (it "runs" (should= 1 1))))
+    (run-and-report @runner @reporters)
+    (run-and-report @runner @reporters)
+    (should= 1 (count @(.results @runner))))
+)
 
 (run-specs)
