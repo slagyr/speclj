@@ -1,6 +1,7 @@
 (ns leiningen.spec
   (:use
-    [clojure.java.io :only [file]])
+    [clojure.java.io :only [file]]
+    [leiningen.core.main :only [exit]])
   (:import
     [java.io BufferedInputStream]))
 
@@ -46,4 +47,4 @@
   (let [speclj-args (cons "-c" args)
         classpath (compute-classpath-string project)
         jvm-args ["-cp" classpath "-Dspeclj.invocation=lein spec"]]
-    (java jvm-args "speclj.main" speclj-args (:root project))))
+    (exit (java jvm-args "speclj.main" speclj-args (:root project)))))
