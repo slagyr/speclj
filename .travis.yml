@@ -1,3 +1,3 @@
 language: clojure
-before_script: "lein compile"
+before_script: "lein javac"
 script: "lein spec"
