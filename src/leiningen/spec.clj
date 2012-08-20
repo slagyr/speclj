@@ -1,7 +1,6 @@
 (ns leiningen.spec
   (:use
-    [clojure.java.io :only [file]]
-    [leiningen.core.main :only [exit]])
+    [clojure.java.io :only [file]])
   (:import
     [java.io BufferedInputStream]))
 
@@ -29,8 +28,8 @@
 
 (defn- compute-classpath-string [project]
   (clojure.string/join java.io.File/pathSeparatorChar
-        ((or (ns-resolve (create-ns 'leiningen.classpath) 'get-classpath)
-             (ns-resolve (create-ns 'leiningen.core.classpath) 'get-classpath))
+        ((or (ns-resolve (the-ns 'leiningen.classpath) 'get-classpath)
+             (ns-resolve (the-ns 'leiningen.core.classpath) 'get-classpath))
           project)))
 
 (defn- prepare [project]
@@ -47,4 +46,8 @@
   (let [speclj-args (cons "-c" args)
         classpath (compute-classpath-string project)
         jvm-args ["-cp" classpath "-Dspeclj.invocation=lein spec"]]
-    (exit (java jvm-args "speclj.main" speclj-args (:root project)))))
+    (try
+      (require 'leiningen.core.main)
+      ((ns-resolve (the-ns 'leiningen.core.main) 'exit) (java jvm-args "speclj.main" speclj-args (:root project)))
+      (catch java.io.FileNotFoundException e
+        (java jvm-args "speclj.main" speclj-args (:root project))))))
