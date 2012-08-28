@@ -38,6 +38,7 @@
     (reset! results [])
     (doseq [description @descriptions]
       (run-description this description reporters))
+    (reset! descriptions [])
     (report-runs* reporters @results)))
 
 (defn new-standard-runner []

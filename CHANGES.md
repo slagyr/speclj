@@ -1,3 +1,7 @@
+# 2.3.1
+
+* Standard runner clears descriptions after each run.
+
 # 2.3.0
 
 * Includes lein template by @bcmcgavin to create new speclj projects. https://github.com/slagyr/speclj/pull/23

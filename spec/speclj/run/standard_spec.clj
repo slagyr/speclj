@@ -23,12 +23,21 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
-  (it "resets the results on each run"
+  (it "resets the results before each run"
     (binding [*runner* @runner]
       (describe "Test Describe" (it "runs" (should= 1 1))))
     (run-and-report @runner @reporters)
+    (binding [*runner* @runner]
+      (describe "Test Describe" (it "runs" (should= 1 1))))
     (run-and-report @runner @reporters)
     (should= 1 (count @(.results @runner))))
+
+  (it "resets the descriptions after each run"
+    (binding [*runner* @runner]
+      (describe "Test Describe" (it "runs" (should= 1 1))))
+    (should= 1 (count @(.descriptions @runner)))
+    (run-and-report @runner @reporters)
+    (should= 0 (count @(.descriptions @runner))))
 )
 
 (run-specs)
