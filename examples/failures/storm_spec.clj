@@ -1,4 +1,4 @@
-(ns storm
+(ns failures.storm-spec
   (:use
     [speclj.core]))
 

@@ -1,13 +1,5 @@
-(ns basics.basic-spec
+(ns basics.calulator-spec
   (:use [speclj.core]))
-
-(describe "Truth"
-
-  (it "is true"
-    (should true))
-
-  (it "is not false"
-    (should-not false)))
 
 (describe "Calculator"
 
@@ -28,7 +20,6 @@
     (should= "3.14159" (.format @nice-format Math/PI)))
 
   (it "knows the answer"
-    (should= 42 *the-answer*))
-  )
+    (should= 42 *the-answer*)))
 
 (run-specs)

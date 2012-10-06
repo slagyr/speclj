@@ -1,4 +1,4 @@
-(ns prime-factors
+(ns prime-factors.prime-factors
   (:use
     [speclj.core]))
 
