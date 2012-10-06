@@ -105,7 +105,7 @@
   `(do
      (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
        (declare ~var-name)
-       (install with-all-component# *parent-description*)))))
+       (-install with-all-component#)))))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
