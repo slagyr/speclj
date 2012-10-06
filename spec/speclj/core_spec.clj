@@ -239,8 +239,13 @@
 
   (context "child2"
     (tags :four :five)
-    (it "tag :one :three :four" :filler))
-  )
+    (it "tag :one :three :four" :filler)))
+
+(describe "defs can be added to specs"
+  (defn a-fn [] true)
+
+  (it "uses the def within the describe"
+    (should (a-fn))))
 
 ;(run-specs :tags ["two"])
 (run-specs)

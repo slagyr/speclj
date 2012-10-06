@@ -12,33 +12,38 @@
   (:import
     [speclj SpecFailure SpecPending]))
 
+(declare #^:dynamic *parent-description*)
+
+(defn -install [component]
+  (when (bound? #'*parent-description*)
+    (install component *parent-description*)))
+
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]
   (if (seq body)
-    `(new-characteristic ~name (fn [] ~@body))
-    `(new-characteristic ~name (fn [] (pending)))))
+    `(-install (new-characteristic ~name (fn [] ~@body)))
+    `(-install (new-characteristic ~name (fn [] (pending))))))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
   [name & body]
   `(it ~name (pending) ~@body))
 
-(declare #^:dynamic *parent-description*)
 (defmacro describe
   "body => & spec-components
 
   Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
-  [name & components]
+  [name & body]
   `(let [description# (new-description ~name *ns*)]
-     (binding [*parent-description* description#]
-       (doseq [component# (list ~@components)]
-         (install component# description#)))
-     (if (not (bound? #'*parent-description*))
-       (submit-description (active-runner) description#))
-     description#))
+    (binding [*parent-description* description#]
+      ~@body)
+    (-install description#)
+    (if (not (bound? #'*parent-description*))
+      (submit-description (active-runner) description#))
+      description#))
 
 (defmacro context [name & components]
   `(describe ~name ~@components))
@@ -47,13 +52,13 @@
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-before (fn [] ~@body)))
+  `(-install (new-before (fn [] ~@body))))
 
 (defmacro after
   "Declares a function that is invoked after each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-after (fn [] ~@body)))
+  `(-install (new-after (fn [] ~@body))))
 
 (defmacro around
   "Declares a function that will be invoked around each characteristic of the containing describe scope.
@@ -62,22 +67,22 @@
   (around [it] (binding [*out* new-out] (it)))
   "
   [binding & body]
-  `(new-around (fn ~binding ~@body)))
+  `(-install (new-around (fn ~binding ~@body))))
 
 (defmacro before-all
   "Declares a function that is invoked once before any characteristic in the containing describe scope is evaluated. The
   body may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-before-all (fn [] ~@body)))
+  `(-install (new-before-all (fn [] ~@body))))
 
 (defmacro after-all
   "Declares a function that is invoked once after all the characteristics in the containing describe scope have been
   evaluated.  The body may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(new-after-all (fn [] ~@body)))
+  `(-install (new-after-all (fn [] ~@body))))
 
 (defmacro with
-  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing 
+  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
 
   (with meaning 42)
@@ -87,7 +92,7 @@
     `(do
        (let [with-component# (new-with '~var-name (fn [] ~@body))]
          (declare ~var-name)
-         with-component#))))
+         (-install with-component#)))))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -100,7 +105,7 @@
   `(do
      (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
        (declare ~var-name)
-       with-all-component#))))
+       (install with-all-component# *parent-description*)))))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -214,8 +219,8 @@ When a string is also passed, it asserts that the message of the Exception is eq
 
   (tags :one :two)"
   [& values]
-  (let [tag-kws (map keyword values)]
-    (map new-tag tag-kws)))
+  (doseq [value values]
+    (-install (new-tag (keyword value)))))
 
 (defn run-specs [& configurations]
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default

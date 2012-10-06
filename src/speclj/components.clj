@@ -3,21 +3,6 @@
 (defprotocol SpecComponent
   (install [this description]))
 
-(extend-type java.lang.Object
-  SpecComponent
-  (install [this description]
-    (throw (Exception. (str "Oops!  It looks like you tried to add a " (class this) ":" this " to a spec.  That's not allowed.")))))
-
-(extend-type nil
-  SpecComponent
-  (install [this description]
-    (throw (Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's not allowed.")))))
-
-(extend-type clojure.lang.Seqable
-  SpecComponent
-  (install [this description]
-    (doseq [component (seq this)] (install component description))))
-
 (deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]
   SpecComponent
   (install [this description]
