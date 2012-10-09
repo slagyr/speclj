@@ -13,6 +13,10 @@
   (install [this description]
     (throw (Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's not allowed.")))))
 
+(extend-type clojure.lang.Var
+  SpecComponent
+  (install [this description] (comment "Vars are cool.  Let them pass.")))
+
 (extend-type clojure.lang.Seqable
   SpecComponent
   (install [this description]

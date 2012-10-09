@@ -2,9 +2,10 @@
   (:use [speclj.core]))
 
 
-(declare ^:dynamic *the-answer*)
 
 (describe "Calculator"
+
+  (declare ^:dynamic *the-answer*)
 
   (before (println "A spec is about to be evaluated"))
   (after (println "A spec has just been evaluated"))
