@@ -1,3 +1,7 @@
+# ???
+
+* Vars (helpers fns and such) can be delcared inside contexts.  Good suggestion by @mylesmegyesi.
+
 # 2.3.1
 
 * Standard runner clears descriptions after each run.
