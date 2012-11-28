@@ -1,6 +1,7 @@
 (ns leiningen.spec
   (:use
-    [clojure.java.io :only [file]])
+    [clojure.java.io :only [file]]
+    [speclj.main :only [arg-spec]])
   (:import
     [java.io BufferedInputStream]))
 
@@ -41,7 +42,11 @@
                'leiningen.compile)
       ((ns-resolve 'leiningen.compile 'prep) project false))))
 
-(defn spec [project & args]
+(defn
+  ^{ :doc (str "Usage: lein spec " (.argString arg-spec) "\n" (.parametersString arg-spec) "\n" (.optionsString arg-spec)) }
+  spec
+  [project & args]
+
   (prepare project)
   (let [speclj-args (cons "-c" args)
         classpath (compute-classpath-string project)
