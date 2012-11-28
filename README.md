@@ -20,7 +20,7 @@ Include speclj in your `:dependencies` and `:plugins`, and also change the `:tes
 For options at the command line, run:
 
 ```bash
-lein spec --help
+$ lein spec --help
 ```
 
 ### Leiningen version 1.x
@@ -169,10 +169,10 @@ speclj uses [Leiningen](https://github.com/technomancy/leiningen) version 1.4.0.
 Clone the master branch, build, and run all the tests:
 
 ```bash
-git clone https://github.com/slagyr/speclj.git
-cd speclj
-lein javac
-lein spec
+$ git clone https://github.com/slagyr/speclj.git
+$ cd speclj
+$ lein javac
+$ lein spec
 ```
 
 Make patches and submit them along with an issue (see below).
