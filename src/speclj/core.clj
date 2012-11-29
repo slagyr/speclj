@@ -77,7 +77,7 @@
   `(new-after-all (fn [] ~@body)))
 
 (defmacro with
-  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing 
+  "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
 
   (with meaning 42)
@@ -155,6 +155,13 @@
   "Asserts that the form evaluates to nil"
   [form]
   `(should= nil ~form))
+
+(defmacro should-contain
+  "Asserts that the string is contained within another string"
+  ([seeking-str within-str]
+     `(let [seeking# ~seeking-str within# ~within-str]
+        (if (not (.contains within# seeking#))
+          (throw (SpecFailure. (str "Expected: " (-to-s seeking#) endl "to be in: " (-to-s within#) " (using .contains)")))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"

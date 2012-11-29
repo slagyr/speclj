@@ -83,6 +83,11 @@
     (should-fail! (should-be-nil true))
     (should-fail! (should-be-nil false)))
 
+  (it "should-contain checks for containmentship of precise strings"
+    (should-pass! (should-contain "foo" "foobar"))
+    (should-fail! (should-contain "foo" "bar"))
+    (should-fail! (should-contain "foo" "Foo")))
+
   (it "should-not-be-nil checks for inequality with nil"
     (should-fail! (should-not-be-nil nil))
     (should-pass! (should-not-be-nil true))
