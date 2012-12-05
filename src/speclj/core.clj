@@ -186,13 +186,13 @@
           (recur r match-against (conj diff f)))))))
 
 (defn difference-message [expected actual extra missing]
-  (-> (str "Expected collection contained:  " (prn-str expected) "Actual collection contained:    " (prn-str actual))
+  (-> (str "Expected collection contained:  " (-to-s expected) endl "Actual collection contained:    " (-to-s actual))
     (#(if (empty? missing)
        %
-       (str % "The missing elements were:      " (prn-str missing))))
+       (str % endl "The missing elements were:      " (-to-s missing))))
     (#(if (empty? extra)
        %
-       (str % "The extra elements were:        " (prn-str extra))))
+       (str % endl "The extra elements were:        " (-to-s extra))))
     ))
 
 (defmacro should=coll
