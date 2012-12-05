@@ -83,6 +83,62 @@
     (should-fail! (should-be-nil true))
     (should-fail! (should-be-nil false)))
 
+  (context "should=coll"
+    (it "passes if target contains all items"
+      (should-pass! (should=coll [1 2 3] [1 2 3])))
+
+    (it "passes if target contains all items out of order"
+      (should-pass! (should=coll [1 2 3] [1 3 2])))
+
+    (it "fails if target includes extra items"
+      (should-fail! (should=coll [1 2 3] [1 2 3 4])))
+
+    (it "reports extra items"
+      (let [message (str "Expected collection contained:  [1 2 3]" endl "Actual collection contained:    [1 2 3 4]" endl "The extra elements were:        [4]" endl)]
+        (should= message (failure-message (should=coll [1 2 3] [1 2 3 4])))))
+
+    (it "fails if target is missing items"
+      (should-fail! (should=coll [1 2 3] [1 2])))
+
+    (it "reports missing items"
+      (let [message (str "Expected collection contained:  [1 2 3]" endl "Actual collection contained:    [1 2]" endl "The missing elements were:      [3]" endl)]
+        (should= message (failure-message (should=coll [1 2 3] [1 2])))))
+
+    (it "fails if target is missing items and has extra items"
+      (should-fail! (should=coll [1 2 3] [1 2 4])))
+
+    (it "reports missing and extra items"
+      (let [message (str "Expected collection contained:  [1 2 3]" endl "Actual collection contained:    [1 2 4]" endl "The missing elements were:      [3]" endl "The extra elements were:        [4]" endl)]
+        (should= message (failure-message (should=coll [1 2 3] [1 2 4])))))
+
+    (it "fails if there are duplicates in the target"
+      (should-fail! (should=coll [1 5] [1 1 1 5])))
+
+    (it "reports extra duplicates"
+      (let [message (str "Expected collection contained:  [1 5]" endl "Actual collection contained:    [1 1 1 5]" endl "The extra elements were:        [1 1]" endl)]
+      (should= message (failure-message (should=coll [1 5] [1 1 1 5])))))
+
+    (it "fails if there are duplicates in the expected"
+      (should-fail! (should=coll [1 1 1 5] [1 5])))
+
+    (it "reports missing duplicates"
+      (let [message (str "Expected collection contained:  [1 1 1 5]" endl "Actual collection contained:    [1 5]" endl "The missing elements were:      [1 1]" endl)]
+      (should= message (failure-message (should=coll [1 1 1 5] [1 5])))))
+
+    (it "prints lazyseqs"
+      (let [message (str "Expected collection contained:  (1 1 1 5)" endl "Actual collection contained:    [1 5]" endl "The missing elements were:      [1 1]" endl)]
+      (should= message (failure-message (should=coll (lazy-seq [1 1 1 5]) [1 5])))))
+
+    (it "prints lists"
+      (let [message (str "Expected collection contained:  (1 1 1 5)" endl "Actual collection contained:    [1 5]" endl "The missing elements were:      [1 1]" endl)]
+      (should= message (failure-message (should=coll (list 1 1 1 5) [1 5])))))
+
+    (it "prints sets"
+      (let [message (str "Expected collection contained:  [1 1 1 5]" endl "Actual collection contained:    #{1 5}" endl "The missing elements were:      [1 1]" endl)]
+      (should= message (failure-message (should=coll [1 1 1 5] #{1 5})))))
+
+           )
+
   (it "should-contain checks for containmentship of precise strings"
     (should-pass! (should-contain "foo" "foobar"))
     (should-fail! (should-contain "foo" "bar"))
