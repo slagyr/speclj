@@ -88,6 +88,22 @@
     (should-fail! (should-contain "foo" "bar"))
     (should-fail! (should-contain "foo" "Foo")))
 
+  (it "should-contain checks for containmentship of regular expressions"
+    (should-pass! (should-contain #"hello.*" "hello, world"))
+    (should-fail! (should-contain #"hello.*" "hola!"))
+    (should-pass! (should-contain #"tea" "I'm a little teapot"))
+    (should-fail! (should-contain #"coffee" "I'm a little teapot")))
+
+  (it "should-contain checks for containmentship of collection items"
+    (should-pass! (should-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
+    (should-pass! (should-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
+    (should-pass! (should-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
+    (should-pass! (should-contain 1 [1 2 3]))
+    (should-fail! (should-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
+    (should-fail! (should-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
+    (should-fail! (should-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"])))
+      )
+
   (it "should-not-be-nil checks for inequality with nil"
     (should-fail! (should-not-be-nil nil))
     (should-pass! (should-not-be-nil true))

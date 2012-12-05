@@ -10,7 +10,9 @@
     [speclj.run.standard]
     [speclj.report.progress])
   (:import
-    [speclj SpecFailure SpecPending]))
+    [speclj SpecFailure SpecPending]
+    [java.util.regex Pattern]
+    [clojure.lang IPersistentCollection]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -156,12 +158,28 @@
   [form]
   `(should= nil ~form))
 
+(defmulti -should-contain (fn [expected actual] [(type expected) (type actual)]))
+
+(defmethod -should-contain [String String] [seeking within]
+  (if (not (.contains within seeking))
+    (throw (SpecFailure. (str "Expected: " (-to-s seeking) endl "to be in: " (-to-s within) " (using .contains)")))))
+
+(defmethod -should-contain [Pattern String] [pattern actual]
+  (if (empty? (re-seq pattern actual))
+    (throw (SpecFailure. (str "Expected: " (-to-s actual) endl " to match: " (-to-s pattern) " (using re-seq)")))))
+
+(defmethod -should-contain [Object IPersistentCollection] [element coll]
+  (if (not (some #(= element %) coll))
+    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "to be in: " (-to-s coll) " (using =)"))))
+  )
+
+(defmethod -should-contain :default [expected actual]
+  (throw (Exception. (str "No matcher for " (type expected) (type actual)))))
+
 (defmacro should-contain
   "Asserts that the string is contained within another string"
-  ([seeking-str within-str]
-     `(let [seeking# ~seeking-str within# ~within-str]
-        (if (not (.contains within# seeking#))
-          (throw (SpecFailure. (str "Expected: " (-to-s seeking#) endl "to be in: " (-to-s within#) " (using .contains)")))))))
+  [expected actual]
+  `(-should-contain ~expected ~actual))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
