@@ -88,11 +88,22 @@
     (should-fail! (should-contain "foo" "bar"))
     (should-fail! (should-contain "foo" "Foo")))
 
+  (it "should-not-contain checks for non-containmentship of precise strings"
+    (should-fail! (should-not-contain "foo" "foobar"))
+    (should-pass! (should-not-contain "foo" "bar"))
+    (should-pass! (should-not-contain "foo" "Foo")))
+
   (it "should-contain checks for containmentship of regular expressions"
     (should-pass! (should-contain #"hello.*" "hello, world"))
     (should-fail! (should-contain #"hello.*" "hola!"))
     (should-pass! (should-contain #"tea" "I'm a little teapot"))
     (should-fail! (should-contain #"coffee" "I'm a little teapot")))
+
+  (it "should-not-contain checks for non-containmentship of regular expressions"
+    (should-fail! (should-not-contain #"hello.*" "hello, world"))
+    (should-pass! (should-not-contain #"hello.*" "hola!"))
+    (should-fail! (should-not-contain #"tea" "I'm a little teapot"))
+    (should-pass! (should-not-contain #"coffee" "I'm a little teapot")))
 
   (it "should-contain checks for containmentship of collection items"
     (should-pass! (should-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
@@ -101,8 +112,36 @@
     (should-pass! (should-contain 1 [1 2 3]))
     (should-fail! (should-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
     (should-fail! (should-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
-    (should-fail! (should-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"])))
-      )
+    (should-fail! (should-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
+
+  (it "should-not-contain checks for non-containmentship of collection items"
+    (should-fail! (should-not-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
+    (should-fail! (should-not-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
+    (should-fail! (should-not-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
+    (should-fail! (should-not-contain 1 [1 2 3]))
+    (should-pass! (should-not-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
+    (should-pass! (should-not-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
+    (should-pass! (should-not-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
+
+  (it "should-contain checks for containmentship of keys"
+    (should-pass! (should-contain "foo" {"foo" :bar}))
+    (should-fail! (should-contain :bar {"foo" :bar}))
+    (should-pass! (should-contain 1 {"foo" :bar 1 2}))
+    (should-fail! (should-contain 2 {"foo" :bar 1 2})))
+
+  (it "should-not-contain checks for non-containmentship of keys"
+    (should-fail! (should-not-contain "foo" {"foo" :bar}))
+    (should-pass! (should-not-contain :bar {"foo" :bar}))
+    (should-fail! (should-not-contain 1 {"foo" :bar 1 2}))
+    (should-pass! (should-not-contain 2 {"foo" :bar 1 2})))
+
+  (it "should-contain errors on unhandles types"
+    (should-throw Exception "should-contain doesn't know how to handle these types: [java.lang.Long java.lang.Long]"
+      (should-contain 1 2)))
+
+  (it "should-not-contain errors on unhandles types"
+    (should-throw Exception "should-not-contain doesn't know how to handle these types: [java.lang.Long java.lang.Long]"
+      (should-not-contain 1 2)))
 
   (it "should-not-be-nil checks for inequality with nil"
     (should-fail! (should-not-be-nil nil))

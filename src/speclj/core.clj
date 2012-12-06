@@ -12,7 +12,7 @@
   (:import
     [speclj SpecFailure SpecPending]
     [java.util.regex Pattern]
-    [clojure.lang IPersistentCollection]))
+    [clojure.lang IPersistentCollection IPersistentMap]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -159,27 +159,60 @@
   `(should= nil ~form))
 
 (defmulti -should-contain (fn [expected actual] [(type expected) (type actual)]))
+(defmulti -should-not-contain (fn [expected actual] [(type expected) (type actual)]))
 
 (defmethod -should-contain [String String] [seeking within]
-  (if (not (.contains within seeking))
+  (when (not (.contains within seeking))
     (throw (SpecFailure. (str "Expected: " (-to-s seeking) endl "to be in: " (-to-s within) " (using .contains)")))))
 
+(defmethod -should-not-contain [String String] [seeking within]
+  (when (.contains within seeking)
+    (throw (SpecFailure. (str "Expected: " (-to-s seeking) endl "not to be in: " (-to-s within) " (using .contains)")))))
+
 (defmethod -should-contain [Pattern String] [pattern actual]
-  (if (empty? (re-seq pattern actual))
-    (throw (SpecFailure. (str "Expected: " (-to-s actual) endl " to match: " (-to-s pattern) " (using re-seq)")))))
+  (when (empty? (re-seq pattern actual))
+    (throw (SpecFailure. (str "Expected: " (-to-s actual) endl "to match: " (-to-s pattern) " (using re-seq)")))))
+
+(defmethod -should-not-contain [Pattern String] [pattern actual]
+  (when (not (empty? (re-seq pattern actual)))
+    (throw (SpecFailure. (str "Expected: " (-to-s actual) endl "not to match: " (-to-s pattern) " (using re-seq)")))))
+
+(defmethod -should-contain [Object IPersistentMap] [element coll]
+  (when (not (contains? coll element))
+    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "to be a key in: " (-to-s coll) " (using contains?)")))))
+
+(defmethod -should-not-contain [Object IPersistentMap] [element coll]
+  (when (contains? coll element)
+    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "not to be a key in: " (-to-s coll) " (using contains?)")))))
 
 (defmethod -should-contain [Object IPersistentCollection] [element coll]
-  (if (not (some #(= element %) coll))
-    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "to be in: " (-to-s coll) " (using =)"))))
-  )
+  (when (not (some #(= element %) coll))
+    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "to be in: " (-to-s coll) " (using =)")))))
+
+(defmethod -should-not-contain [Object IPersistentCollection] [element coll]
+  (when (some #(= element %) coll)
+    (throw (SpecFailure. (str "Expected: " (-to-s element) endl "not to be in: " (-to-s coll) " (using =)")))))
 
 (defmethod -should-contain :default [expected actual]
-  (throw (Exception. (str "No matcher for " (type expected) (type actual)))))
+  (throw (Exception. (str "should-contain doesn't know how to handle these types: " [(type expected) (type actual)]))))
+
+(defmethod -should-not-contain :default [expected actual]
+  (throw (Exception. (str "should-not-contain doesn't know how to handle these types: " [(type expected) (type actual)]))))
 
 (defmacro should-contain
-  "Asserts that the string is contained within another string"
+  "Multi-purpose assertion of containment.  Works strings, regular expressions, sequences, and maps.
+
+  (should-contain \"foo\" \"foobar\")            ; looks for sub-string
+  (should-contain #\"hello.*\" \"hello, world\") ; looks for regular expression
+  (should-contain :foo {:foo :bar})          ; looks for a key in a map
+  (should-contain 3 [1 2 3 4])               ; looks for an object in a collection"
   [expected actual]
   `(-should-contain ~expected ~actual))
+
+(defmacro should-not-contain
+  "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
+  [expected actual]
+  `(-should-not-contain ~expected ~actual))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
