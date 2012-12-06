@@ -41,7 +41,16 @@
                'leiningen.compile)
       ((ns-resolve 'leiningen.compile 'prep) project false))))
 
-(defn spec [project & args]
+(defn spec
+  "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.
+
+You're currently using Speclj's Leiningen plugin.  To get the Speclj's help
+documentation, as opposed to this message provided by Leinigen, try this:
+
+  lein spec --speclj
+
+That ough to do the trick."
+  [project & args]
   (prepare project)
   (let [speclj-args (cons "-c" args)
         classpath (compute-classpath-string project)

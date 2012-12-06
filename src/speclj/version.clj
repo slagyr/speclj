@@ -3,8 +3,8 @@
     [clojure.string :as str]))
 
 (def major 2)
-(def minor 3)
-(def tiny 4)
+(def minor 4)
+(def tiny 0)
 (def snapshot false)
 (def string
   (str

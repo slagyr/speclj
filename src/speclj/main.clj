@@ -63,6 +63,9 @@
     (doseq [error (seq errors)]
       (println error)))
   (println)
+  (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
+  (println "Copyright (c) 2010-2013 Micah Martin under The MIT Licenses.")
+  (println)
   (println "Usage: " speclj-invocation (.argString arg-spec))
   (println)
   (println (.parametersString arg-spec))

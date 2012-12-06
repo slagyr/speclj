@@ -1,3 +1,9 @@
+# 2.4.0
+
+* should-contain works with regular expressions, maps, and sequences
+* should-not-contain, opposite of should-contain
+* Adds leinigen task help/doc string.
+
 # 2.3.2
 
 * Vars (helpers fns and such) can be delcared inside contexts.  Good suggestion by @mylesmegyesi.
