@@ -195,16 +195,22 @@
        (str % endl "The extra elements were:        " (-to-s extra))))
     ))
 
-(defmacro should=coll
+(defmacro should==
   "Asserts that the collection is contained within another collection"
   [expected actual]
   `(let [extra# (coll-difference ~actual ~expected)
          missing# (coll-difference ~expected ~actual)]
-     (if-not (and (empty? extra#) (empty? missing#))
+     (when-not (and (empty? extra#) (empty? missing#))
        (let [error-message# (difference-message ~expected ~actual extra# missing#)]
-         (throw (SpecFailure. error-message#))))
-     )
-  )
+         (throw (SpecFailure. error-message#))))))
+
+(defmacro should-not==
+  "Asserts that the collection is not contained within another collection"
+  [expected actual]
+  `(let [extra# (coll-difference ~actual ~expected)
+         missing# (coll-difference ~expected ~actual)]
+     (when (and (empty? extra#) (empty? missing#))
+       (throw (SpecFailure. (str "Expected:       " (-to-s ~expected) endl "not to contain: " (-to-s ~actual) " (using =)"))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
