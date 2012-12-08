@@ -94,47 +94,47 @@
       (should-fail! (should== [1 2 3] [1 2 3 4])))
 
     (it "reports extra items"
-      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 3 4]>" endl "The extra elements were:        <[4]>")]
+      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 3 4]>" endl "The extra elements were:        <[4]> (using =)")]
         (should= message (failure-message (should== [1 2 3] [1 2 3 4])))))
 
     (it "fails if target is missing items"
       (should-fail! (should== [1 2 3] [1 2])))
 
     (it "reports missing items"
-      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2]>" endl "The missing elements were:      <[3]>")]
+      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2]>" endl "The missing elements were:      <[3]> (using =)")]
         (should= message (failure-message (should== [1 2 3] [1 2])))))
 
     (it "fails if target is missing items and has extra items"
       (should-fail! (should== [1 2 3] [1 2 4])))
 
     (it "reports missing and extra items"
-      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 4]>" endl "The missing elements were:      <[3]>" endl "The extra elements were:        <[4]>")]
+      (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 4]>" endl "The missing elements were:      <[3]>" endl "The extra elements were:        <[4]> (using =)")]
         (should= message (failure-message (should== [1 2 3] [1 2 4])))))
 
     (it "fails if there are duplicates in the target"
       (should-fail! (should== [1 5] [1 1 1 5])))
 
     (it "reports extra duplicates"
-      (let [message (str "Expected collection contained:  <[1 5]>" endl "Actual collection contained:    <[1 1 1 5]>" endl "The extra elements were:        <[1 1]>")]
+      (let [message (str "Expected collection contained:  <[1 5]>" endl "Actual collection contained:    <[1 1 1 5]>" endl "The extra elements were:        <[1 1]> (using =)")]
       (should= message (failure-message (should== [1 5] [1 1 1 5])))))
 
     (it "fails if there are duplicates in the expected"
       (should-fail! (should== [1 1 1 5] [1 5])))
 
     (it "reports missing duplicates"
-      (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]>")]
+      (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
       (should= message (failure-message (should== [1 1 1 5] [1 5])))))
 
     (it "prints lazyseqs"
-      (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]>")]
+      (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
       (should= message (failure-message (should== (lazy-seq [1 1 1 5]) [1 5])))))
 
     (it "prints lists"
-      (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]>")]
+      (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
       (should= message (failure-message (should== (list 1 1 1 5) [1 5])))))
 
     (it "prints sets"
-      (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <#{1 5}>" endl "The missing elements were:      <[1 1]>")]
+      (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <#{1 5}>" endl "The missing elements were:      <[1 1]> (using =)")]
       (should= message (failure-message (should== [1 1 1 5] #{1 5})))))
 
     )

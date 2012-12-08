@@ -193,7 +193,7 @@
     (#(if (empty? extra)
        %
        (str % endl "The extra elements were:        " (-to-s extra))))
-    ))
+    (#(str % " (using =)"))))
 
 (defmacro should==
   "Asserts that the collection is contained within another collection"
