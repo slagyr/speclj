@@ -10,7 +10,8 @@
     [speclj.run.standard]
     [speclj.report.progress])
   (:import
-    [speclj SpecFailure SpecPending]))
+    [speclj SpecFailure SpecPending]
+    [clojure.lang IPersistentCollection]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -195,17 +196,27 @@
        (str % endl "The extra elements were:        " (-to-s extra))))
     (#(str % " (using =)"))))
 
+(defmulti -should== (fn [expected actual] [(type expected) (type actual)]))
+
+(defmethod -should== [Object Object] [expected actual]
+  (when-not (== expected actual)
+    (let [error (str "Expected: " (-to-s expected) endl "     got: " (-to-s actual) " (using ==)")]
+      (throw (SpecFailure. error)))))
+
+(defmethod -should== [IPersistentCollection IPersistentCollection] [expected actual]
+  (let [extra (coll-difference actual expected)
+        missing (coll-difference expected actual)]
+    (when-not (and (empty? extra) (empty? missing))
+      (let [error-message (difference-message expected actual extra missing)]
+        (throw (SpecFailure. error-message))))))
+
 (defmacro should==
-  "Asserts that the collection is contained within another collection"
+  "Asserts loose equality"
   [expected actual]
-  `(let [extra# (coll-difference ~actual ~expected)
-         missing# (coll-difference ~expected ~actual)]
-     (when-not (and (empty? extra#) (empty? missing#))
-       (let [error-message# (difference-message ~expected ~actual extra# missing#)]
-         (throw (SpecFailure. error-message#))))))
+  `(-should== ~expected ~actual))
 
 (defmacro should-not==
-  "Asserts that the collection is not contained within another collection"
+  "Inverse of should=="
   [expected actual]
   `(let [extra# (coll-difference ~actual ~expected)
          missing# (coll-difference ~expected ~actual)]
