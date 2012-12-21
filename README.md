@@ -57,9 +57,8 @@ Checkout this example spec file. It would be located at `sample_project/spec/sam
 
 ```clojure
 (ns sample.core-spec
-  (:use
-  [speclj.core]
-  [sample.core]))
+  (:require [speclj.core :refer :all]
+            [sample.core :refer :all]))
 
 (describe "Truth"
 
