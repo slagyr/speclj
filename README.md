@@ -10,9 +10,9 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](ht
 Include speclj in your `:dependencies` and `:plugins`, and also change the `:test-path` to `"spec/"`
 
 ```clojure
-:dependencies [[speclj "2.3.4"]
-                 [org.clojure/clojure "1.4.0"]]
-:plugins [[speclj "2.3.4"]]
+:dependencies [[speclj "2.5.0"]
+               [org.clojure/clojure "1.4.0"]]
+:plugins [[speclj "2.5.0"]]
 :test-paths ["spec/"]
 ```
 
@@ -22,7 +22,7 @@ You will need [Leiningen](https://github.com/technomancy/leiningen) version 1.4 
 Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
 
 ```clojure
-:dev-dependencies [[speclj "2.1.2"]]
+:dev-dependencies [[speclj "2.5.0"]]
 :test-path "spec/"
 ```
 
