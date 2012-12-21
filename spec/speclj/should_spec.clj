@@ -1,8 +1,7 @@
 (ns speclj.should-spec
-  (:use
-    [speclj.core]
-    [speclj.spec-helper]
-    [speclj.util :only (endl)]))
+  (:use [speclj.core]
+        [speclj.spec-helper]
+        [speclj.util :only (endl)]))
 
 (describe "Should Assertions: "
   (it "should tests truthy"
@@ -114,85 +113,105 @@
         (should-fail! (should== [1 2 3] [1 2 3 4])))
 
       (it "reports extra items"
-        (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 3 4]>" endl "The extra elements were:        <[4]> (using =)")]
+        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2 3 4]>" endl "          missing: <[]>" endl "            extra: <[4]>")]
           (should= message (failure-message (should== [1 2 3] [1 2 3 4])))))
 
       (it "fails if target is missing items"
         (should-fail! (should== [1 2 3] [1 2])))
 
       (it "reports missing items"
-        (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2]>" endl "The missing elements were:      <[3]> (using =)")]
+        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2]>" endl "          missing: <[3]>" endl "            extra: <[]>")]
           (should= message (failure-message (should== [1 2 3] [1 2])))))
 
       (it "fails if target is missing items and has extra items"
         (should-fail! (should== [1 2 3] [1 2 4])))
 
       (it "reports missing and extra items"
-        (let [message (str "Expected collection contained:  <[1 2 3]>" endl "Actual collection contained:    <[1 2 4]>" endl "The missing elements were:      <[3]>" endl "The extra elements were:        <[4]> (using =)")]
+        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2 4]>" endl "          missing: <[3]>" endl "            extra: <[4]>")]
           (should= message (failure-message (should== [1 2 3] [1 2 4])))))
 
       (it "fails if there are duplicates in the target"
         (should-fail! (should== [1 5] [1 1 1 5])))
 
       (it "reports extra duplicates"
-        (let [message (str "Expected collection contained:  <[1 5]>" endl "Actual collection contained:    <[1 1 1 5]>" endl "The extra elements were:        <[1 1]> (using =)")]
-        (should= message (failure-message (should== [1 5] [1 1 1 5])))))
+        (let [message (str "Expected contents: <[1 5]>" endl "              got: <[1 1 1 5]>" endl "          missing: <[]>" endl "            extra: <[1 1]>")]
+          (should= message (failure-message (should== [1 5] [1 1 1 5])))))
 
       (it "fails if there are duplicates in the expected"
         (should-fail! (should== [1 1 1 5] [1 5])))
 
       (it "reports missing duplicates"
-        (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
-        (should= message (failure-message (should== [1 1 1 5] [1 5])))))
+        (let [message (str "Expected contents: <[1 1 1 5]>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+          (should= message (failure-message (should== [1 1 1 5] [1 5])))))
 
       (it "prints lazyseqs"
-        (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
-        (should= message (failure-message (should== (lazy-seq [1 1 1 5]) [1 5])))))
+        (let [message (str "Expected contents: <(1 1 1 5)>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+          (should= message (failure-message (should== (lazy-seq [1 1 1 5]) [1 5])))))
 
       (it "prints lists"
-        (let [message (str "Expected collection contained:  <(1 1 1 5)>" endl "Actual collection contained:    <[1 5]>" endl "The missing elements were:      <[1 1]> (using =)")]
-        (should= message (failure-message (should== (list 1 1 1 5) [1 5])))))
+        (let [message (str "Expected contents: <(1 1 1 5)>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+          (should= message (failure-message (should== (list 1 1 1 5) [1 5])))))
 
       (it "prints sets"
-        (let [message (str "Expected collection contained:  <[1 1 1 5]>" endl "Actual collection contained:    <#{1 5}>" endl "The missing elements were:      <[1 1]> (using =)")]
-        (should= message (failure-message (should== [1 1 1 5] #{1 5})))))
+        (let [message (str "Expected contents: <[1 1 1 5]>" endl "              got: <#{1 5}>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+          (should= message (failure-message (should== [1 1 1 5] #{1 5})))))
 
-    ))
+      ))
 
   (context "should-not=="
-    (it "fails if target contains all items"
-      (should-fail! (should-not== [1 2 3] [1 2 3])))
 
-    (it "fails if target contains all items out of order"
-      (should-fail! (should-not== [1 2 3] [1 3 2])))
+    (context "numbers"
+      (it "tests loose equality"
+        (should-fail! (should-not== 1 1))
+        (should-fail! (should-not== 1 1.0))
+        (should-fail! (should-not== (int 1) (long 1)))
+        (should-pass! (should-not== 1 2))
+        (should-pass! (should-not== 1 2.0)))
 
-    (it "passes if target includes extra items"
-      (should-pass! (should-not== [1 2 3] [1 2 3 4])))
+      (it "reports the error"
+        (let [error (str " Expected: <1>" endl "not to ==: <1> (using ==)")]
+          (should= error (failure-message (should-not== 1 1)))))
 
-    (it "passes if target is missing items"
-      (should-pass! (should-not== [1 2 3] [1 2])))
+      (it "reports the error with floats"
+        (let [error (str " Expected: <1.0>" endl "not to ==: <1> (using ==)")]
+          (should= error (failure-message (should-not== 1.0 1)))))
 
-    (it "passes if target is missing items and has extra items"
-      (should-pass! (should-not== [1 2 3] [1 2 4])))
+      )
 
-    (it "passes if there are duplicates in the target"
-      (should-pass! (should-not== [1 5] [1 1 1 5])))
+    (context "two collections"
+      (it "fails if target contains all items"
+        (should-fail! (should-not== [1 2 3] [1 2 3])))
 
-    (it "passes if there are duplicates in the expected"
-      (should-pass! (should-not== [1 1 1 5] [1 5])))
+      (it "fails if target contains all items out of order"
+        (should-fail! (should-not== [1 2 3] [1 3 2])))
 
-    (it "prints lazyseqs"
-      (let [message (str "Expected:       <(1 5)>" endl "not to contain: <[1 5]> (using =)")]
-      (should= message (failure-message (should-not== (lazy-seq [1 5]) [1 5])))))
+      (it "passes if target includes extra items"
+        (should-pass! (should-not== [1 2 3] [1 2 3 4])))
 
-    (it "prints lists"
-      (let [message (str "Expected:       <(1 5)>" endl "not to contain: <[1 5]> (using =)")]
-      (should= message (failure-message (should-not== (list 1 5) [1 5])))))
+      (it "passes if target is missing items"
+        (should-pass! (should-not== [1 2 3] [1 2])))
 
-    (it "prints sets"
-      (let [message (str "Expected:       <#{1 5}>" endl "not to contain: <[1 5]> (using =)")]
-      (should= message (failure-message (should-not== (set [1 5]) [1 5])))))
+      (it "passes if target is missing items and has extra items"
+        (should-pass! (should-not== [1 2 3] [1 2 4])))
 
+      (it "passes if there are duplicates in the target"
+        (should-pass! (should-not== [1 5] [1 1 1 5])))
+
+      (it "passes if there are duplicates in the expected"
+        (should-pass! (should-not== [1 1 1 5] [1 5])))
+
+      (it "prints lazyseqs"
+        (let [message (str "Expected contents: <(1 5)>" endl "   to differ from: <[1 5]>")]
+          (should= message (failure-message (should-not== (lazy-seq [1 5]) [1 5])))))
+
+      (it "prints lists"
+        (let [message (str "Expected contents: <(1 5)>" endl "   to differ from: <[1 5]>")]
+          (should= message (failure-message (should-not== (list 1 5) [1 5])))))
+
+      (it "prints sets"
+        (let [message (str "Expected contents: <#{1 5}>" endl "   to differ from: <[1 5]>")]
+          (should= message (failure-message (should-not== (set [1 5]) [1 5])))))
+      )
     )
 
   (it "should-contain checks for containmentship of precise strings"
@@ -272,7 +291,7 @@
     (should-pass! (should-throw (throw (Throwable. "error"))))
     (should-fail! (should-throw (+ 1 1)))
     (should= (str "Expected java.lang.Throwable thrown from: (+ 1 1)" endl
-      "                                 but got: <nothing thrown>")
+               "                                 but got: <nothing thrown>")
       (failure-message (should-throw (+ 1 1)))))
 
   (it "should-throw can test an expected throwable type"
@@ -281,10 +300,10 @@
     (should-fail! (should-throw NullPointerException (throw (Exception.))))
     (should-fail! (should-throw NullPointerException (+ 1 1)))
     (should= (str "Expected java.lang.NullPointerException thrown from: (+ 1 1)" endl
-      "                                            but got: <nothing thrown>")
+               "                                            but got: <nothing thrown>")
       (failure-message (should-throw NullPointerException (+ 1 1))))
     (should= (str "Expected java.lang.NullPointerException thrown from: (throw (Exception. \"some message\"))" endl
-      "                                            but got: java.lang.Exception: some message")
+               "                                            but got: java.lang.Exception: some message")
       (failure-message (should-throw NullPointerException (throw (Exception. "some message"))))))
 
   (it "should-throw can test the message of the exception"
@@ -299,9 +318,9 @@
     (should-pass! (should-not-throw (+ 1 1)))
     (should-fail! (should-not-throw (throw (Throwable. "error"))))
     (should= (str "Expected nothing thrown from: (throw (Throwable. \"error\"))" endl
-      "                     but got: java.lang.Throwable: error")
+               "                     but got: java.lang.Throwable: error")
       (failure-message (should-not-throw (throw (Throwable. "error"))))))
 
   )
 
-(run-specs)
+(run-specs :stacktrace true)

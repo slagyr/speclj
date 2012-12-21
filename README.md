@@ -72,7 +72,7 @@ Checkout this example spec file. It would be located at `sample_project/spec/sam
 (run-specs)
 ```
 
-### speclj.core namespace
+### `speclj.core` namespace
 Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
 
 ```clojure
@@ -81,21 +81,21 @@ Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean 
   [sample.core])
 ```
 
-### describe
+### `describe`
 `describe` is the outer most container for specs.  It takes a `String` name and any number of _spec components_.
 
 ```clojure
 (describe "Truth" ...)
 ```
 
-### it
+### `it`
 `it` specifies a _characteristic_ of the subject.  This is where assertions go.  Be sure to provide good names as the first parameter of `it` calls.
 
 ```clojure
 (it "is true" ...)
 ```
 
-### should and should-not
+### `should` and `should-not`
 Assertions.  All assertions begin with `should`.  `should` and `should-not` are just two of the many assertions available.  They both take expressions that they will check for truthy-ness and falsy-ness respectively.
 
 ```clojure
@@ -110,7 +110,7 @@ At the very end of the file is an invocation of `(run-specs)`.  This will invoke
 (run-specs)
 ```
 
-## should Variants
+## `should` Variants (Assertions)
 There are several ways to make assertions.  They are documented on the wiki: [Should Variants](https://github.com/slagyr/speclj/wiki/Should-variants)
 
 ## Spec Components

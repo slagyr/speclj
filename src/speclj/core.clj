@@ -1,18 +1,15 @@
 (ns speclj.core
-  (:use
-    [speclj.running :only (submit-description run-and-report)]
-    [speclj.reporting :only (report-message*)]
-    [speclj.tags :only (describe-filter)]
-    [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
-    [speclj.components]
-    [speclj.util :only (endl)])
-  (:require
-    [speclj.run.standard]
-    [speclj.report.progress])
-  (:import
-    [speclj SpecFailure SpecPending]
-    [java.util.regex Pattern]
-    [clojure.lang IPersistentCollection IPersistentMap]))
+  (:use [speclj.running :only (submit-description run-and-report)]
+        [speclj.reporting :only (report-message*)]
+        [speclj.tags :only (describe-filter)]
+        [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
+        [speclj.components]
+        [speclj.util :only (endl)])
+  (:require [speclj.run.standard]
+            [speclj.report.progress])
+  (:import [speclj SpecFailure SpecPending]
+           [java.util.regex Pattern]
+           [clojure.lang IPersistentCollection IPersistentMap]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -99,10 +96,10 @@
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   (let [var-name (with-meta (symbol name) {:dynamic true})]
-  `(do
-     (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
-       (declare ~var-name)
-       with-all-component#))))
+    `(do
+       (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
+         (declare ~var-name)
+         with-all-component#))))
 
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
@@ -237,41 +234,48 @@
           (recur r match-against (conj diff f)))))))
 
 (defn difference-message [expected actual extra missing]
-  (-> (str "Expected collection contained:  " (-to-s expected) endl "Actual collection contained:    " (-to-s actual))
-    (#(if (empty? missing)
-       %
-       (str % endl "The missing elements were:      " (-to-s missing))))
-    (#(if (empty? extra)
-       %
-       (str % endl "The extra elements were:        " (-to-s extra))))
-    (#(str % " (using =)"))))
+  (str
+    "Expected contents: " (-to-s expected) endl
+    "              got: " (-to-s actual) endl
+    "          missing: " (-to-s missing) endl
+    "            extra: " (-to-s extra)))
 
 (defmulti -should== (fn [expected actual] [(type expected) (type actual)]))
+(defmulti -should-not== (fn [expected actual] [(type expected) (type actual)]))
 
 (defmethod -should== [Object Object] [expected actual]
   (when-not (== expected actual)
-    (let [error (str "Expected: " (-to-s expected) endl "     got: " (-to-s actual) " (using ==)")]
-      (throw (SpecFailure. error)))))
+    (throw (SpecFailure. (str "Expected: " (-to-s expected) endl "     got: " (-to-s actual) " (using ==)")))))
+
+(defmethod -should-not== [Object Object] [expected actual]
+  (when-not (not (== expected actual))
+    (throw (SpecFailure. (str " Expected: " (-to-s expected) endl "not to ==: " (-to-s actual) " (using ==)")))))
 
 (defmethod -should== [IPersistentCollection IPersistentCollection] [expected actual]
   (let [extra (coll-difference actual expected)
         missing (coll-difference expected actual)]
     (when-not (and (empty? extra) (empty? missing))
-      (let [error-message (difference-message expected actual extra missing)]
-        (throw (SpecFailure. error-message))))))
+      (throw (SpecFailure. (difference-message expected actual extra missing))))))
+
+(defmethod -should-not== [IPersistentCollection IPersistentCollection] [expected actual]
+  (let [extra (coll-difference actual expected)
+        missing (coll-difference expected actual)]
+    (when (and (empty? extra) (empty? missing))
+      (throw (SpecFailure. (str "Expected contents: " (-to-s expected) endl "   to differ from: " (-to-s actual)))))))
 
 (defmacro should==
-  "Asserts loose equality"
+  "Asserts 'equivalency'.
+  When passed collections it will check that they have the same contents.
+  For anything else it will assert that clojure.core/== returns true."
   [expected actual]
   `(-should== ~expected ~actual))
 
 (defmacro should-not==
-  "Inverse of should=="
+  "Asserts 'non-equivalency'.
+  When passed collections it will check that they do NOT have the same contents.
+  For anything else it will assert that clojure.core/== returns false."
   [expected actual]
-  `(let [extra# (coll-difference ~actual ~expected)
-         missing# (coll-difference ~expected ~actual)]
-     (when (and (empty? extra#) (empty? missing#))
-       (throw (SpecFailure. (str "Expected:       " (-to-s ~expected) endl "not to contain: " (-to-s ~actual) " (using =)"))))))
+  `(-should-not== ~expected ~actual))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -342,7 +346,7 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
   (when (identical? (active-runner) @default-runner) ; Solo file run?
     (let [config (apply hash-map configurations)
-          config (merge (dissoc default-config :runner) config)]
+          config (merge (dissoc default-config :runner ) config)]
       (with-bindings (config-mappings config)
         (if-let [filter-msg (describe-filter)]
           (report-message* (active-reporters) filter-msg))

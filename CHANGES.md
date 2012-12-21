@@ -1,3 +1,8 @@
+# 2.5.0
+
+* should== for loose equality and collection containment equality
+* should-not== opposite of should==
+
 # 2.4.0
 
 * should-contain works with regular expressions, maps, and sequences
