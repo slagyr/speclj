@@ -214,6 +214,65 @@
   [expected actual]
   `(-should-not-contain ~expected ~actual))
 
+(defn coll-includes? [coll item]
+  (some #(= % item) coll))
+
+(defn remove-first [coll value]
+  (loop [coll coll seen []]
+    (if (empty? coll)
+      seen
+      (let [f (first coll)]
+        (if (= f value)
+          (concat seen (rest coll))
+          (recur (rest coll) (conj seen f)))))))
+
+(defn coll-difference [coll1 coll2]
+  (loop [match-with coll1 match-against coll2 diff []]
+    (if (empty? match-with)
+      diff
+      (let [f (first match-with)
+            r (rest match-with)]
+        (if (coll-includes? match-against f)
+          (recur r (remove-first match-against f) diff)
+          (recur r match-against (conj diff f)))))))
+
+(defn difference-message [expected actual extra missing]
+  (-> (str "Expected collection contained:  " (-to-s expected) endl "Actual collection contained:    " (-to-s actual))
+    (#(if (empty? missing)
+       %
+       (str % endl "The missing elements were:      " (-to-s missing))))
+    (#(if (empty? extra)
+       %
+       (str % endl "The extra elements were:        " (-to-s extra))))
+    (#(str % " (using =)"))))
+
+(defmulti -should== (fn [expected actual] [(type expected) (type actual)]))
+
+(defmethod -should== [Object Object] [expected actual]
+  (when-not (== expected actual)
+    (let [error (str "Expected: " (-to-s expected) endl "     got: " (-to-s actual) " (using ==)")]
+      (throw (SpecFailure. error)))))
+
+(defmethod -should== [IPersistentCollection IPersistentCollection] [expected actual]
+  (let [extra (coll-difference actual expected)
+        missing (coll-difference expected actual)]
+    (when-not (and (empty? extra) (empty? missing))
+      (let [error-message (difference-message expected actual extra missing)]
+        (throw (SpecFailure. error-message))))))
+
+(defmacro should==
+  "Asserts loose equality"
+  [expected actual]
+  `(-should== ~expected ~actual))
+
+(defmacro should-not==
+  "Inverse of should=="
+  [expected actual]
+  `(let [extra# (coll-difference ~actual ~expected)
+         missing# (coll-difference ~expected ~actual)]
+     (when (and (empty? extra#) (empty? missing#))
+       (throw (SpecFailure. (str "Expected:       " (-to-s ~expected) endl "not to contain: " (-to-s ~actual) " (using =)"))))))
+
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
   [form]
