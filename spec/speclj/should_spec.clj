@@ -321,6 +321,40 @@
                "                     but got: java.lang.Throwable: error")
       (failure-message (should-not-throw (throw (Throwable. "error"))))))
 
+  (context "should-be-a"
+    (it "passes if the actual form is an instance of the expected type"
+      (should-pass! (should-be-a Integer (int 1))))
+
+    (it "passes if the actual derives from the expected type"
+      (should-pass! (should-be-a Number (int 1))))
+
+    (it "fails if the actual form is not an instance of the expected type"
+      (should-fail! (should-be-a Integer (long 1))))
+
+    (it "fails with an error message"
+      (should=
+        (str "Expected <1> to be an instance of: <java.lang.Integer>"  endl "but was an instance of:            <java.lang.Long> (using isa?)")
+        (failure-message (should-be-a Integer (long 1)))))
+
+    )
+
+  (context "should-not-be-a"
+    (it "fails if the actual form is an instance of the expected type"
+      (should-fail! (should-not-be-a Integer (int 1))))
+
+    (it "fails if the actual derives from the expected type"
+      (should-fail! (should-not-be-a Number (int 1))))
+
+    (it "passes if the actual form is not an instance of the expected type"
+      (should-pass! (should-not-be-a Integer (long 1))))
+
+    (it "fails with an error message"
+      (should=
+        (str "Expected <1> not to be an instance of <java.lang.Integer> but was (using isa?)")
+        (failure-message (should-not-be-a Integer (int 1)))))
+
+    )
+
   )
 
 (run-specs :stacktrace true)
