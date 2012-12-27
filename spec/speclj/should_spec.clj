@@ -333,7 +333,7 @@
 
     (it "fails with an error message"
       (should=
-        (str "Expected <1> to be an instance of: <java.lang.Integer>"  endl "but was an instance of:            <java.lang.Long> (using isa?)")
+        (str "Expected <1> to be an instance of: <java.lang.Integer>"  endl "           but was an instance of: <java.lang.Long> (using isa?)")
         (failure-message (should-be-a Integer (long 1)))))
 
     )

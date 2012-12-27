@@ -331,7 +331,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
      (if-not (isa? actual-type# expected-type#)
        (throw
          (SpecFailure.
-           (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) endl "but was an instance of:            " (-to-s actual-type#) " (using isa?)"))))))
+           (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)"))))))
 
 (defmacro should-not-be-a
   "Asserts that the type of the given form does not derives from or equals the expected type"
