@@ -119,7 +119,7 @@
        (throw (SpecFailure. (str "Expected falsy but was: " (-to-s value#)))))))
 
 (defmacro should=
-  "Asserts that two forms evaluate to equal values, with the expexcted value as the first parameter."
+  "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
     `(let [expected# ~expected-form actual# ~actual-form]
        (if (not (= expected# actual#))
@@ -130,21 +130,21 @@
          (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
 
 (defmacro should-not=
-  "Asserts that two forms evaluate to inequal values, with the unexpexcted value as the first parameter."
+  "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (= expected# actual#)
        (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
 
 (defmacro should-be-same
-  "Asserts that two forms evaluate to the same object, with the expexcted value as the first parameter."
+  "Asserts that two forms evaluate to the same object, with the expected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (not (identical? expected# actual#))
        (throw (SpecFailure. (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
 
 (defmacro should-not-be-same
-  "Asserts that two forms evaluate to different objects, with the unexpexcted value as the first parameter."
+  "Asserts that two forms evaluate to different objects, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (identical? expected# actual#)
