@@ -322,6 +322,28 @@ When a string is also passed, it asserts that the message of the Exception is eq
      (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
                                                 "                     but got: " (.toString e#)))))))
 
+(defmacro should-be-a
+  "Asserts that the type of the given form derives from or equals the expected type"
+  [expected-type actual-form]
+  `(let [actual# ~actual-form
+         actual-type# (type actual#)
+         expected-type# ~expected-type]
+     (if-not (isa? actual-type# expected-type#)
+       (throw
+         (SpecFailure.
+           (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)"))))))
+
+(defmacro should-not-be-a
+  "Asserts that the type of the given form does not derives from or equals the expected type"
+  [expected-type actual-form]
+  `(let [actual# ~actual-form
+         actual-type# (type actual#)
+         expected-type# ~expected-type]
+     (if (isa? actual-type# expected-type#)
+       (throw
+         (SpecFailure.
+           (str "Expected " (-to-s actual#) " not to be an instance of " (-to-s expected-type#) " but was (using isa?)"))))))
+
 (defmacro pending
   "When added to a characteristic, it is markes as pending.  If a message is provided it will be printed
   in the run report"
