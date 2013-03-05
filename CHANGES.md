@@ -1,3 +1,7 @@
+# ?
+
+* Uses Clojure 1.5.0
+
 # 2.5.0
 
 * should== for loose equality and collection containment equality
