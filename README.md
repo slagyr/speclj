@@ -10,8 +10,8 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](ht
 Include speclj in your `:dependencies` and `:plugins`, and also change the `:test-path` to `"spec/"`
 
 ```clojure
-:dependencies [[speclj "2.5.0"]
-               [org.clojure/clojure "1.4.0"]]
+:dependencies [[org.clojure/clojure "1.5.0"]]
+:profiles {:dev {:dependencies [[speclj "2.5.0"]]}}
 :plugins [[speclj "2.5.0"]]
 :test-paths ["spec/"]
 ```
