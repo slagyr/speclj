@@ -33,7 +33,8 @@
   (report-pass [this result])
   (report-pending [this result])
   (report-fail [this result])
-  (report-runs [this results]))
+  (report-runs [this results])
+  (report-error [this exception]))
 
 (defmulti report-run (fn [result reporters] (type result)))
 (defmethod report-run PassResult [result reporters]
@@ -128,3 +129,6 @@
   (doseq [reporter reporters]
     (report-message reporter message)))
 
+(defn report-error* [reporters exception]
+  (doseq [reporter reporters]
+    (report-error reporter exception)))
