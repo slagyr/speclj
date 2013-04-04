@@ -84,7 +84,21 @@
   [name & body]
   (let [var-name (with-meta (symbol name) {:dynamic true})]
     `(do
-       (let [with-component# (new-with '~var-name (fn [] ~@body))]
+       (let [with-component# (new-with '~var-name (fn [] ~@body) false)]
+         (declare ~var-name)
+         with-component#))))
+
+(defmacro with!
+  "Declares a reference-able symbol that will be evaluated immediately and reset once per characteristic of the containing
+  describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
+
+  (def my-num (atom 0))
+  (with! my-with! (swap! my-num inc))
+  (it \"increments my-num before being accessed\" (should= 1 @my-num) (should= 2 @my-with!))"
+  [name & body]
+  (let [var-name (with-meta (symbol name) {:dynamic true})]
+    `(do
+       (let [with-component# (new-with '~var-name (fn [] ~@body) true)]
          (declare ~var-name)
          with-component#))))
 
@@ -97,7 +111,26 @@
   [name & body]
   (let [var-name (with-meta (symbol name) {:dynamic true})]
     `(do
-       (let [with-all-component# (new-with-all '~var-name (fn [] ~@body))]
+       (let [with-all-component# (new-with-all '~var-name (fn [] ~@body) false)]
+         (declare ~var-name)
+         with-all-component#))))
+
+(defmacro with-all!
+  "Declares a reference-able symbol that will be immediately evaluated once per context. The body may contain any forms,
+   the last of which will be the value of the dereferenced symbol.
+
+  (def my-num (atom 0))
+  (with-all! my-with-all! (swap! my-num inc))
+  (it \"increments my-num before being accessed\"
+    (should= 1 @my-num)
+    (should= 2 @my-with!))
+  (it \"only increments my-num once per context\"
+    (should= 1 @my-num)
+    (should= 2 @my-with!))"
+  [name & body]
+  (let [var-name (with-meta (symbol name) {:dynamic true})]
+    `(do
+       (let [with-all-component# (new-with-all '~var-name (fn [] ~@body) true)]
          (declare ~var-name)
          with-all-component#))))
 

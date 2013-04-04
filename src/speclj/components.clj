@@ -85,7 +85,7 @@
 (defn new-after-all [body]
   (AfterAll. body))
 
-(deftype With [name body value]
+(deftype With [name body value bang]
   SpecComponent
   (install [this description]
     (swap! (.withs description) conj this))
@@ -96,12 +96,15 @@
     @value))
 
 (defn reset-with [with]
-  (reset! (.value with) ::none))
+  (reset! (.value with) ::none)
+  (if (.bang with) (deref with)))
 
-(defn new-with [name body]
-  (With. name body (atom ::none)))
+(defn new-with [name body bang]
+  (let [with (With. name body (atom ::none) bang)]
+    (if bang (deref with))
+    with))
 
-(deftype WithAll [name body value]
+(deftype WithAll [name body value bang]
   SpecComponent
   (install [this description]
     (swap! (.with-alls description) conj this))
@@ -111,8 +114,10 @@
       (reset! value (body)))
     @value))
 
-(defn new-with-all [name body]
-  (WithAll. name body (atom ::none)))
+(defn new-with-all [name body bang]
+  (let [with-all (WithAll. name body (atom ::none) bang)]
+    (if bang (deref with-all))
+    with-all))
 
 (deftype Tag [name]
   SpecComponent
