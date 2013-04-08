@@ -1,6 +1,7 @@
 # ?
 
 * Uses Clojure 1.5.0
+* Added with! and with-all!.  Courtesy of @spadin.
 
 # 2.5.0
 
