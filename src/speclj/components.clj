@@ -101,7 +101,7 @@
 
 (defn new-with [name body bang]
   (let [with (With. name body (atom ::none) bang)]
-    (if bang (deref with))
+    (when bang (deref with))
     with))
 
 (deftype WithAll [name body value bang]
@@ -116,7 +116,7 @@
 
 (defn new-with-all [name body bang]
   (let [with-all (WithAll. name body (atom ::none) bang)]
-    (if bang (deref with-all))
+    (when bang (deref with-all))
     with-all))
 
 (deftype Tag [name]
