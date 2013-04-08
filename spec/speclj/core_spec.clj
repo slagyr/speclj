@@ -242,5 +242,55 @@
     (it "tag :one :three :four" :filler))
   )
 
+(describe "with"
+  (def lazy-calls (atom 0))
+  (with with-example
+         (swap! lazy-calls inc))
+
+  (it "never deref'ed with-example"
+    (should= 0 @lazy-calls))
+
+  (it "still hasn't deref'ed with-example during reset"
+    (should= 0 @lazy-calls))
+
+  (it "finally deref'ed with-example lazily"
+    (should= 1 @with-example)))
+
+(describe "with!"
+  (def non-lazy-calls (atom 0))
+  (with! with-bang-example
+         (swap! non-lazy-calls inc))
+
+  (it "has been deref'ed upon instantiation"
+    (should= 1 @non-lazy-calls))
+
+  (it "has been reset and deref'ed, not lazy"
+    (should= 2 @non-lazy-calls)))
+
+(describe "with-all"
+  (def lazy-with-all-calls (atom 0))
+  (with-all with-all-example
+            (swap! lazy-with-all-calls inc))
+
+  (it "never deref'ed with-all-example"
+    (should= 0 @lazy-with-all-calls))
+
+  (it "still hasn't deref'ed with-example during reset"
+    (should= 0 @lazy-with-all-calls))
+
+  (it "finally deref'ed with-all-example lazily"
+    (should= 1 @with-all-example)))
+
+(describe "with-all!"
+  (def non-lazy-with-all-calls (atom 0))
+  (with-all! with-bang-example
+         (swap! non-lazy-with-all-calls inc))
+
+  (it "has been deref'ed upon instantiation"
+    (should= 1 @non-lazy-with-all-calls))
+
+  (it "has not been reset and deref'ed"
+    (should= 1 @non-lazy-with-all-calls)))
+
 ;(run-specs :tags ["two"])
 (run-specs)
