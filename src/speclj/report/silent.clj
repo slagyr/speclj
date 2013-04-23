@@ -11,7 +11,8 @@
   (report-pass [this result])
   (report-pending [this result])
   (report-fail [this result])
-  (report-runs [this results]))
+  (report-runs [this results])
+  (report-error [this exception]))
 
 (defn new-silent-reporter []
   (SilentReporter. (atom 0) (atom 0) (atom nil)))

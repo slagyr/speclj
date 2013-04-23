@@ -3,7 +3,7 @@
     [speclj.running :only (do-description run-and-report run-description)]
     [speclj.util]
     [speclj.results :only (categorize)]
-    [speclj.reporting :only (report-runs* report-message* print-stack-trace)]
+    [speclj.reporting :only (report-runs* report-message* report-error* print-stack-trace)]
     [speclj.config :only (active-runner active-reporters config-bindings *specs*)]
     [fresh.core :only (freshener make-fresh ns-to-file clj-files-in)]
     [clojure.java.io :only (file)])
@@ -53,7 +53,9 @@
         (when (seq @(.results runner))
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
-        (catch Throwable e (print-stack-trace e *out*)))
+        (catch Throwable e
+          (report-error* reporters e)
+          (print-stack-trace e *out*)))
       (reset! (.results runner) []))))
 
 (deftype VigilantRunner [file-listing results previous-failed directories]

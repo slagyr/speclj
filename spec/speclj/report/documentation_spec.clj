@@ -27,6 +27,10 @@
     (report-description @reporter @description)
     (should= (str endl "Verbosity" endl) (to-s @output)))
 
+  (it "doesnt report errors"
+    (report-error @reporter (Exception. "Compilation failed"))
+    (should= "" (to-s @output)))
+
   (it "reports pass"
     (let [characteristic (new-characteristic "says pass" @description "pass")
           result (pass-result characteristic 1)]

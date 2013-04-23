@@ -86,7 +86,8 @@
     (print (red "F")) (flush))
   (report-runs [this results]
     (println)
-    (print-summary results)))
+    (print-summary results))
+  (report-error [this exception]))
 
 (defn new-progress-reporter []
   (ProgressReporter.))
