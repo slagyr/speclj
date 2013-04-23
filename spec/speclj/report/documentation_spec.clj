@@ -1,16 +1,14 @@
 (ns speclj.report.documentation-spec
-  (:use
-    [speclj.core]
-    [speclj.report.documentation :only (new-documentation-reporter)]
-    [speclj.reporting]
-    [speclj.results :only (pass-result fail-result pending-result)]
-    [speclj.components :only (new-description new-characteristic install)]
-    [clojure.string :only (split-lines)]
-    [speclj.util :only (endl)]
-    [speclj.config :only (*color?*)])
-  (:import
-    [speclj SpecFailure SpecPending]
-    [java.io ByteArrayOutputStream OutputStreamWriter]))
+  (:use [speclj.core]
+        [speclj.report.documentation :only (new-documentation-reporter)]
+        [speclj.reporting]
+        [speclj.results :only (pass-result fail-result pending-result error-result)]
+        [speclj.components :only (new-description new-characteristic install)]
+        [clojure.string :only (split-lines)]
+        [speclj.util :only (endl)]
+        [speclj.config :only (*color?*)])
+  (:import [speclj SpecFailure SpecPending]
+           [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
   (String. (.toByteArray output)))
@@ -27,9 +25,9 @@
     (report-description @reporter @description)
     (should= (str endl "Verbosity" endl) (to-s @output)))
 
-  (it "doesnt report errors"
-    (report-error @reporter (Exception. "Compilation failed"))
-    (should= "" (to-s @output)))
+  (it "reports errors"
+    (report-error @reporter (error-result (Exception. "Compilation failed")))
+    (should= (str (red "java.lang.Exception: Compilation failed") "\n") (to-s @output)))
 
   (it "reports pass"
     (let [characteristic (new-characteristic "says pass" @description "pass")

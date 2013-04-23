@@ -1,6 +1,6 @@
 (ns speclj.running
   (:use
-    [speclj.results :only (pass-result fail-result pending-result)]
+    [speclj.results :only (pass-result fail-result pending-result error-result)]
     [speclj.reporting :only (report-runs* report-run report-description*)]
     [speclj.components :only (reset-with)]
     [speclj.util :only (secs-since)]
@@ -97,6 +97,11 @@
             (do-child-contexts description results reporters))
           (finally
             (reset-withs @(.with-alls description))))))))
+
+(defn process-compile-error [runner e]
+  (let [error-result (error-result e)]
+    (swap! (.results runner) conj error-result)
+    (report-run error-result (active-reporters))))
 
 (defprotocol Runner
   (run-directories [this directories reporters])

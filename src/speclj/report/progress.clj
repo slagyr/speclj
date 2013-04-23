@@ -1,14 +1,11 @@
 (ns speclj.report.progress
-  (:use
-    [speclj.reporting :only (failure-source tally-time red green yellow grey stack-trace indent prefix)]
-    [speclj.results :only (pass? fail? pending? categorize)]
-    [speclj.util :only (seconds-format)]
-    [speclj.config :only (default-reporters)])
-  (:require
-    [clojure.string :as str])
-  (:import
-    [speclj.reporting Reporter]
-    [speclj SpecFailure]))
+  (:use [speclj.reporting :only (failure-source tally-time red green yellow grey stack-trace indent prefix print-stack-trace)]
+        [speclj.results :only (pass? fail? pending? categorize)]
+        [speclj.util :only (seconds-format)]
+        [speclj.config :only (default-reporters)])
+  (:require [clojure.string :as str])
+  (:import [speclj.reporting Reporter]
+           [speclj SpecFailure]))
 
 (defn full-name [characteristic]
   (loop [context @(.parent characteristic) name (.name characteristic)]
@@ -43,24 +40,44 @@
     (println (grey (str "    ; " (.getMessage (.exception result)))))
     (println (grey (str "    ; " (failure-source (.exception result)))))))
 
+(defn print-errors [error-results]
+  (when (seq error-results)
+    (println)
+    (println "Errors:"))
+  (doseq [[number result] (partition 2 (interleave (iterate inc 1) error-results))]
+    (println)
+    (println (indent 1 number ") " (red (str (.exception result)))))
+    (println (grey (indent 2.5 (stack-trace (.exception result))))))
+  (.flush *out*))
+
 (defn- print-duration [results]
   (println)
   (println "Finished in" (.format seconds-format (tally-time results)) "seconds"))
 
 (defn color-fn-for [result-map]
-  (cond (not= 0 (count (:fail result-map))) red
+  (cond
+    (not= 0 (count (concat (:fail result-map) (:error result-map)))) red
     (not= 0 (count (:pending result-map))) yellow
     :else green))
+
+(defn- apply-pending-tally [report tally]
+  (if (pos? (:pending tally))
+    (conj report (str (:pending tally) " pending"))
+    report))
+
+(defn- apply-error-tally [report tally]
+  (if (pos? (:error tally))
+    (conj report (str (:error tally) " errors"))
+    report))
 
 (defn describe-counts-for [result-map]
   (let [tally (zipmap (keys result-map) (map count (vals result-map)))
         always-on-counts [(str (apply + (vals tally)) " examples")
                           (str (:fail tally) " failures")]]
-
     (str/join ", "
-      (if (pos? (:pending tally))
-        (conj always-on-counts (str (:pending tally) " pending"))
-        always-on-counts))))
+      (-> always-on-counts
+        (apply-pending-tally tally)
+        (apply-error-tally tally)))))
 
 (defn- print-tally [result-map]
   (let [color-fn (color-fn-for result-map)]
@@ -70,6 +87,7 @@
   (let [result-map (categorize results)]
     (print-failures (:fail result-map))
     (print-pendings (:pending result-map))
+    (print-errors (:error result-map))
     (print-duration results)
     (print-tally result-map)))
 
@@ -84,10 +102,11 @@
     (print (yellow "*")) (flush))
   (report-fail [this result]
     (print (red "F")) (flush))
+  (report-error [this result]
+    (print (red "E")) (flush))
   (report-runs [this results]
     (println)
-    (print-summary results))
-  (report-error [this exception]))
+    (print-summary results)))
 
 (defn new-progress-reporter []
   (ProgressReporter.))

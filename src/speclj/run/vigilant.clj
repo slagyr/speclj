@@ -1,6 +1,6 @@
 (ns speclj.run.vigilant
   (:use
-    [speclj.running :only (do-description run-and-report run-description)]
+    [speclj.running :only (do-description run-and-report run-description process-compile-error)]
     [speclj.util]
     [speclj.results :only (categorize)]
     [speclj.reporting :only (report-runs* report-message* report-error* print-stack-trace)]
@@ -54,8 +54,7 @@
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
         (catch Throwable e
-          (report-error* reporters e)
-          (print-stack-trace e *out*)))
+          (process-compile-error runner e)))
       (reset! (.results runner) []))))
 
 (deftype VigilantRunner [file-listing results previous-failed directories]

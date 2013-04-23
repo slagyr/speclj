@@ -1,15 +1,13 @@
 (ns speclj.report.progress-spec
-  (:use
-    [speclj.core]
-    [speclj.report.progress :only (new-progress-reporter full-name print-summary print-pendings)]
-    [speclj.reporting]
-    [speclj.results :only (pass-result fail-result pending-result)]
-    [speclj.components :only (new-description new-characteristic install)]
-    [speclj.config :only (*color?*)]
-    [clojure.string :only (split-lines)])
-  (:import
-    [speclj SpecFailure SpecPending]
-    [java.io ByteArrayOutputStream OutputStreamWriter]))
+  (:use [speclj.core]
+        [speclj.report.progress :only (new-progress-reporter full-name print-summary print-pendings print-errors)]
+        [speclj.reporting]
+        [speclj.results :only (pass-result fail-result pending-result error-result)]
+        [speclj.components :only (new-description new-characteristic install)]
+        [speclj.config :only (*color?* *full-stack-trace?*)]
+        [clojure.string :only (split-lines)])
+  (:import [speclj SpecFailure SpecPending]
+           [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
   (String. (.toByteArray output)))
@@ -52,9 +50,9 @@
     (report-description @reporter nil)
     (should= "" (to-s @output)))
 
-  (it "doesnt report errors"
+  (it "reports errors"
     (report-error @reporter (Exception. "Compilation failed"))
-    (should= "" (to-s @output)))
+    (should= "E" (to-s @output)))
 
   (it "reports passing run results"
     (binding [*color?* true]
@@ -64,6 +62,7 @@
             results [result1 result2 result3]
             _ (report-runs @reporter results)
             lines (split-lines (to-s @output))]
+      (println "lines: " lines)
         (should= 4 (count lines))
         (should= "" (lines 0))
         (should= "" (lines 1))
@@ -125,8 +124,34 @@
       (should= "" (nth lines 2))
       (should= (yellow "  Crazy flips") (nth lines 3))
       (should= (grey "    ; Not Yet Implemented") (nth lines 4))
-;      (should= (grey "    ; /Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:117") (nth lines 5))
+      ;      (should= (grey "    ; /Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:117") (nth lines 5))
       ))
+
+  (it "reports error run results"
+    (binding [*color?* true]
+      (let [description (new-description "Crazy" *ns*)
+            char1 (new-characteristic "flips" description "flip")
+            result1 (pass-result char1 0.1)
+            result2 (pass-result char1 0.02)
+            result3 (error-result (Exception. "blah"))
+            results [result1 result2 result3]
+            _ (print-summary results)
+            lines (split-lines (to-s @output))]
+        (should= (red "3 examples, 0 failures, 1 errors") (last lines)))))
+
+  (it "reports error summary"
+    (binding [*full-stack-trace?* false]
+      (let [description (new-description "Crazy" *ns*)
+            char1 (new-characteristic "flips" description "flip")
+            result1 (error-result (Exception. "blah"))
+            _ (print-errors [result1])
+            lines (split-lines (to-s @output))]
+        (should (> (count lines) 3))
+        (should= "" (nth lines 0))
+        (should= "Errors:" (nth lines 1))
+        (should= "" (nth lines 2))
+        (should= "  1) java.lang.Exception: blah" (nth lines 3))
+        )))
 
   (it "can calculate the full name of a characteristic"
     (let [outer (new-description "Outer" *ns*)
@@ -136,4 +161,4 @@
       (should= "Outer Inner char" (full-name char))))
   )
 
-(run-specs)
+(run-specs :stacktrace true)

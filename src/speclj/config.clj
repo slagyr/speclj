@@ -11,6 +11,7 @@
 
 (declare #^{:dynamic true} *runner*)
 (def default-runner (atom nil))
+(def default-runner-fn (atom nil))
 (defn active-runner []
   (if (bound? #'*runner*)
     *runner*

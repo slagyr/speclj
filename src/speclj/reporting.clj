@@ -4,7 +4,7 @@
     [speclj.config :only (*reporters* *color?* *full-stack-trace?*)]
     [clojure.string :as string :only (split join)])
   (:import
-    [speclj.results PassResult FailResult PendingResult]
+    [speclj.results PassResult FailResult PendingResult ErrorResult]
     [java.io PrintWriter StringWriter]))
 
 (defn- classname->filename [classname]
@@ -46,6 +46,9 @@
 (defmethod report-run PendingResult [result reporters]
   (doseq [reporter reporters]
     (report-pending reporter result)))
+(defmethod report-run ErrorResult [result reporters]
+  (doseq [reporter reporters]
+    (report-error reporter result)))
 
 (defn- stylizer [code]
   (fn [text]

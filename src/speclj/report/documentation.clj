@@ -35,9 +35,10 @@
     (let [characteristic (.characteristic result)
           level (level-of characteristic)]
       (println (red (indent (dec level) "- " (.name characteristic) " (FAILED)"))) (flush)))
+  (report-error [this result]
+    (println (red (.toString (.exception result)))))
   (report-runs [this results]
-    (print-summary results))
-  (report-error [this exception]))
+    (print-summary results)))
 
 (defn new-documentation-reporter []
   (DocumentationReporter.))

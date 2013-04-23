@@ -2,7 +2,7 @@
   (:use [speclj.running :only (submit-description run-and-report)]
         [speclj.reporting :only (report-message*)]
         [speclj.tags :only (describe-filter)]
-        [speclj.config :only (active-reporters active-runner default-runner config-mappings default-config)]
+        [speclj.config :only (active-reporters active-runner default-runner default-runner-fn config-mappings default-config)]
         [speclj.components]
         [speclj.util :only (endl)])
   (:require [speclj.run.standard]
@@ -405,4 +405,7 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
       (with-bindings (config-mappings config)
         (if-let [filter-msg (describe-filter)]
           (report-message* (active-reporters) filter-msg))
-        (run-and-report (active-runner) (active-reporters))))))
+        (run-and-report (active-runner) (active-reporters))
+        (reset! default-runner (@default-runner-fn))))))
+
+(reset! default-runner (@default-runner-fn))

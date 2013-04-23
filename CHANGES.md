@@ -1,7 +1,8 @@
-# ?
+# 2.6.0
 
 * Uses Clojure 1.5.0
 * Added with! and with-all!.  Courtesy of @spadin.
+* Compile errors are caught and reported. Courtesy of @glenjamin.  https://github.com/slagyr/speclj/pull/39
 
 # 2.5.0
 
