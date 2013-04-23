@@ -52,6 +52,10 @@
     (report-description @reporter nil)
     (should= "" (to-s @output)))
 
+  (it "doesnt report errors"
+    (report-error @reporter (Exception. "Compilation failed"))
+    (should= "" (to-s @output)))
+
   (it "reports passing run results"
     (binding [*color?* true]
       (let [result1 (pass-result nil 0.1)

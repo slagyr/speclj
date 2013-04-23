@@ -1,7 +1,7 @@
 (ns speclj.run.standard
   (:use
     [speclj.running :only (do-description run-and-report run-description)]
-    [speclj.reporting :only (report-runs*)]
+    [speclj.reporting :only (report-runs* report-error*)]
     [speclj.results :only (fail-count)]
     [speclj.config :only (default-runner *runner* *reporters*)]
     [fresh.core :only (clj-files-in)]
@@ -10,10 +10,9 @@
     [speclj.running Runner]))
 
 (defn- load-spec [spec-file]
-  (try
   (let [src (slurp (.getCanonicalPath spec-file))
         rdr (-> (java.io.StringReader. src) (clojure.lang.LineNumberingPushbackReader.))]
-    (clojure.lang.Compiler/load rdr (.getParent spec-file) (.getName spec-file)))))
+    (clojure.lang.Compiler/load rdr (.getParent spec-file) (.getName spec-file))))
 
 (deftype StandardRunner [descriptions results]
   Runner
@@ -23,7 +22,11 @@
           files (sort files)]
       (binding [*runner* this *reporters* reporters]
         (doseq [file files]
-          (load-spec file))))
+          (try
+            (load-spec file)
+            (catch Throwable e
+              (report-error* reporters e)
+              (throw e))))))
     (run-and-report this reporters)
     (fail-count @results))
 
