@@ -8,7 +8,6 @@
 * auto runner should no longer barf on compile errors. https://github.com/slagyr/speclj/issues/33
 * removed 'lein new speclj' task.  Instead use 'lein new speclj <name>'. https://github.com/slagyr/speclj/pull/23
 
-
 # 2.5.0
 
 * should== for loose equality and collection containment equality
