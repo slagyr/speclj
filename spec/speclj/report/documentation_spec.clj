@@ -1,12 +1,12 @@
 (ns speclj.report.documentation-spec
-  (:use [speclj.core]
-        [speclj.report.documentation :only (new-documentation-reporter)]
-        [speclj.reporting]
-        [speclj.results :only (pass-result fail-result pending-result error-result)]
-        [speclj.components :only (new-description new-characteristic install)]
-        [clojure.string :only (split-lines)]
-        [speclj.util :only (endl)]
-        [speclj.config :only (*color?*)])
+  (:require [clojure.string :refer [split-lines]]
+            [speclj.components :refer [new-description new-characteristic install]]
+            [speclj.config :refer [*color?*]]
+            [speclj.core :refer :all]
+            [speclj.report.documentation :refer [new-documentation-reporter]]
+            [speclj.reporting :refer :all]
+            [speclj.results :refer [pass-result fail-result pending-result error-result]]
+            [speclj.util :refer [endl]])
   (:import [speclj SpecPending]
            [java.io ByteArrayOutputStream OutputStreamWriter]))
 

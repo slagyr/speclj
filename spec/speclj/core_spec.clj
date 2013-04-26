@@ -1,6 +1,5 @@
 (ns speclj.core-spec
-  (:use
-    [speclj.core]))
+  (:require [speclj.core :refer :all]))
 
 (describe "The basic spec structure"
   (it "uses a call to describe to begin a description" :filler)
@@ -97,8 +96,8 @@
     (should= 42 *gewgaw*))
 
   (context "with before and after"
-      (before (should= 42 *gewgaw*))
-      (it "executes around all of them" :filler)
+    (before (should= 42 *gewgaw*))
+    (it "executes around all of them" :filler)
     )
   )
 
@@ -206,9 +205,9 @@
       (it ": the with value has changed"
         (should= @bibelot @gimcrack)
         (should (not (identical? @bibelot @gimcrack))))
+      )
     )
   )
-)
 
 (describe "Nested contexts"
   (it "execute all the components in the right order"
@@ -245,7 +244,7 @@
 (describe "with"
   (def lazy-calls (atom 0))
   (with with-example
-         (swap! lazy-calls inc))
+    (swap! lazy-calls inc))
 
   (it "never deref'ed with-example"
     (should= 0 @lazy-calls))
@@ -259,7 +258,7 @@
 (describe "with!"
   (def non-lazy-calls (atom 0))
   (with! with-bang-example
-         (swap! non-lazy-calls inc))
+    (swap! non-lazy-calls inc))
 
   (it "has been deref'ed upon instantiation"
     (should= 1 @non-lazy-calls))
@@ -270,7 +269,7 @@
 (describe "with-all"
   (def lazy-with-all-calls (atom 0))
   (with-all with-all-example
-            (swap! lazy-with-all-calls inc))
+    (swap! lazy-with-all-calls inc))
 
   (it "never deref'ed with-all-example"
     (should= 0 @lazy-with-all-calls))
@@ -284,7 +283,7 @@
 (describe "with-all!"
   (def non-lazy-with-all-calls (atom 0))
   (with-all! with-bang-example
-         (swap! non-lazy-with-all-calls inc))
+    (swap! non-lazy-with-all-calls inc))
 
   (it "has been deref'ed upon instantiation"
     (should= 1 @non-lazy-with-all-calls))

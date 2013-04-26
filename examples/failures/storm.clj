@@ -1,6 +1,5 @@
 (ns storm
-  (:use
-    [speclj.core]))
+  (:require [speclj.core :refer :all]))
 
 (describe "The storm"
 

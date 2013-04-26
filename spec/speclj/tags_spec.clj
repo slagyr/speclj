@@ -1,10 +1,9 @@
 (ns speclj.tags-spec
-  (:use
-    [speclj.core]
-    [speclj.tags]
-    [speclj.config :only (*runner* *reporters*)]
-    [speclj.run.standard :only (new-standard-runner)]
-    [speclj.report.silent :only (new-silent-reporter)]))
+  (:require [speclj.config :refer [*runner* *reporters*]]
+            [speclj.core :refer :all]
+            [speclj.report.silent :refer [new-silent-reporter]]
+            [speclj.run.standard :refer [new-standard-runner]]
+            [speclj.tags :refer :all]))
 
 (describe "Tags"
 
@@ -57,10 +56,10 @@
     (it "finds all the tag sets with nested contexts"
       (let [spec
             (eval '(describe "foo" (tags :one)
-              (context "child" (tags :two)
-                (context "grandchild" (tags :three :four))
-                (context "grandchild2" (tags :five)))
-              (context "child2" (tags :six))))
+                     (context "child" (tags :two)
+                       (context "grandchild" (tags :three :four))
+                       (context "grandchild2" (tags :five)))
+                     (context "child2" (tags :six))))
             tag-sets (tag-sets-for spec)]
         (should= 5 (count tag-sets))
         (should= #{:one} (nth tag-sets 0))

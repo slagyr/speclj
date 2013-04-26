@@ -1,11 +1,11 @@
 (ns speclj.report.progress-spec
-  (:use [speclj.core]
-        [speclj.report.progress :only (new-progress-reporter full-name print-summary print-pendings print-errors)]
-        [speclj.reporting]
-        [speclj.results :only (pass-result fail-result pending-result error-result)]
-        [speclj.components :only (new-description new-characteristic install)]
-        [speclj.config :only (*color?* *full-stack-trace?*)]
-        [clojure.string :only (split-lines)])
+  (:require [clojure.string :refer [split-lines]]
+            [speclj.components :refer [new-description new-characteristic install]]
+            [speclj.config :refer [*color?* *full-stack-trace?*]]
+            [speclj.core :refer :all]
+            [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
+            [speclj.reporting :refer :all]
+            [speclj.results :refer [pass-result fail-result pending-result error-result]])
   (:import [speclj SpecPending]
            [java.io ByteArrayOutputStream OutputStreamWriter]))
 
@@ -62,7 +62,7 @@
             results [result1 result2 result3]
             _ (report-runs @reporter results)
             lines (split-lines (to-s @output))]
-      (println "lines: " lines)
+        (println "lines: " lines)
         (should= 4 (count lines))
         (should= "" (lines 0))
         (should= "" (lines 1))

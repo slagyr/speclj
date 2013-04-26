@@ -1,14 +1,12 @@
 (ns speclj.running
-  (:use
-    [speclj.results :only (pass-result fail-result pending-result error-result)]
-    [speclj.reporting :only (report-runs* report-run report-description*)]
-    [speclj.components :only (reset-with)]
-    [speclj.util :only (secs-since)]
-    [speclj.config :only (*runner* active-reporters)]
-    [speclj.tags :only (tags-for tag-sets-for pass-tag-filter? context-with-tags-seq)])
-  (:import
-    [speclj SpecPending]
-    [java.io File]))
+  (:require [speclj.components :refer [reset-with]]
+            [speclj.config :refer [*runner* active-reporters]]
+            [speclj.reporting :refer [report-runs* report-run report-description*]]
+            [speclj.results :refer [pass-result fail-result pending-result error-result]]
+            [speclj.tags :refer [tags-for tag-sets-for pass-tag-filter? context-with-tags-seq]]
+            [speclj.util :refer [secs-since]])
+  (:import [speclj SpecPending]
+           [java.io File]))
 
 (defn- eval-components [components]
   (doseq [component components] ((.body component))))

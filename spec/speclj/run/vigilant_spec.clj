@@ -1,7 +1,6 @@
 (ns speclj.run.vigilant-spec
-  (:use
-    [speclj.core]
-    [speclj.run.vigilant]))
+  (:require [speclj.core :refer :all]
+            [speclj.run.vigilant :refer :all]))
 
 (describe "Vigilant Runner"
   (with runner (new-vigilant-runner))

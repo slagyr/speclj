@@ -1,8 +1,7 @@
 (ns speclj.tags
-  (:use
-    [speclj.config :only (*tag-filter*)]
-    [clojure.set :only (union intersection)]
-    [clojure.string :only (join)]))
+  (:require [clojure.set :refer [union intersection]]
+            [clojure.string :refer [join]]
+            [speclj.config :refer [*tag-filter*]]))
 
 (defn pass-includes? [includes tags]
   (if (empty? includes)
@@ -13,8 +12,8 @@
   (if (empty? excludes)
     true
     (not (some
-      #(contains? excludes %)
-      tags))))
+           #(contains? excludes %)
+           tags))))
 
 (defn pass-tag-filter?
   ([tags] (pass-tag-filter? *tag-filter* tags))
@@ -26,7 +25,7 @@
 (defn tags-for [context]
   (if context
     (union (tags-for @(.parent context)) @(.tags context))
-    #{}))
+      #{}))
 
 (defn tag-sets-for [context]
   (let [context-seq (tree-seq #(not (nil? %)) #(deref (.children %)) context)]
@@ -41,7 +40,7 @@
   ([filter]
     (let [includes (seq (map name (:includes filter)))
           excludes (seq (map name (:excludes filter)))]
-    (when (or includes excludes)
-      (str "Filtering tags."
-        (when includes (str " Including: " (join ", " includes) "."))
-        (when excludes (str " Excluding: " (join ", " excludes) ".")))))))
+      (when (or includes excludes)
+        (str "Filtering tags."
+          (when includes (str " Including: " (join ", " includes) "."))
+          (when excludes (str " Excluding: " (join ", " excludes) ".")))))))

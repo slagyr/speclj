@@ -1,10 +1,10 @@
 (ns speclj.run.standard
-  (:use [speclj.running :only (do-description run-and-report run-description process-compile-error)]
-        [speclj.reporting :only (report-runs*)]
-        [speclj.results :only (fail-count)]
-        [speclj.config :only (default-runner-fn *runner* *reporters*)]
-        [fresh.core :only (clj-files-in)]
-        [clojure.java.io :only (file)])
+  (:require [clojure.java.io :refer [file]]
+            [fresh.core :refer [clj-files-in]]
+            [speclj.config :refer [default-runner-fn *runner* *reporters*]]
+            [speclj.reporting :refer [report-runs*]]
+            [speclj.results :refer [fail-count]]
+            [speclj.running :refer [do-description run-and-report run-description process-compile-error]])
   (:import [speclj.running Runner]))
 
 (defn- load-spec [spec-file]

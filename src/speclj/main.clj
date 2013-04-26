@@ -1,14 +1,11 @@
 (ns speclj.main
-  (:use
-    [speclj.running :only (run-directories run-and-report)]
-    [speclj.util :only (endl)]
-    [speclj.config]
-    [speclj.reporting :only (print-stack-trace report-message*)]
-    [speclj.tags :only (describe-filter)])
-  (:require
-    [speclj.version])
-  (:import
-    [mmargs Arguments]))
+  (:require [speclj.running :refer [run-directories run-and-report]]
+            [speclj.util :refer [endl]]
+            [speclj.config :refer :all]
+            [speclj.reporting :refer [print-stack-trace report-message*]]
+            [speclj.tags :refer [describe-filter]]
+            [speclj.version])
+  (:import [mmargs Arguments]))
 
 (def speclj-invocation (or (System/getProperty "speclj.invocation") "java -cp [...] speclj.main"))
 

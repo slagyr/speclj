@@ -1,9 +1,9 @@
 (ns speclj.report.progress
-  (:use [speclj.reporting :only (failure-source tally-time red green yellow grey stack-trace indent prefix print-stack-trace)]
-        [speclj.results :only (pass? fail? pending? categorize)]
-        [speclj.util :only (seconds-format)]
-        [speclj.config :only (default-reporters)])
-  (:require [clojure.string :as str])
+  (:require [speclj.config :refer [default-reporters]]
+            [speclj.reporting :refer [failure-source tally-time red green yellow grey stack-trace indent prefix print-stack-trace]]
+            [speclj.results :refer [pass? fail? pending? categorize]]
+            [speclj.util :refer [seconds-format]]
+            [clojure.string :as str])
   (:import [speclj.reporting Reporter]))
 
 (defn full-name [characteristic]

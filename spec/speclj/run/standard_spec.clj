@@ -1,13 +1,11 @@
 (ns speclj.run.standard-spec
-  (:use
-    [speclj.core]
-    [speclj.run.standard]
-    [speclj.running :only (run-directories run-and-report)]
-    [speclj.config :only (active-reporters *runner*)]
-    [speclj.report.silent :only (new-silent-reporter)]
-    [speclj.spec-helper :only (find-dir)])
-  (:import
-    [java.io File]))
+  (:require [speclj.config :refer [active-reporters *runner*]]
+            [speclj.core :refer :all]
+            [speclj.report.silent :refer [new-silent-reporter]]
+            [speclj.run.standard :refer :all]
+            [speclj.running :refer [run-directories run-and-report]]
+            [speclj.spec-helper :refer [find-dir]])
+  (:import [java.io File]))
 
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
@@ -23,7 +21,6 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
-
-)
+  )
 
 (run-specs)

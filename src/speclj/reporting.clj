@@ -1,11 +1,9 @@
 (ns speclj.reporting
-  (:use
-    [speclj.results :only (pass? fail?)]
-    [speclj.config :only (*reporters* *color?* *full-stack-trace?*)]
-    [clojure.string :as string :only (split join)])
-  (:import
-    [speclj.results PassResult FailResult PendingResult ErrorResult]
-    [java.io PrintWriter StringWriter]))
+  (:require [clojure.string :as string :refer [split join]]
+            [speclj.config :refer [*reporters* *color?* *full-stack-trace?*]]
+            [speclj.results :refer [pass? fail?]])
+  (:import [speclj.results PassResult FailResult PendingResult ErrorResult]
+           [java.io PrintWriter StringWriter]))
 
 (defn- classname->filename [classname]
   (let [root-name (first (split classname #"\$"))]

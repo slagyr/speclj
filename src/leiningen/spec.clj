@@ -1,8 +1,6 @@
 (ns leiningen.spec
-  (:use
-    [clojure.java.io :only [file]])
-  (:import
-    [java.io BufferedInputStream]))
+  (:require [clojure.java.io :refer [file]])
+  (:import [java.io BufferedInputStream]))
 
 (defn- copy-bytes [in out]
   (with-open [input in]
@@ -28,9 +26,9 @@
 
 (defn- compute-classpath-string [project]
   (clojure.string/join java.io.File/pathSeparatorChar
-        ((or (ns-resolve (the-ns 'leiningen.classpath) 'get-classpath)
-             (ns-resolve (the-ns 'leiningen.core.classpath) 'get-classpath))
-          project)))
+    ((or (ns-resolve (the-ns 'leiningen.classpath) 'get-classpath)
+       (ns-resolve (the-ns 'leiningen.core.classpath) 'get-classpath))
+      project)))
 
 (defn- prepare [project]
   (try
@@ -38,7 +36,7 @@
     ((ns-resolve 'leiningen.core.eval 'prep) project)
     (catch java.io.FileNotFoundException e
       (require 'leiningen.classpath
-               'leiningen.compile)
+        'leiningen.compile)
       ((ns-resolve 'leiningen.compile 'prep) project false))))
 
 (defn spec

@@ -1,12 +1,10 @@
 (ns speclj.report.documentation
-  (:use
-    [speclj.reporting :only (failure-source tally-time green red yellow indent)]
-    [speclj.results :only (pass? fail?)]
-    [speclj.report.progress :only (print-summary)]
-    [speclj.util :only (endl)]
-    [speclj.config :only (default-reporters)])
-  (:import
-    [speclj.reporting Reporter]))
+  (:require [speclj.config :refer [default-reporters]]
+            [speclj.report.progress :refer [print-summary]]
+            [speclj.reporting :refer [failure-source tally-time green red yellow indent]]
+            [speclj.results :refer [pass? fail?]]
+            [speclj.util :refer [endl]])
+  (:import [speclj.reporting Reporter]))
 
 (defn level-of [component]
   (loop [component @(.parent component) level 0]

@@ -1,5 +1,5 @@
     (ns basics-spec
-      (:use [speclj.core]))
+      (:require [speclj.core :refer :all]))
 
     ;(describe "Truth"
     ;

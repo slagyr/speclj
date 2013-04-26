@@ -1,17 +1,10 @@
 (ns speclj.main-spec
-  (:use
-    [speclj.core]
-    [speclj.main]
-    [speclj.util :only (endl)])
-  (:require
-    ;    [speclj.run.standard]
-    ;    [speclj.run.vigilant]
-    ;    [speclj.report.progress]
-    ;    [speclj.report.silent]
-    [speclj.version]
-    [speclj.config :as config])
-  (:import
-    [java.io ByteArrayOutputStream OutputStreamWriter]))
+  (:require [speclj.config :as config]
+            [speclj.core :refer :all]
+            [speclj.main :refer :all]
+            [speclj.util :refer [endl]]
+            [speclj.version])
+  (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 
 (defn to-s [output]

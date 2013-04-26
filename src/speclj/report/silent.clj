@@ -1,8 +1,6 @@
 (ns speclj.report.silent
-  (:use
-    [speclj.reporting :only ()])
-  (:import
-    [speclj.reporting Reporter]))
+  (:require [speclj.reporting])
+  (:import [speclj.reporting Reporter]))
 
 (deftype SilentReporter [passes fails results]
   Reporter

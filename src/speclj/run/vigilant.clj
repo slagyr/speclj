@@ -1,15 +1,13 @@
 (ns speclj.run.vigilant
-  (:use
-    [speclj.running :only (do-description run-and-report run-description process-compile-error)]
-    [speclj.util]
-    [speclj.results :only (categorize)]
-    [speclj.reporting :only (report-runs* report-message* report-error* print-stack-trace)]
-    [speclj.config :only (active-runner active-reporters config-bindings *specs*)]
-    [fresh.core :only (freshener make-fresh ns-to-file clj-files-in)]
-    [clojure.java.io :only (file)])
-  (:import
-    [speclj.running Runner]
-    [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
+  (:require [clojure.java.io :refer [file]]
+            [fresh.core :refer [freshener make-fresh ns-to-file clj-files-in]]
+            [speclj.config :refer [active-runner active-reporters config-bindings *specs*]]
+            [speclj.reporting :refer [report-runs* report-message* report-error* print-stack-trace]]
+            [speclj.results :refer [categorize]]
+            [speclj.running :refer [do-description run-and-report run-description process-compile-error]]
+            [speclj.util :refer :all])
+  (:import [speclj.running Runner]
+           [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
 
 (def start-time (atom 0))
 
@@ -30,8 +28,8 @@
 (defn- reload-files [runner current-results]
   (let [previous-failed-files (map ns-to-file (ns-for-results @(.previous-failed runner)))
         files-to-reload (set (concat previous-failed-files current-results))]
-      (swap! (.file-listing runner) #(apply dissoc % previous-failed-files))
-      (make-fresh (.file-listing runner) files-to-reload report-update)
+    (swap! (.file-listing runner) #(apply dissoc % previous-failed-files))
+    (make-fresh (.file-listing runner) files-to-reload report-update)
     )
   )
 

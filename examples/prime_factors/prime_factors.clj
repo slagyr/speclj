@@ -1,6 +1,5 @@
 (ns prime-factors
-  (:use
-    [speclj.core]))
+  (:require [speclj.core :refer :all]))
 
 (defn factors-of [n]
   (loop [factors [] divisor 2 n n]
@@ -41,10 +40,10 @@
   (it "factors 2^100"
     (should= (repeat 100 2) (factors-of (Math/pow 2 100))))
 
-; MDM - This one takes a bit too long to participate in the spec suite
-;  (it "factors 2^19-1"
-;    (let [mercene (int (- (Math/pow 2 19) 1))]
-;      (should= [mercene] (factors-of mercene))))
+  ; MDM - This one takes a bit too long to participate in the spec suite
+  ;  (it "factors 2^19-1"
+  ;    (let [mercene (int (- (Math/pow 2 19) 1))]
+  ;      (should= [mercene] (factors-of mercene))))
   )
 
 (run-specs)

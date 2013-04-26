@@ -1,11 +1,10 @@
 (ns speclj.running-spec
-  (:use
-    [speclj.core]
-    [speclj.running :only (run-and-report)]
-    [speclj.results :only (pass? fail?)]
-    [speclj.run.standard :only (new-standard-runner)]
-    [speclj.config :only (*reporters* *runner* *tag-filter*)]
-    [speclj.report.silent :only (new-silent-reporter)]))
+  (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
+            [speclj.core :refer :all]
+            [speclj.report.silent :refer [new-silent-reporter]]
+            [speclj.results :refer [pass? fail?]]
+            [speclj.run.standard :refer [new-standard-runner]]
+            [speclj.running :refer [run-and-report]]))
 
 (def bauble (atom nil))
 

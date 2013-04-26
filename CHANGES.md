@@ -1,8 +1,13 @@
 # 2.6.0
 
-* Uses Clojure 1.5.0
+* Uses Clojure 1.5.1
 * Added with! and with-all!.  Courtesy of @spadin.
 * Compile errors are caught and reported. Courtesy of @glenjamin.  https://github.com/slagyr/speclj/pull/39
+* should-contain and should== converted to pure macro so that line numbers are accurate.  https://github.com/slagyr/speclj/issues/42
+* failures result from java.lang.AssertionError to be compatible with 3rd party assertion libraries. https://github.com/slagyr/speclj/issues/43
+* auto runner should no longer barf on compile errors. https://github.com/slagyr/speclj/issues/33
+* removed 'lein new speclj' task.  Instead use 'lein new speclj <name>'. https://github.com/slagyr/speclj/pull/23
+
 
 # 2.5.0
 

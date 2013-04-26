@@ -1,11 +1,11 @@
 (ns speclj.core
-  (:use [speclj.running :only (submit-description run-and-report)]
-        [speclj.reporting :only (report-message*)]
-        [speclj.tags :only (describe-filter)]
-        [speclj.config :only (active-reporters active-runner default-runner default-runner-fn config-mappings default-config)]
-        [speclj.components]
-        [speclj.util :only (endl)])
-  (:require [speclj.run.standard]
+  (:require [speclj.running :refer [submit-description run-and-report]]
+            [speclj.reporting :refer [report-message*]]
+            [speclj.tags :refer [describe-filter]]
+            [speclj.config :refer [active-reporters active-runner default-runner default-runner-fn config-mappings default-config]]
+            [speclj.components :refer :all]
+            [speclj.util :refer [endl]]
+            [speclj.run.standard]
             [speclj.report.progress])
   (:import [speclj SpecPending]
            [java.util.regex Pattern]
@@ -320,7 +320,7 @@
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (.toString ~actual) "<nothing thrown>")]
      (AssertionError. (str "Expected " expected-name# " thrown from: " ~expr endl
-                     "         " expected-gaps# "     but got: " actual-string#))))
+                        "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
