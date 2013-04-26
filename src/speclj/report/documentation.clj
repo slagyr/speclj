@@ -6,8 +6,7 @@
     [speclj.util :only (endl)]
     [speclj.config :only (default-reporters)])
   (:import
-    [speclj.reporting Reporter]
-    [speclj SpecFailure]))
+    [speclj.reporting Reporter]))
 
 (defn level-of [component]
   (loop [component @(.parent component) level 0]

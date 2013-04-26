@@ -1,37 +1,35 @@
 (ns speclj.spec-helper
-  (:import
-    [speclj SpecFailure]
-    [java.io File]))
+  (:require [speclj.core :refer [-fail]])
+  (:import [java.io File]))
 
 (defmacro run-result [& body]
   `(try
-    ~@body
-    :pass
-    (catch Exception e#
-      e#)))
+     ~@body
+     :pass (catch Throwable e#
+             e#)))
 
 (defmacro should-pass! [& body]
   `(let [result# (run-result ~@body)]
-    (if (not (= :pass result#))
-      (throw (SpecFailure. (str "Unexpected failure: " (.getMessage result#)))))))
+     (if (not (= :pass result#))
+       (-fail (str "Unexpected failure: " (.getMessage result#))))))
 
 (defmacro should-fail! [& body]
   `(let [result# (run-result ~@body)]
-    (cond
-      (= :pass result#) (throw (SpecFailure. (str "Unexpected pass: " '~body)))
-      (not (= SpecFailure (class result#))) (throw (SpecFailure. (str "Unexpected error: " (.toString result#)))))))
+     (cond
+       (= :pass result#) (-fail (str "Unexpected pass: " '~body))
+       (not (= AssertionError (class result#))) (-fail (str "Unexpected error: " (.toString result#))))))
 
 (defmacro should-error! [& body]
   `(let [result# (run-result ~@body)]
-    (cond
-      (= :pass result#) (throw (SpecFailure. (str "Unexpected pass: " '~body)))
-      (= SpecFailure (class result#)) (throw (SpecFailure. (str "Unexpected failure: " (.getMessage result#)))))))
+     (cond
+       (= :pass result#) (-fail (str "Unexpected pass: " '~body))
+       (= AssertionError (class result#)) (-fail (str "Unexpected failure: " (.getMessage result#))))))
 
 (defmacro failure-message [& body]
   `(let [result# (run-result ~@body)]
-    (if (not (= SpecFailure (class result#)))
-      (throw (SpecFailure. (str "Expected a failure but got: " result#)))
-      (.getMessage result#))))
+     (if (not (= AssertionError (class result#)))
+       (-fail (str "Expected a failure but got: " result#))
+       (.getMessage result#))))
 
 (defn find-dir
   ([name] (find-dir (File. (.getCanonicalPath (File. ""))) name))

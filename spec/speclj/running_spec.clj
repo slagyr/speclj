@@ -5,8 +5,7 @@
     [speclj.results :only (pass? fail?)]
     [speclj.run.standard :only (new-standard-runner)]
     [speclj.config :only (*reporters* *runner* *tag-filter*)]
-    [speclj.report.silent :only (new-silent-reporter)])
-  (:import (speclj SpecFailure)))
+    [speclj.report.silent :only (new-silent-reporter)]))
 
 (def bauble (atom nil))
 
@@ -41,7 +40,7 @@
       (should= 1 (count results))
       (should= "has a fail" (.name (.characteristic result)))
       (should-not= nil (.failure result))
-      (should= SpecFailure (class (.failure result)))))
+      (should= AssertionError (class (.failure result)))))
 
   (it "runs afters with failures"
     (eval

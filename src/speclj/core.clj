@@ -7,7 +7,7 @@
         [speclj.util :only (endl)])
   (:require [speclj.run.standard]
             [speclj.report.progress])
-  (:import [speclj SpecFailure SpecPending]
+  (:import [speclj SpecPending]
            [java.util.regex Pattern]
            [clojure.lang IPersistentCollection IPersistentMap]))
 
@@ -138,7 +138,7 @@
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
 
 (defmacro -fail [message]
-  `(throw (SpecFailure. ~message)))
+  `(throw (AssertionError. ~message)))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
@@ -319,7 +319,7 @@
   `(let [expected-name# (.getName ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (.toString ~actual) "<nothing thrown>")]
-     (SpecFailure. (str "Expected " expected-name# " thrown from: " ~expr endl
+     (AssertionError. (str "Expected " expected-name# " thrown from: " ~expr endl
                      "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
@@ -333,14 +333,14 @@ When a string is also passed, it asserts that the message of the Exception is eq
        (throw (-create-should-throw-failure ~throwable-type nil '~form))
        (catch Throwable e#
          (cond
-           (.isInstance SpecFailure e#) (throw e#)
+           (.isInstance AssertionError e#) (throw e#)
            (not (.isInstance ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
            :else e#))))
   ([throwable-type message form]
     `(let [e# (should-throw ~throwable-type ~form)]
        (try
          (should= ~message (.getMessage e#))
-         (catch SpecFailure f# (-fail (str "Expected exception message didn't match" endl (.getMessage f#))))))))
+         (catch AssertionError f# (-fail (str "Expected exception message didn't match" endl (.getMessage f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."

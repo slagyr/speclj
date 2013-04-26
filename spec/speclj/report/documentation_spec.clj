@@ -7,7 +7,7 @@
         [clojure.string :only (split-lines)]
         [speclj.util :only (endl)]
         [speclj.config :only (*color?*)])
-  (:import [speclj SpecFailure SpecPending]
+  (:import [speclj SpecPending]
            [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
@@ -43,7 +43,7 @@
 
   (it "reports fail"
     (let [characteristic (new-characteristic "says fail" @description "fail")
-          result (fail-result characteristic 2 (SpecFailure. "blah"))]
+          result (fail-result characteristic 2 (AssertionError. "blah"))]
       (report-fail @reporter result)
       (should= (str (red "- says fail (FAILED)") endl) (to-s @output))))
 
@@ -63,7 +63,7 @@
 
     (it "reports nested failure"
       (let [characteristic (new-characteristic "nested fail" @nested-description "fail")
-            result (fail-result characteristic 2 (SpecFailure. "blah"))]
+            result (fail-result characteristic 2 (AssertionError. "blah"))]
         (report-fail @reporter result)
         (should= (str (red "  - nested fail (FAILED)") endl) (to-s @output))))
     )

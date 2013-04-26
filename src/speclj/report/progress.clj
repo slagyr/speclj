@@ -4,8 +4,7 @@
         [speclj.util :only (seconds-format)]
         [speclj.config :only (default-reporters)])
   (:require [clojure.string :as str])
-  (:import [speclj.reporting Reporter]
-           [speclj SpecFailure]))
+  (:import [speclj.reporting Reporter]))
 
 (defn full-name [characteristic]
   (loop [context @(.parent characteristic) name (.name characteristic)]
@@ -19,7 +18,7 @@
     (println)
     (println (indent 1 id ") " (full-name characteristic)))
     (println (red (indent 2.5 (.getMessage failure))))
-    (if (.isInstance SpecFailure failure)
+    (if (.isInstance AssertionError failure)
       (println (grey (indent 2.5 (failure-source failure))))
       (println (grey (indent 2.5 (stack-trace failure)))))))
 

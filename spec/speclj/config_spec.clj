@@ -1,12 +1,10 @@
 (ns speclj.config-spec
-  (:use
-    [speclj.core]
-    [speclj.config])
-  (:require
-    [speclj.run.standard]
-    [speclj.run.vigilant]
-    [speclj.report.progress]
-    [speclj.report.silent]))
+  (:require [speclj.config :refer :all]
+            [speclj.core :refer :all]
+            [speclj.report.progress]
+            [speclj.report.silent]
+            [speclj.run.standard]
+            [speclj.run.vigilant]))
 
 (describe "Config"
   (it "dynaimcally loads StandardRunner"

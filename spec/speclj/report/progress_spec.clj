@@ -6,7 +6,7 @@
         [speclj.components :only (new-description new-characteristic install)]
         [speclj.config :only (*color?* *full-stack-trace?*)]
         [clojure.string :only (split-lines)])
-  (:import [speclj SpecFailure SpecPending]
+  (:import [speclj SpecPending]
            [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
@@ -75,9 +75,9 @@
             char1 (new-characteristic "flips" description "flip")
             char2 (new-characteristic "spins" description "spin")
             char3 (new-characteristic "dives" description "dive")
-            result1 (fail-result char1 0.3 (SpecFailure. "Expected flips"))
-            result2 (fail-result char2 0.02 (SpecFailure. "Expected spins"))
-            result3 (fail-result char3 0.001 (SpecFailure. "Expected dives"))
+            result1 (fail-result char1 0.3 (AssertionError. "Expected flips"))
+            result2 (fail-result char2 0.02 (AssertionError. "Expected spins"))
+            result3 (fail-result char3 0.001 (AssertionError. "Expected dives"))
             results [result1 result2 result3]
             _ (report-runs @reporter results)
             lines (split-lines (to-s @output))]
