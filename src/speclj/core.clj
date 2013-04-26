@@ -137,51 +137,54 @@
 (defn -to-s [thing]
   (if (nil? thing) "nil" (str "<" (pr-str thing) ">")))
 
+(defmacro -fail [message]
+  `(throw (SpecFailure. ~message)))
+
 (defmacro should
   "Asserts the truthy-ness of a form"
   [form]
   `(let [value# ~form]
      (if-not value#
-       (throw (SpecFailure. (str "Expected truthy but was: " (-to-s value#) ""))))))
+       (-fail (str "Expected truthy but was: " (-to-s value#) "")))))
 
 (defmacro should-not
   "Asserts the falsy-ness of a form"
   [form]
   `(let [value# ~form]
      (if value#
-       (throw (SpecFailure. (str "Expected falsy but was: " (-to-s value#)))))))
+       (-fail (str "Expected falsy but was: " (-to-s value#))))))
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
     `(let [expected# ~expected-form actual# ~actual-form]
        (if (not (= expected# actual#))
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)"))))))
+         (-fail (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using =)")))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
        (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))))
+         (-fail (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (= expected# actual#)
-       (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#)))))))
+       (-fail (str "Expected: " (-to-s expected#) endl "not to =: " (-to-s actual#))))))
 
 (defmacro should-be-same
   "Asserts that two forms evaluate to the same object, with the expected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (not (identical? expected# actual#))
-       (throw (SpecFailure. (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
+       (-fail (str "         Expected: " (-to-s expected#) endl "to be the same as: " (-to-s actual#) " (using identical?)")))))
 
 (defmacro should-not-be-same
   "Asserts that two forms evaluate to different objects, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (if (identical? expected# actual#)
-       (throw (SpecFailure. (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
+       (-fail (str "             Expected: " (-to-s expected#) endl "not to be the same as: " (-to-s actual#) " (using identical?)")))))
 
 (defmacro should-be-nil
   "Asserts that the form evaluates to nil"
@@ -203,16 +206,16 @@
      (cond
        (and (isa? expected-type# String) (isa? actual-type# String))
        (when (not (.contains actual# expected#))
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "to be in: " (-to-s actual#) " (using .contains)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "to be in: " (-to-s actual#) " (using .contains)")))
        (and (isa? expected-type# Pattern) (isa? actual-type# String))
        (when (empty? (re-seq expected# actual#))
-         (throw (SpecFailure. (str "Expected: " (-to-s actual#) endl "to match: " (-to-s expected#) " (using re-seq)"))))
+         (-fail (str "Expected: " (-to-s actual#) endl "to match: " (-to-s expected#) " (using re-seq)")))
        (isa? actual-type# IPersistentMap)
        (when (not (contains? actual# expected#))
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "to be a key in: " (-to-s actual#) " (using contains?)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "to be a key in: " (-to-s actual#) " (using contains?)")))
        (isa? actual-type# IPersistentCollection)
        (when (not (some #(= expected# %) actual#))
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "to be in: " (-to-s actual#) " (using =)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "to be in: " (-to-s actual#) " (using =)")))
        :else (throw (Exception. (str "should-contain doesn't know how to handle these types: " [expected-type# actual-type#]))))))
 
 (defmacro should-not-contain
@@ -225,16 +228,16 @@
      (cond
        (and (isa? expected-type# String) (isa? actual-type# String))
        (when (.contains actual# expected#)
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to be in: " (-to-s actual#) " (using .contains)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "not to be in: " (-to-s actual#) " (using .contains)")))
        (and (isa? expected-type# Pattern) (isa? actual-type# String))
        (when (not (empty? (re-seq expected# actual#)))
-         (throw (SpecFailure. (str "Expected: " (-to-s actual#) endl "not to match: " (-to-s expected#) " (using re-seq)"))))
+         (-fail (str "Expected: " (-to-s actual#) endl "not to match: " (-to-s expected#) " (using re-seq)")))
        (isa? actual-type# IPersistentMap)
        (when (contains? actual# expected#)
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to be a key in: " (-to-s actual#) " (using contains?)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "not to be a key in: " (-to-s actual#) " (using contains?)")))
        (isa? actual-type# IPersistentCollection)
        (when (some #(= expected# %) actual#)
-         (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "not to be in: " (-to-s actual#) " (using =)"))))
+         (-fail (str "Expected: " (-to-s expected#) endl "not to be in: " (-to-s actual#) " (using =)")))
        :else (throw (Exception. (str "should-not-contain doesn't know how to handle these types: " [expected-type# actual-type#]))))))
 
 (defn -coll-includes?? [coll item]
@@ -280,9 +283,9 @@
        (let [extra# (-coll-difference actual# expected#)
              missing# (-coll-difference expected# actual#)]
          (when-not (and (empty? extra#) (empty? missing#))
-           (throw (SpecFailure. (-difference-message expected# actual# extra# missing#)))))
+           (-fail (-difference-message expected# actual# extra# missing#))))
        :else (when-not (== expected# actual#)
-               (throw (SpecFailure. (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using ==)")))))))
+               (-fail (str "Expected: " (-to-s expected#) endl "     got: " (-to-s actual#) " (using ==)"))))))
 
 (defmacro should-not==
   "Asserts 'non-equivalency'.
@@ -298,9 +301,9 @@
        (let [extra# (-coll-difference actual# expected#)
              missing# (-coll-difference expected# actual#)]
          (when (and (empty? extra#) (empty? missing#))
-           (throw (SpecFailure. (str "Expected contents: " (-to-s expected#) endl "   to differ from: " (-to-s actual#))))))
+           (-fail (str "Expected contents: " (-to-s expected#) endl "   to differ from: " (-to-s actual#)))))
        :else (when-not (not (== expected# actual#))
-               (throw (SpecFailure. (str " Expected: " (-to-s expected#) endl "not to ==: " (-to-s actual#) " (using ==)")))))))
+               (-fail (str " Expected: " (-to-s expected#) endl "not to ==: " (-to-s actual#) " (using ==)"))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -310,7 +313,7 @@
 (defmacro should-fail
   "Forces a failure. An optional message may be passed in."
   ([] `(should-fail "Forced failure"))
-  ([message] `(throw (SpecFailure. ~message))))
+  ([message] `(-fail ~message)))
 
 (defmacro -create-should-throw-failure [expected actual expr]
   `(let [expected-name# (.getName ~expected)
@@ -337,15 +340,15 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(let [e# (should-throw ~throwable-type ~form)]
        (try
          (should= ~message (.getMessage e#))
-         (catch SpecFailure f# (throw (SpecFailure. (str "Expected exception message didn't match" endl (.getMessage f#)))))))))
+         (catch SpecFailure f# (-fail (str "Expected exception message didn't match" endl (.getMessage f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
   `(try
      ~form
-     (catch Throwable e# (throw (SpecFailure. (str "Expected nothing thrown from: " '~form endl
-                                                "                     but got: " (.toString e#)))))))
+     (catch Throwable e# (-fail (str "Expected nothing thrown from: " '~form endl
+                                  "                     but got: " (.toString e#))))))
 
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
@@ -354,9 +357,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
          actual-type# (type actual#)
          expected-type# ~expected-type]
      (if-not (isa? actual-type# expected-type#)
-       (throw
-         (SpecFailure.
-           (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)"))))))
+       (-fail (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)")))))
 
 (defmacro should-not-be-a
   "Asserts that the type of the given form does not derives from or equals the expected type"
@@ -365,9 +366,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
          actual-type# (type actual#)
          expected-type# ~expected-type]
      (if (isa? actual-type# expected-type#)
-       (throw
-         (SpecFailure.
-           (str "Expected " (-to-s actual#) " not to be an instance of " (-to-s expected-type#) " but was (using isa?)"))))))
+       (-fail (str "Expected " (-to-s actual#) " not to be an instance of " (-to-s expected-type#) " but was (using isa?)")))))
 
 (defmacro pending
   "When added to a characteristic, it is markes as pending.  If a message is provided it will be printed
