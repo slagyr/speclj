@@ -1,6 +1,4 @@
 language: clojure
-before_script: "lein2 javac"
-script:
-  - "lein2 spec"
-  - "lein spec"
+lein: lein2
+script: "lein2 do javac, spec"
 
