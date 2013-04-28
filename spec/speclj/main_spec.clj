@@ -2,7 +2,8 @@
   (:require [speclj.config :as config]
             [speclj.core :refer :all]
             [speclj.main :refer :all]
-            [speclj.util :refer [endl]]
+            [speclj.platform :refer [endl]]
+            [speclj.run.standard :refer [run-specs]]
             [speclj.version])
   (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
 

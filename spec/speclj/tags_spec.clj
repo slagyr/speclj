@@ -1,9 +1,11 @@
 (ns speclj.tags-spec
-  (:require [speclj.config :refer [*runner* *reporters*]]
-            [speclj.core :refer :all]
+  (:require ;cljs-macros
+            [speclj.core :refer [around context describe it should= tags]])
+  (:require [clojure.string :as str]
+            [speclj.config :refer [*runner* *reporters*]]
             [speclj.report.silent :refer [new-silent-reporter]]
-            [speclj.run.standard :refer [new-standard-runner]]
-            [speclj.tags :refer :all]))
+            [speclj.run.standard :refer [new-standard-runner run-specs]]
+            [speclj.tags :refer [tag-sets-for pass-includes? pass-excludes? pass-tag-filter? describe-filter]]))
 
 (describe "Tags"
 
@@ -35,11 +37,12 @@
 
   (it "describes the filter"
     (should= nil (describe-filter {:includes #{} :excludes #{}}))
-    (should= "Filtering tags. Including: one." (.trim (describe-filter {:includes #{:one} :excludes #{}})))
-    (should= "Filtering tags. Excluding: one." (.trim (describe-filter {:includes #{} :excludes #{:one}})))
-    (should= "Filtering tags. Including: one, two." (.trim (describe-filter {:includes #{:one :two} :excludes #{}})))
-    (should= "Filtering tags. Including: one. Excluding: two." (.trim (describe-filter {:includes #{:one} :excludes #{:two}}))))
+    (should= "Filtering tags. Including: one." (str/trim (describe-filter {:includes #{:one} :excludes #{}})))
+    (should= "Filtering tags. Excluding: one." (str/trim (describe-filter {:includes #{} :excludes #{:one}})))
+    (should= "Filtering tags. Including: one, two." (str/trim (describe-filter {:includes #{:one :two} :excludes #{}})))
+    (should= "Filtering tags. Including: one. Excluding: two." (str/trim (describe-filter {:includes #{:one} :excludes #{:two}}))))
 
+  ;cljs-ignore->
   (context "with fake runner/reporter"
     (around [_]
       (binding [*runner* (new-standard-runner)
@@ -69,6 +72,7 @@
         (should= #{:one :six} (nth tag-sets 4))))
 
     )
+  ;<-cljs-ignore
   )
 
 (run-specs)

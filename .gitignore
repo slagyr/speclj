@@ -1,9 +1,11 @@
-pom.xml
 lib
 classes
 out
 *.jar
 .idea
-*.lein-deps-sum
 target
-speclj.iml
+*.iml
+pom.xml*
+.lein*
+cljs/js
+cljs/*/translated

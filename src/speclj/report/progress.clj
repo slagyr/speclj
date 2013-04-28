@@ -1,26 +1,25 @@
 (ns speclj.report.progress
   (:require [speclj.config :refer [default-reporters]]
-            [speclj.reporting :refer [failure-source tally-time red green yellow grey stack-trace indent prefix print-stack-trace]]
+            [speclj.platform :refer [format-seconds error-message failure-source]]
+            [speclj.reporting :refer [tally-time red green yellow grey stack-trace-str indent prefix]]
             [speclj.results :refer [pass? fail? pending? categorize]]
-            [speclj.util :refer [seconds-format]]
-            [clojure.string :as str])
-  (:import [speclj.reporting Reporter]))
+            [clojure.string :as str]))
 
 (defn full-name [characteristic]
-  (loop [context @(.parent characteristic) name (.name characteristic)]
+  (loop [context @(.-parent characteristic) name (.-name characteristic)]
     (if context
-      (recur @(.parent context) (str (.name context) " " name))
+      (recur @(.-parent context) (str (.-name context) " " name))
       name)))
 
 (defn print-failure [id result]
-  (let [characteristic (.characteristic result)
-        failure (.failure result)]
+  (let [characteristic (.-characteristic result)
+        failure (.-failure result)]
     (println)
     (println (indent 1 id ") " (full-name characteristic)))
-    (println (red (indent 2.5 (.getMessage failure))))
-    (if (.isInstance AssertionError failure)
+    (println (red (indent 2.5 (error-message failure))))
+    (if (isa? (type failure) speclj.platform/failure)
       (println (grey (indent 2.5 (failure-source failure))))
-      (println (grey (indent 2.5 (stack-trace failure)))))))
+      (println (grey (indent 2.5 (stack-trace-str failure)))))))
 
 (defn print-failures [failures]
   (when (seq failures)
@@ -35,9 +34,9 @@
     (println "Pending:"))
   (doseq [result pending-results]
     (println)
-    (println (yellow (str "  " (full-name (.characteristic result)))))
-    (println (grey (str "    ; " (.getMessage (.exception result)))))
-    (println (grey (str "    ; " (failure-source (.exception result)))))))
+    (println (yellow (str "  " (full-name (.-characteristic result)))))
+    (println (grey (str "    ; " (error-message (.-exception result)))))
+    (println (grey (str "    ; " (failure-source (.-exception result)))))))
 
 (defn print-errors [error-results]
   (when (seq error-results)
@@ -45,13 +44,13 @@
     (println "Errors:"))
   (doseq [[number result] (partition 2 (interleave (iterate inc 1) error-results))]
     (println)
-    (println (indent 1 number ") " (red (str (.exception result)))))
-    (println (grey (indent 2.5 (stack-trace (.exception result))))))
-  (.flush *out*))
+    (println (indent 1 number ") " (red (str (.-exception result)))))
+    (println (grey (indent 2.5 (stack-trace-str (.-exception result))))))
+  (flush))
 
 (defn- print-duration [results]
   (println)
-  (println "Finished in" (.format seconds-format (tally-time results)) "seconds"))
+  (println "Finished in" (format-seconds (tally-time results)) "seconds"))
 
 (defn color-fn-for [result-map]
   (cond
@@ -91,7 +90,7 @@
     (print-tally result-map)))
 
 (deftype ProgressReporter []
-  Reporter
+  speclj.reporting/Reporter
   (report-message [this message]
     (println message) (flush))
   (report-description [this description])

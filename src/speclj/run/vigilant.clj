@@ -2,10 +2,10 @@
   (:require [clojure.java.io :refer [file]]
             [fresh.core :refer [freshener make-fresh ns-to-file clj-files-in]]
             [speclj.config :refer [active-runner active-reporters config-bindings *specs*]]
-            [speclj.reporting :refer [report-runs* report-message* report-error* print-stack-trace]]
+            [speclj.platform :refer [endl secs-since format-seconds current-time]]
+            [speclj.reporting :refer [report-runs* report-message* report-error*]]
             [speclj.results :refer [categorize]]
-            [speclj.running :refer [do-description run-and-report run-description process-compile-error]]
-            [speclj.util :refer :all])
+            [speclj.running :refer [do-description run-and-report run-description process-compile-error]])
   (:import [speclj.running Runner]
            [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
 
@@ -20,7 +20,7 @@
         reloads (:reloaded report)]
     (when (seq reloads)
       (report-message* reporters (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
-      (report-message* reporters (str "took " (str-time-since @start-time) " to determine file statuses."))
+      (report-message* reporters (str "took " (format-seconds (secs-since @start-time)) " to determine file statuses."))
       (report-message* reporters "reloading files:")
       (doseq [file reloads] (report-message* reporters (str "  " (.getCanonicalPath file))))))
   true)
@@ -46,12 +46,12 @@
     (let [runner (active-runner)
           reporters (active-reporters)]
       (try
-        (reset! start-time (System/nanoTime))
+        (reset! start-time (current-time))
         (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories runner))) (partial reload-report runner))
         (when (seq @(.results runner))
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
-        (catch Throwable e
+        (catch java.lang.Throwable e
           (process-compile-error runner e)))
       (reset! (.results runner) []))))
 

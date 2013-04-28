@@ -1,15 +1,14 @@
 (ns speclj.running
-  (:require [speclj.components :refer [reset-with]]
+  (:require [clojure.string :as str]
+            [speclj.components :refer [reset-with]]
             [speclj.config :refer [*runner* active-reporters]]
+            [speclj.platform :refer [pending? throwable secs-since current-time]]
             [speclj.reporting :refer [report-runs* report-run report-description*]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.tags :refer [tags-for tag-sets-for pass-tag-filter? context-with-tags-seq]]
-            [speclj.util :refer [secs-since]])
-  (:import [speclj SpecPending]
-           [java.io File]))
+            [speclj.tags :refer [tags-for tag-sets-for pass-tag-filter? context-with-tags-seq]]))
 
 (defn- eval-components [components]
-  (doseq [component components] ((.body component))))
+  (doseq [component components] ((.-body component))))
 
 (defn nested-fns [base fns]
   (if (seq fns)
@@ -29,7 +28,7 @@
 (defn- collect-components [getter description]
   (loop [description description components []]
     (if description
-      (recur @(.parent description) (concat (getter description) components))
+      (recur @(.-parent description) (concat (getter description) components))
       components)))
 
 (defn- report-result [result-constructor characteristic start-time reporters failure]
@@ -39,23 +38,23 @@
     result))
 
 (defn- do-characteristic [characteristic reporters]
-  (let [description @(.parent characteristic)
-        befores (collect-components #(deref (.befores %)) description)
-        afters (collect-components #(deref (.afters %)) description)
-        core-body (.body characteristic)
+  (let [description @(.-parent characteristic)
+        befores (collect-components #(deref (.-befores %)) description)
+        afters (collect-components #(deref (.-afters %)) description)
+        core-body (.-body characteristic)
         before-and-after-body (fn [] (eval-characteristic befores core-body afters))
-        arounds (collect-components #(deref (.arounds %)) description)
-        full-body (nested-fns before-and-after-body (map #(.body %) arounds))
-        withs (collect-components #(deref (.withs %)) description)
-        start-time (System/nanoTime)]
+        arounds (collect-components #(deref (.-arounds %)) description)
+        full-body (nested-fns before-and-after-body (map #(.-body %) arounds))
+        withs (collect-components #(deref (.-withs %)) description)
+        start-time (current-time)]
     (try
       (do
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
-      (catch SpecPending p
-        (report-result pending-result characteristic start-time reporters p))
-      (catch Throwable e
-        (report-result fail-result characteristic start-time reporters e))
+      (catch java.lang.Throwable e
+        (if (pending? e)
+          (report-result pending-result characteristic start-time reporters e)
+          (report-result fail-result characteristic start-time reporters e)))
       (finally
         (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
 
@@ -64,41 +63,60 @@
     (for [characteristic characteristics]
       (do-characteristic characteristic reporters))))
 
-(defn- withs-mapping [description]
-  (let [withs (concat @(.withs description) @(.with-alls description))
-        ns (.ns description)]
-    (reduce #(assoc %1 (ns-resolve ns (.name %2)) %2) {} withs)))
-
 (declare do-description)
 
 (defn- do-child-contexts [context results reporters]
-  (loop [results results contexts @(.children context)]
+  (loop [results results contexts @(.-children context)]
     (if (seq contexts)
       (recur (concat results (do-description (first contexts) reporters)) (rest contexts))
       (do
-        (eval-components @(.after-alls context))
+        (eval-components @(.-after-alls context))
         results))))
 
 (defn- results-for-context [context reporters]
   (if (pass-tag-filter? (tags-for context))
-    (do-characteristics @(.charcteristics context) reporters)
+    (do-characteristics @(.-charcteristics context) reporters)
     []))
+
+;cljs-ignore->
+(defn- with-withs-bound [description body]
+  (let [withs (concat @(.-withs description) @(.-with-alls description))
+        ns (the-ns (symbol (.-ns description)))
+        with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
+    (with-bindings* with-mappings body)))
+;<-cljs-ignore
+
+;cljs-include (defn- with-withs-bound [description body]
+;cljs-include   (let [withs (concat @(.-withs description) @(.-with-alls description))
+;cljs-include         ns (str/replace (.-ns description) "-" "_")
+;cljs-include         var-names (map #(str ns "." (name (.-name %))) withs)
+;cljs-include         unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
+;cljs-include     (doseq [[n un] (partition 2 (interleave var-names unique-names))]
+;cljs-include       (let [code (str n " = " un ";")]
+;cljs-include         (js* "eval(~{})" code)))
+;cljs-include     (try
+;cljs-include       (body)
+;cljs-include       (finally
+;cljs-include         (doseq [[n] var-names]
+;cljs-include           (let [code (str n " = null;")]
+;cljs-include             (js* "eval(~{})" code)))))))
 
 (defn do-description [description reporters]
   (let [tag-sets (tag-sets-for description)]
     (when (some pass-tag-filter? tag-sets)
       (report-description* reporters description)
-      (with-bindings (withs-mapping description)
-        (eval-components @(.before-alls description))
-        (try
-          (let [results (results-for-context description reporters)]
-            (do-child-contexts description results reporters))
-          (finally
-            (reset-withs @(.with-alls description))))))))
+      (with-withs-bound description
+        (fn []
+          (eval-components @(.-before-alls description))
+          (try
+            (let [results (results-for-context description reporters)]
+              (do-child-contexts description results reporters))
+            (finally
+              (reset-withs @(.-with-alls description)))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]
-    (swap! (.results runner) conj error-result)
+    (swap! (.-results runner) conj error-result)
     (report-run error-result (active-reporters))))
 
 (defprotocol Runner

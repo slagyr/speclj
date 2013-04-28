@@ -1,7 +1,15 @@
 (ns speclj.core-spec
-  (:require [speclj.core :refer :all]))
+  (:require ;cljs-macros
+            [speclj.core :refer [describe it context tags
+                                 should should-be-same should-not-be-same should=
+                                 before after before-all after-all
+                                 with with! with-all with-all! around]])
+  (:require [speclj.platform]
+            [speclj.components]
+            [speclj.run.standard :refer [run-specs]]))
 
 (describe "The basic spec structure"
+  (tags :one)
   (it "uses a call to describe to begin a description" :filler)
   (it "contains 0 to many 'it' forms to specify characteristics" :filler)
   (it "characteristics use 'should' forms to make assertions"
@@ -56,10 +64,10 @@
 
 (describe "setting up state for descriptions"
   (it "can be achieved using the 'with' form" :filler)
-  (with bibelot (String. "shiney"))
+  (with bibelot (atom "shiney"))
 
   (it ": 'with' forms can be dereferenced in your characteristics"
-    (should= "shiney" @bibelot))
+    (should= "shiney" @@bibelot))
 
   (it ": they're evaluated lazily, and only once for each characteristic"
     (should (identical? @bibelot @bibelot)))
@@ -145,7 +153,7 @@
   (before-all (swap! frippery conj :before-all-1))
   (after-all (swap! frippery conj :after-all-1))
   (with outside :outside)
-  (with bibelot (String. "bibelot"))
+  (with bibelot (atom "bibelot"))
   (before (reset! bauble [@outside]))
   (after (swap! bauble rest))
   (around [it] (binding [*gewgaw* (inc *gewgaw*)] (it)))
@@ -203,7 +211,7 @@
         (reset! gimcrack @bibelot))
 
       (it ": the with value has changed"
-        (should= @bibelot @gimcrack)
+        (should= @@bibelot @@gimcrack)
         (should (not (identical? @bibelot @gimcrack))))
       )
     )
@@ -253,7 +261,8 @@
     (should= 0 @lazy-calls))
 
   (it "finally deref'ed with-example lazily"
-    (should= 1 @with-example)))
+    (should= 1 @with-example)
+    (should= 1 @lazy-calls)))
 
 (describe "with!"
   (def non-lazy-calls (atom 0))

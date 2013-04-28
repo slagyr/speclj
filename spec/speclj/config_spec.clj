@@ -1,37 +1,42 @@
 (ns speclj.config-spec
-  (:require [speclj.config :refer :all]
-            [speclj.core :refer :all]
+  (:require ;cljs-macros
+            [speclj.core :refer [describe it should-not= should= should-throw]]
+            [speclj.platform])
+  (:require [speclj.config :refer [load-runner load-reporter default-config
+                                   parse-tags config-mappings *tag-filter*]]
+            [speclj.platform :refer [exception]]
             [speclj.report.progress]
             [speclj.report.silent]
-            [speclj.run.standard]
-            [speclj.run.vigilant]))
+            [speclj.run.standard :refer [run-specs]]))
 
 (describe "Config"
   (it "dynaimcally loads StandardRunner"
     (let [runner (load-runner "standard")]
       (should-not= nil runner)
-      (should= speclj.run.standard.StandardRunner (class runner))))
+      (should= speclj.run.standard.StandardRunner (type runner))))
 
+  ;cljs-ignore->
   (it "dynaimcally loads VigilantRunner"
     (let [runner (load-runner "vigilant")]
       (should-not= nil runner)
-      (should= speclj.run.vigilant.VigilantRunner (class runner))))
+      (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner)))))
+  ;<-cljs-ignore
 
   (it "throws exception with unrecognized runner"
-    (should-throw Exception "Failed to load runner: blah" (load-runner "blah")))
+    (should-throw exception "Failed to load runner: blah" (load-runner "blah")))
 
   (it "dynaimcally loads ProgressReporter"
     (let [reporter (load-reporter "progress")]
       (should-not= nil reporter)
-      (should= speclj.report.progress.ProgressReporter (class reporter))))
+      (should= speclj.report.progress.ProgressReporter (type reporter))))
 
   (it "dynaimcally loads SilentReporter"
     (let [reporter (load-reporter "silent")]
       (should-not= nil reporter)
-      (should= speclj.report.silent.SilentReporter (class reporter))))
+      (should= speclj.report.silent.SilentReporter (type reporter))))
 
   (it "throws exception with unrecognized reporter"
-    (should-throw Exception "Failed to load reporter: blah" (load-reporter "blah")))
+    (should-throw exception "Failed to load reporter: blah" (load-reporter "blah")))
 
   (it "converts tag input to includes/excludes"
     (should= {:includes #{} :excludes #{}} (parse-tags []))
@@ -42,11 +47,13 @@
     (should= {:includes #{} :excludes #{:one :two}} (parse-tags ["~one" "~two"]))
     (should= {:includes #{:two} :excludes #{:one}} (parse-tags ["~one" "two"])))
 
+  ;cljs-ignore->
   (it "should translate tags in config-bindings"
     (let [mappings (config-mappings (assoc default-config :tags ["one" "~two"]))]
       (should=
         {:includes #{:one} :excludes #{:two}}
         (get mappings #'*tag-filter*))))
+  ;<-cljs-ignore
 
   )
 

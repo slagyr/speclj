@@ -1,7 +1,11 @@
 (ns speclj.reporting-spec
+  (:require ;cljs-macros
+            [speclj.core :refer [describe context with before around it should should=]])
   (:require [speclj.config :refer [*color?* *full-stack-trace?*]]
-            [speclj.core :refer :all]
-            [speclj.reporting :refer :all]))
+            [speclj.run.standard :refer [run-specs]]
+            [speclj.reporting :refer [green grey indent red report-description report-error
+                                      report-fail report-pass report-pending report-runs
+                                      prefix stack-trace-str yellow]]))
 
 (describe "Reporting"
   (context "without color"
@@ -32,9 +36,9 @@
   (context "with elided stacktrace"
     (around [it] (binding [*full-stack-trace?* false] (it)))
 
+  ;cljs-ignore->
     (it "prints elided stack traces"
-      (let [output (java.io.StringWriter.)
-            exception (Exception. "Test Exception")
+      (let [exception (Exception. "Test Exception")
             expected "java.lang.Exception: Test Exception
 \tat my_code$start.invoke(my_file.clj:123)
 \tat clojure_my_code.invoke(my_file.clj:666)
@@ -55,12 +59,10 @@
                         (StackTraceElement. "clojure.core$load" "doInvoke" "core.clj" 4904)
                         (StackTraceElement. "my_code$end" "invoke" "my_file.clj" 124)
                         ]))
-        (print-stack-trace exception output)
-        (should= expected (.toString output))))
+        (should= expected (stack-trace-str exception))))
 
     (it "prints elided stack traces of caused exceptions"
-      (let [output (java.io.StringWriter.)
-            cause (Exception. "Cause")
+      (let [cause (Exception. "Cause")
             exception (Exception. "Test Exception" cause)
             expected "java.lang.Exception: Test Exception
 \tat my_code$outside.invoke(my_file.clj:321)
@@ -81,8 +83,8 @@ Caused by: java.lang.Exception: Cause
                         (StackTraceElement. "clojure.core$load" "doInvoke" "core.clj" 4904)
                         (StackTraceElement. "my_code$end" "invoke" "my_file.clj" 124)
                         ]))
-        (print-stack-trace exception output)
-        (should= expected (.toString output))))
+        (should= expected (stack-trace-str exception))))
+  ;<-cljs-ignore;
 
     (it "prefixes lines of text"
       (should= "--foo" (prefix "--" "foo"))

@@ -1,5 +1,6 @@
 (ns basics-spec.calulator_spec
-  (:require [speclj.core :refer :all]))
+  (:require [speclj.core :refer :all]
+            [speclj.run.standard :refer [run-specs]]))
 
 
 

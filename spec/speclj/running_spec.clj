@@ -1,9 +1,14 @@
 (ns speclj.running-spec
+  (:require ;cljs-macros
+            [speclj.core :refer [after around before before-all context describe
+                                 it should should-fail should-not
+                                 should-not-throw should-not= should= tags
+                                 with with-all]]
+            [speclj.platform :refer [new-exception]])
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
-            [speclj.core :refer :all]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [pass? fail?]]
-            [speclj.run.standard :refer [new-standard-runner]]
+            [speclj.run.standard :refer [run-specs new-standard-runner]]
             [speclj.running :refer [run-and-report]]))
 
 (def bauble (atom nil))
@@ -22,10 +27,10 @@
          (it "has a pass"
            (should (= 1 1)))))
     (run-and-report *runner* *reporters*)
-    (let [results @(.results *runner*)
+    (let [results @(.-results *runner*)
           result (first results)]
       (should= 1 (count results))
-      (should= "has a pass" (.name (.characteristic result)))
+      (should= "has a pass" (.-name (.-characteristic result)))
       (should-not (fail? result))))
 
   (it "tracks one fail"
@@ -34,12 +39,12 @@
          (it "has a fail"
            (should= 1 2))))
     (run-and-report *runner* *reporters*)
-    (let [results @(.results *runner*)
+    (let [results @(.-results *runner*)
           result (first results)]
       (should= 1 (count results))
-      (should= "has a fail" (.name (.characteristic result)))
-      (should-not= nil (.failure result))
-      (should= AssertionError (class (.failure result)))))
+      (should= "has a fail" (.-name (.-characteristic result)))
+      (should-not= nil (.-failure result))
+      (should= AssertionError (class (.-failure result)))))
 
   (it "runs afters with failures"
     (eval
@@ -57,7 +62,7 @@
          (after (reset! bauble nil))
          (it "changes the bauble"
            (reset! bauble :something)
-           (throw (Exception. "blah")))))
+           (throw (new-exception "blah")))))
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
@@ -69,7 +74,7 @@
                (should= "foo" @bauble)))]
       (should-not-throw (eval spec))
       (run-and-report *runner* *reporters*)
-      (let [results @(.results *runner*)
+      (let [results @(.-results *runner*)
             result (first results)]
         (should= 1 (count results))
         (should-not (fail? result)))))
@@ -82,9 +87,9 @@
            (it "one, two tag" :filler))))
     (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
       (run-and-report *runner* *reporters*))
-    (let [results @(.results *runner*)]
+    (let [results @(.-results *runner*)]
       (should= 1 (count results))
-      (should= "one, two tag" (.name (.characteristic (first results))))))
+      (should= "one, two tag" (.-name (.-characteristic (first results))))))
 
   (it "before-all's can use with-all's"
     (eval
@@ -94,7 +99,7 @@
          (it "check foo"
            (should= 43 @@foo))))
     (run-and-report *runner* *reporters*)
-    (let [results @(.results *runner*)]
+    (let [results @(.-results *runner*)]
       (should= 1 (count results))
       (should-not (fail? (first results)))))
 
