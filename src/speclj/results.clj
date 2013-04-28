@@ -23,7 +23,7 @@
 (defn error? [result] (= (type result) ErrorResult))
 
 (defn fail-count [results]
-  (reduce #(if (fail? %2) (inc %) %) 0 results))
+  (reduce #(if (or (fail? %2) (error? %2)) (inc %) %) 0 results))
 
 (defn categorize [results]
   (reduce (fn [tally result]

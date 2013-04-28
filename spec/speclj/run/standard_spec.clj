@@ -3,9 +3,16 @@
             [speclj.core :refer :all]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.run.standard :refer :all]
-            [speclj.running :refer [run-directories run-and-report]]
-            [speclj.spec-helper :refer [find-dir]])
+            [speclj.running :refer [run-directories run-and-report]])
   (:import [java.io File]))
+
+(defn find-dir
+  ([name] (find-dir (File. (.getCanonicalPath (File. ""))) name))
+  ([file name]
+    (let [examples (File. file name)]
+      (if (.exists examples)
+        examples
+        (find-dir (.getParentFile file) name)))))
 
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))

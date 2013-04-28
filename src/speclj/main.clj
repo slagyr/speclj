@@ -1,8 +1,8 @@
 (ns speclj.main
-  (:require [speclj.running :refer [run-directories run-and-report]]
-            [speclj.util :refer [endl]]
-            [speclj.config :refer :all]
-            [speclj.reporting :refer [print-stack-trace report-message*]]
+  (:require [speclj.config :refer :all]
+            [speclj.platform :refer [endl]]
+            [speclj.reporting :refer [stack-trace-str report-message*]]
+            [speclj.running :refer [run-directories run-and-report]]
             [speclj.tags :refer [describe-filter]]
             [speclj.version])
   (:import [mmargs Arguments]))
@@ -91,7 +91,7 @@
       (exit (run-directories *runner* *specs* *reporters*))
       (catch Exception e
         (.printStackTrace e)
-        (print-stack-trace e *err*)
+        (println (stack-trace-str e))
         (exit -1)))))
 
 (defn run [& args]
@@ -103,4 +103,6 @@
 
 (defn -main [& args]
   (apply run args))
+
+
 

@@ -24,16 +24,16 @@
 
 (defn tags-for [context]
   (if context
-    (union (tags-for @(.parent context)) @(.tags context))
+    (union (tags-for @(.-parent context)) @(.-tags context))
       #{}))
 
 (defn tag-sets-for [context]
-  (let [context-seq (tree-seq #(not (nil? %)) #(deref (.children %)) context)]
+  (let [context-seq (tree-seq #(not (nil? %)) #(deref (.-children %)) context)]
     (map tags-for context-seq)))
 
 (defn context-with-tags-seq [context]
-  (let [context-seq (tree-seq #(not (nil? %)) #(deref (.children %)) context)]
-    (map #(hash-map :context % :tag-set (tags-for %)))))
+  (let [context-seq (tree-seq #(not (nil? %)) #(deref (.-children %)) context)]
+    (map #(hash-map :context % :tag-set (tags-for %)) context-seq)))
 
 (defn describe-filter
   ([] (describe-filter *tag-filter*))
