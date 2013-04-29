@@ -6,3 +6,4 @@ out
 .idea
 *.lein-deps-sum
 target
+speclj.iml
