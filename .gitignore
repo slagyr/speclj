@@ -9,3 +9,4 @@ pom.xml*
 .lein*
 cljs/js
 cljs/*/translated
+*.iml
