@@ -15,4 +15,5 @@
   :uberjar-exclusions [#"^clojure/.*"]
   :test-paths ["spec"]
   :java-source-paths ["src"]
+  :javac-options     ["-target" "1.5" "-source" "1.5"]
   )

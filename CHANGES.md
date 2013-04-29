@@ -1,3 +1,7 @@
+# 2 6.1
+
+* Java src is compiles with 1.5 target instead of 1.7 (which was used in 2.6.0)
+
 # 2.6.0
 
 * Uses Clojure 1.5.1
