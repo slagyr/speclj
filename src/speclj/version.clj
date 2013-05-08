@@ -1,10 +1,9 @@
 (ns speclj.version
-  (:require
-    [clojure.string :as str]))
+  (:require [clojure.string :as str]))
 
 (def major 2)
-(def minor 6)
-(def tiny 1)
+(def minor 7)
+(def tiny 0)
 (def snapshot false)
 (def string
   (str
