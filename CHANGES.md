@@ -1,6 +1,7 @@
 # 2.7.0
 
 * Refactored to accomodate multiple platform (cljs)
+* BREAKING-CHANGE: (run-specs) moved from speclj.core to speclj.run.standard
 * Specljs (speclj on ClojureScript)
 
 # 2 6.1
