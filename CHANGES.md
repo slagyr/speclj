@@ -1,3 +1,8 @@
+# 2.7.0
+
+* Refactored to accomodate multiple platform (cljs)
+* Specljs (speclj on ClojureScript)
+
 # 2 6.1
 
 * Java src is compiles with 1.5 target instead of 1.7 (which was used in 2.6.0)
