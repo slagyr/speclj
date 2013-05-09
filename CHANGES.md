@@ -1,3 +1,7 @@
+# 2.7.1
+
+* Fixes problem with vigilant runner
+
 # 2.7.0
 
 * Refactored to accomodate multiple platform (cljs)
