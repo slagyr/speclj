@@ -36,12 +36,12 @@
 
 (def #^{:dynamic true} *tag-filter* {:include #{} :exclude #{}})
 
-(def default-config {
-                      :specs ["spec"]
-                      :runner "standard"
-                      :reporters ["progress"]
-                      :tags []
-                      })
+(def default-config
+  {:specs ["spec"]
+   :runner "standard"
+   :reporters ["progress"]
+   :tags []
+   })
 
 ;cljs-ignore->
 (defn config-bindings
@@ -49,7 +49,7 @@
   Can be used in (with-bindings ...) call to load a configuration state"
   []
   (let [ns (the-ns 'speclj.config)
-        all-vars (ns-interns ns)
+        all-vars (dissoc (ns-interns ns) '*parent-description*)
         non-config-keys (filter #(not (.startsWith (name %) "*")) (keys all-vars))
         config-vars (apply dissoc all-vars non-config-keys)]
     (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))

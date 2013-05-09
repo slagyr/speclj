@@ -77,8 +77,9 @@
   (run-and-report [this reporters]
     (report-runs* reporters @results))
 
-  Object
-  (toString [this] (str this)))
+;  Object
+;  (toString [this] (str this))
+  )
 
 (defn new-vigilant-runner []
   (VigilantRunner. (atom {}) (atom []) (atom []) (atom nil)))

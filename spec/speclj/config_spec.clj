@@ -1,9 +1,9 @@
 (ns speclj.config-spec
   (:require ;cljs-macros
-            [speclj.core :refer [describe it should-not= should= should-throw]]
+            [speclj.core :refer [describe it should-not= should= should-throw should-not-contain]]
             [speclj.platform])
   (:require [speclj.config :refer [load-runner load-reporter default-config
-                                   parse-tags config-mappings *tag-filter*]]
+                                   parse-tags config-mappings *tag-filter* config-bindings]]
             [speclj.platform :refer [exception]]
             [speclj.report.progress]
             [speclj.report.silent]
@@ -53,6 +53,10 @@
       (should=
         {:includes #{:one} :excludes #{:two}}
         (get mappings #'*tag-filter*))))
+
+  (it "doesn't include *parent-description* in config-bindings"
+    (let [cb (config-bindings)]
+      (should-not-contain #'speclj.config/*parent-description* cb)))
   ;<-cljs-ignore
 
   )

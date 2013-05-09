@@ -26,7 +26,7 @@
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
      ;cljs-ignore->
-     (if (not (bound? #'speclj.config/*parent-description*))
+     (when (not (bound? #'speclj.config/*parent-description*))
        ;<-cljs-ignore
        ;cljs-include (if (not speclj.config/*parent-description*)
        (speclj.running/submit-description (speclj.config/active-runner) description#))
@@ -153,8 +153,8 @@
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
        ;cljs-ignore->
        (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
-       ;<-cljs-ignore
-       ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
+         ;<-cljs-ignore
+         ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-not=
