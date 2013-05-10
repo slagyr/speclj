@@ -18,7 +18,7 @@
   ;cljs-include List (install [this description] (doseq [component (seq this)] (install component description)))
   ;cljs-include EmptyList (install [this description] (doseq [component (seq this)] (install component description)))
   ;cljs-include PersistentVector (install [this description] (doseq [component (seq this)] (install component description)))
-  ;cljs-include js/Object (install [this description] (comment "Whatever...  Let them pass."))
+  ;cljs-include object (install [this description] (comment "Whatever...  Let them pass."))
   )
 
 (deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]

@@ -1,2 +1,0 @@
-(ns specljs.platform-spec)
-
