@@ -6,6 +6,14 @@ A Clojure library designed to ... well, that part is up to you.
 
 FIXME
 
+## Running tests
+
+```
+$ lein translate
+# ...
+$ lein cljsbuild auto
+```
+
 ## License
 
 Copyright © 2013 FIXME
