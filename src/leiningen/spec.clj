@@ -7,6 +7,7 @@
     (loop [b (.read input)]
       (when-not (= -1 b)
         (.write out b)
+        (.flush out)
         (recur (.read input))))))
 
 (defn- java [jvm-args main-class args working-directory]
