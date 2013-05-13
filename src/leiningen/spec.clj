@@ -18,6 +18,8 @@
         output-thread (Thread. #(copy-bytes output System/out))
         error (BufferedInputStream. (.getErrorStream process))
         error-thread (Thread. #(copy-bytes error System/err))]
+    (.addShutdownHook (Runtime/getRuntime)
+                      (Thread. (fn [] (.destroy process))))
     (.start output-thread)
     (.start error-thread)
     (.waitFor process)
