@@ -1,6 +1,14 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
-  in both Clojure and ClojureScript.")
+  in both Clojure and ClojureScript."
+  ;cljs-ignore->
+  (:require
+    [speclj.components]
+    [speclj.config]
+    [speclj.platform]
+    [speclj.running])
+  ;<-cljs-ignore
+  )
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)

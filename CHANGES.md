@@ -1,3 +1,10 @@
+# 2.7.2
+
+* Specljs no longer adds keys to js/Object
+* Speclj doesn't leave orphaned sub process when the main process crashes @trptcolin
+* Speclj flushes output @trptcolin
+* speclj.core requires used name spaced for convenience.
+
 # 2.7.1
 
 * Fixes problem with vigilant runner
