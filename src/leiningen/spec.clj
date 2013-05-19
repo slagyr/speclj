@@ -42,6 +42,14 @@
         'leiningen.compile)
       ((ns-resolve 'leiningen.compile 'prep) project false))))
 
+(defn- exit-if-needed
+  [exit-code]
+  (when-not (zero? exit-code)
+    (try
+      (require 'leiningen.core.main)
+      ((ns-resolve (the-ns 'leiningen.core.main) 'exit) exit-code)
+      (catch java.io.FileNotFoundException e))))
+
 (defn spec
   "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.
 
@@ -56,8 +64,5 @@ That ought to do the trick."
   (let [speclj-args (cons "-c" args)
         classpath (compute-classpath-string project)
         jvm-args ["-cp" classpath "-Dspeclj.invocation=lein spec"]]
-    (try
-      (require 'leiningen.core.main)
-      ((ns-resolve (the-ns 'leiningen.core.main) 'exit) (java jvm-args "speclj.main" speclj-args (:root project)))
-      (catch java.io.FileNotFoundException e
-        (java jvm-args "speclj.main" speclj-args (:root project))))))
+    (exit-if-needed
+      (java jvm-args "speclj.main" speclj-args (:root project)))))
