@@ -1,3 +1,7 @@
+# ?
+
+* adding speclj.core/run-spec as speclj.run.standard/run-spec (clj only) for backward compatibility
+
 # 2.7.2
 
 * Specljs no longer adds keys to js/Object

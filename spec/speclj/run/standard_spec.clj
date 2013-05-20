@@ -1,6 +1,6 @@
 (ns speclj.run.standard-spec
   (:require [speclj.config :refer [active-reporters *runner*]]
-            [speclj.core :refer :all]
+            [speclj.core :refer [describe with it should=]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.run.standard :refer :all]
             [speclj.running :refer [run-directories run-and-report]])

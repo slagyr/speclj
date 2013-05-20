@@ -1,6 +1,5 @@
 (ns prime-factors
-  (:require [speclj.core :refer :all]
-            [speclj.run.standard :refer [run-specs]]))
+  (:require [speclj.core :refer :all]))
 
 (defn factors-of [n]
   (loop [factors [] divisor 2 n n]

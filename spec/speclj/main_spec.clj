@@ -3,7 +3,6 @@
             [speclj.core :refer :all]
             [speclj.main :refer :all]
             [speclj.platform :refer [endl]]
-            [speclj.run.standard :refer [run-specs]]
             [speclj.version])
   (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
 

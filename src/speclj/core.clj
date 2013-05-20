@@ -6,7 +6,7 @@
     [speclj.components]
     [speclj.config]
     [speclj.platform]
-    [speclj.running])
+    [speclj.run.standard])
   ;<-cljs-ignore
   )
 
@@ -376,5 +376,9 @@ When a string is also passed, it asserts that the message of the Exception is eq
   [& values]
   (let [tag-kws (mapv keyword values)]
     `(mapv speclj.components/new-tag ~tag-kws)))
+
+;cljs-ignore->
+(def run-specs speclj.run.standard/run-specs)
+;<-cljs-ignore
 
 
