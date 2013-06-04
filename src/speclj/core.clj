@@ -165,6 +165,13 @@
          ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
+(defmacro should-satisfy
+  "Asserts that a form satisfies a function."
+  [f-form actual-form]
+  `(let [f# ~f-form actual# ~actual-form]
+     (if-not (f# actual#)
+       (-fail (str "Expected " (-to-s actual#) " to satisfy: " ~(str f-form))))))
+
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
@@ -380,5 +387,3 @@ When a string is also passed, it asserts that the message of the Exception is eq
 ;cljs-ignore->
 (def run-specs speclj.run.standard/run-specs)
 ;<-cljs-ignore
-
-

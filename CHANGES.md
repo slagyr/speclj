@@ -1,6 +1,7 @@
 # ?
 
 * adding speclj.core/run-spec as speclj.run.standard/run-spec (clj only) for backward compatibility
+* adds should-satisfy, such that (should-satisfy empty? [1 2 3]) offers a useful report
 
 # 2.7.2
 
@@ -139,4 +140,3 @@
 # 1.0.3
 
 * First release
-
