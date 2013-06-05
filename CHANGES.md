@@ -1,6 +1,9 @@
 # ?
 
-* adding speclj.core/run-spec as speclj.run.standard/run-spec (clj only) for backward compatibility
+* Adds speclj.core/run-spec as speclj.run.standard/run-spec (clj only) for backward compatibility
+* Adds should-be, such that (should-be empty? [1 2 3]) offers a useful report
+* Adds should-not-be, such that (should-not-be empty? []) offers a useful report
+* Simplifies failure report syntax
 
 # 2.7.2
 
@@ -139,4 +142,3 @@
 # 1.0.3
 
 * First release
-
