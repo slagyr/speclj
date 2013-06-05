@@ -20,12 +20,12 @@
     (should-pass! (should-not false)))
 
   (it "should failure message is nice"
-    (should= "Expected truthy but was: <false>" (failure-message (should false)))
+    (should= "Expected truthy but was: false" (failure-message (should false)))
     (should= "Expected truthy but was: nil" (failure-message (should nil))))
 
   (it "should failure message is nice"
-    (should= "Expected falsy but was: <true>" (failure-message (should-not true)))
-    (should= "Expected falsy but was: <1>" (failure-message (should-not 1))))
+    (should= "Expected falsy but was: true" (failure-message (should-not true)))
+    (should= "Expected falsy but was: 1" (failure-message (should-not 1))))
 
   (it "should= tests equality"
     (should-pass! (should= 1 1))
@@ -36,8 +36,8 @@
   (it "should-be tests functionality"
     (should-pass! (should-satisfy empty? []))
     (should-fail! (should-satisfy empty? [1 2 3]))
-    (should= "Expected <[1 2 3]> to satisfy: empty?" (failure-message (should-satisfy empty? [1 2 (+ 1 2)])))
-    (should= "Expected <[1 2 3]> to satisfy: (comp zero? first)" (failure-message (should-satisfy (comp zero? first) [1 2 (+ 1 2)]))))
+    (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-satisfy empty? [1 2 (+ 1 2)])))
+    (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-satisfy (comp zero? first) [1 2 (+ 1 2)]))))
 
   (it "should= checks equality of doubles within a delta"
     (should-pass! (should= 1.0 1.0 0.1))
@@ -49,16 +49,16 @@
     (should-fail! (should= 3.141592 3.141594 0.000001)))
 
   (it "should= failure message is nice"
-    (should= (str "Expected: <1>" endl "     got: <2> (using =)") (failure-message (should= 1 2))))
+    (should= (str "Expected: 1" endl "     got: 2 (using =)") (failure-message (should= 1 2))))
 
   (it "nil is printed as 'nil' instead of blank"
-    (should= (str "Expected: <1>" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
+    (should= (str "Expected: 1" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
 
   (it "should= failure message with delta is nice"
-    (should= (str "Expected: <1>" endl "     got: <2> (using delta: 0.1)") (failure-message (should= 1 2 0.1))))
+    (should= (str "Expected: 1" endl "     got: 2 (using delta: 0.1)") (failure-message (should= 1 2 0.1))))
 
   (it "prints lazy seqs nicely"
-    (should= (str "Expected: <(1 2 3)>" endl "     got: <(3 2 1)> (using =)")
+    (should= (str "Expected: (1 2 3)" endl "     got: (3 2 1) (using =)")
       (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
 
   (it "should_not= tests inequality"
@@ -67,7 +67,7 @@
 
   (it "should_not= failure message is nice"
     (should=
-      (str "Expected: <1>" endl "not to =: <1>")
+      (str "Expected: 1" endl "not to =: 1")
       (failure-message (should-not= 1 1))))
 
   (it "should-be-same tests identity"
@@ -80,7 +80,7 @@
     )
 
   (it "should-be-same failure message is nice"
-    (should= (str "         Expected: <1>" endl "to be the same as: <2> (using identical?)")
+    (should= (str "         Expected: 1" endl "to be the same as: 2 (using identical?)")
       (failure-message (should-be-same 1 2))))
 
   (it "should-not-be-same tests identity"
@@ -93,7 +93,7 @@
     )
 
   (it "should-not-be-same failure message is nice"
-    (should= (str "             Expected: <1>" endl "not to be the same as: <1> (using identical?)")
+    (should= (str "             Expected: 1" endl "not to be the same as: 1 (using identical?)")
       (failure-message (should-not-be-same 1 1))))
 
   (it "should-be-nil checks for equality with nil"
@@ -112,12 +112,12 @@
         (should-fail! (should== 1 2.0)))
 
       (it "reports the error"
-        (let [error (str "Expected: <1>" endl "     got: <2> (using ==)")]
+        (let [error (str "Expected: 1" endl "     got: 2 (using ==)")]
           (should= error (failure-message (should== 1 2)))))
 
       ;cljs-ignore->
       (it "reports the error with floats"
-        (let [error (str "Expected: <1.0>" endl "     got: <2> (using ==)")]
+        (let [error (str "Expected: 1.0" endl "     got: 2 (using ==)")]
           (should= error (failure-message (should== 1.0 2)))))
       ;<-cljs-ignore
 
@@ -134,47 +134,47 @@
         (should-fail! (should== [1 2 3] [1 2 3 4])))
 
       (it "reports extra items"
-        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2 3 4]>" endl "          missing: <[]>" endl "            extra: <[4]>")]
+        (let [message (str "Expected contents: [1 2 3]" endl "              got: [1 2 3 4]" endl "          missing: []" endl "            extra: [4]")]
           (should= message (failure-message (should== [1 2 3] [1 2 3 4])))))
 
       (it "fails if target is missing items"
         (should-fail! (should== [1 2 3] [1 2])))
 
       (it "reports missing items"
-        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2]>" endl "          missing: <[3]>" endl "            extra: <[]>")]
+        (let [message (str "Expected contents: [1 2 3]" endl "              got: [1 2]" endl "          missing: [3]" endl "            extra: []")]
           (should= message (failure-message (should== [1 2 3] [1 2])))))
 
       (it "fails if target is missing items and has extra items"
         (should-fail! (should== [1 2 3] [1 2 4])))
 
       (it "reports missing and extra items"
-        (let [message (str "Expected contents: <[1 2 3]>" endl "              got: <[1 2 4]>" endl "          missing: <[3]>" endl "            extra: <[4]>")]
+        (let [message (str "Expected contents: [1 2 3]" endl "              got: [1 2 4]" endl "          missing: [3]" endl "            extra: [4]")]
           (should= message (failure-message (should== [1 2 3] [1 2 4])))))
 
       (it "fails if there are duplicates in the target"
         (should-fail! (should== [1 5] [1 1 1 5])))
 
       (it "reports extra duplicates"
-        (let [message (str "Expected contents: <[1 5]>" endl "              got: <[1 1 1 5]>" endl "          missing: <[]>" endl "            extra: <[1 1]>")]
+        (let [message (str "Expected contents: [1 5]" endl "              got: [1 1 1 5]" endl "          missing: []" endl "            extra: [1 1]")]
           (should= message (failure-message (should== [1 5] [1 1 1 5])))))
 
       (it "fails if there are duplicates in the expected"
         (should-fail! (should== [1 1 1 5] [1 5])))
 
       (it "reports missing duplicates"
-        (let [message (str "Expected contents: <[1 1 1 5]>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+        (let [message (str "Expected contents: [1 1 1 5]" endl "              got: [1 5]" endl "          missing: [1 1]" endl "            extra: []")]
           (should= message (failure-message (should== [1 1 1 5] [1 5])))))
 
       (it "prints lazyseqs"
-        (let [message (str "Expected contents: <(1 1 1 5)>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+        (let [message (str "Expected contents: (1 1 1 5)" endl "              got: [1 5]" endl "          missing: [1 1]" endl "            extra: []")]
           (should= message (failure-message (should== (lazy-seq [1 1 1 5]) [1 5])))))
 
       (it "prints lists"
-        (let [message (str "Expected contents: <(1 1 1 5)>" endl "              got: <[1 5]>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+        (let [message (str "Expected contents: (1 1 1 5)" endl "              got: [1 5]" endl "          missing: [1 1]" endl "            extra: []")]
           (should= message (failure-message (should== (list 1 1 1 5) [1 5])))))
 
       (it "prints sets"
-        (let [message (str "Expected contents: <[1 1 1 5]>" endl "              got: <#{1 5}>" endl "          missing: <[1 1]>" endl "            extra: <[]>")]
+        (let [message (str "Expected contents: [1 1 1 5]" endl "              got: #{1 5}" endl "          missing: [1 1]" endl "            extra: []")]
           (should= message (failure-message (should== [1 1 1 5] #{1 5})))))
 
       ))
@@ -190,12 +190,12 @@
         (should-pass! (should-not== 1 2.0)))
 
       (it "reports the error"
-        (let [error (str " Expected: <1>" endl "not to ==: <1> (using ==)")]
+        (let [error (str " Expected: 1" endl "not to ==: 1 (using ==)")]
           (should= error (failure-message (should-not== 1 1)))))
 
       ;cljs-ignore->
       (it "reports the error with floats"
-        (let [error (str " Expected: <1.0>" endl "not to ==: <1> (using ==)")]
+        (let [error (str " Expected: 1.0" endl "not to ==: 1 (using ==)")]
           (should= error (failure-message (should-not== 1.0 1)))))
       ;<-cljs-ignore
 
@@ -224,15 +224,15 @@
         (should-pass! (should-not== [1 1 1 5] [1 5])))
 
       (it "prints lazyseqs"
-        (let [message (str "Expected contents: <(1 5)>" endl "   to differ from: <[1 5]>")]
+        (let [message (str "Expected contents: (1 5)" endl "   to differ from: [1 5]")]
           (should= message (failure-message (should-not== (lazy-seq [1 5]) [1 5])))))
 
       (it "prints lists"
-        (let [message (str "Expected contents: <(1 5)>" endl "   to differ from: <[1 5]>")]
+        (let [message (str "Expected contents: (1 5)" endl "   to differ from: [1 5]")]
           (should= message (failure-message (should-not== (list 1 5) [1 5])))))
 
       (it "prints sets"
-        (let [message (str "Expected contents: <#{1 5}>" endl "   to differ from: <[1 5]>")]
+        (let [message (str "Expected contents: #{1 5}" endl "   to differ from: [1 5]")]
           (should= message (failure-message (should-not== (set [1 5]) [1 5])))))
       )
     )
@@ -340,7 +340,7 @@
     (should-fail! (should-throw exception "My message" (throw (java.lang.Throwable. "My message"))))
     ;<-cljs-ignore
     (should-fail! (should-throw exception "My message" (+ 1 1)))
-    (should= (str "Expected exception message didn't match" endl "Expected: <\"My message\">" endl "     got: <\"Not my message\"> (using =)")
+    (should= (str "Expected exception message didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
       (failure-message (should-throw java.lang.Exception "My message" (throw (java.lang.Exception. "Not my message"))))))
 
   (it "should-not-throw tests that nothing was thrown"
@@ -365,7 +365,7 @@
 
     (it "fails with an error message"
       (should=
-        (str "Expected <1> to be an instance of: " (-to-s (type :foo)) endl "           but was an instance of: " (-to-s (type 1)) " (using isa?)")
+        (str "Expected 1 to be an instance of: " (-to-s (type :foo)) endl "           but was an instance of: " (-to-s (type 1)) " (using isa?)")
         (failure-message (should-be-a (type :foo) 1))))
 
     )
@@ -385,7 +385,7 @@
 
     (it "fails with an error message"
       (should=
-        (str "Expected <:bar> not to be an instance of " (-to-s (type :bar)) " but was (using isa?)")
+        (str "Expected :bar not to be an instance of " (-to-s (type :bar)) " but was (using isa?)")
         (failure-message (should-not-be-a (type :foo) :bar))))
 
     )

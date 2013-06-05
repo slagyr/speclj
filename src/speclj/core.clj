@@ -132,7 +132,7 @@
   (-make-with name body `speclj.components/new-with-all true))
 
 (defmacro -to-s [thing]
-  `(if (nil? ~thing) "nil" (str "<" (pr-str ~thing) ">")))
+  `(if (nil? ~thing) "nil" (pr-str ~thing)))
 
 (defmacro -fail [message]
   `(throw (speclj.platform/new-failure ~message)))
