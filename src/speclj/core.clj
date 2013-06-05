@@ -165,12 +165,19 @@
          ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
-(defmacro should-satisfy
+(defmacro should-be
   "Asserts that a form satisfies a function."
   [f-form actual-form]
   `(let [f# ~f-form actual# ~actual-form]
      (if-not (f# actual#)
        (-fail (str "Expected " (-to-s actual#) " to satisfy: " ~(str f-form))))))
+
+(defmacro should-not-be
+  "Asserts that a form does not satisfy a function."
+  [f-form actual-form]
+  `(let [f# ~f-form actual# ~actual-form]
+     (if (f# actual#)
+       (-fail (str "Expected " (-to-s actual#) " not to satisfy: " ~(str f-form))))))
 
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."

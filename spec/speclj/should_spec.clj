@@ -1,6 +1,6 @@
 (ns speclj.should-spec
   (:require ;cljs-macros
-            [speclj.core :refer [context describe it should should-be-a should-be-nil should-satisfy
+            [speclj.core :refer [context describe it should should-be-a should-be-nil should-be should-not-be
                                  should-be-same should-contain should-fail should-not should-not-be-a
                                  should-not-be-nil should-not-be-same should-not-contain
                                  should-not-throw should-not= should-not== should-throw
@@ -34,10 +34,16 @@
     (should-fail! (should= "hello" "goodbye")))
 
   (it "should-be tests functionality"
-    (should-pass! (should-satisfy empty? []))
-    (should-fail! (should-satisfy empty? [1 2 3]))
-    (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-satisfy empty? [1 2 (+ 1 2)])))
-    (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-satisfy (comp zero? first) [1 2 (+ 1 2)]))))
+    (should-pass! (should-be empty? []))
+    (should-fail! (should-be empty? [1 2 3]))
+    (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-be empty? [1 2 (+ 1 2)])))
+    (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-be (comp zero? first) [1 2 (+ 1 2)]))))
+
+  (it "should-not-be tests complementary functionality"
+    (should-pass! (should-not-be empty? [1 2 3]))
+    (should-fail! (should-not-be empty? []))
+    (should= "Expected 1 not to satisfy: pos?" (failure-message (should-not-be pos? 1)))
+    (should= "Expected 1 not to satisfy: (comp pos? inc)" (failure-message (should-not-be (comp pos? inc) 1))))
 
   (it "should= checks equality of doubles within a delta"
     (should-pass! (should= 1.0 1.0 0.1))
