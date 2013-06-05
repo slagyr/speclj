@@ -168,6 +168,15 @@ $ lein javac
 $ lein spec
 ```
 
+To make sure you didn't break the cljs version of specljs:
+
+```bash
+$ cd cljs
+$ lein translate
+$ lein cljsbuild clean
+$ lein cljsbuild once
+```
+
 Make patches and submit them along with an issue (see below).
 
 ## Issues
