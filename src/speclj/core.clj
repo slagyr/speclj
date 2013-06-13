@@ -2,11 +2,10 @@
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   ;cljs-ignore->
-  (:require
-    [speclj.components]
-    [speclj.config]
-    [speclj.platform]
-    [speclj.run.standard])
+  (:require [speclj.components]
+            [speclj.config]
+            [speclj.platform]
+            [speclj.run.standard])
   ;<-cljs-ignore
   )
 
@@ -77,15 +76,15 @@
   `(speclj.components/new-after-all (fn [] ~@body)))
 
 (defn -make-with [name body ctor bang?]
-  (let [var-name
-        ;cljs-ignore->
-        (with-meta (symbol name) {:dynamic true})
-        ;<-cljs-ignore
-        ;cljs-include (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})
+  (let [var-name (with-meta (symbol name) {:dynamic true})
+        ;cljs-include munged-name (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})
         unique-name (gensym "with")]
     `(do
        (declare ~var-name)
+       ;cljs-ignore->
        (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
+       ;<-cljs-ignore
+       ;cljs-include (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
 
 (defmacro with
