@@ -10,13 +10,13 @@
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Config"
-  (it "dynaimcally loads StandardRunner"
+  (it "dynamically loads StandardRunner"
     (let [runner (load-runner "standard")]
       (should-not= nil runner)
       (should= speclj.run.standard.StandardRunner (type runner))))
 
   ;cljs-ignore->
-  (it "dynaimcally loads VigilantRunner"
+  (it "dynamically loads VigilantRunner"
     (let [runner (load-runner "vigilant")]
       (should-not= nil runner)
       (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner)))))
@@ -25,12 +25,12 @@
   (it "throws exception with unrecognized runner"
     (should-throw exception "Failed to load runner: blah" (load-runner "blah")))
 
-  (it "dynaimcally loads ProgressReporter"
+  (it "dynamically loads ProgressReporter"
     (let [reporter (load-reporter "progress")]
       (should-not= nil reporter)
       (should= speclj.report.progress.ProgressReporter (type reporter))))
 
-  (it "dynaimcally loads SilentReporter"
+  (it "dynamically loads SilentReporter"
     (let [reporter (load-reporter "silent")]
       (should-not= nil reporter)
       (should= speclj.report.silent.SilentReporter (type reporter))))
