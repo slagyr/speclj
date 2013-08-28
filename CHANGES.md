@@ -1,6 +1,10 @@
-# 2.7.4
+# 2.7.5
 
 * should-contain and should-not-contain gracefully handle nil containers
+
+# 2.7.4
+
+* ???
 
 # 2.7.3
 
