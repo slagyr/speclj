@@ -308,6 +308,14 @@
     (should-pass! (should-not-be-nil true))
     (should-pass! (should-not-be-nil false)))
 
+  (it "should-contain handles nil containers gracefully"
+    (should-fail! (should-contain "foo" nil))
+    (should-fail! (should-contain nil nil)))
+
+  (it "should-not-contain handles nil containers gracefully"
+    (should-pass! (should-not-contain "foo" nil))
+    (should-pass! (should-not-contain nil nil)))
+
   (it "should-fail is an automatic failure"
     (should-fail! (should-fail))
     (should= "Forced failure" (failure-message (should-fail))))

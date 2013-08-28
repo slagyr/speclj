@@ -1,3 +1,7 @@
+# 2.7.4
+
+* should-contain and should-not-contain gracefully handle nil containers
+
 # 2.7.3
 
 * Adds speclj.core/run-spec as speclj.run.standard/run-spec (clj only) for backward compatibility

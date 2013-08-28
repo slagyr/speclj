@@ -215,6 +215,7 @@
   `(let [expected# ~expected
          actual# ~actual]
      (cond
+       (nil? actual#) (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: nil"))
        (and (string? expected#) (string? actual#))
        (when (= -1 (.indexOf actual# expected#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using .contains)")))
@@ -235,6 +236,7 @@
   `(let [expected# ~expected
          actual# ~actual]
      (cond
+       (nil? actual#) nil ; automatic pass!
        (and (string? expected#) (string? actual#))
        (when (not (= -1 (.indexOf actual# expected#)))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using .contains)")))
