@@ -15,6 +15,7 @@
   (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
+  (.addSwitchOption "C" "no-color" "Disable colored output (helpful for writing to file).")
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                "  [d]ocumentation:  (description/context and characteristic names)" endl
                                                "  [p]rogress:       (default - dots)" endl
@@ -48,6 +49,7 @@
     (:reporter options) (recur (dissoc (assoc options :reporters (map resolve-reporter-alias (:reporter options))) :reporter))
     (= "s" (:runner options)) (recur (assoc options :runner "standard"))
     (= "v" (:runner options)) (recur (assoc options :runner "vigilant"))
+    (:no-color options) (recur (dissoc options :color :no-color))
     (:tag options) (recur (dissoc (assoc options :tags (:tag options)) :tag))
     :else options))
 

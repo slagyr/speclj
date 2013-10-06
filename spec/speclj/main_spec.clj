@@ -79,6 +79,10 @@
     (should= "on" (:color (parse-args "--color")))
     (should= "on" (:color (parse-args "-c"))))
 
+  (it "parses the --no-color switch"
+      (should= nil (:color (parse-args "-C")))
+      (should= nil (:color (parse-args "-c" "-C"))))
+
   (it "builds var mappings from config"
     (with-bindings (config/config-mappings {:runner "standard" :reporter "progress" :color true})
       (should= true config/*color?*)))
