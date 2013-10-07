@@ -35,7 +35,7 @@
     (-write writer ")>"))
   specljs.components.Description
   (-pr-writer [x writer opts]
-    (-write writer (format "#<specljs.component.Description(name: %s)>" (.-name x)))))
+    (-write writer (str "#<specljs.component.Description(name: " (.-name x) ")>"))))
 
 (defn new-standard-runner []
   (StandardRunner. (swap! counter inc) (atom []) (atom [])))
