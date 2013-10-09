@@ -1,20 +1,18 @@
-(ns speclj.main-spec
+(ns speclj.cli-spec
   (:require [speclj.config :as config]
             [speclj.core :refer :all]
-            [speclj.main :refer :all]
+            [speclj.cli :refer :all]
             [speclj.platform :refer [endl]]
             [speclj.version])
   (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
 
-
 (defn to-s [output]
   (String. (.toByteArray output)))
 
-(describe "speclj main"
+(describe "speclj.cli"
   (with output (ByteArrayOutputStream.))
   (with writer (OutputStreamWriter. @output))
   (around [spec] (binding [*out* @writer] (spec)))
-  (around [spec] (binding [exit identity] (spec)))
 
   (it "has default configuration"
     (should= ["spec"] (:specs config/default-config))
