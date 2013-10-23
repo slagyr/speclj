@@ -5,12 +5,12 @@
 
 (extend-protocol SpecComponent
   ;cljs-ignore->
-;  java.lang.Object ; This prohibits multimethod defs... Let it pass
-;  (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add a " (type this) ":" this " to a spec.  That's not allowed."))))
+  java.lang.Object
+  (install [this description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
   nil
   (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's not allowed."))))
-;  clojure.lang.Var
-;  (install [this description] (comment "Vars are cool.  Let them pass."))
+  clojure.lang.Var
+  (install [this description] (comment "Vars are cool.  Let them pass."))
   clojure.lang.Seqable
   (install [this description] (doseq [component (seq this)] (install component description)))
   ;<-cljs-ignore
