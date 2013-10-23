@@ -1,3 +1,7 @@
+# ???
+
+* Removes check for java.lang.Object when installing SpecCompoenent, because it blocks multimethods
+
 # 2.7.5
 
 * should-contain and should-not-contain gracefully handle nil containers
