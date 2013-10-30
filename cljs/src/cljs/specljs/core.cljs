@@ -1,7 +1,8 @@
 (ns specljs.core
   (:require-macros [specljs.core]
                    [specljs.platform])
-  (:require [specljs.components]
+  (:require [clojure.data]
+            [specljs.components]
             [specljs.config]
             [specljs.report.documentation]
             [specljs.report.progress]

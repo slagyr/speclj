@@ -12,7 +12,7 @@
   :profiles {:cljs {:repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                    :init-ns speclj.repl}
                     :dependencies [[com.cemerick/piggieback "0.0.4"]]}
-             :dev {:dependencies [[org.clojure/clojurescript "0.0-1806"]]}}
+             :dev {:dependencies [[org.clojure/clojurescript "0.0-1978"]]}}
   :aliases {"cljs-repl" ["with-profile" "cljs" "repl"]}
 
   :source-paths ["src/clj"

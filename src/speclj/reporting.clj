@@ -1,5 +1,6 @@
 (ns speclj.reporting
   (:require [clojure.string :as string :refer [split join]]
+            ;cljs-include [goog.string] ;cljs bug?
             [speclj.config :refer [*reporters* *color?* *full-stack-trace?*]]
             [speclj.platform :refer [endl file-separator failure-source stack-trace cause print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))

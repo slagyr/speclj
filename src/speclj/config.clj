@@ -54,6 +54,7 @@
         config-vars (apply dissoc all-vars non-config-keys)]
     (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
 ;<-cljs-ignore
+;cljs-include (defn config-bindings [] (throw "Not Supported"))
 
 (defn load-runner [name]
   (try
@@ -83,6 +84,7 @@
    #'*full-stack-trace?* (not (nil? (:stacktrace config)))
    #'*tag-filter* (parse-tags (:tags config))})
 ;<-cljs-ignore
+;cljs-include (defn config-mappings [_] (throw "Not Supported"))
 
 (defn with-config
   "Runs the given function with all the cofigurations set.  Useful in cljs because config-mappings can't be used."

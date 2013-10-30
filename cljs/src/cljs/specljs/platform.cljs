@@ -9,8 +9,8 @@
 (defn re? [obj] (= re-type (type obj)))
 
 (deftype SpecFailure [message])
-(set! specljs.platform.SpecFailure/prototype (js/Error.))
-(set! (.-constructor specljs.platform.SpecFailure/prototype) SpecFailure)
+;(set! specljs.platform.SpecFailure/prototype (js/Error.))
+;(set! (.-constructor specljs.platform.SpecFailure/prototype) SpecFailure)
 (deftype SpecPending [message])
 
 (def throwable js/Object)

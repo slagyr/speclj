@@ -6,6 +6,7 @@
 * Fix for localized specs. @nilnor
 * -no-color switch. @dudymas https://github.com/slagyr/speclj/pull/64
 * Remove (format) to work in recent cljs. @philipsdoctor https://github.com/slagyr/speclj/pull/66
+* CLJS upgrade to 0.0-1978
 
 # 2.7.5
 

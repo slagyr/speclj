@@ -1,14 +1,14 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  ;cljs-ignore->
-  (:require [speclj.components]
+  (:require [clojure.data]
+            ;cljs-ignore->
+            [speclj.components]
             [speclj.config]
             [speclj.platform]
-            [speclj.run.standard])
-  (:use clojure.data)
-  ;<-cljs-ignore
-  )
+            [speclj.run.standard]
+            ;<-cljs-ignore
+            ))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -263,7 +263,7 @@
 
 (defmacro -coll-difference [coll1 coll2]
   `(if (map? ~coll1)
-     (first (diff ~coll1 ~coll2))
+     (first (clojure.data/diff ~coll1 ~coll2))
      (loop [match-with# ~coll1 match-against# ~coll2 diff# []]
        (if (empty? match-with#)
          diff#

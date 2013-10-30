@@ -3,6 +3,7 @@
             [speclj.core :refer [around before context describe it should= with]]
             [speclj.platform :refer [new-exception new-failure new-pending]])
   (:require [clojure.string :refer [split-lines]]
+            ;cljs-include [goog.string] ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?*]]
             [speclj.platform :refer [endl]]
@@ -10,7 +11,8 @@
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :refer [run-specs]])
+  )
 
 (describe "Speccdoc Reporter"
   (with reporter (new-documentation-reporter))

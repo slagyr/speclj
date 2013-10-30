@@ -18,7 +18,7 @@
   (report-description [this description]
     (let [level (level-of description)]
       (when (zero? level) (println))
-      (println (str (indent level) (.-name description))) (flush)))
+      (println (str (indent level (.-name description)))) (flush)))
   (report-pass [this result]
     (let [characteristic (.-characteristic result)
           level (level-of characteristic)]
