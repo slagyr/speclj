@@ -128,6 +128,7 @@
       ;<-cljs-ignore
 
       )
+    
 
     (context "two collections"
       (it "passes if target contains all items"
@@ -182,6 +183,11 @@
       (it "prints sets"
         (let [message (str "Expected contents: [1 1 1 5]" endl "              got: #{1 5}" endl "          missing: [1 1]" endl "            extra: []")]
           (should= message (failure-message (should== [1 1 1 5] #{1 5})))))
+
+      (it "checks equality of maps"
+        (should-pass! (should== {:a 1} {:a 1}))
+        (should-fail! (should== {:a 1} {:a 1 :b 2}))
+        (should= (str "Expected contents: {:a 1}" endl "              got: {:a 1, :b 2}" endl "          missing: nil" endl "            extra: {:b 2}") (failure-message (should== {:a 1} {:a 1 :b 2}))))
 
       ))
 

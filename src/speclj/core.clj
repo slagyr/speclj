@@ -6,6 +6,7 @@
             [speclj.config]
             [speclj.platform]
             [speclj.run.standard])
+  (:use clojure.data)
   ;<-cljs-ignore
   )
 
@@ -261,14 +262,16 @@
            (recur (rest coll#) (conj seen# f#)))))))
 
 (defmacro -coll-difference [coll1 coll2]
-  `(loop [match-with# ~coll1 match-against# ~coll2 diff# []]
-     (if (empty? match-with#)
-       diff#
-       (let [f# (first match-with#)
-             r# (rest match-with#)]
-         (if (some #(= % f#) match-against#)
-           (recur r# (-remove-first match-against# f#) diff#)
-           (recur r# match-against# (conj diff# f#)))))))
+  `(if (map? ~coll1)
+     (first (diff ~coll1 ~coll2))
+     (loop [match-with# ~coll1 match-against# ~coll2 diff# []]
+       (if (empty? match-with#)
+         diff#
+         (let [f# (first match-with#)
+               r# (rest match-with#)]
+           (if (some #(= % f#) match-against#)
+             (recur r# (-remove-first match-against# f#) diff#)
+             (recur r# match-against# (conj diff# f#))))))))
 
 (defmacro -difference-message [expected actual extra missing]
   `(str
