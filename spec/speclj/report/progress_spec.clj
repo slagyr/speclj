@@ -1,7 +1,7 @@
 (ns speclj.report.progress-spec
   (:require ;cljs-macros
             [speclj.core :refer [around before context describe it should should= with]]
-            [speclj.platform :refer [new-exception new-failure new-pending]])
+            [speclj.platform :refer [format-seconds new-exception new-failure new-pending]])
   (:require [clojure.string :as str]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?*]]
@@ -66,7 +66,7 @@
         (should= 4 (count lines))
         (should= "" (nth lines 0))
         (should= "" (nth lines 1))
-        (should= "Finished in 0.12300 seconds" (nth lines 2))
+        (should= (format "Finished in %s seconds" (format-seconds 0.123)) (nth lines 2))
         (should= (green "3 examples, 0 failures") (nth lines 3)))))
 
   (it "reports failing run results"
@@ -96,7 +96,7 @@
         (should= (red "     Expected dives") (nth lines 13))
         ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (nth lines 14))
         (should= "" (nth lines 15))
-        (should= "Finished in 0.32100 seconds" (nth lines 16))
+        (should= (format "Finished in %s seconds" (format-seconds 0.321)) (nth lines 16))
         (should= (red "3 examples, 3 failures") (nth lines 17)))))
 
   (it "reports pending run results"
