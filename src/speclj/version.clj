@@ -2,8 +2,8 @@
   (:require [clojure.string :as str]))
 
 (def major 2)
-(def minor 7)
-(def tiny 5)
+(def minor 8)
+(def tiny 0)
 (def snapshot false)
 (def string
   (str

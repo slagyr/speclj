@@ -1,4 +1,4 @@
-# ???
+# 2.8.0
 
 * Removes check for java.lang.Object when installing SpecCompoenent, because it blocks multimethods
 * Only call exit on fail. @glenjamin https://github.com/slagyr/speclj/pull/47
