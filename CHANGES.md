@@ -1,6 +1,11 @@
 # ???
 
 * Removes check for java.lang.Object when installing SpecCompoenent, because it blocks multimethods
+* Only call exit on fail. @glenjamin https://github.com/slagyr/speclj/pull/47
+* Diff for maps. @edtsech https://github.com/slagyr/speclj/pull/53
+* Fix for localized specs. @nilnor
+* -no-color switch. @dudymas https://github.com/slagyr/speclj/pull/64
+* Remove (format) to work in recent cljs. @philipsdoctor https://github.com/slagyr/speclj/pull/66
 
 # 2.7.5
 
