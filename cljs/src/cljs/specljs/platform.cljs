@@ -41,6 +41,6 @@
 (set! *print-fn* (fn [thing] (.log js/console thing)))
 
 (defn dynamically-invoke [ns-name fn-name]
-  (let [code (format "%s.%s();" (str/replace ns-name "-" "_") (str/replace fn-name "-" "_"))]
+  (let [code (str (str/replace ns-name "-" "_") "." (str/replace fn-name "-" "_") "();")]
     (js* "eval(~{code})")))
 
