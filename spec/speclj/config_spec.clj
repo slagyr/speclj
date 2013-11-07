@@ -1,6 +1,6 @@
 (ns speclj.config-spec
   (:require ;cljs-macros
-            [speclj.core :refer [describe it should-not= should= should-throw should-not-contain]]
+            [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]]
             [speclj.platform])
   (:require [speclj.config :refer [load-runner load-reporter default-config
                                    parse-tags config-mappings *tag-filter* config-bindings]]
@@ -37,6 +37,12 @@
 
   (it "throws exception with unrecognized reporter"
     (should-throw exception "Failed to load reporter: blah" (load-reporter "blah")))
+  
+  (it "can be given a pre-fabricated reporter"
+    (let [pre-fabricated-reporter (speclj.report.silent/new-silent-reporter)
+          reporter (load-reporter pre-fabricated-reporter)]
+      (should-not= nil reporter)
+      (should-be-same reporter pre-fabricated-reporter)))
 
   (it "converts tag input to includes/excludes"
     (should= {:includes #{} :excludes #{}} (parse-tags []))

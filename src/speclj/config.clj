@@ -61,10 +61,20 @@
     (dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
     (catch java.lang.Exception e (throw (java.lang.Exception. (str "Failed to load runner: " name) e)))))
 
-(defn load-reporter [name]
+(defn- load-reporter-by-name [name]
   (try
     (dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
     (catch java.lang.Exception e (throw (java.lang.Exception. (str "Failed to load reporter: " name) e)))))
+
+;cljs-ignore->
+(defn load-reporter [name-or-object]
+  (if (instance? (Class/forName "speclj.reporting.Reporter") name-or-object)
+    name-or-object
+    (load-reporter-by-name name-or-object)))
+;<-cljs-ignore
+;cljs-include (defn load-reporter [name-or-object] (load-reporter-by-name name-or-object))
+
+
 
 (defn parse-tags [values]
   (loop [result {:includes #{} :excludes #{}} values values]
