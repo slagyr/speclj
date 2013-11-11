@@ -19,7 +19,9 @@
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                "  [d]ocumentation:  (description/context and characteristic names)" endl
                                                "  [p]rogress:       (default - dots)" endl
-                                               "  [s]ilent:         (no output)" endl))
+                                               "  [c]lojure-test:   (reporting via clojure.test/report)" endl
+                                               "  [s]ilent:         (no output)" endl
+                                               ))
   (.addMultiOption "f" "format" "FORMAT" "An alias for reporter.")
   (.addValueOption "r" "runner" "RUNNER" (str "Specifies the spec runner.  Builtin runners:" endl
                                            "  [s]tandard:  (default) Runs all the specs once" endl
@@ -40,6 +42,7 @@
     (= "d" name) "documentation"
     (= "p" name) "progress"
     (= "s" name) "silent"
+    (= "c" name) "clojure-test"
     :else name))
 
 (defn- resolve-aliases [options]
