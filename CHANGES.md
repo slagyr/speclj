@@ -1,3 +1,7 @@
+# 2.8.1
+
+* Faster lein task. @mylesmegyesi https://github.com/slagyr/speclj/pull/67
+
 # 2.8.0
 
 * Removes check for java.lang.Object when installing SpecCompoenent, because it blocks multimethods
