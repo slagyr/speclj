@@ -17,6 +17,7 @@
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addSwitchOption "C" "no-color" "Disable colored output (helpful for writing to file).")
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
+                                               "  [c]lojure-test:   (reporting via clojure.test/report)" endl
                                                "  [d]ocumentation:  (description/context and characteristic names)" endl
                                                "  [p]rogress:       (default - dots)" endl
                                                "  [s]ilent:         (no output)" endl))
@@ -37,6 +38,7 @@
 
 (defn- resolve-reporter-alias [name]
   (cond
+    (= "c" name) "clojure-test"
     (= "d" name) "documentation"
     (= "p" name) "progress"
     (= "s" name) "silent"

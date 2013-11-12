@@ -99,7 +99,8 @@
   (it "resolves reporter aliases"
     (should= ["silent"] (:reporters (parse-args "-f" "s")))
     (should= ["progress"] (:reporters (parse-args "-f" "p")))
-    (should= ["documentation"] (:reporters (parse-args "-f" "d"))))
+    (should= ["documentation"] (:reporters (parse-args "-f" "d")))
+    (should= ["clojure-test"] (:reporters (parse-args "-f" "c"))))
 
   (it "resolves runner aliases"
     (should= "standard" (:runner (parse-args "-r" "s")))

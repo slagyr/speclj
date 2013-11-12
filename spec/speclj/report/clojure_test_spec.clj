@@ -24,22 +24,21 @@
   (with reporter (new-clojure-test-reporter))
   (with a-failure (fail-result (new-characteristic "flips" (new-description "Crazy" "some.ns") "flip") 0.3 (new-failure "Expected flips")))
   (with an-error (error-result (new-exception "Compilation failed")))
-  (around [spec] (binding [clojure.test/*report-counters* (ref clojure.test/*initial-report-counters*)] (spec)))
   
   (it "reports pass"
     (with-test-out-str (report-pass @reporter nil))
     (should= 1
-      (:pass @clojure.test/*report-counters*)))
+      (:pass (deref (.report-counters @reporter)))))
 
   (it "reports pending"
     (with-test-out-str (report-pending @reporter nil))
     (should= 1
-      (:pending @clojure.test/*report-counters*)))
+      (:pending (deref (.report-counters @reporter)))))
 
   (it "reports fail"
     (with-test-out-str (report-fail @reporter @a-failure))
     (should= 1
-      (:fail @clojure.test/*report-counters*)))
+      (:fail (deref (.report-counters @reporter)))))
   
   (it "reports failure message"
     (let [lines (str/split-lines (with-test-out-str (report-fail @reporter @a-failure)))]
@@ -49,7 +48,7 @@
   (it "reports error"
     (with-test-out-str (report-error @reporter @an-error))
     (should= 1
-      (:error @clojure.test/*report-counters*)))
+      (:error (deref (.report-counters @reporter)))))
   
   (it "reports error message"
     (let [lines (str/split-lines (with-test-out-str (report-error @reporter @an-error)))]
