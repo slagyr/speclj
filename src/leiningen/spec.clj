@@ -8,11 +8,16 @@
       ((ns-resolve (the-ns 'leiningen.core.main) 'exit) exit-code)
       (catch java.io.FileNotFoundException e))))
 
-(defn build-args [project args]
+(defn- with-paths [args project]
+  (if (some #(not (.startsWith % "-")) args)
+    args
+    (concat args (:test-paths project))))
+
+(defn- build-args [project args]
   (-> args
     seq
     (conj "-c")
-    (concat (:test-paths project))
+    (with-paths project)
     vec))
 
 (defn spec
