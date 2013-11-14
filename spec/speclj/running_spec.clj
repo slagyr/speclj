@@ -4,7 +4,7 @@
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
-            [speclj.platform :refer [new-exception]])
+            [speclj.platform :as platform])
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [pass? fail?]]
@@ -44,7 +44,7 @@
       (should= 1 (count results))
       (should= "has a fail" (.-name (.-characteristic result)))
       (should-not= nil (.-failure result))
-      (should= AssertionError (class (.-failure result)))))
+      (should (platform/failure? (.-failure result)))))
 
   (it "runs afters with failures"
     (eval
@@ -62,7 +62,7 @@
          (after (reset! bauble nil))
          (it "changes the bauble"
            (reset! bauble :something)
-           (throw (new-exception "blah")))))
+           (throw (platform/new-exception "blah")))))
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 

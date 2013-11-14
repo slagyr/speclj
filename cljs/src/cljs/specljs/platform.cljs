@@ -18,8 +18,8 @@
 (def failure SpecFailure)
 (def pending SpecPending)
 
-(defn pending? [e] (isa? (type e) SpecPending))
-(defn failure? [e] (isa? (type e) SpecFailure))
+(defn pending? [e] (isa? (type e) pending))
+(defn failure? [e] (isa? (type e) failure))
 
 (defn error-message [e] (.-message e))
 (defn failure-source [e]

@@ -72,9 +72,7 @@
     name-or-object
     (load-reporter-by-name name-or-object)))
 ;<-cljs-ignore
-;cljs-include (defn load-reporter [name-or-object] (load-reporter-by-name name-or-object))
-
-
+;cljs-include (defn load-reporter [name-or-object] (if (string? name-or-object) (load-reporter-by-name name-or-object) name-or-object))
 
 (defn parse-tags [values]
   (loop [result {:includes #{} :excludes #{}} values values]

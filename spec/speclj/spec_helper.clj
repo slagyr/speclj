@@ -17,16 +17,16 @@
   `(let [result# (run-result ~@body)]
      (cond
        (= :pass result#) (-fail (str "Unexpected pass: " '~body))
-       (not (= speclj.platform/failure (type result#))) (-fail (str "Unexpected error: " (.toString result#))))))
+       (not (speclj.platform/failure? result#)) (-fail (str "Unexpected error: " (.toString result#))))))
 
 (defmacro should-error! [& body]
   `(let [result# (run-result ~@body)]
      (cond
        (= :pass result#) (-fail (str "Unexpected pass: " '~body))
-       (= speclj.platform/failure (type result#)) (-fail (str "Unexpected failure: " (speclj.platform/error-message result#))))))
+       (speclj.platform/failure? result#) (-fail (str "Unexpected failure: " (speclj.platform/error-message result#))))))
 
 (defmacro failure-message [& body]
   `(let [result# (run-result ~@body)]
-     (if (not (= speclj.platform/failure (type result#)))
+     (if (not (speclj.platform/failure? result#))
        (-fail (str "Expected a failure but got: " result#))
        (speclj.platform/error-message result#))))

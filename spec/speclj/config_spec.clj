@@ -4,7 +4,7 @@
             [speclj.platform])
   (:require [speclj.config :refer [load-runner load-reporter default-config
                                    parse-tags config-mappings *tag-filter* config-bindings]]
-            [speclj.platform :refer [exception]]
+            [speclj.platform :as platform]
             [speclj.report.progress]
             [speclj.report.silent]
             [speclj.run.standard :refer [run-specs]]))
@@ -23,7 +23,7 @@
   ;<-cljs-ignore
 
   (it "throws exception with unrecognized runner"
-    (should-throw exception "Failed to load runner: blah" (load-runner "blah")))
+    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah")))
 
   (it "dynamically loads ProgressReporter"
     (let [reporter (load-reporter "progress")]
@@ -36,7 +36,7 @@
       (should= speclj.report.silent.SilentReporter (type reporter))))
 
   (it "throws exception with unrecognized reporter"
-    (should-throw exception "Failed to load reporter: blah" (load-reporter "blah")))
+    (should-throw platform/exception "Failed to load reporter: blah" (load-reporter "blah")))
   
   (it "can be given a pre-fabricated reporter"
     (let [pre-fabricated-reporter (speclj.report.silent/new-silent-reporter)

@@ -1,6 +1,9 @@
 # 2.8.1
 
 * Faster lein task. @mylesmegyesi https://github.com/slagyr/speclj/pull/67
+* clojure-test reporter. @alpian
+* can use reporter objects as well as names. @alpian https://github.com/slagyr/speclj/pull/69
+* reverts back to speclj.SpecFailure for errors.
 
 # 2.8.0
 

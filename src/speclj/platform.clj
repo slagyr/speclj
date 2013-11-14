@@ -1,5 +1,6 @@
 (ns speclj.platform
-  (:require [clojure.string :as string :refer [split]]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string :refer [split]]))
 
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
@@ -8,15 +9,15 @@
 
 (def throwable Throwable)
 (def exception Exception)
-(def failure AssertionError)
+(def failure speclj.SpecFailure)
 (def pending speclj.SpecPending)
 
-(defn pending? [e] (isa? (type e) speclj.SpecPending))
-(defn failure? [e] (isa? (type e) java.lang.AssertionError))
+(defn pending? [e] (isa? (type e) pending))
+(defn failure? [e] (isa? (type e) failure))
 
 (defmacro new-throwable [message] `(java.lang.Throwable. ~message))
 (defmacro new-exception [message] `(java.lang.Exception. ~message))
-(defmacro new-failure [message] `(java.lang.AssertionError. ~message))
+(defmacro new-failure [message] `(speclj.SpecFailure. ~message))
 (defmacro new-pending [message] `(speclj.SpecPending. ~message))
 (defmacro throw-error [message] `(throw (Exception. ~message)))
 
@@ -35,7 +36,7 @@
   (let [source (nth (.getStackTrace exception) 0)
         classname (.getClassName source)
         filename (classname->filename classname)]
-    (if-let [url (.getResource (clojure.lang.RT/baseLoader) filename)]
+    (if-let [url (io/resource filename)]
       (str (.getFile url) ":" (.getLineNumber source))
       (str filename ":" (.getLineNumber source)))))
 

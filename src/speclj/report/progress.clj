@@ -1,6 +1,6 @@
 (ns speclj.report.progress
   (:require [speclj.config :refer [default-reporters]]
-            [speclj.platform :refer [format-seconds error-message failure-source]]
+            [speclj.platform :as platform]
             [speclj.reporting :refer [tally-time red green yellow grey stack-trace-str indent prefix]]
             [speclj.results :refer [pass? fail? pending? categorize]]
             [clojure.string :as str]))
@@ -16,9 +16,9 @@
         failure (.-failure result)]
     (println)
     (println (indent 1 id ") " (full-name characteristic)))
-    (println (red (indent 2.5 (error-message failure))))
-    (if (isa? (type failure) speclj.platform/failure)
-      (println (grey (indent 2.5 (failure-source failure))))
+    (println (red (indent 2.5 (platform/error-message failure))))
+    (if (platform/failure? failure)
+      (println (grey (indent 2.5 (platform/failure-source failure))))
       (println (grey (indent 2.5 (stack-trace-str failure)))))))
 
 (defn print-failures [failures]
@@ -35,8 +35,8 @@
   (doseq [result pending-results]
     (println)
     (println (yellow (str "  " (full-name (.-characteristic result)))))
-    (println (grey (str "    ; " (error-message (.-exception result)))))
-    (println (grey (str "    ; " (failure-source (.-exception result)))))))
+    (println (grey (str "    ; " (platform/error-message (.-exception result)))))
+    (println (grey (str "    ; " (platform/failure-source (.-exception result)))))))
 
 (defn print-errors [error-results]
   (when (seq error-results)
@@ -50,7 +50,7 @@
 
 (defn- print-duration [results]
   (println)
-  (println "Finished in" (format-seconds (tally-time results)) "seconds"))
+  (println "Finished in" (platform/format-seconds (tally-time results)) "seconds"))
 
 (defn color-fn-for [result-map]
   (cond
