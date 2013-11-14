@@ -1,8 +1,7 @@
 (ns leiningen.spec
   (:require [leiningen.core.eval :refer [eval-in-project]]))
 
-(defn- exit-if-needed
-  [exit-code]
+(defn- exit-if-needed [exit-code]
   (when-not (zero? exit-code)
     (try
       (require 'leiningen.core.main)
@@ -26,8 +25,10 @@ documentation, as opposed to this message provided by Leiningen, try this:
 
 That ought to do the trick."
   [project & args]
-  (let [speclj-args (build-args project args)]
+  (let [project (assoc project :eval-in (get project :speclj-eval-in :leiningen))
+        speclj-args (build-args project args)]
     (exit-if-needed
       (eval-in-project project
         `(apply speclj.cli/run ~speclj-args)
-        '(require 'speclj.cli)))))
+        '(require 'speclj.cli))
+      )))

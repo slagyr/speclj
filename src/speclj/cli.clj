@@ -82,7 +82,7 @@
 (defn do-specs [config]
   (with-bindings (config-mappings config)
     (try
-      (if-let [filter-msg (describe-filter)]
+      (when-let [filter-msg (describe-filter)]
         (report-message* *reporters* filter-msg))
       (run-directories *runner* *specs* *reporters*)
       (catch Exception e

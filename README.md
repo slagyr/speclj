@@ -4,35 +4,32 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](ht
 
 # Installation
 
-## With Leiningen
+## From Scratch
 
-### Leiningen version 2.0 or later
-Include speclj in your `:dependencies` and `:plugins`, and also change the `:test-path` to `"spec/"`
-
-```clojure
-:dependencies [[org.clojure/clojure "1.5.0"]]
-:profiles {:dev {:dependencies [[speclj "2.5.0"]]}}
-:plugins [[speclj "2.5.0"]]
-:test-paths ["spec/"]
+```bash
+lein new speclj YOUR_PROJECT_NAME
 ```
+See [@trptcolin's speclj template](https://github.com/trptcolin/speclj-template)
 
-### Leiningen version 1.x
-You will need [Leiningen](https://github.com/technomancy/leiningen) version 1.4 or later.
+## Using Leiningen (2.0 or later)
 
-Include speclj in your `:dev-dependencies` and change the `:test-path` to `"spec/"`
+Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change the `:test-path` to `"spec"`
 
 ```clojure
-:dev-dependencies [[speclj "2.5.0"]]
-:test-path "spec/"
+; - snip
+:dependencies [[org.clojure/clojure "1.5.1"]]
+:profiles {:dev {:dependencies [[speclj "2.8.1"]]}}
+:plugins [[speclj "2.8.1"]]
+:test-paths ["spec"]
 ```
 
 ## Manual installation
 
 1. Check out the source code: [https://github.com/slagyr/speclj](https://github.com/slagyr/speclj)
-2. Build the jar file:
+2. Install it:
 
 ```bash
-$ lein jar
+$ lein install
 ```
 
 # Usage
@@ -123,7 +120,14 @@ Speclj includes a Leiningen task to execute `speclj.main`.
 $ lein spec
 ```
 
-## Running All Specs at Once
+## Using `lein run`
+The command below will run all the specs found in `"spec"` directory.
+
+```bash
+$ lein run -m speclj.main
+```
+
+## As a Java command
 The command below will run all the specs found in `"spec"` directory.
 
 ```bash
@@ -131,13 +135,7 @@ $ java -cp <...> speclj.main
 ```
 
 ## Autotest
-The command below will start a process that will watch the source files and run spec for any updated files.
-
-```bash
-$ java -cp <...> speclj.main -a
-```
-
-You can also run the watcher through Leiningen. The benefit of that is that the color of the output is preserved.
+The command below will start a process that will watch the source files and run specs for any updated files.
 
 ```bash
 $ lein spec -a
@@ -147,8 +145,11 @@ $ lein spec -a
 There are several options for the runners.  Use the `--help` options to see them all.  Or visit [Command Line Options](https://github.com/slagyr/speclj/wiki/Command-Line-Options).
 
 ```bash
-$ java -cp <...> speclj.main --help
+$ lein spec --help
 ```
+
+## `:eval-in`
+The spec lein task overrides the leiningen project's `:eval-in` setting to be `:leiningen`.  If you need to change this, you can set the `:speclj-eval-in` setting. But then the spec task probably won't work right... just say'in.
 
 # Community
 
@@ -157,14 +158,13 @@ $ java -cp <...> speclj.main --help
 * Email List: [http://groups.google.com/group/speclj](http://groups.google.com/group/speclj)
 
 # Contributing
-speclj uses [Leiningen](https://github.com/technomancy/leiningen) version 1.4.0.
+speclj uses [Leiningen](https://github.com/technomancy/leiningen) version 2.0.0 or later.
 
 Clone the master branch, build, and run all the tests:
 
 ```bash
 $ git clone https://github.com/slagyr/speclj.git
 $ cd speclj
-$ lein javac
 $ lein spec
 ```
 
