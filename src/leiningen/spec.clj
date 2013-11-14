@@ -9,6 +9,13 @@
       ((ns-resolve (the-ns 'leiningen.core.main) 'exit) exit-code)
       (catch java.io.FileNotFoundException e))))
 
+(defn build-args [project args]
+  (-> args
+    seq
+    (conj "-c")
+    (concat (:test-paths project))
+    vec))
+
 (defn spec
   "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.
 
@@ -19,9 +26,8 @@ documentation, as opposed to this message provided by Leiningen, try this:
 
 That ought to do the trick."
   [project & args]
-  (.setProperty (System/getProperties) "speclj.invocation" "lein spec")
-  (let [speclj-args (vec (cons "-c" args))]
+  (let [speclj-args (build-args project args)]
     (exit-if-needed
       (eval-in-project project
-                       `(apply speclj.cli/run ~speclj-args)
-                       '(require 'speclj.cli)))))
+        `(apply speclj.cli/run ~speclj-args)
+        '(require 'speclj.cli)))))

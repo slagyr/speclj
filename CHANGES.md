@@ -4,6 +4,7 @@
 * clojure-test reporter. @alpian
 * can use reporter objects as well as names. @alpian https://github.com/slagyr/speclj/pull/69
 * reverts back to speclj.SpecFailure for errors.
+* lein spec task uses :test-paths project setting to specify spec location
 
 # 2.8.0
 
