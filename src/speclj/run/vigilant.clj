@@ -52,7 +52,8 @@
           (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
           (run-and-report runner reporters))
         (catch java.lang.Throwable e
-          (process-compile-error runner e)))
+          (process-compile-error runner e)
+          (report-runs* reporters @(.results runner))))
       (reset! (.results runner) []))))
 
 (deftype VigilantRunner [file-listing results previous-failed directories]
