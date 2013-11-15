@@ -1,3 +1,7 @@
+# 2.8.2
+
+* vigilant runner prints load error stacktraces
+
 # 2.8.1
 
 * Faster lein task. @mylesmegyesi https://github.com/slagyr/speclj/pull/67
