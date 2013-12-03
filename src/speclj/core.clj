@@ -148,19 +148,19 @@
   "Asserts the falsy-ness of a form"
   [form]
   `(let [value# ~form]
-     (if value#
+     (when value#
        (-fail (str "Expected falsy but was: " (-to-s value#))))))
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
     `(let [expected# ~expected-form actual# ~actual-form]
-       (if (not (= expected# actual#))
+       (when-not (= expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
        ;cljs-ignore->
-       (if (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
+       (when (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
          ;<-cljs-ignore
          ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
@@ -169,21 +169,21 @@
   "Asserts that a form satisfies a function."
   [f-form actual-form]
   `(let [f# ~f-form actual# ~actual-form]
-     (if-not (f# actual#)
+     (when-not (f# actual#)
        (-fail (str "Expected " (-to-s actual#) " to satisfy: " ~(str f-form))))))
 
 (defmacro should-not-be
   "Asserts that a form does not satisfy a function."
   [f-form actual-form]
   `(let [f# ~f-form actual# ~actual-form]
-     (if (f# actual#)
+     (when (f# actual#)
        (-fail (str "Expected " (-to-s actual#) " not to satisfy: " ~(str f-form))))))
 
 (defmacro should-not=
   "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
-     (if (= expected# actual#)
+     (when (= expected# actual#)
        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to =: " (-to-s actual#))))))
 
 (defmacro should-be-same
@@ -197,7 +197,7 @@
   "Asserts that two forms evaluate to different objects, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
-     (if (identical? expected# actual#)
+     (when (identical? expected# actual#)
        (-fail (str "             Expected: " (-to-s expected#) speclj.platform/endl "not to be the same as: " (-to-s actual#) " (using identical?)")))))
 
 (defmacro should-be-nil

@@ -1,6 +1,7 @@
-# 2.8.2
+# 2.9.0
 
 * vigilant runner prints load error stacktraces
+* Adds stubs
 
 # 2.8.1
 
