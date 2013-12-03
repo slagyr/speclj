@@ -7,6 +7,7 @@
             [speclj.config]
             [speclj.platform]
             [speclj.run.standard]
+            [speclj.stub]
             ;<-cljs-ignore
             ))
 
@@ -34,9 +35,9 @@
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
      ;cljs-ignore->
-     (when (not (bound? #'speclj.config/*parent-description*))
+     (when-not (bound? #'speclj.config/*parent-description*)
        ;<-cljs-ignore
-       ;cljs-include (if (not speclj.config/*parent-description*)
+       ;cljs-include (when-not speclj.config/*parent-description*
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -394,6 +395,72 @@ When a string is also passed, it asserts that the message of the Exception is eq
   [& values]
   (let [tag-kws (mapv keyword values)]
     `(mapv speclj.components/new-tag ~tag-kws)))
+
+(defmacro with-stubs
+  "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
+  []
+  `(around [it#]
+     (binding [speclj.stub/*stubbed-invocations* (atom [])]
+       (it#))))
+
+(defmacro should-have-invoked
+  "Checks for invocations of the specified stub.
+
+  Options:
+    :times - the number of times the stub should have been invoked. nil means at least once. (default: nil)
+    :with - a list of arguments that the stubs should have been invoked with. Each call must have the same arguments.
+      If not specified, anything goes.
+
+  (should-have-invoked :foo {:with [1] :times 3})"
+  ([name] `(should-have-invoked ~name {}))
+  ([name options]
+    `(let [name# ~name
+           options# ~options
+           invocations# (speclj.stub/invocations-of name#)
+           times# (:times options#)
+           check-params?# (contains? options# :with)
+           with# (:with options#)
+           with# (if (nil? with#) [] with#)]
+       (if (number? times#)
+         (when-not (= times# (count invocations#))
+           (-fail (str "Expected: " times# " invocation" (if (= 1 times#) "" "s") " of " name# speclj.platform/endl "     got: " (count invocations#))))
+         (when-not (seq invocations#)
+           (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#)))))
+       (when check-params?#
+         (doseq [invocation# invocations#]
+           (when-not (= with# invocation#)
+             (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocation#)))))))))
+
+(defmacro should-not-have-invoked
+  "Asserts that the specified stub was never invoked.
+
+  Same as: (should-have-invoked :foo {:times 0})"
+  ([name] `(should-not-have-invoked ~name {}))
+  ([name options]
+    `(should-have-invoked ~name ~(assoc options :times 0))))
+
+(defmacro should-invoke
+  "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.
+
+  (should-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3]))
+
+  See stub and should-have-invoked for valid options."
+  [var options & body]
+  (when-not (map? options)
+    `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
+  (let [var-name (str var)]
+    `(let [options# ~options]
+       (binding [speclj.stub/*stubbed-invocations* (atom [])]
+         (with-redefs [~var (speclj.stub/stub ~var-name options#)]
+           ~@body)
+         (should-have-invoked ~var-name options#)))))
+
+(defmacro should-not-invoke
+  "Creates a stub, and binds it to the specified var, evaluates the body, and checks that is was NOT invoked.
+
+  Same as: (should-invoke :foo {:times 0} ...)"
+  [var options & body]
+  `(should-invoke ~var ~(assoc options :times 0) ~@body))
 
 ;cljs-ignore->
 (def run-specs speclj.run.standard/run-specs)

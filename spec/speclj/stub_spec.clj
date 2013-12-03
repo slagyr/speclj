@@ -1,8 +1,11 @@
 (ns speclj.stub-spec
-  (:require [speclj.core :refer :all]
+  (:require ;cljs-macros
+            [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
-            [speclj.stub :refer :all]
-            [speclj.platform :refer [endl]]))
+            [speclj.platform :refer [new-exception]])
+  (:require [speclj.stub :refer [stub *stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
+            [speclj.platform :refer [endl exception]]
+            [speclj.run.standard :refer [run-specs]]))
 
 (describe "Stubs"
 
@@ -27,8 +30,8 @@
     (should= 42 ((stub :foo {:return 42}))))
 
   (it "can throw stuff"
-    (should-throw NullPointerException ((stub :bar {:throw (NullPointerException. "Yay!")})))
-    (should-throw IndexOutOfBoundsException ((stub :bar {:throw (IndexOutOfBoundsException. "Oh no!")}))))
+    (should-throw exception "Yay!" ((stub :bar {:throw (new-exception "Yay!")})))
+    (should-throw exception "Oh no!" ((stub :bar {:throw (new-exception "Oh no!")}))))
 
   (it "can invoke"
     (let [trail (atom [])
@@ -44,13 +47,14 @@
     (should= 9 ((stub :foo {:invoke *}) 3 3))
     (should= 42 ((stub :foo {:invoke * :return 42}) 3 3)))
 
+  ;cljs-ignore->
   (it "invoke with wrong number of params"
-    (should-fail! ((stub :foo {:invoke (fn [a] a)})))
-    (should= "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
-      (failure-message ((stub :foo {:invoke (fn [a] a)})))))
+    (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
+      ((stub :foo {:invoke (fn [a] a)}))))
+  ;<-cljs-ignore
 
   (it "throw error when :invoke argument is not a fn"
-    (should-throw IllegalArgumentException "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
+    (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
 
   (context "invocations"
     (with foo (stub :foo))

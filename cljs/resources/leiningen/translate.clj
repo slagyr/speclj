@@ -35,6 +35,7 @@
    "../src/speclj/reporting.clj" "src/translated/specljs/reporting.cljs"
    "../src/speclj/results.clj" "src/translated/specljs/results.cljs"
    "../src/speclj/running.clj" "src/translated/specljs/running.cljs"
+   "../src/speclj/stub.clj" "src/translated/specljs/stub.cljs"
    "../src/speclj/tags.clj" "src/translated/specljs/tags.cljs"
    "../src/speclj/version.clj" "src/translated/specljs/version.cljs"
    ; Specs
@@ -45,6 +46,7 @@
    "../spec/speclj/reporting_spec.clj" "spec/translated/specljs/reporting_spec.cljs"
    "../spec/speclj/should_spec.clj" "spec/translated/specljs/should_spec.cljs"
    "../spec/speclj/spec_helper.clj" "spec/translated/specljs/spec_helper.clj"
+   "../spec/speclj/stub_spec.clj" "spec/translated/specljs/stub_spec.cljs"
    "../spec/speclj/tags_spec.clj" "spec/translated/specljs/tags_spec.cljs"
    })
 
