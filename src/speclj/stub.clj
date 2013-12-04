@@ -20,8 +20,12 @@
   (defn- invoke-delegate [name delegate args]
     (try
       (apply delegate args)
+    ;cljs-ignore->
       (catch clojure.lang.ArityException e
-        (throw-error (str "Stub " name " was invoked with " (.-actual e) " arguments, but the :invoke fn has a different arity")))))
+        (throw-error (str "Stub " name " was invoked with " (.-actual e) " arguments, but the :invoke fn has a different arity")))
+      ;<-cljs-ignore
+      ;cljs-include (catch speclj.platform/throwable e (throw-error (str "Error calling :invoke fn for stub " name ": " e)))
+      ))
 
   (defn stub
     "Creates a stub function.  Each call to the stub will be recorded an can later be looked up using the specified name.

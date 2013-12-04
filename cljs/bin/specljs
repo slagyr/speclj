@@ -13,8 +13,8 @@ p.injectJs(sys.args[1]);
 var result = p.evaluate(function () {
     specljs.run.standard.armed = true;
     return specljs.run.standard.run_specs(
-        cljs.core.keyword("color"), true,
-        cljs.core.keyword("reporters"), ["documentation"]
+        cljs.core.keyword("color"), true
+        // cljs.core.keyword("reporters"), ["documentation"]
         );
 });
 
