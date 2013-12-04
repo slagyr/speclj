@@ -12,5 +12,6 @@
             [specljs.run.standard]
             [specljs.running]
             [specljs.platform]
+            [specljs.stub]
             [specljs.tags]
             [specljs.version]))
