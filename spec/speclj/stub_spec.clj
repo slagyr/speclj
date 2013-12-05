@@ -1,9 +1,9 @@
 (ns speclj.stub-spec
   (:require ;cljs-macros
-            [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs]]
+            [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
             [speclj.platform :refer [new-exception]])
-  (:require [speclj.stub :refer [stub *stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
+  (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]))
 

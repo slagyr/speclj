@@ -403,6 +403,17 @@ When a string is also passed, it asserts that the message of the Exception is eq
      (binding [speclj.stub/*stubbed-invocations* (atom [])]
        (it#))))
 
+(defmacro stub
+  "Creates a stub function.  Each call to the stub will be recorded an can later be looked up using the specified name.
+
+  Options:
+    :invoke - a function that will be invoked when the stub is invoked.  All the arguments passed to the stub will
+      be passed to the :invoke value and it's return value returned by the stub.
+    :return - a value that will be returned by the stub.  This overides the result of the :invoke value, if specified.
+    :throw - an exception that will be thrown by the stub."
+  ([name] `(speclj.stub/stub ~name {}))
+  ([name options] `(speclj.stub/stub ~name ~options)))
+
 (defmacro should-have-invoked
   "Checks for invocations of the specified stub.
 
