@@ -11,13 +11,13 @@
   :profiles {:cljs {:repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                    :init-ns speclj.repl}
                     :dependencies [[com.cemerick/piggieback "0.0.4"]]}
-             :dev {:dependencies [[org.clojure/clojurescript "0.0-1978"]]}}
+             :dev {:dependencies [[org.clojure/clojurescript "0.0-2014"]]}}
   :aliases {"cljs-repl" ["with-profile" "cljs" "repl"]}
 
   :source-paths ["src/clj"
                  "src/cljs"
                  "src/translated"]
-  :plugins [[lein-cljsbuild "0.3.4"
+  :plugins [[lein-cljsbuild "1.0.0"
              :exclusions [[org.clojure/clojurescript]]]]
   :jvm-opts ["-Xmx1g" "-server"]
   :cljsbuild {:builds {:dev {:source-paths ["spec/cljs"

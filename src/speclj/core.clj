@@ -41,7 +41,10 @@
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
-(defmacro context [name & components]
+(defmacro context
+  "Same as describe, but should be used to nest testing contexts inside the outer describe.
+  Contexts can be nested any number of times."
+  [name & components]
   `(describe ~name ~@components))
 
 (defmacro before
@@ -474,5 +477,11 @@ When a string is also passed, it asserts that the message of the Exception is eq
   `(should-invoke ~var ~(assoc options :times 0) ~@body))
 
 ;cljs-ignore->
-(def run-specs speclj.run.standard/run-specs)
+(def run-specs
+  "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
+runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
+are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
+
+(run-specs :stacktrace true :color false :reporter \"documentation\")"
+  speclj.run.standard/run-specs)
 ;<-cljs-ignore

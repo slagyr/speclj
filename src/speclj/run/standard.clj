@@ -48,11 +48,6 @@
 (reset! default-runner-fn new-standard-runner)
 
 (defn run-specs [& configurations]
-  "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
-runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
-are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
-
-(run-specs :stacktrace true :color false :reporter \"documentation\")"
   (when (identical? (active-runner) @default-runner) ; Solo file run?
     (let [config (apply hash-map configurations)
           config (merge (dissoc default-config :runner) config)]
