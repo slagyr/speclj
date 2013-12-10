@@ -1,3 +1,7 @@
+# 2.9.1
+
+# adds :* and fn matchers to stub invokation checking
+
 # 2.9.0
 
 * vigilant runner prints load error stacktraces

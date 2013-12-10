@@ -129,6 +129,26 @@
         (@foo 1 2 3)
         (should-pass! (should-have-invoked :foo {:with [1 2 3]})))
 
+      (it "with :* (anything) parameters"
+        (@foo 1 2 3)
+        (should-pass! (should-have-invoked :foo {:with [:* :* :*]}))
+        (should-pass! (should-have-invoked :foo {:with [1 :* :*]}))
+        (should-pass! (should-have-invoked :foo {:with [:* 2 :*]}))
+        (should-pass! (should-have-invoked :foo {:with [:* :* 3]}))
+        (should-fail! (should-have-invoked :foo {:with [0 :* :*]})))
+
+
+      (it "with fn matchers"
+        (@bar nil?)
+        (should-pass! (should-have-invoked :bar {:with [nil?]}))
+        (should-pass! (should-have-invoked :bar {:with [fn?]}))
+        (should-fail! (should-have-invoked :bar {:with [number?]}))
+        (@foo 1 2 3)
+        (should-pass! (should-have-invoked :foo {:with [#(> % 0) #(> % 0) #(> % 0)]}))
+        (should-pass! (should-have-invoked :foo {:with [#(not (nil? %)) #(not (nil? %)) #(not (nil? %))]}))
+        (should-fail! (should-have-invoked :foo {:with [#(< 5 %) :* :*]}))
+        (should-fail! (should-have-invoked :foo {:with [:* #(nil? %) :*]})))
+
       )
 
     (context "should-invoke"

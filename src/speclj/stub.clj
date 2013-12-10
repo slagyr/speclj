@@ -58,3 +58,17 @@
   [name]
   (last (invocations-of name)))
 
+(defn params-match? [expected actual]
+  (and
+    (sequential? expected)
+    (sequential? actual)
+    (= (count expected) (count actual))
+    (every? true?
+      (map
+        (fn [e a]
+          (cond
+            (= :* e) true
+            (fn? e) (or (= e a) (e a))
+            :else (= e a)))
+        expected actual))))
+

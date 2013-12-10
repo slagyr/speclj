@@ -423,7 +423,10 @@ When a string is also passed, it asserts that the message of the Exception is eq
   Options:
     :times - the number of times the stub should have been invoked. nil means at least once. (default: nil)
     :with - a list of arguments that the stubs should have been invoked with. Each call must have the same arguments.
-      If not specified, anything goes.
+      If not specified, anything goes.  Special expected arguments include:
+       :* - matches anything
+       a fn - matches when the actual is the same fn or calling fn with the actual argument returns true
+
 
   (should-have-invoked :foo {:with [1] :times 3})"
   ([name] `(should-have-invoked ~name {}))
@@ -442,7 +445,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
            (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#)))))
        (when check-params?#
          (doseq [invocation# invocations#]
-           (when-not (= with# invocation#)
+           (when-not (speclj.stub/params-match? with# invocation#)
              (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocation#)))))))))
 
 (defmacro should-not-have-invoked
