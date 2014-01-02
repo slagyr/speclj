@@ -1,6 +1,6 @@
 (ns speclj.reporting
   (:require [clojure.string :as string :refer [split join]]
-            ;cljs-include [goog.string] ;cljs bug?
+            #+cljs [goog.string] ;cljs bug?
             [speclj.config :refer [*reporters* *color?* *full-stack-trace?*]]
             [speclj.platform :refer [endl file-separator failure-source stack-trace cause print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))
@@ -48,6 +48,7 @@
 
 (declare print-exception)
 
+#+clj
 (defn- print-stack-levels [exception]
   (loop [levels (stack-trace exception) elides 0]
     (if (seq levels)
@@ -56,10 +57,22 @@
           (recur (rest levels) (inc elides))
           (do
             (print-elides elides)
-            ;cljs-ignore->
             (println "\tat" (str level))
-            ;<-cljs-ignore
-            ;cljs-include (println (str level))
+            (recur (rest levels) 0))))
+      (print-elides elides)))
+  (if-let [cause (cause exception)]
+    (print-exception "Caused by:" cause)))
+
+#+cljs
+(defn- print-stack-levels [exception]
+  (loop [levels (stack-trace exception) elides 0]
+    (if (seq levels)
+      (let [level (first levels)]
+        (if (elide-level? level)
+          (recur (rest levels) (inc elides))
+          (do
+            (print-elides elides)
+            (println (str level))
             (recur (rest levels) 0))))
       (print-elides elides)))
   (if-let [cause (cause exception)]

@@ -78,28 +78,28 @@
     (do-characteristics @(.-charcteristics context) reporters)
     []))
 
-;cljs-ignore->
+#+clj
 (defn- with-withs-bound [description body]
   (let [withs (concat @(.-withs description) @(.-with-alls description))
         ns (the-ns (symbol (.-ns description)))
         with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
     (with-bindings* with-mappings body)))
-;<-cljs-ignore
 
-;cljs-include (defn- with-withs-bound [description body]
-;cljs-include   (let [withs (concat @(.-withs description) @(.-with-alls description))
-;cljs-include         ns (str/replace (.-ns description) "-" "_")
-;cljs-include         var-names (map #(str ns "." (name (.-name %))) withs)
-;cljs-include         unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
-;cljs-include     (doseq [[n un] (partition 2 (interleave var-names unique-names))]
-;cljs-include       (let [code (str n " = " un ";")]
-;cljs-include         (js* "eval(~{})" code)))
-;cljs-include     (try
-;cljs-include       (body)
-;cljs-include       (finally
-;cljs-include         (doseq [[n] var-names]
-;cljs-include           (let [code (str n " = null;")]
-;cljs-include             (js* "eval(~{})" code)))))))
+#+cljs
+(defn- with-withs-bound [description body]
+  (let [withs (concat @(.-withs description) @(.-with-alls description))
+        ns (str/replace (.-ns description) "-" "_")
+        var-names (map #(str ns "." (name (.-name %))) withs)
+        unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
+    (doseq [[n un] (partition 2 (interleave var-names unique-names))]
+      (let [code (str n " = " un ";")]
+        (js* "eval(~{})" code)))
+    (try
+      (body)
+      (finally
+        (doseq [[n] var-names]
+          (let [code (str n " = null;")]
+            (js* "eval(~{})" code)))))))
 
 (defn do-description [description reporters]
   (let [tag-sets (tag-sets-for description)]

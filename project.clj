@@ -6,7 +6,7 @@
   :license {:name "The MIT License"
             :url "file://LICENSE"
             :distribution :repo
-            :comments "Copyright 2011-2013 Micah Martin All Rights Reserved."}
+            :comments "Copyright 2011-2014 Micah Martin All Rights Reserved."}
 
   :hooks [cljx.hooks]
 
@@ -20,32 +20,40 @@
                                    {:source-paths ["src/cljx"]
                                     :output-path "target/generated/src/cljs"
                                     :rules :cljs}
-                                   {:source-paths ["test/cljx"]
-                                    :output-path "target/generated/test/clj"
+                                   {:source-paths ["spec/cljx"]
+                                    :output-path "target/generated/spec/clj"
                                     :rules :clj}
-                                   {:source-paths ["test/cljx"]
-                                    :output-path "target/generated/test/cljs"
+                                   {:source-paths ["spec/cljx"]
+                                    :output-path "target/generated/spec/cljs"
                                     :rules :cljs}]}}
 
              :clj {:dependencies [[org.clojure/clojure "1.5.1"]
                                   [fresh "1.0.2"]
                                   [mmargs "1.2.0"]]
                    :source-paths   ["target/generated/src/clj" "src/clj"]
-                   :test-paths     ["target/generated/spec/clj" "spec/clj"]}
+                   :test-paths     ["target/generated/spec/clj" "spec/clj"]
+                   :java-source-paths ["src"]
+                   }
 
              :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
-                                   [org.clojure/clojurescript "0.0-2080"]
+                                   [org.clojure/tools.reader "0.8.3"]
+                                   [org.clojure/clojurescript "0.0-2134"]
                                    [lein-cljsbuild "1.0.0"]
                                    [com.cemerick/clojurescript.test "0.2.1"]]
                     :plugins [[lein-cljsbuild "1.0.0"]]
 
-                    :source-paths   ["target/generated/src/cljs" "src/cljs"]
-                    :test-paths     ["target/generated/spec/cljs" "spec/cljs"]
-
-                    :cljsbuild ~(let [test-command ["bin/specljs" "target/tests.js"]]
-                                  {:builds {:dev {:compiler {:output-to "target/tests.js"
+                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/tests.js"]]
+                                  {:builds
+;                                   {:dev {:source-paths ["target/generated/src" "src/cljs" "target/generated/spec/cljs" "spec/cljs"]
+;                                                  :compiler {:output-to "target/tests.js"
+;                                                             :pretty-print true}
+;                                                  ;:notify-command test-command
+;                                                  }}
+                                   {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "src/clj" "target/classes"]
+                                                  :compiler {:output-to "target/tests.js"
                                                              :pretty-print true}
-                                                  :notify-command test-command}}
+                                                  :notify-command test-command
+                                                  }}
                                    :test-commands {"unit" test-command}})
 
                     :aliases {"clean" ["cljsbuild" "clean"]
@@ -58,7 +66,6 @@
   ;:eval-in-leiningen true
   ;:uberjar-exclusions [#"^clojure/.*"]
   ;:test-paths ["spec"]
-  :java-source-paths ["src"]
   ;:javac-options     ["-target" "1.5" "-source" "1.5"]
 
   )

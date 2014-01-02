@@ -5,12 +5,18 @@
 
 (declare #^{:dynamic true} *reporters*)
 (def default-reporters (atom nil))
+
+#+clj
 (defn active-reporters []
-  ;cljs-ignore->
   (if (bound? #'*reporters*)
-    ;<-cljs-ignore
-    ;cljs-include (if *reporters*
     *reporters*
+    (if-let [reporters @default-reporters]
+      reporters
+      (throw (java.lang.Exception. "*reporters* is unbound and no default value has been provided")))))
+
+#+cljs
+(defn active-reporters []
+  (if *reporters* *reporters*
     (if-let [reporters @default-reporters]
       reporters
       (throw (java.lang.Exception. "*reporters* is unbound and no default value has been provided")))))
@@ -18,12 +24,18 @@
 (declare #^{:dynamic true} *runner*)
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
+
+#+clj
 (defn active-runner []
-  ;cljs-ignore->
   (if (bound? #'*runner*)
-    ;<-cljs-ignore
-    ;cljs-include (if *runner*
     *runner*
+    (if-let [runner @default-runner]
+      runner
+      (throw (java.lang.Exception. "*runner* is unbound and no default value has been provided")))))
+
+#+cljs
+(defn active-runner []
+    (if *runner* *runner*
     (if-let [runner @default-runner]
       runner
       (throw (java.lang.Exception. "*runner* is unbound and no default value has been provided")))))
@@ -43,7 +55,7 @@
    :tags []
    })
 
-;cljs-ignore->
+#+clj
 (defn config-bindings
   "Retuns a map of vars to values for all the ear-muffed vars in the speclj.config namespace.
   Can be used in (with-bindings ...) call to load a configuration state"
@@ -53,8 +65,9 @@
         non-config-keys (filter #(not (.startsWith (name %) "*")) (keys all-vars))
         config-vars (apply dissoc all-vars non-config-keys)]
     (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
-;<-cljs-ignore
-;cljs-include (defn config-bindings [] (throw "Not Supported"))
+
+#+cljs
+(defn config-bindings [] (throw "Not Supported"))
 
 (defn load-runner [name]
   (try
@@ -66,13 +79,14 @@
     (dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
     (catch java.lang.Exception e (throw (java.lang.Exception. (str "Failed to load reporter: " name) e)))))
 
-;cljs-ignore->
+#+clj
 (defn load-reporter [name-or-object]
   (if (instance? (Class/forName "speclj.reporting.Reporter") name-or-object)
     name-or-object
     (load-reporter-by-name name-or-object)))
-;<-cljs-ignore
-;cljs-include (defn load-reporter [name-or-object] (if (string? name-or-object) (load-reporter-by-name name-or-object) name-or-object))
+
+#+cljs
+(defn load-reporter [name-or-object] (if (string? name-or-object) (load-reporter-by-name name-or-object) name-or-object))
 
 (defn parse-tags [values]
   (loop [result {:includes #{} :excludes #{}} values values]
@@ -83,7 +97,7 @@
           (recur (update-in result [:includes] conj (keyword value)) (rest values))))
       result)))
 
-;cljs-ignore->
+#+clj
 (defn config-mappings [config]
   {#'*runner* (if (:runner config) (load-runner (:runner config)) (active-runner))
    #'*reporters* (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
@@ -91,8 +105,10 @@
    #'*color?* (:color config)
    #'*full-stack-trace?* (not (nil? (:stacktrace config)))
    #'*tag-filter* (parse-tags (:tags config))})
-;<-cljs-ignore
-;cljs-include (defn config-mappings [_] (throw "Not Supported"))
+
+
+#+cljs
+(defn config-mappings [_] (throw "Not Supported"))
 
 (defn with-config
   "Runs the given function with all the cofigurations set.  Useful in cljs because config-mappings can't be used."

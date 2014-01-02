@@ -1,15 +1,18 @@
 (ns speclj.stub
-  (:require ;cljs-macros
+  (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.platform :refer [throw-error]])
   (:require [speclj.platform :refer [endl]]))
 
 (declare ^:dynamic *stubbed-invocations*)
 
+#+clj
 (defn- check-recording []
-  ;cljs-ignore->
   (when-not (bound? #'*stubbed-invocations*)
-    ;<-cljs-ignore
-    ;cljs-include (when-not *stubbed-invocations*
+    (throw-error "Stub recoding not bound.  Please add (with-stubs) to the decribe/context.")))
+
+#+cljs
+(defn- check-recording []
+    (when-not *stubbed-invocations*
     (throw-error "Stub recoding not bound.  Please add (with-stubs) to the decribe/context.")))
 
 (defn -record-invocation [name args]
@@ -17,14 +20,18 @@
   (let [args (if (= nil args) [] (vec args))]
     (swap! *stubbed-invocations* conj [name args])))
 
+#+clj
 (defn- invoke-delegate [name delegate args]
   (try
     (apply delegate args)
-    ;cljs-ignore->
     (catch clojure.lang.ArityException e
       (throw-error (str "Stub " name " was invoked with " (.-actual e) " arguments, but the :invoke fn has a different arity")))
-    ;<-cljs-ignore
     ))
+
+#+cljs
+(defn- invoke-delegate [name delegate args]
+  (try
+    (apply delegate args)))
 
 (defn stub
   ([name] (stub name {}))

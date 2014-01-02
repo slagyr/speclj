@@ -11,10 +11,10 @@ p.onConsoleMessage = function (x) {
 p.injectJs(sys.args[1]);
 
 var result = p.evaluate(function () {
-    specljs.run.standard.armed = true;
-    return specljs.run.standard.run_specs(
-        cljs.core.keyword("color"), true
-        // cljs.core.keyword("reporters"), ["documentation"]
+    speclj.run.standard.armed = true;
+    return speclj.run.standard.run_specs(
+        clj.core.keyword("color"), true
+        // clj.core.keyword("reporters"), ["documentation"]
         );
 });
 

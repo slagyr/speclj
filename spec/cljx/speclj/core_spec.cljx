@@ -1,5 +1,5 @@
 (ns speclj.core-spec
-  (:require ;cljs-macros
+  (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [describe it context tags
                                  should should-be-same should-not-be-same should=
                                  before after before-all after-all

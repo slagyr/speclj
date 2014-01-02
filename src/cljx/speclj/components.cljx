@@ -3,8 +3,8 @@
 (defprotocol SpecComponent
   (install [this description]))
 
+#+clj
 (extend-protocol SpecComponent
-  ;cljs-ignore->
   java.lang.Object
   (install [this description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
   nil
@@ -12,14 +12,15 @@
   clojure.lang.Var
   (install [this description] (comment "Vars are cool.  Let them pass."))
   clojure.lang.Seqable
-  (install [this description] (doseq [component (seq this)] (install component description)))
-  ;<-cljs-ignore
-  ;cljs-include LazySeq (install [this description] (doseq [component (seq this)] (install component description)))
-  ;cljs-include List (install [this description] (doseq [component (seq this)] (install component description)))
-  ;cljs-include EmptyList (install [this description] (doseq [component (seq this)] (install component description)))
-  ;cljs-include PersistentVector (install [this description] (doseq [component (seq this)] (install component description)))
-  ;cljs-include object (install [this description] (comment "Whatever...  Let them pass."))
-  )
+  (install [this description] (doseq [component (seq this)] (install component description))))
+
+#+cljs
+(extend-protocol SpecComponent
+  LazySeq (install [this description] (doseq [component (seq this)] (install component description)))
+  List (install [this description] (doseq [component (seq this)] (install component description)))
+  EmptyList (install [this description] (doseq [component (seq this)] (install component description)))
+  PersistentVector (install [this description] (doseq [component (seq this)] (install component description)))
+  object (install [this description] (comment "Whatever...  Let them pass.")))
 
 (deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]
   SpecComponent
@@ -84,16 +85,24 @@
 (defn new-after-all [body]
   (AfterAll. body))
 
+#+clj
 (deftype With [name unique-name body value bang]
   SpecComponent
   (install [this description]
     (swap! (.-withs description) conj this))
-  ;cljs-ignore->
   clojure.lang.IDeref
   (deref [this]
-    ;<-cljs-ignore
-    ;cljs-include cljs.core/IDeref
-    ;cljs-include (-deref [this]
+    (when (= ::none @value)
+      (reset! value (body)))
+    @value))
+
+#+cljs
+(deftype With [name unique-name body value bang]
+  SpecComponent
+  (install [this description]
+    (swap! (.-withs description) conj this))
+  cljs.core/IDeref
+  (-deref [this]
     (when (= ::none @value)
       (reset! value (body)))
     @value))
@@ -107,16 +116,24 @@
     (when bang (deref with))
     with))
 
+#+clj
 (deftype WithAll [name unique-name body value bang]
   SpecComponent
   (install [this description]
     (swap! (.-with-alls description) conj this))
-  ;cljs-ignore->
   clojure.lang.IDeref
   (deref [this]
-    ;<-cljs-ignore
-    ;cljs-include cljs.core/IDeref
-    ;cljs-include (-deref [this]
+    (when (= ::none @value)
+      (reset! value (body)))
+    @value))
+
+#+cljs
+(deftype WithAll [name unique-name body value bang]
+  SpecComponent
+  (install [this description]
+    (swap! (.-with-alls description) conj this))
+    cljs.core/IDeref
+    (-deref [this]
     (when (= ::none @value)
       (reset! value (body)))
     @value))

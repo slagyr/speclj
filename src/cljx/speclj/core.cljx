@@ -1,14 +1,13 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  (:require [clojure.data]
-            ;cljs-ignore->
+        (:require
+            [clojure.data]
             [speclj.components]
             [speclj.config]
             [speclj.platform]
             [speclj.run.standard]
             [speclj.stub]
-            ;<-cljs-ignore
             ))
 
 (defmacro it
@@ -25,6 +24,7 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
+#+clj
 (defmacro describe
   "body => & spec-components
 
@@ -34,10 +34,21 @@
      (binding [speclj.config/*parent-description* description#]
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
-     ;cljs-ignore->
      (when-not (bound? #'speclj.config/*parent-description*)
-       ;<-cljs-ignore
-       ;cljs-include (when-not speclj.config/*parent-description*
+       (speclj.running/submit-description (speclj.config/active-runner) description#))
+     description#))
+
+#+cljs
+(defmacro describe
+  "body => & spec-components
+
+  Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
+  [name & components]
+  `(let [description# (speclj.components/new-description ~name ~(clojure.core/name (.name *ns*)))]
+     (binding [speclj.config/*parent-description* description#]
+       (doseq [component# (list ~@components)]
+         (speclj.components/install component# description#)))
+       (when-not speclj.config/*parent-description*
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -80,16 +91,23 @@
   [& body]
   `(speclj.components/new-after-all (fn [] ~@body)))
 
+
+#+clj
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
-        ;cljs-include munged-name (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})
         unique-name (gensym "with")]
     `(do
        (declare ~var-name)
-       ;cljs-ignore->
-       (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
-       ;<-cljs-ignore
-       ;cljs-include (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
+             (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
+       ~unique-name)))
+
+#+cljs
+(defn -make-with [name body ctor bang?]
+  (let [var-name (with-meta (symbol name) {:dynamic true})
+        munged-name (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})
+        unique-name (gensym "with")]
+    `(do (declare ~var-name)
+       (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
 
 (defmacro with
@@ -155,6 +173,7 @@
      (when value#
        (-fail (str "Expected falsy but was: " (-to-s value#))))))
 
+#+clj
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
@@ -163,11 +182,20 @@
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-       ;cljs-ignore->
        (when (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
-         ;<-cljs-ignore
-         ;cljs-include (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
+
+#+cljs
+(defmacro should=
+  "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
+  ([expected-form actual-form]
+   `(let [expected# ~expected-form actual# ~actual-form]
+      (when-not (= expected# actual#)
+        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
+  ([expected-form actual-form delta-form]
+   `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
+        (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
+        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-be
   "Asserts that a form satisfies a function."
@@ -479,7 +507,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   [var options & body]
   `(should-invoke ~var ~(assoc options :times 0) ~@body))
 
-;cljs-ignore->
+#+clj
 (def run-specs
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
@@ -487,4 +515,4 @@ are evaluated by evaluation the file as a script.  Optional configuration paramt
 
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
   speclj.run.standard/run-specs)
-;<-cljs-ignore
+
