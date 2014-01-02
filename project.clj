@@ -49,7 +49,7 @@
 ;                                                             :pretty-print true}
 ;                                                  ;:notify-command test-command
 ;                                                  }}
-                                   {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "src/clj" "target/classes"]
+                                   {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "src/clj" "target/classes" ]
                                                   :compiler {:output-to "target/tests.js"
                                                              :pretty-print true}
                                                   :notify-command test-command
