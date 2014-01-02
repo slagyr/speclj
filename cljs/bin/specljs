@@ -10,6 +10,8 @@ p.onConsoleMessage = function (x) {
 
 p.injectJs(sys.args[1]);
 
+//fs.write("/dev/stdout", sys.args, "w");
+
 var result = p.evaluate(function () {
     speclj.run.standard.armed = true;
     return speclj.run.standard.run_specs(

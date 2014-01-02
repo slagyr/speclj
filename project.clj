@@ -42,7 +42,7 @@
                                    [com.cemerick/clojurescript.test "0.2.1"]]
                     :plugins [[lein-cljsbuild "1.0.0"]]
 
-                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/tests.js"]]
+                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/cljsbuild-compiler-0"]]
                                   {:builds
 ;                                   {:dev {:source-paths ["target/generated/src" "src/cljs" "target/generated/spec/cljs" "spec/cljs"]
 ;                                                  :compiler {:output-to "target/tests.js"
