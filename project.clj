@@ -30,30 +30,29 @@
              :clj {:dependencies [[org.clojure/clojure "1.5.1"]
                                   [fresh "1.0.2"]
                                   [mmargs "1.2.0"]]
+
                    :source-paths   ["target/generated/src/clj" "src/clj"]
                    :test-paths     ["target/generated/spec/clj" "spec/clj"]
-                   :java-source-paths ["src"]
+                   :java-source-paths ["src/clj"]
                    }
 
              :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
                                    [org.clojure/tools.reader "0.8.3"]
                                    [org.clojure/clojurescript "0.0-2134"]
                                    [lein-cljsbuild "1.0.0"]
-                                   [com.cemerick/clojurescript.test "0.2.1"]]
+                                   [fresh "1.0.2"]
+                                   [mmargs "1.2.0"]]
                     :plugins [[lein-cljsbuild "1.0.0"]]
 
-                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/cljsbuild-compiler-0"]]
+                    :source-paths   ["src/cljs" "target/classes" "target/generated/src/clj" "src/clj"]
+
+                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/tests.js"]]
                                   {:builds
-;                                   {:dev {:source-paths ["target/generated/src" "src/cljs" "target/generated/spec/cljs" "spec/cljs"]
-;                                                  :compiler {:output-to "target/tests.js"
-;                                                             :pretty-print true}
-;                                                  ;:notify-command test-command
-;                                                  }}
-                                   {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "src/clj" "target/classes" ]
-                                                  :compiler {:output-to "target/tests.js"
-                                                             :pretty-print true}
-                                                  :notify-command test-command
-                                                  }}
+                                   {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "target/generated/spec/cljs" "spec/cljs"]
+                                          :compiler {:output-to "target/tests.js"
+                                                     :pretty-print true}
+                                          :notify-command test-command
+                                          }}
                                    :test-commands {"unit" test-command}})
 
                     :aliases {"clean" ["cljsbuild" "clean"]
@@ -65,7 +64,6 @@
 
   ;:eval-in-leiningen true
   ;:uberjar-exclusions [#"^clojure/.*"]
-  ;:test-paths ["spec"]
-  ;:javac-options     ["-target" "1.5" "-source" "1.5"]
+  :javac-options     ["-target" "1.5" "-source" "1.5"]
 
   )

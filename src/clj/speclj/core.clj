@@ -1,14 +1,13 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-        (:require
-            [clojure.data]
+  (:require [clojure.data]
             [speclj.components]
             [speclj.config]
             [speclj.platform]
+            [speclj.platform-macros]
             [speclj.run.standard]
-            [speclj.stub]
-            ))
+            [speclj.stub]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -24,7 +23,6 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
-#+clj
 (defmacro describe
   "body => & spec-components
 
@@ -34,21 +32,7 @@
      (binding [speclj.config/*parent-description* description#]
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
-     (when-not (bound? #'speclj.config/*parent-description*)
-       (speclj.running/submit-description (speclj.config/active-runner) description#))
-     description#))
-
-#+cljs
-(defmacro describe
-  "body => & spec-components
-
-  Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
-  [name & components]
-  `(let [description# (speclj.components/new-description ~name ~(clojure.core/name (.name *ns*)))]
-     (binding [speclj.config/*parent-description* description#]
-       (doseq [component# (list ~@components)]
-         (speclj.components/install component# description#)))
-       (when-not speclj.config/*parent-description*
+     (speclj.platform-macros/when-not-bound speclj.config/*parent-description*
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -91,25 +75,6 @@
   [& body]
   `(speclj.components/new-after-all (fn [] ~@body)))
 
-
-#+clj
-(defn -make-with [name body ctor bang?]
-  (let [var-name (with-meta (symbol name) {:dynamic true})
-        unique-name (gensym "with")]
-    `(do
-       (declare ~var-name)
-             (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
-       ~unique-name)))
-
-#+cljs
-(defn -make-with [name body ctor bang?]
-  (let [var-name (with-meta (symbol name) {:dynamic true})
-        munged-name (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})
-        unique-name (gensym "with")]
-    `(do (declare ~var-name)
-       (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
-       ~unique-name)))
-
 (defmacro with
   "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
@@ -117,7 +82,7 @@
   (with meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (-make-with name body `speclj.components/new-with false))
+  (speclj.platform-macros/-make-with name body `speclj.components/new-with false))
 
 (defmacro with!
   "Declares a reference-able symbol that will be evaluated immediately and reset once per characteristic of the containing
@@ -127,7 +92,7 @@
   (with! my-with! (swap! my-num inc))
   (it \"increments my-num before being accessed\" (should= 1 @my-num) (should= 2 @my-with!))"
   [name & body]
-  (-make-with name body `speclj.components/new-with true))
+  (speclj.platform-macros/-make-with name body `speclj.components/new-with true))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -136,7 +101,7 @@
   (with-all meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (-make-with name body `speclj.components/new-with-all false))
+  (speclj.platform-macros/-make-with name body `speclj.components/new-with-all false))
 
 (defmacro with-all!
   "Declares a reference-able symbol that will be immediately evaluated once per context. The body may contain any forms,
@@ -151,7 +116,7 @@
     (should= 1 @my-num)
     (should= 2 @my-with!))"
   [name & body]
-  (-make-with name body `speclj.components/new-with-all true))
+  (speclj.platform-macros/-make-with name body `speclj.components/new-with-all true))
 
 (defmacro -to-s [thing]
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
@@ -173,7 +138,6 @@
      (when value#
        (-fail (str "Expected falsy but was: " (-to-s value#))))))
 
-#+clj
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
@@ -184,18 +148,6 @@
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
        (when (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
-
-#+cljs
-(defmacro should=
-  "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
-  ([expected-form actual-form]
-   `(let [expected# ~expected-form actual# ~actual-form]
-      (when-not (= expected# actual#)
-        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
-  ([expected-form actual-form delta-form]
-   `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-        (if (> (js/Math.abs (- expected# actual#)) (js/Math.abs delta#))
-        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-be
   "Asserts that a form satisfies a function."
@@ -507,7 +459,6 @@ When a string is also passed, it asserts that the message of the Exception is eq
   [var options & body]
   `(should-invoke ~var ~(assoc options :times 0) ~@body))
 
-#+clj
 (def run-specs
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
