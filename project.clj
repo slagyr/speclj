@@ -37,8 +37,10 @@
                    }
 
              :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
-                                   [org.clojure/tools.reader "0.8.3"]
-                                   [org.clojure/clojurescript "0.0-2134"]
+                                   ;[org.clojure/tools.reader "0.8.3"]
+                                   [org.clojure/tools.reader "0.7.10"]
+                                   ;[org.clojure/clojurescript "0.0-2134"]
+                                   [org.clojure/clojurescript "0.0-2014"]
                                    [lein-cljsbuild "1.0.0"]
                                    [fresh "1.0.2"]
                                    [mmargs "1.2.0"]]

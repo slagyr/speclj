@@ -1,5 +1,5 @@
 (ns speclj.tags-spec
-  (:require ;cljs-macros
+  (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [around context describe it should= tags]])
   (:require [clojure.string :as str]
             [speclj.config :refer [*runner* *reporters*]]
@@ -43,6 +43,7 @@
     (should= "Filtering tags. Including: one. Excluding: two." (str/trim (describe-filter {:includes #{:one} :excludes #{:two}}))))
 
   ;cljs-ignore->
+  #+clj
   (context "with fake runner/reporter"
     (around [_]
       (binding [*runner* (new-standard-runner)
