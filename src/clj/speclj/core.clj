@@ -122,7 +122,7 @@
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
 
 (defmacro -fail [message]
-  `(throw (speclj.platform/new-failure ~message)))
+  `(throw (speclj.platform-macros/new-failure ~message)))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
@@ -213,7 +213,7 @@
        (coll? actual#)
        (when (not (some #(= expected# %) actual#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (speclj.platform/new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (speclj.platform-macros/new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro should-not-contain
   "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
@@ -234,7 +234,7 @@
        (coll? actual#)
        (when (some #(= expected# %) actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (speclj.platform/new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (speclj.platform-macros/new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
@@ -280,7 +280,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (== expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using ==)")))
-       :else (throw (speclj.platform/new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (speclj.platform-macros/new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not==
   "Asserts 'non-equivalency'.
@@ -298,7 +298,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (not (== expected# actual#))
          (-fail (str " Expected: " (-to-s expected#) speclj.platform/endl "not to ==: " (-to-s actual#) " (using ==)")))
-       :else (throw (speclj.platform/new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (speclj.platform-macros/new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -314,7 +314,7 @@
   `(let [expected-name# (speclj.platform/type-name ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (pr-str ~actual) "<nothing thrown>")]
-     (speclj.platform/new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
+     (speclj.platform-macros/new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
                                     "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
@@ -326,7 +326,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(try
        ~form
        (throw (-create-should-throw-failure ~throwable-type nil '~form))
-       (catch java.lang.Throwable e#
+       (catch ~speclj.platform-macros/throwable e#
          (cond
            (speclj.platform/failure? e#) (throw e#)
            (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
@@ -335,14 +335,14 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(let [e# (should-throw ~throwable-type ~form)]
        (try
          (should= ~message (speclj.platform/error-message e#))
-         (catch java.lang.Throwable f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+         (catch ~speclj.platform-macros/throwable f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
   `(try
      ~form
-     (catch java.lang.Throwable e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
+     (catch ~speclj.platform-macros/throwable e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
                                             "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
@@ -368,7 +368,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   in the run report"
   ([] `(pending "Not Yet Implemented"))
   ([message]
-    `(throw (speclj.platform/new-pending ~message))))
+    `(throw (speclj.platform-macros/new-pending ~message))))
 
 (defmacro tags
   "Add tags to the containing context.  All values passed will be converted into keywords.  Contexts can be filtered
@@ -444,7 +444,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   See stub and should-have-invoked for valid options."
   [var options & body]
   (when-not (map? options)
-    `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
+    `(speclj.platform-macros/throw-error "The second argument to should-invoke must be a map of options"))
   (let [var-name (str var)]
     `(let [options# ~options]
        (binding [speclj.stub/*stubbed-invocations* (atom [])]

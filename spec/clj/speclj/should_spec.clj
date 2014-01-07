@@ -6,7 +6,7 @@
                                  should-not-throw should-not= should-not== should-throw
                                  should= should== -to-s]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
-            [speclj.platform :refer [new-exception]])
+            [speclj.platform-macros :refer [new-exception]])
   (:require [speclj.platform :refer [endl exception type-name]]
             [speclj.run.standard :refer [run-specs]]))
 

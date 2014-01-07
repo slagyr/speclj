@@ -1,7 +1,7 @@
 (ns speclj.report.clojure-test-spec
   (:require ;cljs-macros
             [speclj.core :refer [around before context describe it should should= should-contain with]]
-            [speclj.platform :refer [new-exception new-failure new-pending]])
+            [speclj.platform-macros :refer [new-exception new-failure new-pending]])
   (:require [clojure.string :as str]
             ;cljs-include [goog.string] ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
@@ -24,7 +24,7 @@
   (with reporter (new-clojure-test-reporter))
   (with a-failure (fail-result (new-characteristic "flips" (new-description "Crazy" "some.ns") "flip") 0.3 (new-failure "Expected flips")))
   (with an-error (error-result (new-exception "Compilation failed")))
-  
+
   (it "reports pass"
     (with-test-out-str (report-pass @reporter nil))
     (should= 1
@@ -39,17 +39,17 @@
     (with-test-out-str (report-fail @reporter @a-failure))
     (should= 1
       (:fail (deref (.report-counters @reporter)))))
-  
+
   (it "reports failure message"
     (let [lines (str/split-lines (with-test-out-str (report-fail @reporter @a-failure)))]
       (should-contain "FAIL in (Crazy flips)" (nth lines 1))
       (should-contain "Expected flips" (nth lines 2))))
-  
+
   (it "reports error"
     (with-test-out-str (report-error @reporter @an-error))
     (should= 1
       (:error (deref (.report-counters @reporter)))))
-  
+
   (it "reports error message"
     (let [lines (str/split-lines (with-test-out-str (report-error @reporter @an-error)))]
       (should-contain "ERROR in (unknown)" (nth lines 1))

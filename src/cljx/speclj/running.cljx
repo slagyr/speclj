@@ -51,7 +51,9 @@
       (do
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
-      (catch java.lang.Throwable e
+      (catch #+clj java.lang.Throwable
+             #+cljs js/Object
+             e
         (if (pending? e)
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))

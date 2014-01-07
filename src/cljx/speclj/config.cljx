@@ -1,5 +1,6 @@
 (ns speclj.config
-  (:require [speclj.platform :refer [dynamically-invoke print-stack-trace]]))
+  (:require [speclj.platform :refer [dynamically-invoke print-stack-trace]]
+            [speclj.platform-macros :refer [new-exception]]))
 
 (declare ^:dynamic *parent-description*)
 
@@ -12,14 +13,14 @@
     *reporters*
     (if-let [reporters @default-reporters]
       reporters
-      (throw (java.lang.Exception. "*reporters* is unbound and no default value has been provided")))))
+      (throw (new-exception "*reporters* is unbound and no default value has been provided")))))
 
 #+cljs
 (defn active-reporters []
   (if *reporters* *reporters*
     (if-let [reporters @default-reporters]
       reporters
-      (throw (java.lang.Exception. "*reporters* is unbound and no default value has been provided")))))
+      (throw (new-exception "*reporters* is unbound and no default value has been provided")))))
 
 (declare #^{:dynamic true} *runner*)
 (def default-runner (atom nil))
@@ -38,7 +39,7 @@
     (if *runner* *runner*
     (if-let [runner @default-runner]
       runner
-      (throw (java.lang.Exception. "*runner* is unbound and no default value has been provided")))))
+      (throw (js/Error "*runner* is unbound and no default value has been provided")))))
 
 (declare #^{:dynamic true} *specs*)
 
@@ -72,12 +73,12 @@
 (defn load-runner [name]
   (try
     (dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
-    (catch java.lang.Exception e (throw (java.lang.Exception. (str "Failed to load runner: " name) e)))))
+    (catch #+clj java.lang.Exception #+cljs js/Object e (throw (new-exception (str "Failed to load runner: " name) e)))))
 
 (defn- load-reporter-by-name [name]
   (try
     (dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
-    (catch java.lang.Exception e (throw (java.lang.Exception. (str "Failed to load reporter: " name) e)))))
+    (catch #+clj java.lang.Exception #+cljs js/Object e (throw (new-exception (str "Failed to load reporter: " name) e)))))
 
 #+clj
 (defn load-reporter [name-or-object]

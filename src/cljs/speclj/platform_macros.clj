@@ -11,3 +11,14 @@
        (declare ~var-name)
        (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
+
+(def throwable 'js/Object)
+
+(defmacro new-throwable [message] `(js/Error. message))
+(defmacro new-exception
+  ([message] `(js/Error. ~message))
+  ([message cause] `(js/Error. ~message)))
+(defmacro new-failure [message] `(speclj.platform.SpecFailure. ~message))
+(defmacro new-pending [message] `(speclj.platform.SpecPending. ~message))
+(defmacro throw-error [message] `(throw (js/Error. ~message)))
+

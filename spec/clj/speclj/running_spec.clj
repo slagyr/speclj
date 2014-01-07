@@ -4,7 +4,8 @@
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
-            [speclj.platform :as platform])
+            [speclj.platform :as platform]
+            [speclj.platform-macros :as platform-macros])
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [pass? fail?]]
@@ -62,7 +63,7 @@
          (after (reset! bauble nil))
          (it "changes the bauble"
            (reset! bauble :something)
-           (throw (platform/new-exception "blah")))))
+           (throw (platform-macros/new-exception "blah")))))
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 

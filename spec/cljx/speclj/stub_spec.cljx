@@ -2,7 +2,7 @@
   (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
-            [speclj.platform :refer [new-exception]])
+            [speclj.platform-macros :refer [new-exception]])
   (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]))
@@ -54,9 +54,9 @@
       ((stub :foo {:invoke (fn [a] a)}))))
   ;<-cljs-ignore
 
-;  (it "throw error when :invoke argument is not a fn"
-;    (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
-;
+  (it "throw error when :invoke argument is not a fn"
+    (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
+
   (context "invocations"
     (with foo (stub :foo))
     (with bar (stub :bar))

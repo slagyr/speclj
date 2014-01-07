@@ -15,12 +15,6 @@
 (defn pending? [e] (isa? (type e) pending))
 (defn failure? [e] (isa? (type e) failure))
 
-(defmacro new-throwable [message] `(java.lang.Throwable. ~message))
-(defmacro new-exception [message] `(java.lang.Exception. ~message))
-(defmacro new-failure [message] `(speclj.SpecFailure. ~message))
-(defmacro new-pending [message] `(speclj.SpecPending. ~message))
-(defmacro throw-error [message] `(throw (Exception. ~message)))
-
 (defn- classname->filename [classname]
   (let [root-name (first (split classname #"\$"))]
     (str

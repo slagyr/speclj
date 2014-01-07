@@ -11,3 +11,12 @@
        (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
 
+(def throwable 'Throwable)
+
+(defmacro new-throwable [message] `(java.lang.Throwable. ~message))
+(defmacro new-exception
+  ([message] `(java.lang.Exception. ~message))
+  ([message cause] `(java.lang.Exception. ~message ~cause)))
+(defmacro new-failure [message] `(speclj.SpecFailure. ~message))
+(defmacro new-pending [message] `(speclj.SpecPending. ~message))
+(defmacro throw-error [message] `(throw (Exception. ~message)))

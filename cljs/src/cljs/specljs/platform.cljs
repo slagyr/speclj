@@ -18,6 +18,12 @@
 (def failure SpecFailure)
 (def pending SpecPending)
 
+(defmacro new-throwable [message] `(js/Error. ~message))
+(defmacro new-exception [message] `(js/Error. ~message))
+(defmacro new-failure [message] `(SpecFailure. ~message))
+(defmacro new-pending [message] `(SpecPending. ~message))
+(defmacro throw-error [message] `(throw (js/Error. ~message)))
+
 (defn pending? [e] (isa? (type e) pending))
 (defn failure? [e] (isa? (type e) failure))
 
