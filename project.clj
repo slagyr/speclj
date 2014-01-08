@@ -46,7 +46,7 @@
                                    [mmargs "1.2.0"]]
                     :plugins [[lein-cljsbuild "1.0.0"]]
 
-                    :source-paths   ["src/cljs" "src/clj"]
+                    :source-paths   ["src/cljs" "src/clj" "spec/clj"]
 
                     :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/tests.js"]]
                                   {:builds

@@ -22,9 +22,9 @@
       (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner)))))
   ;<-cljs-ignore
 
-;  (it "throws exception with unrecognized runner"
-;    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah"))))
-;
+  (it "throws exception with unrecognized runner"
+    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah")))
+
   (it "dynamically loads ProgressReporter"
     (let [reporter (load-reporter "progress")]
       (should-not= nil reporter)
@@ -35,8 +35,8 @@
       (should-not= nil reporter)
       (should= speclj.report.silent.SilentReporter (type reporter))))
 
-;  (it "throws exception with unrecognized reporter"
-;    (should-throw platform/exception "Failed to load reporter: blah" (load-reporter "blah"))))
+  (it "throws exception with unrecognized reporter"
+    (should-throw platform/exception "Failed to load reporter: blah" (load-reporter "blah")))
 
   (it "can be given a pre-fabricated reporter"
     (let [pre-fabricated-reporter (speclj.report.silent/new-silent-reporter)

@@ -47,10 +47,12 @@
     (should= 9 ((stub :foo {:invoke *}) 3 3))
     (should= 42 ((stub :foo {:invoke * :return 42}) 3 3)))
 
+  ;cljs-ignore->
   #+clj
   (it "invoke with wrong number of params"
     (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
       ((stub :foo {:invoke (fn [a] a)}))))
+  ;<-cljs-ignore
 
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
@@ -78,7 +80,7 @@
       (it "last"
         (should= [2] (last-invocation-of :foo))
         (should= [4] (last-invocation-of :bar)))
-     )))
+      )
 
     (context "checking"
 
@@ -88,103 +90,102 @@
           (failure-message (should-have-invoked :foo)))
         (@foo)
         (should-pass! (should-have-invoked :foo))))
-;
-;      (it "for no invocations"
-;        (should-pass! (should-not-have-invoked :foo))
-;        (@foo)
-;        (should-fail! (should-not-have-invoked :foo))
-;        (should= (str "Expected: 0 invocations of :foo" endl "     got: 1")
-;          (failure-message (should-not-have-invoked :foo))))
-;
-;      (it "a specific number of invocations"
-;        (should-fail! (should-have-invoked :foo {:times 1}))
-;        (should= (str "Expected: 1 invocation of :foo" endl "     got: 0")
-;          (failure-message (should-have-invoked :foo {:times 1})))
-;        (@foo)
-;        (should-pass! (should-have-invoked :foo {:times 1}))
-;        (@foo)
-;        (should-fail! (should-have-invoked :foo {:times 1}))
-;        (should= (str "Expected: 1 invocation of :foo" endl "     got: 2")
-;          (failure-message (should-have-invoked :foo {:times 1}))))
-;
-;      (it "with no parameters - failing"
-;        (@foo 1)
-;        (should-fail! (should-have-invoked :foo {:with []}))
-;        (should= (str "Expected: invocation of :foo with []" endl "     got: [1]")
-;          (failure-message (should-have-invoked :foo {:with []}))))
-;
-;      (it "with no parameters - passing"
-;        (@foo)
-;        (should-pass! (should-have-invoked :foo {:with nil}))
-;        (should-pass! (should-have-invoked :foo {:with []})))
-;
-;      (it "with some parameters - failing"
-;        (@foo 3 2 1)
-;        (should-fail! (should-have-invoked :foo {:with [1 2 3]}))
-;        (should= (str "Expected: invocation of :foo with [1 2 3]" endl "     got: [3 2 1]")
-;          (failure-message (should-have-invoked :foo {:with [1 2 3]}))))
-;
-;      (it "with some parameters - passing"
-;        (@foo 1 2 3)
-;        (should-pass! (should-have-invoked :foo {:with [1 2 3]})))
-;
-;      (it "with :* (anything) parameters"
-;        (@foo 1 2 3)
-;        (should-pass! (should-have-invoked :foo {:with [:* :* :*]}))
-;        (should-pass! (should-have-invoked :foo {:with [1 :* :*]}))
-;        (should-pass! (should-have-invoked :foo {:with [:* 2 :*]}))
-;        (should-pass! (should-have-invoked :foo {:with [:* :* 3]}))
-;        (should-fail! (should-have-invoked :foo {:with [0 :* :*]})))
-;
-;
-;      (it "with fn matchers"
-;        (@bar nil?)
-;        (should-pass! (should-have-invoked :bar {:with [nil?]}))
-;        (should-pass! (should-have-invoked :bar {:with [fn?]}))
-;        (should-fail! (should-have-invoked :bar {:with [number?]}))
-;        (@foo 1 2 3)
-;        (should-pass! (should-have-invoked :foo {:with [#(> % 0) #(> % 0) #(> % 0)]}))
-;        (should-pass! (should-have-invoked :foo {:with [#(not (nil? %)) #(not (nil? %)) #(not (nil? %))]}))
-;        (should-fail! (should-have-invoked :foo {:with [#(< 5 %) :* :*]}))
-;        (should-fail! (should-have-invoked :foo {:with [:* #(nil? %) :*]})))
-;
-;      )
-;
-;   (context "should-invoke"
-;
-;     (it "stubs and checks simple call - passing"
-;       (should-pass! (should-invoke println {} (println "Hello!"))))
-;
-;     (it "stubs and checks simple call - failing"
-;       (should-fail! (should-invoke println {} "No calls to println :("))
-;       (should= "Expected: an invocation of println\n     got: 0"
-;         (failure-message (should-invoke println {} "No calls to println :("))))
-;
-;     (it "uses options on stubbing and checking - passing"
-;       (should-pass!
-;         (should-invoke reverse {:return 42 :times 2}
-;           (should= 42 (reverse [1 2]))
-;           (should= 42 (reverse [3 4])))))
-;
-;     (it "uses options on stubbing and checking - failure"
-;       (should-fail!
-;         (should-invoke reverse {:return 42 :times 2}
-;           (should= 42 (reverse [1 2]))))
-;       (should= "Expected: 2 invocations of reverse\n     got: 1"
-;         (failure-message
-;           (should-invoke reverse {:return 42 :times 2}
-;             (should= 42 (reverse [1 2]))))))
-;
-;     (it "stubs and checks it was not called - failing"
-;       (should-fail! (should-not-invoke println {} (println "Hello!")))
-;       (should= "Expected: 0 invocations of println\n     got: 1"
-;         (failure-message (should-not-invoke println {} (println "Hello!")))))
-;
-;     (it "stubs and checks simple call - passing"
-;       (should-pass! (should-not-invoke println {} "No calls to println :(")))
-;
-;     ))
+
+     (it "for no invocations"
+       (should-pass! (should-not-have-invoked :foo))
+       (@foo)
+       (should-fail! (should-not-have-invoked :foo))
+       (should= (str "Expected: 0 invocations of :foo" endl "     got: 1")
+         (failure-message (should-not-have-invoked :foo))))
+
+     (it "a specific number of invocations"
+       (should-fail! (should-have-invoked :foo {:times 1}))
+       (should= (str "Expected: 1 invocation of :foo" endl "     got: 0")
+         (failure-message (should-have-invoked :foo {:times 1})))
+       (@foo)
+       (should-pass! (should-have-invoked :foo {:times 1}))
+       (@foo)
+       (should-fail! (should-have-invoked :foo {:times 1}))
+       (should= (str "Expected: 1 invocation of :foo" endl "     got: 2")
+         (failure-message (should-have-invoked :foo {:times 1}))))
+
+     (it "with no parameters - failing"
+       (@foo 1)
+       (should-fail! (should-have-invoked :foo {:with []}))
+       (should= (str "Expected: invocation of :foo with []" endl "     got: [1]")
+         (failure-message (should-have-invoked :foo {:with []}))))
+
+     (it "with no parameters - passing"
+       (@foo)
+       (should-pass! (should-have-invoked :foo {:with nil}))
+       (should-pass! (should-have-invoked :foo {:with []})))
+
+     (it "with some parameters - failing"
+       (@foo 3 2 1)
+       (should-fail! (should-have-invoked :foo {:with [1 2 3]}))
+       (should= (str "Expected: invocation of :foo with [1 2 3]" endl "     got: [3 2 1]")
+         (failure-message (should-have-invoked :foo {:with [1 2 3]}))))
+
+     (it "with some parameters - passing"
+       (@foo 1 2 3)
+       (should-pass! (should-have-invoked :foo {:with [1 2 3]})))
+
+     (it "with :* (anything) parameters"
+       (@foo 1 2 3)
+       (should-pass! (should-have-invoked :foo {:with [:* :* :*]}))
+       (should-pass! (should-have-invoked :foo {:with [1 :* :*]}))
+       (should-pass! (should-have-invoked :foo {:with [:* 2 :*]}))
+       (should-pass! (should-have-invoked :foo {:with [:* :* 3]}))
+       (should-fail! (should-have-invoked :foo {:with [0 :* :*]})))
 
 
+     (it "with fn matchers"
+       (@bar nil?)
+       (should-pass! (should-have-invoked :bar {:with [nil?]}))
+       (should-pass! (should-have-invoked :bar {:with [fn?]}))
+       (should-fail! (should-have-invoked :bar {:with [number?]}))
+       (@foo 1 2 3)
+       (should-pass! (should-have-invoked :foo {:with [#(> % 0) #(> % 0) #(> % 0)]}))
+       (should-pass! (should-have-invoked :foo {:with [#(not (nil? %)) #(not (nil? %)) #(not (nil? %))]}))
+       (should-fail! (should-have-invoked :foo {:with [#(< 5 %) :* :*]}))
+       (should-fail! (should-have-invoked :foo {:with [:* #(nil? %) :*]})))
+
+     )
+
+    (context "should-invoke"
+
+      (it "stubs and checks simple call - passing"
+        (should-pass! (should-invoke println {} (println "Hello!"))))
+
+      (it "stubs and checks simple call - failing"
+        (should-fail! (should-invoke println {} "No calls to println :("))
+        (should= "Expected: an invocation of println\n     got: 0"
+          (failure-message (should-invoke println {} "No calls to println :("))))
+
+      (it "uses options on stubbing and checking - passing"
+        (should-pass!
+          (should-invoke reverse {:return 42 :times 2}
+            (should= 42 (reverse [1 2]))
+            (should= 42 (reverse [3 4])))))
+
+      (it "uses options on stubbing and checking - failure"
+        (should-fail!
+          (should-invoke reverse {:return 42 :times 2}
+            (should= 42 (reverse [1 2]))))
+        (should= "Expected: 2 invocations of reverse\n     got: 1"
+          (failure-message
+            (should-invoke reverse {:return 42 :times 2}
+              (should= 42 (reverse [1 2]))))))
+
+;      (it "stubs and checks it was not called - failing"
+;        (should-fail! (should-not-invoke println {} (println "Hello!"))))
+;        (should= "Expected: 0 invocations of println\n     got: 1"
+;          (failure-message (should-not-invoke println {} (println "Hello!")))))
+
+      (it "stubs and checks simple call - passing"
+        (should-pass! (should-not-invoke println {} "No calls to println :(")))
+
+      )
+    )
 
 (run-specs)
