@@ -5,7 +5,7 @@
 (defmacro run-result [& body]
   `(try
      ~@body
-     :pass (catch java.lang.Throwable e#
+     :pass (catch ~speclj.platform-macros/throwable e#
              e#)))
 
 (defmacro should-pass! [& body]

@@ -1,9 +1,10 @@
 (ns speclj.report.progress-spec
-  (:require ;cljs-macros
+  (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [around before context describe it should should= with]]
             [speclj.platform-macros :refer [new-exception new-failure new-pending]])
   (:require [clojure.string :as str]
             ;cljs-include [goog.string] ;cljs bug?
+            #+cljs [goog.string]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?*]]
             [speclj.platform :refer [format-seconds]]

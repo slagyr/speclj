@@ -47,12 +47,10 @@
     (should= 9 ((stub :foo {:invoke *}) 3 3))
     (should= 42 ((stub :foo {:invoke * :return 42}) 3 3)))
 
-  ;cljs-ignore->
   #+clj
   (it "invoke with wrong number of params"
     (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
       ((stub :foo {:invoke (fn [a] a)}))))
-  ;<-cljs-ignore
 
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
@@ -80,16 +78,16 @@
       (it "last"
         (should= [2] (last-invocation-of :foo))
         (should= [4] (last-invocation-of :bar)))
-      )))
+     )))
 
-;    (context "checking"
-;
-;      (it "at least one invocation"
-;        (should-fail! (should-have-invoked :foo))
-;        (should= (str "Expected: an invocation of :foo" endl "     got: 0")
-;          (failure-message (should-have-invoked :foo)))
-;        (@foo)
-;        (should-pass! (should-have-invoked :foo)))
+    (context "checking"
+
+      (it "at least one invocation"
+        (should-fail! (should-have-invoked :foo))
+        (should= (str "Expected: an invocation of :foo" endl "     got: 0")
+          (failure-message (should-have-invoked :foo)))
+        (@foo)
+        (should-pass! (should-have-invoked :foo))))
 ;
 ;      (it "for no invocations"
 ;        (should-pass! (should-not-have-invoked :foo))

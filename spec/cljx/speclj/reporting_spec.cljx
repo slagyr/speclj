@@ -1,5 +1,5 @@
 (ns speclj.reporting-spec
-  (:require ;cljs-macros
+  (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [describe context with before around it should should=]])
   (:require [speclj.config :refer [*color?* *full-stack-trace?*]]
             [speclj.run.standard :refer [run-specs]]
@@ -37,6 +37,7 @@
     (around [it] (binding [*full-stack-trace?* false] (it)))
 
   ;cljs-ignore->
+    #+clj
     (it "prints elided stack traces"
       (let [exception (Exception. "Test Exception")
             expected "java.lang.Exception: Test Exception
@@ -61,6 +62,7 @@
                         ]))
         (should= expected (stack-trace-str exception))))
 
+    #+clj
     (it "prints elided stack traces of caused exceptions"
       (let [cause (Exception. "Cause")
             exception (Exception. "Test Exception" cause)
