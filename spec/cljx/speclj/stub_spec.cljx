@@ -29,9 +29,9 @@
     (should= :bar ((stub :foo {:return :bar})))
     (should= 42 ((stub :foo {:return 42}))))
 
-;  (it "can throw stuff"
-;    (should-throw exception "Yay!" ((stub :bar {:throw (new-exception "Yay!")})))
-;    (should-throw exception "Oh no!" ((stub :bar {:throw (new-exception "Oh no!")}))))
+  (it "can throw stuff"
+    (should-throw exception "Yay!" ((stub :bar {:throw (new-exception "Yay!")})))
+    (should-throw exception "Oh no!" ((stub :bar {:throw (new-exception "Oh no!")}))))
 
   (it "can invoke"
     (let [trail (atom [])
@@ -152,41 +152,41 @@
 ;
 ;      )
 ;
-;    (context "should-invoke"
+;   (context "should-invoke"
 ;
-;      (it "stubs and checks simple call - passing"
-;        (should-pass! (should-invoke println {} (println "Hello!"))))
+;     (it "stubs and checks simple call - passing"
+;       (should-pass! (should-invoke println {} (println "Hello!"))))
 ;
-;      (it "stubs and checks simple call - failing"
-;        (should-fail! (should-invoke println {} "No calls to println :("))
-;        (should= "Expected: an invocation of println\n     got: 0"
-;          (failure-message (should-invoke println {} "No calls to println :("))))
+;     (it "stubs and checks simple call - failing"
+;       (should-fail! (should-invoke println {} "No calls to println :("))
+;       (should= "Expected: an invocation of println\n     got: 0"
+;         (failure-message (should-invoke println {} "No calls to println :("))))
 ;
-;      (it "uses options on stubbing and checking - passing"
-;        (should-pass!
-;          (should-invoke reverse {:return 42 :times 2}
-;            (should= 42 (reverse [1 2]))
-;            (should= 42 (reverse [3 4])))))
+;     (it "uses options on stubbing and checking - passing"
+;       (should-pass!
+;         (should-invoke reverse {:return 42 :times 2}
+;           (should= 42 (reverse [1 2]))
+;           (should= 42 (reverse [3 4])))))
 ;
-;      (it "uses options on stubbing and checking - failure"
-;        (should-fail!
-;          (should-invoke reverse {:return 42 :times 2}
-;            (should= 42 (reverse [1 2]))))
-;        (should= "Expected: 2 invocations of reverse\n     got: 1"
-;          (failure-message
-;            (should-invoke reverse {:return 42 :times 2}
-;              (should= 42 (reverse [1 2]))))))
+;     (it "uses options on stubbing and checking - failure"
+;       (should-fail!
+;         (should-invoke reverse {:return 42 :times 2}
+;           (should= 42 (reverse [1 2]))))
+;       (should= "Expected: 2 invocations of reverse\n     got: 1"
+;         (failure-message
+;           (should-invoke reverse {:return 42 :times 2}
+;             (should= 42 (reverse [1 2]))))))
 ;
-;      (it "stubs and checks it was not called - failing"
-;        (should-fail! (should-not-invoke println {} (println "Hello!")))
-;        (should= "Expected: 0 invocations of println\n     got: 1"
-;          (failure-message (should-not-invoke println {} (println "Hello!")))))
+;     (it "stubs and checks it was not called - failing"
+;       (should-fail! (should-not-invoke println {} (println "Hello!")))
+;       (should= "Expected: 0 invocations of println\n     got: 1"
+;         (failure-message (should-not-invoke println {} (println "Hello!")))))
 ;
-;      (it "stubs and checks simple call - passing"
-;        (should-pass! (should-not-invoke println {} "No calls to println :(")))
+;     (it "stubs and checks simple call - passing"
+;       (should-pass! (should-not-invoke println {} "No calls to println :(")))
 ;
-;      )
-;    )
-;  )
+;     ))
+
+
 
 (run-specs)

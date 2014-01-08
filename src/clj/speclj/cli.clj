@@ -3,6 +3,7 @@
             [speclj.platform :refer [endl]]
             [speclj.reporting :refer [stack-trace-str report-message*]]
             [speclj.running :refer [run-directories run-and-report]]
+            [speclj.stub]
             [speclj.tags :refer [describe-filter]]
             [speclj.version])
   (:import [mmargs Arguments]))

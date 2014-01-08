@@ -1,13 +1,7 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  (:require [clojure.data]
-            [speclj.components]
-            [speclj.config]
-            [speclj.platform]
-            [speclj.platform-macros]
-            [speclj.run.standard]
-            [speclj.stub]))
+  (:require [clojure.data]))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -459,11 +453,13 @@ When a string is also passed, it asserts that the message of the Exception is eq
   [var options & body]
   `(should-invoke ~var ~(assoc options :times 0) ~@body))
 
-(def run-specs
+(defmacro run-specs []
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
 are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
 
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
-  speclj.run.standard/run-specs)
+  `(do
+     (require '[speclj.cli]) ; require all speclj files
+     (speclj.run.standard/run-specs)))
 
