@@ -132,7 +132,6 @@
 
       )
 
-
     (context "two collections"
       (it "passes if target contains all items"
         (should-pass! (should== [1 2 3] [1 2 3])))
@@ -369,11 +368,10 @@
 
   (it "should-not-throw tests that nothing was thrown"
     (should-pass! (should-not-throw (+ 1 1)))
-    (should-fail! (should-not-throw (throw (throwable "error"))))
-;    (should= (str "Expected nothing thrown from: " (pr-str '(throw (new-throwable "error"))) endl
-;               "                     but got: " (pr-str (new-throwable "error")))
-;      (failure-message (should-not-throw (throw (new-throwable "error")))))
-      )
+    (should-fail! (should-not-throw (throw (new-throwable "error"))))
+    (should= (str "Expected nothing thrown from: " (pr-str '(throw (new-throwable "error"))) endl
+               "                     but got: " (pr-str (new-throwable "error")))
+      (failure-message (should-not-throw (throw (new-throwable "error"))))))
 
 
   (context "should-be-a"
