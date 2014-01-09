@@ -65,8 +65,7 @@
         (should= (str (red "  - nested fail (FAILED)") endl)
           (with-out-str (report-fail @reporter result)))))
     )
-
-  )
+)
 
 
 (run-specs)

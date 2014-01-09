@@ -177,10 +177,10 @@
             (should-invoke reverse {:return 42 :times 2}
               (should= 42 (reverse [1 2]))))))
 
-;      (it "stubs and checks it was not called - failing"
-;        (should-fail! (should-not-invoke println {} (println "Hello!"))))
-;        (should= "Expected: 0 invocations of println\n     got: 1"
-;          (failure-message (should-not-invoke println {} (println "Hello!")))))
+      (it "stubs and checks it was not called - failing"
+        (should-fail! (should-not-invoke println {} (println "Hello!")))
+        (should= "Expected: 0 invocations of println\n     got: 1"
+          (failure-message (should-not-invoke println {} (println "Hello!")))))
 
       (it "stubs and checks simple call - passing"
         (should-pass! (should-not-invoke println {} "No calls to println :(")))
