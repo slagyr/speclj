@@ -1,0 +1,6 @@
+To Run Specs:
+
+Clojure: lein with-profile clj run -m speclj.main -c -b target/generated/spec/clj spec/clj
+  -note: currently, clj specs will activate cljx compilation
+
+ClojureScript: lein with-profile cljs compile
