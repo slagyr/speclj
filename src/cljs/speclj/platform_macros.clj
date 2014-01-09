@@ -14,7 +14,9 @@
 
 (def throwable 'js/Object)
 
-(defmacro new-throwable [message] `(js/Error. message))
+(defmacro new-throwable
+  ([] `(js/Error.))
+  ([message] `(js/Error. ~message)))
 (defmacro new-exception
   ([message] `(js/Error. ~message))
   ([message cause] `(js/Error. ~message)))

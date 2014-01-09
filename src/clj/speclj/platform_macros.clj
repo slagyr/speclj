@@ -13,7 +13,9 @@
 
 (def throwable 'Throwable)
 
-(defmacro new-throwable [message] `(java.lang.Throwable. ~message))
+(defmacro new-throwable
+  ([] `(java.lang.Throwable.))
+  ([message] `(java.lang.Throwable. ~message)))
 (defmacro new-exception
   ([message] `(java.lang.Exception. ~message))
   ([message cause] `(java.lang.Exception. ~message ~cause)))
