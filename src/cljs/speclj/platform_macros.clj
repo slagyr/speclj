@@ -15,8 +15,7 @@
        ~unique-name)))
 
 (defmacro expected-larger-than-delta [expected actual delta]
-  `(> (js/math.abs (- ~expected ~actual)) (js/math.abs ~delta)))
-
+  `(> (js/Math.abs (- ~expected ~actual)) (js/Math.abs ~delta)))
 
 (defmacro new-throwable
   ([] `(js/Error.))
