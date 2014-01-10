@@ -347,7 +347,7 @@
     #+clj
     (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.))))
 
-    ;(should-fail! (should-throw exception (throw (new-throwable))))
+;    (should-fail! (should-throw exception (throw (new-throwable))))
     (should-fail! (should-throw exception (+ 1 1)))
     (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
                (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
