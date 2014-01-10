@@ -1,5 +1,5 @@
 (ns speclj.running-spec
-  (:require ;cljs-macros
+  (:require
             [speclj.core :refer [after around before before-all context describe
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags

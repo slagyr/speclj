@@ -140,7 +140,7 @@
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
   ([expected-form actual-form delta-form]
     `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-       (when (> (.abs (- (bigdec expected#) (bigdec actual#))) (.abs (bigdec delta#)))
+       (when (speclj.platform-macros/expected-larger-than-delta expected# actual# delta#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-be

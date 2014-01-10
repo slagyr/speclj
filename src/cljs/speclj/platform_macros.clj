@@ -1,5 +1,7 @@
 (ns speclj.platform-macros)
 
+(def throwable 'js/Object)
+
 (defmacro when-not-bound [name & body]
   `(when-not ~name ~@body))
 
@@ -12,7 +14,9 @@
        (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
 
-(def throwable 'js/Object)
+(defmacro expected-larger-than-delta [expected actual delta]
+  `(> (js/math.abs (- ~expected ~actual)) (js/math.abs ~delta)))
+
 
 (defmacro new-throwable
   ([] `(js/Error.))

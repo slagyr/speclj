@@ -11,6 +11,9 @@
        (def ~unique-name (~ctor '~var-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
 
+(defmacro expected-larger-than-delta [expected actual delta]
+  `(> (.abs (- (bigdec ~expected) (bigdec ~actual))) (.abs (bigdec ~delta))))
+
 (def throwable 'Throwable)
 
 (defmacro new-throwable
