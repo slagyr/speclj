@@ -110,11 +110,17 @@
       (with-withs-bound description
         (fn []
           (eval-components @(.-before-alls description))
-          (try
-            (let [results (results-for-context description reporters)]
-              (do-child-contexts description results reporters))
-            (finally
-              (reset-withs @(.-with-alls description)))))))))
+          (let [around-alls (reduce (fn [composed around-all]
+                                      (fn [f] ((.-body around-all) (fn [] (composed f)))))
+                                    (fn [f] (f))
+                                    @(.-around-alls description))]
+            (around-alls (fn []
+              (try
+                (let [results (results-for-context description reporters)]
+                  (do-child-contexts description results reporters))
+                (finally
+                  (reset-withs @(.-with-alls description)))))))
+          )))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]

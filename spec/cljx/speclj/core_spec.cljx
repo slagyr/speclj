@@ -3,7 +3,8 @@
             [speclj.core :refer [describe it context tags
                                  should should-be-same should-not-be-same should=
                                  before after before-all after-all
-                                 with with! with-all with-all! around]])
+                                 with with! with-all with-all! around around-all
+                                 pending]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
@@ -110,40 +111,41 @@
   )
 
 
-;(def widget (atom 5))
-;(describe "around-all form"
-;  (around-all [context]
-;    (binding [*gewgaw* (swap! widget inc)]
-;      (context)))
-;
-;  (it "executes before all the specs"
-;    (should= 6 @widget)
-;    (should= 6 *gewgaw*))
-;
-;  (it "only executes onece"
-;    (should= 6 @widget)
-;    (should= 6 *gewgaw*))
-;
-;  (context "nested"
-;
-;    (around-all [context]
-;      (binding [*gewgaw* (swap! widget #(* 3 %))]
-;        (context)))
-;
-;    (around-all [context]
-;      (binding [*gewgaw* (swap! widget #(/ % 2))]
-;        (context)))
-;
-;    (it "will all execute before the characteristics"
-;      (should= 9 @widget)
-;      (should= 9 *gewgaw*))
-;
-;    (it "and still only execure once"
-;      (should= 9 @widget)
-;      (should= 9 *gewgaw*))
-;
-;    )
-;  )
+(def #^{:dynamic true} widget (atom 5))
+(describe "around-all form"
+  (around-all [context]
+    (binding [*gewgaw* (swap! widget inc)]
+      (context)))
+
+  (it "executes before all the specs"
+    (should= 6 @widget)
+    (should= 6 *gewgaw*))
+
+  (it "only executes once"
+    (pending)
+    (should= 6 @widget)
+    (should= 6 *gewgaw*))
+
+  (context "nested"
+    (around-all [context]
+      (binding [*gewgaw* (swap! widget #(* 3 %))]
+        (context)))
+
+    (around-all [context]
+      (binding [*gewgaw* (swap! widget #(/ % 2))]
+        (context)))
+
+    (it "will all execute before the characteristics"
+      (pending)
+      (should= 9 @widget)
+      (should= 9 *gewgaw*))
+
+    (it "and still only execute once"
+      (pending)
+      (should= 9 @widget)
+      (should= 9 *gewgaw*))
+
+    ))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
