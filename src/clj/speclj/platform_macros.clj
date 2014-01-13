@@ -20,8 +20,10 @@
   ([] `(java.lang.Throwable.))
   ([message] `(java.lang.Throwable. ~message)))
 (defmacro new-exception
+  ([] `(java.lang.Exception.))
   ([message] `(java.lang.Exception. ~message))
   ([message cause] `(java.lang.Exception. ~message ~cause)))
+
 (defmacro new-failure [message] `(speclj.SpecFailure. ~message))
 (defmacro new-pending [message] `(speclj.SpecPending. ~message))
 (defmacro throw-error [message] `(throw (Exception. ~message)))

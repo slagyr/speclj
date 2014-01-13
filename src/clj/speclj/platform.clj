@@ -8,7 +8,7 @@
 (defn re? [obj] (isa? (type obj) java.util.regex.Pattern))
 
 (def throwable Throwable)
-(def exception Exception)
+(def exception java.lang.Exception)
 (def failure speclj.SpecFailure)
 (def pending speclj.SpecPending)
 

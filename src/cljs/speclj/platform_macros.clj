@@ -18,9 +18,10 @@
   `(> (js/Math.abs (- ~expected ~actual)) (js/Math.abs ~delta)))
 
 (defmacro new-throwable
-  ([] `(js/Error.))
-  ([message] `(js/Error. ~message)))
+  ([] `(js/Object.))
+  ([message] `(js/Object. ~message)))
 (defmacro new-exception
+  ([] `(js/Error.))
   ([message] `(js/Error. ~message))
   ([message cause] `(js/Error. ~message)))
 (defmacro new-failure [message] `(speclj.platform.SpecFailure. ~message))

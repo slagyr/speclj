@@ -6,7 +6,8 @@
                                  should-not-throw should-not= should-not== should-throw
                                  should= should== -to-s]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
-            [speclj.platform-macros :refer [new-exception, new-throwable]])
+            [speclj.platform-macros :refer [new-exception new-throwable]]
+         )
   (:require [speclj.platform :refer [endl exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
@@ -340,20 +341,20 @@
       (failure-message (should-throw (+ 1 1)))))
 
   (it "should-throw can test an expected throwable type"
-    (should-pass! (should-throw exception (throw (exception))))
+    (should-pass! (should-throw exception (throw (new-exception))))
 
     #+clj
     (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.))))
 
-;    (should-fail! (should-throw exception (throw (new-throwable))))
+    (should-fail! (should-throw exception (throw (new-throwable))))
     (should-fail! (should-throw exception (+ 1 1)))
     (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
                (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
       (failure-message (should-throw exception (+ 1 1))))
 
-;    (should= (str "Expected " (type-name java.lang.Exception) " thrown from: (throw (java.lang.Throwable. \"some message\"))" endl
-;               (apply str (take (count (type-name java.lang.Exception)) (repeat " "))) "              but got: " (pr-str (java.lang.Throwable. "some message")))
-;      (failure-message (should-throw java.lang.Exception (throw (java.lang.Throwable. "some message")))))
+    (should= (str "Expected " (type-name exception) " thrown from: (throw (new-throwable \"some message\"))" endl
+               (apply str (take (count (type-name exception)) (repeat " "))) "              but got: " (pr-str (new-throwable "some message")))
+      (failure-message (should-throw exception (throw (new-throwable "some message")))))
       )
 
   (it "should-throw can test the message of the exception"
