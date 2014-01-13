@@ -154,27 +154,64 @@
     (context "should-invoke"
 
       (it "stubs and checks simple call - passing"
-        (should-pass! (should-invoke println {} (println "Hello!"))))
+        (should-pass! (should-invoke [println {}] (println "Hello!"))))
+
+      (it "stubs and checks nested call - passing"
+        (should-pass! (should-invoke [println {}
+                                      str {}]
+                                     (println (str "Hello! " :buddy)))))
 
       (it "stubs and checks simple call - failing"
-        (should-fail! (should-invoke println {} "No calls to println :("))
+        (should-fail! (should-invoke [println {}] "No calls to println :("))
         (should= "Expected: an invocation of println\n     got: 0"
-          (failure-message (should-invoke println {} "No calls to println :("))))
+          (failure-message (should-invoke [println {}] "No calls to println :("))))
+
+      (it "stubs and checks nested call - failing"
+        (should-fail! (should-invoke [println {}
+                                      str {}] (str "No calls to println :(")))
+        (should= "Expected: an invocation of println\n     got: 0"
+                 (failure-message (should-invoke [println {}
+                                                  str {}] (str "No calls to println :(")))))
+
+      (it "stubs and checks nested call (other way around) - failing"
+        (should-fail! (should-invoke [str {}
+                                      println {}] (println "No calls to println :(")))
+        (should= "Expected: an invocation of str\n     got: 0"
+                 (failure-message (should-invoke [str {}
+                                                  println {}] (println "No calls to println :(")))))
 
       (it "uses options on stubbing and checking - passing"
         (should-pass!
-          (should-invoke reverse {:return 42 :times 2}
+          (should-invoke [reverse {:return 42 :times 2}]
             (should= 42 (reverse [1 2]))
             (should= 42 (reverse [3 4])))))
 
+      (it "uses options on stubbing and checking (nested call) - passing"
+        (should-pass!
+          (should-invoke [reverse {:return 42 :times 2}
+                          concat {:return [3 4] :times 2}]
+            (should= 42 (reverse (concat [1 2])))
+            (should= 42 (reverse (concat [3 4]))))))
+
       (it "uses options on stubbing and checking - failure"
         (should-fail!
-          (should-invoke reverse {:return 42 :times 2}
+          (should-invoke [reverse {:return 42 :times 2}]
             (should= 42 (reverse [1 2]))))
         (should= "Expected: 2 invocations of reverse\n     got: 1"
           (failure-message
-            (should-invoke reverse {:return 42 :times 2}
+            (should-invoke [reverse {:return 42 :times 2}]
               (should= 42 (reverse [1 2]))))))
+
+      (it "uses options on stubbing and checking (nested call) - failure"
+        (should-fail!
+          (should-invoke [reverse {:return 42 :times 1}
+                          concat {:return [3 4] :times 2}]
+                         (should= 42 (reverse (concat [1 2])))))
+        (should= "Expected: 2 invocations of reverse\n     got: 1"
+                 (failure-message
+                   (should-invoke [reverse {:return 42 :times 2}
+                                   concat {:return [3 4] :times 2}]
+                                  (should= 42 (reverse (concat [1 2])))))))
 
       (it "stubs and checks it was not called - failing"
         (should-fail! (should-not-invoke println {} (println "Hello!")))
