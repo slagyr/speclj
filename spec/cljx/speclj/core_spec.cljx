@@ -298,7 +298,8 @@
     (should= 1 @non-lazy-with-all-calls))
 
   (it "has not been reset and deref'ed"
-    (should= 1 @non-lazy-with-all-calls)))
+    (should= 1 @non-lazy-with-all-calls))
+         )
 
 ;(run-specs :tags ["two"])
 (run-specs)

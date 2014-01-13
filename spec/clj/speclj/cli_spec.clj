@@ -55,7 +55,7 @@
     (should= "on" (:help (parse-args "--help")))
     (should= "on" (:help (parse-args "-h"))))
 
-  (it "handles the --version switch"
+  (it "handles the --help switch"
     (should= 0 (run "--help"))
     (should-not= -1 (.indexOf (to-s @output) "Usage")))
 

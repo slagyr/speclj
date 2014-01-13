@@ -12,23 +12,6 @@ To Do:
 
 
 To Consider:
-
--can running_spec be added to cljx? current issue: clojurescript does not support "the-ns"
--can should= 3-arity delta version be tested in clojurescript?: current issue: clojurescript does not support "bigdec"
 -can commented portions of should-thow (type) tests be added to clojurescript side? current issue:  clojurescript/javascript object types are dissimilar to java
 
 
-(defmacro should=
-  "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
-  ([expected-form actual-form]
-    `(let [expected# ~expected-form actual# ~actual-form]
-       (when-not (= expected# actual#)
-         (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
-  ([expected-form actual-form delta-form]
-    `(let [expected# ~expected-form
-           actual# ~actual-form
-           delta# ~delta-form
-           actual-delta# (abs (- expected# actual#))]
-       (when (speclj.platform-macros/expected-larger-than-delta delta# actual-delta#)
-         (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")")))))
-  )
