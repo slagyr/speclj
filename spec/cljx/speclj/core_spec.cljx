@@ -122,7 +122,6 @@
     (should= 6 *gewgaw*))
 
   (it "only executes once"
-    (pending)
     (should= 6 @widget)
     (should= 6 *gewgaw*))
 
@@ -136,16 +135,12 @@
         (context)))
 
     (it "will all execute before the characteristics"
-      (pending)
       (should= 9 @widget)
       (should= 9 *gewgaw*))
 
     (it "and still only execute once"
-      (pending)
       (should= 9 @widget)
-      (should= 9 *gewgaw*))
-
-    ))
+      (should= 9 *gewgaw*))))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
