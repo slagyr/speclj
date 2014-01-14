@@ -1,10 +1,8 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  (:require [clojure.data]))
-
-(defn compiling-cljs? []
-  (boolean (find-ns 'cljs.analyzer)))
+  (:require [clojure.data]
+            [speclj.util :refer [compiling-cljs?]]))
 
 (defmacro setup-platform []
   `(require
@@ -17,7 +15,7 @@
 ;     ~(if (compiling-cljs?)
 ;        '"cljs"
 ;        '"clj")))
-
+;
 ;(print-compile-platform)
 
 (setup-platform)

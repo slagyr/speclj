@@ -1,12 +1,7 @@
 (ns speclj.spec-helper
   (:require ; comment here to prevent cljs translation to replace with require-macros
-    [speclj.core :refer [-fail]]))
-
-(defn compiling-cljs? []
-  (boolean
-    (when-let [n (find-ns 'cljs.analyzer)]
-      (when-let [v (ns-resolve n '*cljs-file*)]
-        @v))))
+    [speclj.core :refer [-fail]]
+    [speclj.util :refer [compiling-cljs?]]))
 
 (defmacro run-result [& body]
   `(try
