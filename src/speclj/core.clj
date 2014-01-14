@@ -459,25 +459,25 @@ When a string is also passed, it asserts that the message of the Exception is eq
 (defmacro should-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.
 
-  (should-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3]))
+  (should-invoke [reverse {:with [1 2 3] :return []}] (reverse [1 2 3]))
 
   See stub and should-have-invoked for valid options."
-  [var options & body]
-  (when-not (map? options)
-    `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
-  (let [var-name (str var)]
-    `(let [options# ~options]
-       (binding [speclj.stub/*stubbed-invocations* (atom [])]
-         (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-           ~@body)
-         (should-have-invoked ~var-name options#)))))
+  [invocations & body]
+   (let [var-options (partition 2 invocations)
+         stubs (apply concat (map (fn [[var options]] `[~var (speclj.stub/stub ~(str var) ~options)]) var-options))
+         assertions (map (fn [[var options]] `(should-have-invoked ~(str var) ~options)) var-options)]
+     `(binding [speclj.stub/*stubbed-invocations* (atom [])]
+        (with-redefs ~stubs
+          ~@body)
+        ~@assertions)))
+
 
 (defmacro should-not-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks that is was NOT invoked.
 
   Same as: (should-invoke :foo {:times 0} ...)"
   [var options & body]
-  `(should-invoke ~var ~(assoc options :times 0) ~@body))
+  `(should-invoke [~var ~(assoc options :times 0)] ~@body))
 
 ;cljs-ignore->
 (def run-specs
