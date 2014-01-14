@@ -5,7 +5,7 @@
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.platform :as platform]
-            [speclj.platform-macros :as platform-macros])
+            [speclj.platform-clj-macros :as platform-macros])
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [pass? fail?]]

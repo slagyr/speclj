@@ -1,6 +1,7 @@
 (ns speclj.stub
   (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.platform-macros :refer [throw-error]])
+            #+clj [speclj.platform-clj-macros :refer [throw-error]]
+            #+cljs [speclj.platform-cljs-macros :refer [throw-error]])
   (:require [speclj.platform :refer [endl]]))
 
 (declare ^:dynamic *stubbed-invocations*)

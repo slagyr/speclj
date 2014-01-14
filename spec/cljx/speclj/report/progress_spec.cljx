@@ -1,7 +1,9 @@
 (ns speclj.report.progress-spec
   (#+clj :require #+cljs :require-macros ;cljs-macros
             [speclj.core :refer [around before context describe it should should= with]]
-            [speclj.platform-macros :refer [new-exception new-failure new-pending]])
+            #+clj [speclj.platform-clj-macros :refer [new-exception new-failure new-pending]]
+            #+cljs [speclj.platform-cljs-macros :refer [new-exception new-failure new-pending]]
+         )
   (:require [clojure.string :as str]
             ;cljs-include [goog.string] ;cljs bug?
             #+cljs [goog.string]

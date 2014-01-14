@@ -12,8 +12,7 @@
 
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]
                                    [com.keminglabs/cljx "0.3.1"]]
-                   :plugins [[codox "0.6.4"]
-                             [com.keminglabs/cljx "0.3.1"]]
+                   :plugins [ [com.keminglabs/cljx "0.3.1"]]
                    :cljx {:builds [{:source-paths ["src/cljx"]
                                     :output-path "target/generated/src/clj"
                                     :rules :clj}
@@ -27,6 +26,31 @@
                                     :output-path "target/generated/spec/cljs"
                                     :rules :cljs}]}}
 
+             :production {:dependencies [[org.clojure/clojure "1.5.1"]
+                                         [com.keminglabs/cljx "0.3.1"]
+                                         [fresh "1.0.2"]
+                                         [mmargs "1.2.0"]]
+                          :plugins [[com.keminglabs/cljx "0.3.1"]
+                                    [lein-cljsbuild "1.0.0"]]
+
+                          :cljx {:builds [{:source-paths ["src/cljx"]
+                                           :output-path "target/generated/src/clj"
+                                           :rules :clj}
+                                          {:source-paths ["src/cljx"]
+                                           :output-path "target/generated/src/cljs"
+                                           :rules :cljs}
+                                          {:source-paths ["spec/cljx"]
+                                           :output-path "target/generated/spec/clj"
+                                           :rules :clj}
+                                          {:source-paths ["spec/cljx"]
+                                           :output-path "target/generated/spec/cljs"
+                                           :rules :cljs}]}
+
+                          :source-paths   ["target/generated/src/clj" "src/clj"]
+                          :resource-paths ["target/generated/src/cljs" "src/cljs"]
+
+                          }
+
              :clj {:dependencies [[org.clojure/clojure "1.5.1"]
                                   [fresh "1.0.2"]
                                   [mmargs "1.2.0"]]
@@ -36,7 +60,8 @@
                    :java-source-paths ["src/clj"]
                    }
 
-             :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
+             :cljs {:dependencies
+                    [[org.clojure/clojure "1.5.1"]
                                    [org.clojure/tools.reader "0.7.10"] ;necessary for current version of speclj
                                    [org.clojure/clojurescript "0.0-2014"]  ;necessary for current version of speclj
                                    [lein-cljsbuild "1.0.0"]]
