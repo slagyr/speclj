@@ -422,39 +422,122 @@ When a string is also passed, it asserts that the message of the Exception is eq
 
   Options:
     :times - the number of times the stub should have been invoked. nil means at least once. (default: nil)
-    :with - a list of arguments that the stubs should have been invoked with. Each call must have the same arguments.
+    :with - a list of arguments that the stubs should have been invoked with.
       If not specified, anything goes.  Special expected arguments include:
        :* - matches anything
        a fn - matches when the actual is the same fn or calling fn with the actual argument returns true
 
-
-  (should-have-invoked :foo {:with [1] :times 3})"
+  Example:
+  (let [foo (stub :foo)]
+    (should-have-invoked :foo {:with [1] :times 3}) ; fail
+    (foo 1)
+    (foo 2)
+    (should-have-invoked :foo {:with [1] :times 3}) ; fail
+    (should-have-invoked :foo {:with [1] :times 1}) ; pass
+    (should-have-invoked :foo {:with [2] :times 1}) ; pass
+    (should-have-invoked :foo {:times 3}) ; fail
+    (should-have-invoked :foo {:times 2}) ; pass
+    (should-have-invoked :foo {:times 1}) ; fail
+    (should-have-invoked :foo {:with [1]}) ; pass
+    (should-have-invoked :foo {:with [2]}) ; pass
+    )"
   ([name] `(should-have-invoked ~name {}))
   ([name options]
     `(let [name# ~name
            options# ~options
            invocations# (speclj.stub/invocations-of name#)
            times# (:times options#)
+           times?# (number? times#)
            check-params?# (contains? options# :with)
            with# (:with options#)
-           with# (if (nil? with#) [] with#)]
-       (if (number? times#)
+           with# (if (nil? with#) [] with#)
+           invocations-str# #(if (= 1 %) "invocation" "invocations")]
+       (cond
+
+         (and times?# check-params?#)
+         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
+               matching-count# (count matching-invocations#)]
+           (when-not (= times# matching-count#)
+             (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " " (invocations-str# matching-count#)))))
+
+         check-params?#
+         (when-not (some #(speclj.stub/params-match? with# %) invocations#)
+           (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
+
+         times?#
          (when-not (= times# (count invocations#))
-           (-fail (str "Expected: " times# " invocation" (if (= 1 times#) "" "s") " of " name# speclj.platform/endl "     got: " (count invocations#))))
+           (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# speclj.platform/endl "     got: " (count invocations#))))
+
+         :else
          (when-not (seq invocations#)
-           (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#)))))
-       (when check-params?#
-         (doseq [invocation# invocations#]
-           (when-not (speclj.stub/params-match? with# invocation#)
-             (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocation#)))))))))
+           (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#))))
+
+         ))))
 
 (defmacro should-not-have-invoked
-  "Asserts that the specified stub was never invoked.
+  "Inverse of should-have-invoked.
 
-  Same as: (should-have-invoked :foo {:times 0})"
+  Options:
+    :times - the number of times the stub should not have been invoked. nil means never. (default: nil)
+    :with - a list of arguments that the stubs should not have been invoked with.
+      If not specified, anything goes. Special expected arguments include:
+       :* - matches anything
+       a fn - matches when the actual is the same fn or calling fn with the actual argument returns true
+
+  Example:
+  (let [foo (stub :foo)]
+    (should-not-have-invoked :foo {:with [1] :times 3}) ; pass
+    (foo 1)
+    (should-not-have-invoked :foo {:with [1] :times 3}) ; pass
+    (should-not-have-invoked :foo {:with [1] :times 1}) ; fail
+    (should-not-have-invoked :foo {:times 3}) ; pass
+    (should-not-have-invoked :foo {:times 1}) ; fail
+    (should-not-have-invoked :foo {:with [1]}) ; fail
+    )"
   ([name] `(should-not-have-invoked ~name {}))
   ([name options]
-    `(should-have-invoked ~name ~(assoc options :times 0))))
+    `(let [name# ~name
+           options# ~options
+           invocations# (speclj.stub/invocations-of name#)
+           times# (:times options#)
+           times?# (number? times#)
+           check-params?# (contains? options# :with)
+           with# (:with options#)
+           with# (if (nil? with#) [] with#)
+           add-s# #(if (= 1 %) "" "s")]
+       (cond
+         (and times?# check-params?#)
+         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
+               matching-count# (count matching-invocations#)]
+           (when (= times# matching-count#)
+             (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# matching-count#) " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " invocation" (add-s# matching-count#)))))
+
+         times?#
+         (when (= times# (count invocations#))
+           (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# times#) speclj.platform/endl "     got: " times# " invocation" (add-s# times#))))
+
+         check-params?#
+         (when (some #(speclj.stub/params-match? with# %) invocations#)
+           (-fail (str "Expected: " name# " not to have been invoked with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
+
+         :else
+         (when (seq invocations#)
+           (-fail (str "Expected: 0 invocations of " name# speclj.platform/endl "     got: " (count invocations#))))
+
+         ))))
+
+(def ^:dynamic *bound-by-should-invoke* false)
+
+(defn bound-by-should-invoke? []
+  (and (bound? #'*bound-by-should-invoke*)
+       *bound-by-should-invoke*))
+
+(defmacro with-stubbed-invocations [& body]
+  `(if (not (bound-by-should-invoke?))
+     (binding [speclj.stub/*stubbed-invocations* (atom [])
+               *bound-by-should-invoke* true]
+       ~@body)
+     (do ~@body)))
 
 (defmacro should-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.
@@ -467,7 +550,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
   (let [var-name (str var)]
     `(let [options# ~options]
-       (binding [speclj.stub/*stubbed-invocations* (atom [])]
+       (with-stubbed-invocations
          (with-redefs [~var (speclj.stub/stub ~var-name options#)]
            ~@body)
          (should-have-invoked ~var-name options#)))))
@@ -475,9 +558,19 @@ When a string is also passed, it asserts that the message of the Exception is eq
 (defmacro should-not-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks that is was NOT invoked.
 
-  Same as: (should-invoke :foo {:times 0} ...)"
+  (should-not-invoke reverse {:with [1 2 3] :return [] :times 2} (reverse [1 2 3])) ; pass
+  (should-not-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3])) ; fail
+
+  See stub and should-not-have-invoked for valid options."
   [var options & body]
-  `(should-invoke ~var ~(assoc options :times 0) ~@body))
+  (when-not (map? options)
+    `(speclj.platform/throw-error "The second argument to should-not-invoke must be a map of options"))
+  (let [var-name (str var)]
+    `(let [options# ~options]
+       (with-stubbed-invocations
+         (with-redefs [~var (speclj.stub/stub ~var-name options#)]
+           ~@body)
+         (should-not-have-invoked ~var-name options#)))))
 
 ;cljs-ignore->
 (def run-specs
