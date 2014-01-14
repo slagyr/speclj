@@ -12,13 +12,14 @@
         ''[speclj.platform-cljs-macros :as platform-macros]
         ''[speclj.platform-clj-macros  :as platform-macros])))
 
-(defmacro print-compile-platform []
-  `(prn
-     ~(if (compiling-cljs?)
-        '"cljs"
-        '"clj")))
+;(defmacro print-compile-platform []
+;  `(prn
+;     ~(if (compiling-cljs?)
+;        '"cljs"
+;        '"clj")))
 
-(print-compile-platform)
+;(print-compile-platform)
+
 (setup-platform)
 
 (defmacro it
