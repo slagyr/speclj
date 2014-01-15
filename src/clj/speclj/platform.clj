@@ -39,6 +39,9 @@
 (defn throw-error [message]
   (throw (Exception. message)))
 
+(defn expected-larger-than-delta [expected actual delta]
+    (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
+
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
 (defn cause [e] (.getCause e))

@@ -16,17 +16,3 @@
 
 (defmacro expected-larger-than-delta [expected actual delta]
   `(> (js/Math.abs (- ~expected ~actual)) (js/Math.abs ~delta)))
-
-;(defmacro new-throwable
-;  ([] `(js/object.))
-;  ([message] `(js/object. ~message)))
-
-;(defmacro new-exception
-;  ([] `(js/Error.))
-;  ([message] `(js/Error. ~message))
-;  ([message cause] `(js/Error. ~message)))
-
-;(defmacro new-failure [message] `(speclj.platform.SpecFailure. ~message))
-;(defmacro new-pending [message] `(speclj.platform.SpecPending. ~message))
-;(defmacro throw-error [message] `(throw (js/Error. ~message)))
-

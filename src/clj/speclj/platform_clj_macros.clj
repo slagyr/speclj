@@ -15,16 +15,3 @@
     `(> (.abs (- (bigdec ~expected) (bigdec ~actual))) (.abs (bigdec ~delta))))
 
 (def throwable 'Throwable)
-
-;(defmacro new-throwable
-;    ([] `(java.lang.Throwable.))
-;    ([message] `(java.lang.Throwable. ~message)))
-
-;(defmacro new-exception
-;    ([] `(java.lang.Exception.))
-;    ([message] `(java.lang.Exception. ~message))
-;    ([message cause] `(java.lang.Exception. ~message ~cause)))
-
-;(defmacro new-failure [message] `(speclj.SpecFailure. ~message))
-;(defmacro new-pending [message] `(speclj.SpecPending. ~message))
-;(defmacro throw-error [message] `(throw (Exception. ~message)))

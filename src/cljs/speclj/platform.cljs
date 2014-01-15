@@ -36,6 +36,9 @@
 (defn throw-error [message]
   (throw (js/Error. message)))
 
+(defn expected-larger-than-delta [expected actual delta]
+  (> (js/Math.abs (- expected actual)) (js/Math.abs delta)))
+
 (defn pending? [e] (isa? (type e) pending))
 (defn failure? [e] (isa? (type e) failure))
 
