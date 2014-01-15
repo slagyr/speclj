@@ -18,6 +18,18 @@
 (def failure SpecFailure)
 (def pending SpecPending)
 
+(defn new-exception
+  ([] (js/Error.))
+  ([message] (js/Error. message))
+  ([message cause] (js/Error. message)))
+
+(defn new-throwable
+  ([] (js/Object.))
+  ([message] (js/Object. message)))
+
+(defn new-failure [message]
+  (speclj.platform.SpecFailure. message))
+
 (defn pending? [e] (isa? (type e) pending))
 (defn failure? [e] (isa? (type e) failure))
 

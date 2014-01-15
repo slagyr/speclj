@@ -6,10 +6,8 @@
                                  should-not-throw should-not= should-not== should-throw
                                  should= should== -to-s]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
-            #+clj [speclj.platform-clj-macros :refer [new-exception new-throwable]]
-            #+cljs [speclj.platform-cljs-macros :refer [new-exception new-throwable]]
          )
-  (:require [speclj.platform :refer [endl exception type-name throwable]]
+  (:require [speclj.platform :refer [new-throwable new-exception endl exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Should Assertions: "

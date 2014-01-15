@@ -21,6 +21,18 @@
       (string/replace root-name "." file-separator)
       ".clj")))
 
+(defn new-exception
+    ([] (java.lang.Exception.))
+    ([message] (java.lang.Exception. message))
+    ([message cause] (java.lang.Exception. message cause)))
+
+(defn new-throwable
+    ([] (java.lang.Throwable.))
+    ([message] (java.lang.Throwable. message)))
+
+(defn new-failure [message]
+  (speclj.SpecFailure. message))
+
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
 (defn cause [e] (.getCause e))

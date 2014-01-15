@@ -2,13 +2,17 @@
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   (:require [clojure.data]
-            [speclj.util :refer [compiling-cljs?]]))
+            [speclj.util :refer [choose-platform-namespace]]))
 
-(defmacro setup-platform []
-  `(require
-     ~(if (compiling-cljs?)
-        ''[speclj.platform-cljs-macros :as platform-macros]
-        ''[speclj.platform-clj-macros  :as platform-macros])))
+;(defmacro setup-platform []
+;  `(require
+;     ~(if (compiling-cljs?)
+;        ''[speclj.platform-cljs-macros :as platform-macros]
+;        ''[speclj.platform-clj-macros  :as platform-macros])))
+
+(choose-platform-namespace
+  '[speclj.platform-clj-macros  :as platform-macros]
+  '[speclj.platform-cljs-macros :as platform-macros])
 
 ;(defmacro print-compile-platform []
 ;  `(prn
@@ -18,7 +22,7 @@
 ;
 ;(print-compile-platform)
 
-(setup-platform)
+;(setup-platform)
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -133,7 +137,7 @@
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
 
 (defmacro -fail [message]
-  `(throw (platform-macros/new-failure ~message)))
+  `(throw (speclj.platform/new-failure ~message)))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
@@ -224,7 +228,7 @@
        (coll? actual#)
        (when (not (some #(= expected# %) actual#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (platform-macros/new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (speclj.platform/new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro should-not-contain
   "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
@@ -245,7 +249,7 @@
        (coll? actual#)
        (when (some #(= expected# %) actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (platform-macros/new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (speclj.platform/new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
@@ -291,7 +295,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (== expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using ==)")))
-       :else (throw (platform-macros/new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (speclj.platform/new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not==
   "Asserts 'non-equivalency'.
@@ -309,7 +313,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (not (== expected# actual#))
          (-fail (str " Expected: " (-to-s expected#) speclj.platform/endl "not to ==: " (-to-s actual#) " (using ==)")))
-       :else (throw (platform-macros/new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (speclj.platform/new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -325,7 +329,7 @@
   `(let [expected-name# (speclj.platform/type-name ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (pr-str ~actual) "<nothing thrown>")]
-     (platform-macros/new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
+     (speclj.platform/new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
                                     "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw

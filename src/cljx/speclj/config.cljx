@@ -1,9 +1,5 @@
 (ns speclj.config
-  (#+clj :require #+cljs :require-macros
-         #+clj [speclj.platform-clj-macros :refer [new-exception]]
-         #+cljs [speclj.platform-cljs-macros :refer [new-exception]]
-         )
-  (:require [speclj.platform :refer [dynamically-invoke print-stack-trace]]))
+  (:require [speclj.platform :refer [new-exception dynamically-invoke print-stack-trace]]))
 
 (declare ^:dynamic *parent-description*)
 

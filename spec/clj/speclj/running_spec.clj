@@ -1,12 +1,10 @@
 (ns speclj.running-spec
-  (:require
-            [speclj.core :refer [after around before before-all context describe
+  (:require [speclj.core :refer [after around before before-all context describe
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.platform :as platform]
-            [speclj.platform-clj-macros :as platform-macros])
-  (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
+            [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [pass? fail?]]
             [speclj.run.standard :refer [run-specs new-standard-runner]]
@@ -63,7 +61,7 @@
          (after (reset! bauble nil))
          (it "changes the bauble"
            (reset! bauble :something)
-           (throw (platform-macros/new-exception "blah")))))
+           (throw (platform/new-exception "blah")))))
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
