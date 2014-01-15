@@ -27,6 +27,6 @@
 ;  ([message cause] `(js/Error. ~message)))
 
 ;(defmacro new-failure [message] `(speclj.platform.SpecFailure. ~message))
-(defmacro new-pending [message] `(speclj.platform.SpecPending. ~message))
-(defmacro throw-error [message] `(throw (js/Error. ~message)))
+;(defmacro new-pending [message] `(speclj.platform.SpecPending. ~message))
+;(defmacro throw-error [message] `(throw (js/Error. ~message)))
 

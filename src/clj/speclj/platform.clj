@@ -33,6 +33,12 @@
 (defn new-failure [message]
   (speclj.SpecFailure. message))
 
+(defn new-pending [message]
+  (speclj.SpecPending. message))
+
+(defn throw-error [message]
+  (throw (Exception. message)))
+
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
 (defn cause [e] (.getCause e))

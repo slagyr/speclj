@@ -30,6 +30,12 @@
 (defn new-failure [message]
   (speclj.platform.SpecFailure. message))
 
+(defn new-pending [message]
+  (speclj.platform.SpecPending. message))
+
+(defn throw-error [message]
+  (throw (js/Error. message)))
+
 (defn pending? [e] (isa? (type e) pending))
 (defn failure? [e] (isa? (type e) failure))
 

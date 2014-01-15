@@ -26,5 +26,5 @@
 ;    ([message cause] `(java.lang.Exception. ~message ~cause)))
 
 ;(defmacro new-failure [message] `(speclj.SpecFailure. ~message))
-(defmacro new-pending [message] `(speclj.SpecPending. ~message))
-(defmacro throw-error [message] `(throw (Exception. ~message)))
+;(defmacro new-pending [message] `(speclj.SpecPending. ~message))
+;(defmacro throw-error [message] `(throw (Exception. ~message)))

@@ -1,7 +1,6 @@
 (ns speclj.report.clojure-test-spec
   (:require ;cljs-macros
-            [speclj.core :refer [around before context describe it should should= should-contain with]]
-            [speclj.platform-clj-macros :refer [new-pending]])
+            [speclj.core :refer [around before context describe it should should= should-contain with]])
   (:require [clojure.string :as str]
             ;cljs-include [goog.string] ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]

@@ -459,7 +459,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   See stub and should-have-invoked for valid options."
   [var options & body]
   (when-not (map? options)
-    `(platform-macros/throw-error "The second argument to should-invoke must be a map of options"))
+    `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
   (let [var-name (str var)]
     `(let [options# ~options]
        (binding [speclj.stub/*stubbed-invocations* (atom [])]
