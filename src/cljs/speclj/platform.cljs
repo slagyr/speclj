@@ -18,6 +18,9 @@
 (def failure SpecFailure)
 (def pending SpecPending)
 
+(defn expected-larger-than-delta [expected actual delta]
+  `(> (js/Math.abs (- ~expected ~actual)) (js/Math.abs ~delta)))
+
 (defn new-exception
   ([] (js/Error.))
   ([message] (js/Error. message))

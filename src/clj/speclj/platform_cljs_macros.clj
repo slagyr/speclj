@@ -13,6 +13,3 @@
        (declare ~var-name)
        (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
        ~unique-name)))
-
-(defmacro expected-larger-than-delta [expected actual delta]
-  `(> (js/Math.abs (- ~expected ~actual)) (js/Math.abs ~delta)))
