@@ -21,9 +21,6 @@
       (string/replace root-name "." file-separator)
       ".clj")))
 
-(defn expected-larger-than-delta [expected actual delta]
-    `(> (.abs (- (bigdec ~expected) (bigdec ~actual))) (.abs (bigdec ~delta))))
-
 (defn new-exception
     ([] (java.lang.Exception.))
     ([message] (java.lang.Exception. message))
@@ -42,7 +39,7 @@
 (defn throw-error [message]
   (throw (Exception. message)))
 
-(defn expected-larger-than-delta [expected actual delta]
+(defn difference-greater-than-delta? [expected actual delta]
     (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
 
 (defn error-message [e] (.getMessage e))
