@@ -4,25 +4,12 @@
   (:require [clojure.data]
             [speclj.util :refer [choose-platform-namespace]]))
 
-;(defmacro setup-platform []
-;  `(require
-;     ~(if (compiling-cljs?)
-;        ''[speclj.platform-cljs-macros :as platform-macros]
-;        ''[speclj.platform-clj-macros  :as platform-macros])))
+(defn cljs? []
+  (boolean (find-ns 'cljs.analyzer)))
 
 (choose-platform-namespace
   '[speclj.platform-clj-macros  :as platform-macros]
   '[speclj.platform-cljs-macros :as platform-macros])
-
-;(defmacro print-compile-platform []
-;  `(prn
-;     ~(if (compiling-cljs?)
-;        '"cljs"
-;        '"clj")))
-;
-;(print-compile-platform)
-
-;(setup-platform)
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -341,7 +328,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(try
        ~form
        (throw (-create-should-throw-failure ~throwable-type nil '~form))
-       (catch ~platform-macros/throwable e#
+       (catch ~(if (cljs?) 'js/Object 'Throwable) e#
          (cond
            (speclj.platform/failure? e#) (throw e#)
            (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
@@ -350,14 +337,14 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(let [e# (should-throw ~throwable-type ~form)]
        (try
          (should= ~message (speclj.platform/error-message e#))
-         (catch ~platform-macros/throwable f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+         (catch ~(if (cljs?) 'js/Object 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
   `(try
      ~form
-     (catch ~platform-macros/throwable e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
+     (catch ~(if (cljs?) 'js/Object 'Throwable) e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
                                             "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
