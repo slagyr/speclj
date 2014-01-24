@@ -1,10 +1,5 @@
 (ns speclj.platform-cljs-macros)
 
-(def throwable 'js/Object)
-
-(defmacro when-not-bound [name & body]
-  `(when-not ~name ~@body))
-
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
         munged-name (with-meta (symbol (cljs.compiler/munge (str name))) {:dynamic true})

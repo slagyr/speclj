@@ -25,6 +25,11 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
+(defmacro when-not-bound [name & body]
+  (if (cljs?)
+    `(when-not ~name ~@body)
+    `(when-not (bound? (find-var '~name)) ~@body)))
+
 (defmacro describe
   "body => & spec-components
 
@@ -34,7 +39,7 @@
      (binding [speclj.config/*parent-description* description#]
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
-     (platform-macros/when-not-bound speclj.config/*parent-description*
+     (when-not-bound speclj.config/*parent-description*
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
