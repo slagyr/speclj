@@ -82,6 +82,18 @@
   [& body]
   `(speclj.components/new-after-all (fn [] ~@body)))
 
+(defn -make-with [name body ctor bang?]
+  (let [var-name (with-meta (symbol name) {:dynamic true})
+        munged-name (if (cljs?)
+                      ;(with-meta (symbol ((ns-resolve cljs.compiler/munge) (str name))) {:dynamic true})
+                      nil ;(prn (ns-resolve 'cljs.compiler/munge))
+                      var-name)
+        unique-name (gensym "with")]
+    `(do
+       (declare ~var-name)
+       (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
+       ~unique-name)))
+
 (defmacro with
   "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
@@ -89,7 +101,7 @@
   (with meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (platform-macros/-make-with name body `speclj.components/new-with false))
+  (-make-with name body `speclj.components/new-with false))
 
 (defmacro with!
   "Declares a reference-able symbol that will be evaluated immediately and reset once per characteristic of the containing
@@ -444,7 +456,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(should-have-invoked ~name ~(assoc options :times 0))))
 
 (defmacro should-invoke
-  "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.
+  "Creates a stub, and binds it to the specified var, evaluates thns-resolve 'cljs.compilere body, and checks the invocations.
 
   (should-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3]))
 
