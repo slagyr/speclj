@@ -1,13 +1,15 @@
 (ns speclj.spec-helper
   (:require ; comment here to prevent cljs translation to replace with require-macros
-    [speclj.core :refer [-fail]]
-    [speclj.util :refer [compiling-cljs?]]))
+    [speclj.core :refer [-fail]]))
+
+(defn cljs? []
+  (boolean (find-ns 'cljs.analyzer)))
 
 (defmacro run-result [& body]
   `(try
      ~@body
      :pass
-     ~(if (compiling-cljs?)
+     ~(if (cljs?)
         '(catch js/Object e# e#)
         '(catch java.lang.Throwable e# e#))))
 

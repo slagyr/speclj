@@ -1,15 +1,10 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  (:require [clojure.data]
-            [speclj.util :refer [choose-platform-namespace]]))
+  (:require [clojure.data]))
 
 (defn cljs? []
   (boolean (find-ns 'cljs.analyzer)))
-
-(choose-platform-namespace
-  '[speclj.platform-clj-macros  :as platform-macros]
-  '[speclj.platform-cljs-macros :as platform-macros])
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -85,8 +80,7 @@
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
         munged-name (if (cljs?)
-                      ;(with-meta (symbol ((ns-resolve cljs.compiler/munge) (str name))) {:dynamic true})
-                      nil ;(prn (ns-resolve 'cljs.compiler/munge))
+                      (with-meta (symbol ((ns-resolve 'cljs.compiler (symbol "munge")) (str name))) {:dynamic true})
                       var-name)
         unique-name (gensym "with")]
     `(do
@@ -111,7 +105,7 @@
   (with! my-with! (swap! my-num inc))
   (it \"increments my-num before being accessed\" (should= 1 @my-num) (should= 2 @my-with!))"
   [name & body]
-  (platform-macros/-make-with name body `speclj.components/new-with true))
+  (-make-with name body `speclj.components/new-with true))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -120,7 +114,7 @@
   (with-all meaning 42)
   (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (platform-macros/-make-with name body `speclj.components/new-with-all false))
+  (-make-with name body `speclj.components/new-with-all false))
 
 (defmacro with-all!
   "Declares a reference-able symbol that will be immediately evaluated once per context. The body may contain any forms,
@@ -135,7 +129,7 @@
     (should= 1 @my-num)
     (should= 2 @my-with!))"
   [name & body]
-  (platform-macros/-make-with name body `speclj.components/new-with-all true))
+  (-make-with name body `speclj.components/new-with-all true))
 
 (defmacro -to-s [thing]
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
@@ -387,7 +381,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   in the run report"
   ([] `(pending "Not Yet Implemented"))
   ([message]
-    `(throw (platform-macros/new-pending ~message))))
+    `(throw (speclj.platform/new-pending ~message))))
 
 (defmacro tags
   "Add tags to the containing context.  All values passed will be converted into keywords.  Contexts can be filtered

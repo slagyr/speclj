@@ -74,4 +74,3 @@
         fn-sym (symbol (str ns-name "/" fn-name))
         expr `(do (require '~ns-sym) (~fn-sym))]
     (eval expr)))
-
