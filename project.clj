@@ -48,7 +48,7 @@
 
                           :source-paths   ["target/generated/src/clj" "src/clj"]
                           :resource-paths ["target/generated/src/cljs" "src/cljs"]
-
+                          :java-source-paths ["src/clj"]
                           }
 
              :clj {:dependencies [[org.clojure/clojure "1.5.1"]
