@@ -3,7 +3,7 @@
   in both Clojure and ClojureScript."
   (:require [clojure.data]))
 
-(defn cljs? []
+(defn- cljs? []
   (boolean (find-ns 'cljs.analyzer)))
 
 (defmacro it
@@ -80,7 +80,10 @@
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
         munged-name (if (cljs?)
-                      (with-meta (symbol ((ns-resolve 'cljs.compiler (symbol "munge")) (str name))) {:dynamic true})
+                      (with-meta
+                        (symbol
+                          ((ns-resolve 'cljs.compiler (symbol "munge"))
+                           (str name))) {:dynamic true})
                       var-name)
         unique-name (gensym "with")]
     `(do

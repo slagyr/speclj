@@ -10,7 +10,8 @@
 
   :hooks [cljx.hooks]
 
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]
+  :profiles {
+             :dev {:dependencies [[org.clojure/clojure "1.5.1"]
                                    [com.keminglabs/cljx "0.3.1"]]
                    :plugins [ [com.keminglabs/cljx "0.3.1"]]
                    :cljx {:builds [{:source-paths ["src/cljx"]

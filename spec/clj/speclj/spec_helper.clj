@@ -1,7 +1,8 @@
 (ns speclj.spec-helper
-  (:require ; comment here to prevent cljs translation to replace with require-macros
-    [speclj.core :refer [-fail]]))
+  (:require [speclj.core :refer [-fail]]))
 
+;cljs? is a duplicate of the cljs? function found in core
+;this decision was made so that the Core namespace API and dependencies are simple as possible
 (defn cljs? []
   (boolean (find-ns 'cljs.analyzer)))
 

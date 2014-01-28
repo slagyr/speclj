@@ -58,7 +58,7 @@
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
       (finally
-        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error 
+        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
