@@ -3,7 +3,7 @@
   in both Clojure and ClojureScript."
   (:require [clojure.data]))
 
-(defn- cljs? []
+(defn cljs? []
   (boolean (find-ns 'cljs.analyzer)))
 
 (defmacro it
@@ -34,7 +34,9 @@
      (binding [speclj.config/*parent-description* description#]
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
-     (when-not-bound speclj.config/*parent-description*
+       (when-not ~(if (not (cljs?))
+                    `(bound? #'speclj.config/*parent-description*)
+                    `speclj.config/*parent-description*)
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
