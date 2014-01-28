@@ -70,7 +70,7 @@
 
                     :source-paths   ["src/cljs" "src/clj" "spec/clj"]
 
-                    :cljsbuild ~(let [test-command ["cljs/bin/specljs" "target/tests.js"]]
+                    :cljsbuild ~(let [test-command ["bin/specljs" "target/tests.js"]]
                                   {:builds
                                    {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "target/generated/spec/cljs" "spec/cljs"]
                                           :compiler {:output-to "target/tests.js"
