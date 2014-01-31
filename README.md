@@ -1,6 +1,10 @@
 # speclj [![Build Status](https://secure.travis-ci.org/slagyr/speclj.png?branch=master)](http://travis-ci.org/slagyr/speclj)
 ### (pronounced "speckle" [spek-uhl]) ###
-It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](http://rspec.info/).
+It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
+
+[Installation](https://github.com/AndrewZures/speclj_again/edit/master/README.md#installation)
+[Clojure](https://github.com/AndrewZures/speclj_again/edit/master/README.md#clojure)
+[ClojureScript](https://github.com/AndrewZures/speclj_again/edit/master/README.md#clojurescript)
 
 # Installation
 
@@ -32,7 +36,7 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 $ lein install
 ```
 
-#For Clojure
+#Clojure
 
 ## Usage
 
@@ -154,7 +158,7 @@ $ lein spec --help
 The spec lein task overrides the leiningen project's `:eval-in` setting to be `:leiningen`.  If you need to change this, you can set the `:speclj-eval-in` setting. But then the spec task probably won't work right... just say'in.
 
 
-#For ClojureScript
+#ClojureScript
 
 ## File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
