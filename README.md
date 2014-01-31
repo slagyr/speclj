@@ -161,8 +161,10 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 
 	| sample_project
 	|-- project.clj
+	|-- bin
+	    |-- speclj.js
 	|-- src
-	    |--cljs
+	    |-- cljs
 	    	|-- sample
 	        	|-- core.cljs
 	        	| (All your other source code)
@@ -174,7 +176,31 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 
 
 ##Set Up Your Project.clj File
-Speclj for ClojureScript requires a few changes to your project.clj file
+Speclj for ClojureScript requires a few changes to your project.clj file.
+
+
+##### Configure Your Project.clj File
+
+You'll need to make a few changes to `:cljsbuild` map:
+
+```clojure
+  :cljsbuild ~(let [run-specs ["bin/speclj_runner.js" "resources/public/javascript/your_project_dev.js"]]
+                {:builds {:dev {
+                		:source-paths ["src/cljs" "spec/cljs"]
+                          	:compiler {:output-to "resources/public/javascript/your_project_dev.js"}
+                          	:notify-command run-specs
+                          	}
+                          }
+                          :prod {:source-paths ["src/cljs"]
+                                 :compiler {:output-to "resources/public/javascript/your_project.js"}
+                          }
+                 }
+                 :test-commands {"test" run-specs}
+               )
+```
+
+
+##### Configure Your speclj.js File
 
 ```JavaScript
 #! /usr/bin/env phantomjs
@@ -234,7 +260,6 @@ As a final note, your own library must be __aliased__ using `:as`.  This is a cu
           [sample.core :as my-core]))
 ```
 
-
 # Running Specs
 
 ## With Leiningen
@@ -242,13 +267,6 @@ Speclj includes a Leiningen task to execute `speclj.main`.
 
 ```bash
 $ lein cljsbuild test
-```
-
-## Using `lein run`
-The command below will run all the specs found in `"spec"` directory.
-
-```bash
-$ lein run -m speclj.main
 ```
 
 # Community
