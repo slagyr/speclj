@@ -181,6 +181,8 @@ Speclj for ClojureScript requires a few changes to your project.clj file.
 
 ##### 1. Configure Your Project.clj File
 
+Speclj works with `lein-cljsbuild` which can be found [here](https://github.com/emezeske/lein-cljsbuild)
+
 You'll need to make a few changes to `:cljsbuild` map:
 
 ```clojure
@@ -311,6 +313,6 @@ Post issues on the speclj github project:
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
 
 # License
-Copyright (C) 2010-2013 Micah Martin All Rights Reserved.
+Copyright (C) 2010-2014 Micah Martin All Rights Reserved.
 
 Distributed under the The MIT License.
