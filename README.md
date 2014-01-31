@@ -190,7 +190,6 @@ You'll need to make a few changes to `:cljsbuild` map:
                 {:builds {:dev {
                 		:source-paths ["src/cljs" "spec/cljs"]
                           	:compiler {:output-to "resources/public/javascript/your_project_dev.js"}
-                          	:notify-command run-specs
                           	}
                           }
                           :prod {:source-paths ["src/cljs"]
@@ -213,7 +212,6 @@ Create a file named `speclj.js` in your `bin` directory and copy the code below:
 var fs = require("fs");
 var p = require('webpage').create();
 var sys = require('system');
-p.injectJs('resources/public/javascript/jquery.js');
 
 p.onConsoleMessage = function (x) {
     fs.write("/dev/stdout", x, "w");
