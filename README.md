@@ -179,7 +179,7 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 Speclj for ClojureScript requires a few changes to your project.clj file.
 
 
-##### Configure Your Project.clj File
+##### 1. Configure Your Project.clj File
 
 You'll need to make a few changes to `:cljsbuild` map:
 
@@ -198,9 +198,12 @@ You'll need to make a few changes to `:cljsbuild` map:
                  :test-commands {"test" run-specs}
                )
 ```
+Speclj works by operating on your compiled ClojureScript.  The `:notify-command` will execute the `run-specs` command after your cljs is compiled.  The `run-specs` command will use speclj to evaluate your compiled ClojureScript.
 
 
-##### Configure Your speclj.js File
+##### 2. Configure Your speclj.js File
+
+Create a file named `speclj.js` in your `bin` directory and copy the code below:
 
 ```JavaScript
 #! /usr/bin/env phantomjs
