@@ -32,7 +32,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 $ lein install
 ```
 
-# Usage
+#For Clojure
+
+## Usage
 
 ## File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
@@ -69,7 +71,7 @@ Checkout this example spec file. It would be located at `sample_project/spec/sam
 ```
 
 ### speclj.core namespace
-Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
+Your spec files should `:require` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
 
 ```clojure
 (use 'speclj.core)
@@ -150,6 +152,104 @@ $ lein spec --help
 
 ## `:eval-in`
 The spec lein task overrides the leiningen project's `:eval-in` setting to be `:leiningen`.  If you need to change this, you can set the `:speclj-eval-in` setting. But then the spec task probably won't work right... just say'in.
+
+
+#For ClojureScript
+
+## File Structure
+All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
+
+	| sample_project
+	|-- project.clj
+	|-- src
+	    |--cljs
+	    	|-- sample
+	        	|-- core.cljs
+	        	| (All your other source code)
+	|-- spec
+	    |-- cljs
+	    	|-- sample
+	        	|-- core_spec.cljs
+	       		| (All your other test code)
+
+
+##Set Up Your Project.clj File
+Speclj for ClojureScript requires a few changes to your project.clj file
+
+```JavaScript
+#! /usr/bin/env phantomjs
+
+var fs = require("fs");
+var p = require('webpage').create();
+var sys = require('system');
+p.injectJs('resources/public/javascript/jquery.js');
+
+p.onConsoleMessage = function (x) {
+    fs.write("/dev/stdout", x, "w");
+};
+
+p.injectJs(phantom.args[0]);
+
+var result = p.evaluate(function () {
+  speclj.run.standard.armed = true;
+  return speclj.run.standard.run_specs(
+     cljs.core.keyword("color"), true
+  );
+});
+
+phantom.exit(result);
+```
+
+
+## A Sample Spec File
+Checkout this example spec file. It would be located at `sample_project/spec/cljs/sample/core_spec.cljs`.  Below we'll look at it piece by piece.
+
+```clojure
+(ns sample.core-spec
+  (:require-macros [speclj.core :refer [describe it should should-not run-specs])
+  (:require [speclj.core]
+            [sample.core :as my-core]))
+
+(describe "Truth"
+
+  (it "is true"
+    (should true))
+
+  (it "is not false"
+    (should-not false)))
+
+(run-specs)
+```
+
+### speclj.core namespace
+Your spec files should `:require` the `speclj.core` just like in clojure. Don't forget to pull in the library that you're testing as well (sample.core in this case).  
+
+You'll also need to `:require-macros` the `speclj.core` and `:refer` each speclj test word that you want to use.  In the example below, we are using __describe__, __it__, __should__, __should-not__, and __run-spec__.  If you wanted to use __context__ you would simply add it to the current `:refer` collection.  For a list of speclj test words go to the [speclj documentation](http://speclj.com/docs)
+
+As a final note, your own library must be __aliased__ using `:as`.  This is a current ClojureScript requirement.
+
+```clojure
+(:require-macros [speclj.core :refer [describe it should should-not run-specs])
+(:require [speclj.core]
+          [sample.core :as my-core]))
+```
+
+
+# Running Specs
+
+## With Leiningen
+Speclj includes a Leiningen task to execute `speclj.main`.
+
+```bash
+$ lein cljsbuild test
+```
+
+## Using `lein run`
+The command below will run all the specs found in `"spec"` directory.
+
+```bash
+$ lein run -m speclj.main
+```
 
 # Community
 
