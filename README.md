@@ -1,6 +1,10 @@
 # speclj [![Build Status](https://secure.travis-ci.org/slagyr/speclj.png?branch=master)](http://travis-ci.org/slagyr/speclj)
 ### (pronounced "speckle" [spek-uhl]) ###
-It's a TDD/BDD framework for [Clojure](http://clojure.org/), based on [RSpec](http://rspec.info/).
+It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
+
+[Installation](https://github.com/AndrewZures/speclj_again/edit/master/README.md#installation)
+[Clojure](https://github.com/AndrewZures/speclj_again/edit/master/README.md#clojure)
+[ClojureScript](https://github.com/AndrewZures/speclj_again/edit/master/README.md#clojurescript)
 
 # Installation
 
@@ -32,7 +36,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 $ lein install
 ```
 
-# Usage
+#Clojure
+
+## Usage
 
 ## File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
@@ -151,6 +157,125 @@ $ lein spec --help
 ## `:eval-in`
 The spec lein task overrides the leiningen project's `:eval-in` setting to be `:leiningen`.  If you need to change this, you can set the `:speclj-eval-in` setting. But then the spec task probably won't work right... just say'in.
 
+
+#ClojureScript
+
+## File Structure
+All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
+
+	| sample_project
+	|-- project.clj
+	|-- bin
+	    |-- speclj.js
+	|-- src
+	    |-- cljs
+	    	|-- sample
+	        	|-- core.cljs
+	        	| (All your other source code)
+	|-- spec
+	    |-- cljs
+	    	|-- sample
+	        	|-- core_spec.cljs
+	       		| (All your other test code)
+
+
+##Set Up Your Project.clj File
+Speclj for ClojureScript requires a few changes to your project.clj file.
+
+
+##### 1. Configure Your Project.clj File
+
+Speclj works with `lein-cljsbuild` which can be found [here](https://github.com/emezeske/lein-cljsbuild)
+
+You'll need to make a few changes to `:cljsbuild` map:
+
+```clojure
+  :cljsbuild ~(let [run-specs ["bin/speclj_runner.js" "resources/public/javascript/your_project_dev.js"]]
+                {:builds {:dev {
+                		:source-paths ["src/cljs" "spec/cljs"]
+                          	:compiler {:output-to "resources/public/javascript/your_project_dev.js"}
+                          	}
+                          }
+                          :prod {:source-paths ["src/cljs"]
+                                 :compiler {:output-to "resources/public/javascript/your_project.js"}
+                          }
+                 }
+                 :test-commands {"test" run-specs}
+               )
+```
+Speclj works by operating on your compiled ClojureScript.  The `:notify-command` will execute the `run-specs` command after your cljs is compiled.  The `run-specs` command will use speclj to evaluate your compiled ClojureScript.
+
+
+##### 2. Configure Your speclj.js File
+
+Create a file named `speclj.js` in your `bin` directory and copy the code below:
+
+```JavaScript
+#! /usr/bin/env phantomjs
+
+var fs = require("fs");
+var p = require('webpage').create();
+var sys = require('system');
+
+p.onConsoleMessage = function (x) {
+    fs.write("/dev/stdout", x, "w");
+};
+
+p.injectJs(phantom.args[0]);
+
+var result = p.evaluate(function () {
+  speclj.run.standard.armed = true;
+  return speclj.run.standard.run_specs(
+     cljs.core.keyword("color"), true
+  );
+});
+
+phantom.exit(result);
+```
+
+
+## A Sample Spec File
+Checkout this example spec file. It would be located at `sample_project/spec/cljs/sample/core_spec.cljs`.  Below we'll look at it piece by piece.
+
+```clojure
+(ns sample.core-spec
+  (:require-macros [speclj.core :refer [describe it should should-not run-specs])
+  (:require [speclj.core]
+            [sample.core :as my-core]))
+
+(describe "Truth"
+
+  (it "is true"
+    (should true))
+
+  (it "is not false"
+    (should-not false)))
+
+(run-specs)
+```
+
+### speclj.core namespace
+Your spec files should `:require` the `speclj.core` just like in clojure. Don't forget to pull in the library that you're testing as well (sample.core in this case).  
+
+You'll also need to `:require-macros` the `speclj.core` and `:refer` each speclj test word that you want to use.  In the example below, we are using __describe__, __it__, __should__, __should-not__, and __run-spec__.  If you wanted to use __context__ you would simply add it to the current `:refer` collection.  For a list of speclj test words go to the [speclj documentation](http://speclj.com/docs)
+
+As a final note, your own library must be __aliased__ using `:as`.  This is a current ClojureScript requirement.
+
+```clojure
+(:require-macros [speclj.core :refer [describe it should should-not run-specs])
+(:require [speclj.core]
+          [sample.core :as my-core]))
+```
+
+# Running Specs
+
+## With Leiningen
+Speclj includes a Leiningen task to execute `speclj.main`.
+
+```bash
+$ lein cljsbuild test
+```
+
 # Community
 
 * Source code: [https://github.com/slagyr/speclj](https://github.com/slagyr/speclj)
@@ -190,6 +315,6 @@ Post issues on the speclj github project:
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
 
 # License
-Copyright (C) 2010-2013 Micah Martin All Rights Reserved.
+Copyright (C) 2010-2014 Micah Martin All Rights Reserved.
 
 Distributed under the The MIT License.
