@@ -69,7 +69,7 @@ Checkout this example spec file. It would be located at `sample_project/spec/sam
 ```
 
 ### speclj.core namespace
-Your spec files should `:use` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
+Your spec files should `:require` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
 
 ```clojure
 (use 'speclj.core)
