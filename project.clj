@@ -84,7 +84,11 @@
                               "test" ["do" "clean" "," "compile"]}}}
 
   :aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]
-            "cljx"      ["with-profile" "dev" "cljx"]}
+            "cljx"      ["with-profile" "dev" "cljx"]
+            "clj-test" ["do" "clean," "with-profile" "clj" "run" "-m" "speclj.main" "-c" "-b" "target/generated/spec/clj"  "spec/clj"]
+            "cljs-test" ["do" "clean," "cljx," "with-profile" "cljs" "test"]
+            "all-tests" ["do" "clj-test," "cljs-test"]
+            }
 
   ;:eval-in-leiningen true
   ;:uberjar-exclusions [#"^clojure/.*"]
