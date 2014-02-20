@@ -13,6 +13,11 @@
 ;(set! (.-constructor specljs.platform.SpecFailure/prototype) SpecFailure)
 (deftype SpecPending [message])
 
+(declare ^:dynamic *bound-by-should-invoke*)
+
+(defn bound-by-should-invoke? []
+  *bound-by-should-invoke*)
+
 (def throwable js/Object)
 (def exception js/Error)
 (def failure SpecFailure)

@@ -21,6 +21,13 @@
       (string/replace root-name "." file-separator)
       ".clj")))
 
+
+(declare ^:dynamic *bound-by-should-invoke*)
+
+(defn bound-by-should-invoke? []
+  (and (bound? #'*bound-by-should-invoke*)
+       *bound-by-should-invoke*))
+
 (defn new-exception
     ([] (java.lang.Exception.))
     ([message] (java.lang.Exception. message))
