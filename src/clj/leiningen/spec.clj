@@ -30,7 +30,7 @@ documentation, as opposed to this message provided by Leiningen, try this:
 
 That ought to do the trick."
   [project & args]
-  (let [project (assoc project :eval-in (get project :speclj-eval-in :leiningen))
+  (let [project (assoc project :eval-in (get project :speclj-eval-in :subprocess))
         speclj-args (build-args project args)]
     (exit-if-needed
       (eval-in-project project
