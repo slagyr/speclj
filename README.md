@@ -155,7 +155,7 @@ $ lein spec --help
 ```
 
 ## `:eval-in`
-The spec lein task overrides the leiningen project's `:eval-in` setting to be `:leiningen`.  If you need to change this, you can set the `:speclj-eval-in` setting. But then the spec task probably won't work right... just say'in.
+To make your tests start up slightly faster, you can add `:speclj-eval-in :leiningen` to your project map.
 
 
 #ClojureScript
