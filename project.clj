@@ -33,11 +33,11 @@
 
   :java-source-paths ["src/clj"]
 
-  :profiles {:dev  {:dependencies [[com.keminglabs/cljx "0.3.2"]
-                                   [org.clojure/clojurescript "0.0-2014"]]
-                                   ;[org.clojure/clojurescript "0.0-2173"]]
-                    :plugins      [[com.keminglabs/cljx "0.3.2"]
-                                   [lein-cljsbuild "1.0.2"]]}}
+  :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
+                                  [org.clojure/clojurescript "0.0-2014"]]
+                   ;[org.clojure/clojurescript "0.0-2173"]]
+                   :plugins      [[com.keminglabs/cljx "0.3.2"]
+                                  [lein-cljsbuild "1.0.1"]]}}
 
   :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"
@@ -46,13 +46,10 @@
                                     }}
               :test-commands {"unit" ["bin/specljs" "target/tests.js"]}}
 
-  ;:aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]
-  ;          "cljx"      ["with-profile" "dev" "cljx"]
-  ;          "clj-test"  ["do" "clean," "with-profile" "clj" "run" "-m" "speclj.main" "-c" "-b" "target/generated/spec/clj" "spec/clj"]
-  ;          "cljs-test" ["do" "clean," "cljx," "with-profile" "cljs" "test"]
-  ;          "all-tests" ["do" "clj-test," "cljs-test"]}
+  :aliases {"cljs" ["do" "clean," "cljx," "cljsbuild" "once" "dev"]
+            "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
 
-  :eval-in :leiningen
-  :speclj-eval-in :leiningen
+  :eval-in :leiningen ; to recognize spec task
+  :speclj-eval-in :leiningen ; to make tests faster
 
   )

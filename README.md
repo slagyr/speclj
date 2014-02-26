@@ -20,8 +20,8 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 ```clojure
 ; - snip
 :dependencies [[org.clojure/clojure "1.5.1"]]
-:profiles {:dev {:dependencies [[speclj "2.9.1"]]}}
-:plugins [[speclj "2.9.1"]]
+:profiles {:dev {:dependencies [[speclj "3.0.0"]]}}
+:plugins [[speclj "3.0.0"]]
 :test-paths ["spec"]
 ```
 
