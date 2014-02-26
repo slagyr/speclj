@@ -2,7 +2,10 @@
   (:require [leiningen.core.eval :refer [eval-in-project]]))
 
 (defn- exit-if-needed [exit-code]
-  (when-not (zero? exit-code)
+  (cond
+    (nil? exit-code) 0
+    (not (number? exit-code)) (println *err* (str "Unusual exit code: " exit-code))
+    (not (zero? exit-code))
     (try
       (require 'leiningen.core.main)
       ((ns-resolve (the-ns 'leiningen.core.main) 'exit) exit-code)

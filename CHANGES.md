@@ -1,6 +1,11 @@
+# 3.0.0
+
+* Merges CLJ and CLJS into one jar using CLJX (specljs is no more)
+* `lein spec` tasks defaults to `:eval-in :subprocess` rather than `:eval-in leiningen`
+
 # 2.9.1
 
-# adds :* and fn matchers to stub invokation checking
+* adds :* and fn matchers to stub invokation checking
 
 # 2.9.0
 

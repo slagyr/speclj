@@ -17,7 +17,7 @@ var result = p.evaluate(function () {
     speclj.run.standard.armed = true;
     return speclj.run.standard.run_specs(
         cljs.core.keyword("color"), true
-        // cljs.core.keyword("reporters"), ["documentation"]
+        // , cljs.core.keyword("reporters"), ["documentation"]
         );
 });
 
