@@ -63,7 +63,7 @@
       (println error)))
   (println)
   (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
-  (println "Copyright (c) 2010-2013 Micah Martin under The MIT Licenses.")
+  (println "Copyright (c) 2010-2014 Micah Martin under The MIT Licenses.")
   (println)
   (println "Usage: " speclj-invocation (.argString arg-spec))
   (println)
