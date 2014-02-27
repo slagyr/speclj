@@ -1,12 +1,12 @@
 (ns speclj.report.progress-spec
   (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [around before context describe it should should= with]])
+            [speclj.core :refer [around before context describe it should should= with -new-exception -new-failure -new-pending]])
   (:require [clojure.string :as str]
             ;cljs-include [goog.string] ;cljs bug?
             #+cljs [goog.string]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?*]]
-            [speclj.platform :refer [new-exception new-failure new-pending format-seconds]]
+            [speclj.platform :refer [format-seconds]]
             [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow grey report-runs]]
@@ -50,7 +50,7 @@
 
   (it "reports errors"
     (should= "E"
-      (with-out-str (report-error @reporter (new-exception "Compilation failed")))))
+      (with-out-str (report-error @reporter (-new-exception "Compilation failed")))))
 
   (it "reports passing run results"
     (binding [*color?* true]
@@ -72,9 +72,9 @@
             char1 (new-characteristic "flips" description "flip")
             char2 (new-characteristic "spins" description "spin")
             char3 (new-characteristic "dives" description "dive")
-            result1 (fail-result char1 0.3 (new-failure "Expected flips"))
-            result2 (fail-result char2 0.02 (new-failure "Expected spins"))
-            result3 (fail-result char3 0.001 (new-failure "Expected dives"))
+            result1 (fail-result char1 0.3 (-new-failure "Expected flips"))
+            result2 (fail-result char2 0.02 (-new-failure "Expected spins"))
+            result3 (fail-result char3 0.001 (-new-failure "Expected dives"))
             results [result1 result2 result3]
             lines (str/split-lines (with-out-str (report-runs @reporter results)))]
         (should= 18 (count lines))
@@ -102,7 +102,7 @@
             char1 (new-characteristic "flips" description "flip")
             result1 (pass-result char1 0.1)
             result2 (pass-result char1 0.02)
-            result3 (pending-result char1 0.003 (new-pending "Blah"))
+            result3 (pending-result char1 0.003 (-new-pending "Blah"))
             results [result1 result2 result3]
             lines (str/split-lines (with-out-str (print-summary results)))]
         (should= (yellow "3 examples, 0 failures, 1 pending") (last lines)))))
@@ -110,7 +110,7 @@
   (it "reports pending summary"
     (let [description (new-description "Crazy" "some.ns")
           char1 (new-characteristic "flips" description "flip")
-          result1 (pending-result char1 0.3 (new-pending "Not Yet Implemented"))
+          result1 (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
           lines (str/split-lines (with-out-str (print-pendings [result1])))]
       (should= 6 (count lines))
       (should= "" (nth lines 0))
@@ -127,7 +127,7 @@
             char1 (new-characteristic "flips" description "flip")
             result1 (pass-result char1 0.1)
             result2 (pass-result char1 0.02)
-            result3 (error-result (new-exception "blah"))
+            result3 (error-result (-new-exception "blah"))
             results [result1 result2 result3]
             lines (str/split-lines (with-out-str (print-summary results)))]
         (should= (red "3 examples, 0 failures, 1 errors") (last lines)))))
@@ -136,13 +136,13 @@
     (binding [*full-stack-trace?* false]
       (let [description (new-description "Crazy" "some.ns")
             char1 (new-characteristic "flips" description "flip")
-            result1 (error-result (new-exception "blah"))
+            result1 (error-result (-new-exception "blah"))
             lines (str/split-lines (with-out-str (print-errors [result1])))]
         (should (> (count lines) 3))
         (should= "" (nth lines 0))
         (should= "Errors:" (nth lines 1))
         (should= "" (nth lines 2))
-        (should= (str "  1) " (new-exception "blah")) (nth lines 3)))))
+        (should= (str "  1) " (-new-exception "blah")) (nth lines 3)))))
 
   (it "can calculate the full name of a characteristic"
     (let [outer (new-description "Outer" "some.ns")

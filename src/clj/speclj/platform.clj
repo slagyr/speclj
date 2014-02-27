@@ -28,24 +28,6 @@
   (and (bound? #'*bound-by-should-invoke*)
        *bound-by-should-invoke*))
 
-(defn new-exception
-    ([] (java.lang.Exception.))
-    ([message] (java.lang.Exception. message))
-    ([message cause] (java.lang.Exception. message cause)))
-
-(defn new-throwable
-    ([] (java.lang.Throwable.))
-    ([message] (java.lang.Throwable. message)))
-
-(defn new-failure [message]
-  (speclj.SpecFailure. message))
-
-(defn new-pending [message]
-  (speclj.SpecPending. message))
-
-(defn throw-error [message]
-  (throw (Exception. message)))
-
 (defn difference-greater-than-delta? [expected actual delta]
     (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
 
@@ -54,6 +36,7 @@
 (defn cause [e] (.getCause e))
 (defn print-stack-trace [e]
   (.printStackTrace e (java.io.PrintWriter. *out* true)))
+
 (defn failure-source [exception]
   (let [source (nth (.getStackTrace exception) 0)
         classname (.getClassName source)

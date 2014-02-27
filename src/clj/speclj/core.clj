@@ -3,8 +3,22 @@
   in both Clojure and ClojureScript."
   (:require [clojure.data]))
 
-(defn cljs? []
-  (boolean (find-ns 'cljs.analyzer)))
+(def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
+
+(defmacro -new-exception
+  ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
+  ([message] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message)))
+  ([message cause] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message ~cause))))
+
+(defmacro -new-throwable
+  ([] (if cljs? `(js/Object.) `(java.lang.Throwable.)))
+  ([message] (if cljs? `(js/Object. ~message) `(java.lang.Throwable. ~message))))
+
+(defmacro -new-failure [message]
+  (if cljs? `(speclj.platform.SpecFailure. ~message) `(speclj.SpecFailure. ~message)))
+
+(defmacro -new-pending [message]
+  (if cljs? `(speclj.platform.SpecPending. ~message) `(speclj.SpecPending. ~message)))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
@@ -21,7 +35,7 @@
   `(it ~name (pending) ~@body))
 
 (defmacro when-not-bound [name & body]
-  (if (cljs?)
+  (if cljs?
     `(when-not ~name ~@body)
     `(when-not (bound? (find-var '~name)) ~@body)))
 
@@ -34,9 +48,9 @@
      (binding [speclj.config/*parent-description* description#]
        (doseq [component# (list ~@components)]
          (speclj.components/install component# description#)))
-       (when-not ~(if (not (cljs?))
-                    `(bound? #'speclj.config/*parent-description*)
-                    `speclj.config/*parent-description*)
+     (when-not ~(if (not cljs?)
+                  `(bound? #'speclj.config/*parent-description*)
+                  `speclj.config/*parent-description*)
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -81,7 +95,7 @@
 
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
-        munged-name (if (cljs?)
+        munged-name (if cljs?
                       (with-meta
                         (symbol
                           ((ns-resolve 'cljs.compiler (symbol "munge"))
@@ -140,7 +154,7 @@
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
 
 (defmacro -fail [message]
-  `(throw (speclj.platform/new-failure ~message)))
+  `(throw (-new-failure ~message)))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
@@ -159,13 +173,13 @@
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
-    `(let [expected# ~expected-form actual# ~actual-form]
-       (when-not (= expected# actual#)
-         (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
+   `(let [expected# ~expected-form actual# ~actual-form]
+      (when-not (= expected# actual#)
+        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)")))))
   ([expected-form actual-form delta-form]
-    `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
-       (when (speclj.platform/difference-greater-than-delta? expected# actual# delta#)
-         (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
+   `(let [expected# ~expected-form actual# ~actual-form delta# ~delta-form]
+      (when (speclj.platform/difference-greater-than-delta? expected# actual# delta#)
+        (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using delta: " delta# ")"))))))
 
 (defmacro should-be
   "Asserts that a form satisfies a function."
@@ -231,7 +245,7 @@
        (coll? actual#)
        (when (not (some #(= expected# %) actual#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (speclj.platform/new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (-new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro should-not-contain
   "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
@@ -252,7 +266,7 @@
        (coll? actual#)
        (when (some #(= expected# %) actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (speclj.platform/new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (-new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
 (defmacro -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
@@ -298,7 +312,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (== expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using ==)")))
-       :else (throw (speclj.platform/new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (-new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not==
   "Asserts 'non-equivalency'.
@@ -316,7 +330,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (not (== expected# actual#))
          (-fail (str " Expected: " (-to-s expected#) speclj.platform/endl "not to ==: " (-to-s actual#) " (using ==)")))
-       :else (throw (speclj.platform/new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (-new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -332,8 +346,8 @@
   `(let [expected-name# (speclj.platform/type-name ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (pr-str ~actual) "<nothing thrown>")]
-     (speclj.platform/new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
-                                    "         " expected-gaps# "     but got: " actual-string#))))
+     (-new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
+                        "         " expected-gaps# "     but got: " actual-string#))))
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
@@ -341,27 +355,27 @@ When an class is passed, it assets that the thrown Exception is an instance of t
 When a string is also passed, it asserts that the message of the Exception is equal to the string."
   ([form] `(should-throw speclj.platform/throwable ~form))
   ([throwable-type form]
-    `(try
-       ~form
-       (throw (-create-should-throw-failure ~throwable-type nil '~form))
-       (catch ~(if (cljs?) 'js/Object 'Throwable) e#
-         (cond
-           (speclj.platform/failure? e#) (throw e#)
-           (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
-           :else e#))))
+   `(try
+      ~form
+      (throw (-create-should-throw-failure ~throwable-type nil '~form))
+      (catch ~(if cljs? 'js/Object 'Throwable) e#
+        (cond
+          (speclj.platform/failure? e#) (throw e#)
+          (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
+          :else e#))))
   ([throwable-type message form]
-    `(let [e# (should-throw ~throwable-type ~form)]
-       (try
-         (should= ~message (speclj.platform/error-message e#))
-         (catch ~(if (cljs?) 'js/Object 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+   `(let [e# (should-throw ~throwable-type ~form)]
+      (try
+        (should= ~message (speclj.platform/error-message e#))
+        (catch ~(if cljs? 'js/Object 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
   `(try
      ~form
-     (catch ~(if (cljs?) 'js/Object 'Throwable) e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
-                                            "                     but got: " (pr-str e#))))))
+     (catch ~(if cljs? 'js/Object 'Throwable) e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
+                                                             "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
@@ -386,7 +400,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   in the run report"
   ([] `(pending "Not Yet Implemented"))
   ([message]
-    `(throw (speclj.platform/new-pending ~message))))
+   `(throw (-new-pending ~message))))
 
 (defmacro tags
   "Add tags to the containing context.  All values passed will be converted into keywords.  Contexts can be filtered
@@ -401,8 +415,8 @@ When a string is also passed, it asserts that the message of the Exception is eq
   "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
   []
   `(around [it#]
-     (binding [speclj.stub/*stubbed-invocations* (atom [])]
-       (it#))))
+           (binding [speclj.stub/*stubbed-invocations* (atom [])]
+             (it#))))
 
 (defmacro stub
   "Creates a stub function.  Each call to the stub will be recorded an can later be looked up using the specified name.
@@ -441,36 +455,36 @@ When a string is also passed, it asserts that the message of the Exception is eq
     )"
   ([name] `(should-have-invoked ~name {}))
   ([name options]
-    `(let [name# ~name
-           options# ~options
-           invocations# (speclj.stub/invocations-of name#)
-           times# (:times options#)
-           times?# (number? times#)
-           check-params?# (contains? options# :with)
-           with# (:with options#)
-           with# (if (nil? with#) [] with#)
-           invocations-str# #(if (= 1 %) "invocation" "invocations")]
-       (cond
+   `(let [name# ~name
+          options# ~options
+          invocations# (speclj.stub/invocations-of name#)
+          times# (:times options#)
+          times?# (number? times#)
+          check-params?# (contains? options# :with)
+          with# (:with options#)
+          with# (if (nil? with#) [] with#)
+          invocations-str# #(if (= 1 %) "invocation" "invocations")]
+      (cond
 
-         (and times?# check-params?#)
-         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
-               matching-count# (count matching-invocations#)]
-           (when-not (= times# matching-count#)
-             (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " " (invocations-str# matching-count#)))))
+        (and times?# check-params?#)
+        (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
+              matching-count# (count matching-invocations#)]
+          (when-not (= times# matching-count#)
+            (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " " (invocations-str# matching-count#)))))
 
-         check-params?#
-         (when-not (some #(speclj.stub/params-match? with# %) invocations#)
-           (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
+        check-params?#
+        (when-not (some #(speclj.stub/params-match? with# %) invocations#)
+          (-fail (str "Expected: invocation of " name# " with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
 
-         times?#
-         (when-not (= times# (count invocations#))
-           (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# speclj.platform/endl "     got: " (count invocations#))))
+        times?#
+        (when-not (= times# (count invocations#))
+          (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# speclj.platform/endl "     got: " (count invocations#))))
 
-         :else
-         (when-not (seq invocations#)
-           (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#))))
+        :else
+        (when-not (seq invocations#)
+          (-fail (str "Expected: an invocation of " name# speclj.platform/endl "     got: " (count invocations#))))
 
-         ))))
+        ))))
 
 (defmacro should-not-have-invoked
   "Inverse of should-have-invoked.
@@ -494,42 +508,42 @@ When a string is also passed, it asserts that the message of the Exception is eq
     )"
   ([name] `(should-not-have-invoked ~name {}))
   ([name options]
-    `(let [name# ~name
-           options# ~options
-           invocations# (speclj.stub/invocations-of name#)
-           times# (:times options#)
-           times?# (number? times#)
-           check-params?# (contains? options# :with)
-           with# (:with options#)
-           with# (if (nil? with#) [] with#)
-           add-s# #(if (= 1 %) "" "s")]
-       (cond
-         (and times?# check-params?#)
-         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
-               matching-count# (count matching-invocations#)]
-           (when (= times# matching-count#)
-             (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# matching-count#) " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " invocation" (add-s# matching-count#)))))
+   `(let [name# ~name
+          options# ~options
+          invocations# (speclj.stub/invocations-of name#)
+          times# (:times options#)
+          times?# (number? times#)
+          check-params?# (contains? options# :with)
+          with# (:with options#)
+          with# (if (nil? with#) [] with#)
+          add-s# #(if (= 1 %) "" "s")]
+      (cond
+        (and times?# check-params?#)
+        (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
+              matching-count# (count matching-invocations#)]
+          (when (= times# matching-count#)
+            (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# matching-count#) " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " invocation" (add-s# matching-count#)))))
 
-         times?#
-         (when (= times# (count invocations#))
-           (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# times#) speclj.platform/endl "     got: " times# " invocation" (add-s# times#))))
+        times?#
+        (when (= times# (count invocations#))
+          (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# times#) speclj.platform/endl "     got: " times# " invocation" (add-s# times#))))
 
-         check-params?#
-         (when (some #(speclj.stub/params-match? with# %) invocations#)
-           (-fail (str "Expected: " name# " not to have been invoked with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
+        check-params?#
+        (when (some #(speclj.stub/params-match? with# %) invocations#)
+          (-fail (str "Expected: " name# " not to have been invoked with " (pr-str with#) speclj.platform/endl "     got: " (pr-str invocations#))))
 
-         :else
-         (when (seq invocations#)
-           (-fail (str "Expected: 0 invocations of " name# speclj.platform/endl "     got: " (count invocations#))))
+        :else
+        (when (seq invocations#)
+          (-fail (str "Expected: 0 invocations of " name# speclj.platform/endl "     got: " (count invocations#))))
 
-         ))))
+        ))))
 
 (def ^:dynamic *bound-by-should-invoke* false)
 
 (defmacro bound-by-should-invoke? []
-  `(if (cljs?)
+  `(if cljs?
      *bound-by-should-invoke*
-     (and  (bound? #'*bound-by-should-invoke*)
+     (and (bound? #'*bound-by-should-invoke*)
           *bound-by-should-invoke*)))
 
 ;(declare ^:dynamic *bound-by-should-invoke*)
@@ -558,12 +572,12 @@ When a string is also passed, it asserts that the message of the Exception is eq
   See stub and should-have-invoked for valid options."
   [var options & body]
   (when-not (map? options)
-    `(speclj.platform/throw-error "The second argument to should-invoke must be a map of options"))
+    `(throw (-new-exception "The second argument to should-invoke must be a map of options")))
   (let [var-name (str var)]
     `(let [options# ~options]
        (with-stubbed-invocations
          (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-           ~@body)
+                      ~@body)
          (should-have-invoked ~var-name options#)))))
 
 (defmacro should-not-invoke
@@ -575,12 +589,12 @@ When a string is also passed, it asserts that the message of the Exception is eq
   See stub and should-not-have-invoked for valid options."
   [var options & body]
   (when-not (map? options)
-    `(speclj.platform/throw-error "The second argument to should-not-invoke must be a map of options"))
+    `(throw (-new-exception "The second argument to should-not-invoke must be a map of options")))
   (let [var-name (str var)]
     `(let [options# ~options]
        (with-stubbed-invocations
          (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-           ~@body)
+                      ~@body)
          (should-not-have-invoked ~var-name options#)))))
 
 (defmacro run-specs []

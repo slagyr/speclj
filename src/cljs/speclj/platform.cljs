@@ -23,24 +23,6 @@
 (def failure SpecFailure)
 (def pending SpecPending)
 
-(defn new-exception
-  ([] (js/Error.))
-  ([message] (js/Error. message))
-  ([message cause] (js/Error. message)))
-
-(defn new-throwable
-  ([] (js/Object.))
-  ([message] (js/Object. message)))
-
-(defn new-failure [message]
-  (speclj.platform.SpecFailure. message))
-
-(defn new-pending [message]
-  (speclj.platform.SpecPending. message))
-
-(defn throw-error [message]
-  (throw (js/Error. message)))
-
 (defn difference-greater-than-delta? [expected actual delta]
   (> (js/Math.abs (- expected actual)) (js/Math.abs delta)))
 

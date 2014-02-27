@@ -4,10 +4,10 @@
                                  should-be-same should-contain should-fail should-not should-not-be-a
                                  should-not-be-nil should-not-be-same should-not-contain
                                  should-not-throw should-not= should-not== should-throw
-                                 should= should== -to-s]]
+                                 should= should== -to-s -new-throwable -new-exception]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
          )
-  (:require [speclj.platform :refer [new-throwable new-exception endl exception type-name throwable]]
+  (:require [speclj.platform :refer [endl exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Should Assertions: "
@@ -340,36 +340,36 @@
       (failure-message (should-throw (+ 1 1)))))
 
   (it "should-throw can test an expected throwable type"
-    (should-pass! (should-throw exception (throw (new-exception))))
+    (should-pass! (should-throw exception (throw (-new-exception))))
 
     #+clj
     (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.))))
 
-    (should-fail! (should-throw exception (throw (new-throwable))))
+    (should-fail! (should-throw exception (throw (-new-throwable))))
     (should-fail! (should-throw exception (+ 1 1)))
     (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
                (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
       (failure-message (should-throw exception (+ 1 1))))
 
-    (should= (str "Expected " (type-name exception) " thrown from: (throw (new-throwable \"some message\"))" endl
-               (apply str (take (count (type-name exception)) (repeat " "))) "              but got: " (pr-str (new-throwable "some message")))
-      (failure-message (should-throw exception (throw (new-throwable "some message")))))
+    (should= (str "Expected " (type-name exception) " thrown from: (throw (-new-throwable \"some message\"))" endl
+               (apply str (take (count (type-name exception)) (repeat " "))) "              but got: " (pr-str (-new-throwable "some message")))
+      (failure-message (should-throw exception (throw (-new-throwable "some message")))))
       )
 
   (it "should-throw can test the message of the exception"
-    (should-pass! (should-throw exception "My message" (throw (new-exception "My message"))))
-    (should-fail! (should-throw exception "My message" (throw (new-exception "Not my message"))))
+    (should-pass! (should-throw exception "My message" (throw (-new-exception "My message"))))
+    (should-fail! (should-throw exception "My message" (throw (-new-exception "Not my message"))))
     (should-fail! (should-throw exception "My message" (throw (throwable "My message"))))
     (should-fail! (should-throw exception "My message" (+ 1 1)))
     (should= (str "Expected exception message didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
-      (failure-message (should-throw exception "My message" (throw (new-exception "Not my message"))))))
+      (failure-message (should-throw exception "My message" (throw (-new-exception "Not my message"))))))
 
   (it "should-not-throw tests that nothing was thrown"
     (should-pass! (should-not-throw (+ 1 1)))
-    (should-fail! (should-not-throw (throw (new-throwable "error"))))
-    (should= (str "Expected nothing thrown from: " (pr-str '(throw (new-throwable "error"))) endl
-               "                     but got: " (pr-str (new-throwable "error")))
-      (failure-message (should-not-throw (throw (new-throwable "error"))))))
+    (should-fail! (should-not-throw (throw (-new-throwable "error"))))
+    (should= (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
+               "                     but got: " (pr-str (-new-throwable "error")))
+      (failure-message (should-not-throw (throw (-new-throwable "error"))))))
 
 
   (context "should-be-a"

@@ -3,7 +3,7 @@
 
 (def major 3)
 (def minor 0)
-(def tiny 0)
+(def tiny 1)
 (def snapshot false)
 (def string
   (str

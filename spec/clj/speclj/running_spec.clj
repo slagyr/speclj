@@ -61,7 +61,7 @@
          (after (reset! bauble nil))
          (it "changes the bauble"
            (reset! bauble :something)
-           (throw (platform/new-exception "blah")))))
+           (throw (Exception. "blah")))))
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 

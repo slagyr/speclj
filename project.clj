@@ -35,7 +35,7 @@
 
   :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
                                   [org.clojure/clojurescript "0.0-2014"]]
-                   ;[org.clojure/clojurescript "0.0-2173"]]
+                                  ;[org.clojure/clojurescript "0.0-2173"]]
                    :plugins      [[com.keminglabs/cljx "0.3.2"]
                                   [lein-cljsbuild "1.0.1"]]}}
 

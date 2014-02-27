@@ -1,10 +1,10 @@
 (ns speclj.stub-spec
-  (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub]]
+  (#+clj :require #+cljs :require-macros
+            [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
          )
   (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
-            [speclj.platform :refer [endl exception new-exception]]
+            [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Stubs"
@@ -30,8 +30,8 @@
     (should= 42 ((stub :foo {:return 42}))))
 
   (it "can throw stuff"
-    (should-throw exception "Yay!" ((stub :bar {:throw (new-exception "Yay!")})))
-    (should-throw exception "Oh no!" ((stub :bar {:throw (new-exception "Oh no!")}))))
+    (should-throw exception "Yay!" ((stub :bar {:throw (-new-exception "Yay!")})))
+    (should-throw exception "Oh no!" ((stub :bar {:throw (-new-exception "Oh no!")}))))
 
   (it "can invoke"
     (let [trail (atom [])
@@ -47,12 +47,10 @@
     (should= 9 ((stub :foo {:invoke *}) 3 3))
     (should= 42 ((stub :foo {:invoke * :return 42}) 3 3)))
 
-  ;cljs-ignore->
   #+clj
   (it "invoke with wrong number of params"
     (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
       ((stub :foo {:invoke (fn [a] a)}))))
-  ;<-cljs-ignore
 
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
