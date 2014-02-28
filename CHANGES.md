@@ -1,3 +1,9 @@
+# 3.0.1
+
+* Fixes exception throwing so that correct line numbers are displayed
+* CLJS upgrade to 2173
+* Resolves CLJS warning: "WARNING: Use of undeclared Var" when `with` used
+
 # 3.0.0
 
 * Merges CLJ and CLJS into one jar using CLJX (specljs is no more)

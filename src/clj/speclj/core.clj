@@ -5,6 +5,12 @@
 
 (def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
 
+; Disable CLJS :invalid-arithmetic warnings... They popup when ever should== is used.
+;(.println System/out "HERE!!!")
+;(when cljs? (set! cljs.analyzer/*cljs-warnings* (dissoc cljs.analyzer/*cljs-warnings* :invalid-arithmetic)))
+;(println "cljs.analyzer/*cljs-warnings*: " cljs.analyzer/*cljs-warnings*)
+;(.println System/out (:invalid-arithmetic cljs.analyzer/*cljs-warnings*))
+
 (defmacro -new-exception
   ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
   ([message] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message)))
@@ -46,7 +52,8 @@
   [name & components]
   `(let [description# (speclj.components/new-description ~name ~(clojure.core/name (.name *ns*)))]
      (binding [speclj.config/*parent-description* description#]
-       (doseq [component# (list ~@components)]
+       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediatly
+       (doseq [component# (vector ~@components)]
          (speclj.components/install component# description#)))
      (when-not ~(if (not cljs?)
                   `(bound? #'speclj.config/*parent-description*)
