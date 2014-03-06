@@ -134,13 +134,17 @@
       (binding [*gewgaw* (swap! widget #(/ % 2))]
         (context)))
 
-    (it "will all execute before the characteristics"
-      (should= 9 @widget)
-      (should= 9 *gewgaw*))
+    (around-all [context]
+      (binding [*gewgaw* (swap! widget #(- % 2))]
+        (context)))
+
+    (it "will all execute before the characteristics in the order in which they are defined"
+      (should= 7 @widget)
+      (should= 7 *gewgaw*))
 
     (it "and still only execute once"
-      (should= 9 @widget)
-      (should= 9 *gewgaw*))))
+      (should= 7 @widget)
+      (should= 7 *gewgaw*))))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))

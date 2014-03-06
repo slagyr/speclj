@@ -113,7 +113,7 @@
           (let [around-alls (reduce (fn [composed around-all]
                                       (fn [f] ((.-body around-all) (fn [] (composed f)))))
                                     (fn [f] (f))
-                                    @(.-around-alls description))]
+                                    (reverse @(.-around-alls description)))]
             (around-alls (fn []
               (try
                 (let [results (results-for-context description reporters)]
