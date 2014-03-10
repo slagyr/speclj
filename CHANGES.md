@@ -1,3 +1,7 @@
+# 3.0.2
+
+* Fixes 'ClassNotFoundException speclj.run.standard' when running Vigilant.
+
 # 3.0.1
 
 * Fixes exception throwing so that correct line numbers are displayed

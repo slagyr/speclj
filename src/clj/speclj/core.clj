@@ -5,11 +5,7 @@
 
 (def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
 
-; Disable CLJS :invalid-arithmetic warnings... They popup when ever should== is used.
-;(.println System/out "HERE!!!")
-;(when cljs? (set! cljs.analyzer/*cljs-warnings* (dissoc cljs.analyzer/*cljs-warnings* :invalid-arithmetic)))
-;(println "cljs.analyzer/*cljs-warnings*: " cljs.analyzer/*cljs-warnings*)
-;(.println System/out (:invalid-arithmetic cljs.analyzer/*cljs-warnings*))
+(println "cljs?: " cljs?)
 
 (defmacro -new-exception
   ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
@@ -552,17 +548,6 @@ When a string is also passed, it asserts that the message of the Exception is eq
      *bound-by-should-invoke*
      (and (bound? #'*bound-by-should-invoke*)
           *bound-by-should-invoke*)))
-
-;(declare ^:dynamic *bound-by-should-invoke*)
-
-;#+clj
-;(defn- bound-by-should-invoke? []
-;  (and (bound? #'*bound-by-should-invoke*)
-;       *bound-by-should-invoke*))
-
-;#+cljs
-;(defn- bound-by-should-invoke? []
-;  *bound-by-should-invoke*)
 
 (defmacro with-stubbed-invocations [& body]
   `(if (not (speclj.platform/bound-by-should-invoke?))

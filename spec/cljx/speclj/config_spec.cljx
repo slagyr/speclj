@@ -23,7 +23,8 @@
   ;<-cljs-ignore
 
   (it "throws exception with unrecognized runner"
-    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah")))
+    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah"))
+    )
 
   (it "dynamically loads ProgressReporter"
     (let [reporter (load-reporter "progress")]

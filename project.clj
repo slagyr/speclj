@@ -34,7 +34,6 @@
   :java-source-paths ["src/clj"]
 
   :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
-                                  ;[org.clojure/clojurescript "0.0-2014"]]
                                   [org.clojure/clojurescript "0.0-2173"]]
                    :plugins      [[com.keminglabs/cljx "0.3.2"]
                                   [lein-cljsbuild "1.0.1"]]}}
@@ -50,6 +49,4 @@
             "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
 
   :eval-in :leiningen ; to recognize spec task
-  :speclj-eval-in :leiningen ; to make tests faster
-
   )
