@@ -111,40 +111,42 @@
   )
 
 
-(def #^{:dynamic true} widget (atom 5))
-(def #^{:dynamic true} call-count (atom 0))
 (describe "around-all form"
   (describe "with nothing else"
-    (around-all [context]
-      (swap! call-count inc)
-      (binding [*gewgaw* (swap! widget inc)]
-        (context)))
+    (let [widget (atom 5)
+          call-count (atom 0)]
 
-    (it "executes before the specs"
-      (should= 6 @widget))
-
-    (it "executes around the specs"
-      (should= 6 *gewgaw*))
-
-    (it "only executes once"
-      (should= 1 @call-count))
-
-    (context "nested"
+      [
       (around-all [context]
         (swap! call-count inc)
-        (swap! widget #(/ % 2))
-        (context))
+        (binding [*gewgaw* (swap! widget inc)]
+          (context)))
 
-      (around-all [context]
-        (swap! call-count inc)
-        (swap! widget #(- % 2))
-        (context))
+      (it "executes before the specs"
+        (should= 6 @widget))
 
-      (it "executes in the order in which they are defined"
-        (should= 1 @widget))
+      (it "executes around the specs"
+        (should= 6 *gewgaw*))
 
-      (it "and still only execute once"
-        (should= 3 @call-count))))
+      (it "only executes once"
+        (should= 1 @call-count))
+
+      (context "nested"
+        (around-all [context]
+          (swap! call-count inc)
+          (swap! widget #(/ % 2))
+          (context))
+
+        (around-all [context]
+          (swap! call-count inc)
+          (swap! widget #(- % 2))
+          (context))
+
+        (it "executes in the order in which they are defined"
+          (should= 1 @widget))
+
+        (it "and still only execute once"
+          (should= 3 @call-count)))]))
 
   (describe "with before-alls"
     (before-all
