@@ -112,39 +112,46 @@
 
 
 (def #^{:dynamic true} widget (atom 5))
+(def #^{:dynamic true} call-count (atom 0))
 (describe "around-all form"
-  (around-all [context]
-    (binding [*gewgaw* (swap! widget inc)]
-      (context)))
-
-  (it "executes before all the specs"
-    (should= 6 @widget)
-    (should= 6 *gewgaw*))
-
-  (it "only executes once"
-    (should= 6 @widget)
-    (should= 6 *gewgaw*))
-
-  (context "nested"
+  (describe "with nothing else"
     (around-all [context]
-      (binding [*gewgaw* (swap! widget #(* 3 %))]
+      (swap! call-count inc)
+      (binding [*gewgaw* (swap! widget inc)]
         (context)))
 
-    (around-all [context]
-      (binding [*gewgaw* (swap! widget #(/ % 2))]
-        (context)))
+    (it "executes before the specs"
+      (should= 6 @widget))
 
-    (around-all [context]
-      (binding [*gewgaw* (swap! widget #(- % 2))]
-        (context)))
+    (it "executes around the specs"
+      (should= 6 *gewgaw*))
 
-    (it "will all execute before the characteristics in the order in which they are defined"
-      (should= 7 @widget)
-      (should= 7 *gewgaw*))
+    (it "only executes once"
+      (should= 1 @call-count))
 
-    (it "and still only execute once"
-      (should= 7 @widget)
-      (should= 7 *gewgaw*))))
+    (context "nested"
+      (around-all [context]
+        (swap! call-count inc)
+        (swap! widget #(/ % 2))
+        (context))
+
+      (around-all [context]
+        (swap! call-count inc)
+        (swap! widget #(- % 2))
+        (context))
+
+      (it "executes in the order in which they are defined"
+        (should= 1 @widget))
+
+      (it "and still only execute once"
+        (should= 3 @call-count))))
+
+  (describe "with before-alls"
+    (before-all
+      )
+
+    (it "executes after before-alls"
+      )))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))

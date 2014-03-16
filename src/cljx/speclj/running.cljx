@@ -103,6 +103,10 @@
           (let [code (str n " = null;")]
             (js* "eval(~{})" code)))))))
 
+(defn- nested-results-for-context [description reporters]
+  (let [results (results-for-context description reporters)]
+    (do-child-contexts description results reporters)))
+
 (defn do-description [description reporters]
   (let [tag-sets (tag-sets-for description)]
     (when (some pass-tag-filter? tag-sets)
@@ -116,8 +120,8 @@
                                     (reverse @(.-around-alls description)))]
             (around-alls (fn []
               (try
-                (let [results (results-for-context description reporters)]
-                  (do-child-contexts description results reporters))
+                (nested-results-for-context description reporters)
+
                 (finally
                   (reset-withs @(.-with-alls description)))))))
           )))))
