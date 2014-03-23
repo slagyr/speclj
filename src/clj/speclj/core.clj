@@ -5,8 +5,6 @@
 
 (def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
 
-(println "cljs?: " cljs?)
-
 (defmacro -new-exception
   ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
   ([message] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message)))
