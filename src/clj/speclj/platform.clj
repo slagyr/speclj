@@ -64,3 +64,12 @@
         fn-sym (symbol (str ns-name "/" fn-name))
         expr `(do (require '~ns-sym) (~fn-sym))]
     (eval expr)))
+
+(def new-line 10)
+
+(defn- read-in []
+  (when (.ready *in*)
+    (.read *in*)))
+
+(defn enter-pressed? []
+  (= (read-in) new-line))
