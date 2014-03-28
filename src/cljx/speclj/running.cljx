@@ -115,16 +115,18 @@
         (fn []
           (eval-components @(.-before-alls description))
           (let [around-alls (reduce (fn [composed around-all]
-                                      (fn [f] ((.-body around-all) (fn [] (composed f)))))
-                                    (fn [f] (f))
-                                    (reverse @(.-around-alls description)))]
-            (around-alls (fn []
-              (try
-                (nested-results-for-context description reporters)
+                                      (fn [f] ((.-body around-all)
+                                                 (fn [] (composed f)))))
 
-                (finally
-                  (reset-withs @(.-with-alls description)))))))
-          )))))
+                                    (fn [f] (f))
+
+                                    (reverse @(.-around-alls description)))]
+            (try
+              (around-alls (fn []
+                (nested-results-for-context description reporters)))
+
+              (finally
+                (reset-withs @(.-with-alls description))))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]

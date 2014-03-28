@@ -149,11 +149,34 @@
           (should= 3 @call-count)))]))
 
   (describe "with before-alls"
-    (before-all
-      )
+    (let [widget (atom 6)]
+      [
+      (around-all [context]
+        (swap! widget #(- % 2))
+        (context))
 
-    (it "executes after before-alls"
-      )))
+      (before-all
+        (swap! widget #(/ % 2)))
+
+      ; TODO: Change this behavior eventually, so that execution order is dependent on definition order?
+      (it "executes after before-alls regardless of definition order"
+        (should= 1 @widget))]))
+
+  (describe "with withs"
+    (let [widget (atom 0)]
+      [
+      (with-all with-all-val (swap! widget inc))
+
+      (around-all [context]
+        (should= 0 @widget)
+        (should= 1 @with-all-val)
+        (context)
+        (should= 1 @with-all-val))
+
+      (it "enters after binding but before initializing with-alls and exits before resetting or unbinding"
+        :filler)
+
+      (it "enters before binding withs and exits with withs unbound")])))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
