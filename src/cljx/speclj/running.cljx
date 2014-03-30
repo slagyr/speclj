@@ -108,15 +108,8 @@
     (do-child-contexts description results reporters)))
 
 (defn- with-around-alls [description run-characteristics-fn]
-  (let [around-alls (reduce (fn [composed around-all]
-                              (fn [f] ((.-body around-all)
-                                         (partial composed f))))
-
-                            (fn [f] (f))
-
-                            (reverse @(.-around-alls description)))]
-
-    (around-alls run-characteristics-fn)))
+  ((nested-fns run-characteristics-fn
+               (map #(.-body %) @(.-around-alls description)))))
 
 (defn do-description [description reporters]
   (let [tag-sets (tag-sets-for description)]
