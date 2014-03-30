@@ -107,6 +107,17 @@
   (let [results (results-for-context description reporters)]
     (do-child-contexts description results reporters)))
 
+(defn- with-around-alls [description run-characteristics-fn]
+  (let [around-alls (reduce (fn [composed around-all]
+                              (fn [f] ((.-body around-all)
+                                         (partial composed f))))
+
+                            (fn [f] (f))
+
+                            (reverse @(.-around-alls description)))]
+
+    (around-alls run-characteristics-fn)))
+
 (defn do-description [description reporters]
   (let [tag-sets (tag-sets-for description)]
     (when (some pass-tag-filter? tag-sets)
@@ -114,19 +125,14 @@
       (with-withs-bound description
         (fn []
           (eval-components @(.-before-alls description))
-          (let [around-alls (reduce (fn [composed around-all]
-                                      (fn [f] ((.-body around-all)
-                                                 (fn [] (composed f)))))
 
-                                    (fn [f] (f))
+          (try
+            (with-around-alls
+              description
+              (partial nested-results-for-context description reporters))
 
-                                    (reverse @(.-around-alls description)))]
-            (try
-              (around-alls (fn []
-                (nested-results-for-context description reporters)))
-
-              (finally
-                (reset-withs @(.-with-alls description))))))))))
+            (finally
+              (reset-withs @(.-with-alls description)))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]
