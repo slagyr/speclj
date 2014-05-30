@@ -2,7 +2,7 @@
   (:require [clojure.java.io :refer [file]]
             [fresh.core :refer [freshener make-fresh ns-to-file clj-files-in]]
             [speclj.config :refer [active-runner active-reporters config-bindings *specs*]]
-            [speclj.platform :refer [endl secs-since format-seconds current-time]]
+            [speclj.platform :refer [endl secs-since format-seconds current-time enter-pressed?]]
             [speclj.reporting :refer [report-runs* report-message* report-error*]]
             [speclj.results :refer [categorize]]
             [speclj.running :refer [do-description run-and-report run-description process-compile-error]])
@@ -56,6 +56,16 @@
           (report-runs* reporters @(.results runner))))
       (reset! (.results runner) []))))
 
+(defn- reset-runner [runner]
+  (reset! (.previous-failed runner) [])
+  (reset! (.results runner) [])
+  (reset! (.file-listing runner) {}))
+
+(defn- listen-for-rerun [configuration]
+  (with-bindings configuration
+    (when (enter-pressed?)
+      (reset-runner (active-runner)))))
+
 (deftype VigilantRunner [file-listing results previous-failed directories]
   Runner
   (run-directories [this directories reporters]
@@ -65,6 +75,7 @@
           dir-files (map file directories)]
       (reset! (.directories this) dir-files)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
+      (.scheduleWithFixedDelay scheduler (fn [] (listen-for-rerun configuration)) 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))
 
