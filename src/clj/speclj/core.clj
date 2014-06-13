@@ -365,9 +365,12 @@ When a string is also passed, it asserts that the message of the Exception is eq
           (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
           :else e#))))
   ([throwable-type message form]
-   `(let [e# (should-throw ~throwable-type ~form)]
+   `(let [e# (should-throw ~throwable-type ~form)
+          regex# ~(if cljs? `js/RegExp `java.util.regex.Pattern)]
       (try
-        (should= ~message (speclj.platform/error-message e#))
+        (if (instance? regex# ~message)
+          (should-not-be-nil (re-find ~message (speclj.platform/error-message e#)))
+          (should= ~message (speclj.platform/error-message e#)))
         (catch ~(if cljs? 'js/Object 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 (defmacro should-not-throw
