@@ -1,15 +1,14 @@
 (ns leiningen.spec
-  (:require [leiningen.core.eval :refer [eval-in-project]]))
+  (:require [leiningen.core.eval :refer [eval-in-project]]
+            [leiningen.core.main :as main]))
 
-(defn- exit-if-needed [exit-code]
-  (cond
-    (nil? exit-code) 0
-    (not (number? exit-code)) (println *err* (str "Unusual exit code: " exit-code))
-    (not (zero? exit-code))
-    (try
-      (require 'leiningen.core.main)
-      ((ns-resolve (the-ns 'leiningen.core.main) 'exit) exit-code)
-      (catch java.io.FileNotFoundException e))))
+(defn make-run-form [project speclj-args]
+  (let [exit-fn (if (or (:eval-in-leiningen project)
+                        (= (:eval-in project) :leiningen))
+                  `main/exit
+                  `System/exit)]
+    `(let [failures# (speclj.cli/run ~@speclj-args)]
+       (~exit-fn (min 255 failures#)))))
 
 (defn- with-paths [args project]
   (if (some #(not (.startsWith % "-")) args)
@@ -34,9 +33,7 @@ documentation, as opposed to this message provided by Leiningen, try this:
 That ought to do the trick."
   [project & args]
   (let [project (assoc project :eval-in (get project :speclj-eval-in :subprocess))
-        speclj-args (build-args project args)]
-    (exit-if-needed
-      (eval-in-project project
-        `(apply speclj.cli/run ~speclj-args)
-        '(require 'speclj.cli))
-      )))
+        speclj-args (build-args project args)
+        run-form (make-run-form project speclj-args)
+        init-form '(require 'speclj.cli)]
+      (eval-in-project project run-form init-form)))
