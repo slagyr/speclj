@@ -5,8 +5,10 @@
 (defn make-run-form [project speclj-args]
   (let [exit-fn (if (or (:eval-in-leiningen project)
                         (= (:eval-in project) :leiningen))
-                  `main/exit
-                  `System/exit)]
+                  'main/exit
+                  '(fn [code]
+                     (shutdown-agents)
+                     (System/exit code)))]
     `(let [failures# (speclj.cli/run ~@speclj-args)]
        (~exit-fn (min 255 failures#)))))
 
