@@ -356,6 +356,10 @@
       (failure-message (should-throw exception (throw (-new-throwable "some message")))))
       )
 
+  (it "should-throw can test the message of the exception with regex"
+   (should-pass! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "my message"))))
+   (should-fail! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "123456")))))
+
   (it "should-throw can test the message of the exception"
     (should-pass! (should-throw exception "My message" (throw (-new-exception "My message"))))
     (should-fail! (should-throw exception "My message" (throw (-new-exception "Not my message"))))
