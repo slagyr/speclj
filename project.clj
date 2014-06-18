@@ -14,7 +14,7 @@
   :test-paths ["spec/clj" "target/test-classes"]
   :hooks [cljx.hooks]
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [fresh "1.0.2"]
                  [mmargs "1.2.0"]]
 
@@ -34,9 +34,9 @@
   :java-source-paths ["src/clj"]
 
   :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
-                                  [org.clojure/clojurescript "0.0-2173"]]
+                                  [org.clojure/clojurescript "0.0-2234"]]
                    :plugins      [[com.keminglabs/cljx "0.3.2"]
-                                  [lein-cljsbuild "1.0.1"]]}}
+                                  [lein-cljsbuild "1.0.3"]]}}
 
   :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"

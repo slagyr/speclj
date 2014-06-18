@@ -187,7 +187,16 @@
       (it "checks equality of maps"
         (should-pass! (should== {:a 1} {:a 1}))
         (should-fail! (should== {:a 1} {:a 1 :b 2}))
-        (should= (str "Expected contents: {:a 1}" endl "              got: {:a 1, :b 2}" endl "          missing: nil" endl "            extra: {:b 2}") (failure-message (should== {:a 1} {:a 1 :b 2}))))
+        (let [lines (.split (failure-message (should== {:a 1} {:a 1 :b 2})) endl)]
+          (should= "Expected contents: {:a 1}" (aget lines 0))
+          (should-contain ":b 2" (aget lines 1))
+          (should-contain ":a 1" (aget lines 1))
+          (should= "          missing: nil" (aget lines 2))
+          (should= "            extra: {:b 2}" (aget lines 3))
+          )
+;        (should= (str "Expected contents: {:a 1}" endl "              got: {:b 2, :a 1}" endl "          missing: nil" endl "            extra: {:b 2}")
+;          (failure-message (should== {:a 1} {:a 1 :b 2})))
+        )
 
       ))
 
