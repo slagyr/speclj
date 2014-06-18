@@ -1,3 +1,11 @@
+# 3.1.0
+
+* should-throw matches regex. @TakaGoto https://github.com/slagyr/speclj/pull/95 
+* `lein spec` no longer hangs when exiting if agents were used. @sdegutis https://github.com/slagyr/issues/pull/94 
+* Fix for inproper exit-code on spec failures. @CraZySacX https://github.com/slagyr/speclj/pull/90
+* Rerun all tests by pressing <Enter> in vigilant runner. @kevinbuch https://github.com/slagyr/speclj/issues/41
+* remove cljs? debug message. @kevinbuch https://github.com/slagyr/speclj/pull/84
+
 # 3.0.2
 
 * Fixes 'ClassNotFoundException speclj.run.standard' when running Vigilant.
