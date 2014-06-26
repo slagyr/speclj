@@ -3,7 +3,7 @@
 * upgrade to clojure 1.6
 * upgrade clojurescript to 0.0-2234 and cljsbuild to 1.0.3 
 * should-throw matches regex. @TakaGoto https://github.com/slagyr/speclj/pull/95 
-* `lein spec` no longer hangs when exiting if agents were used. @sdegutis https://github.com/slagyr/issues/pull/94 
+* `lein spec` no longer hangs when exiting if agents were used. @sdegutis https://github.com/slagyr/speclj/issues/94
 * Fix for inproper exit-code on spec failures. @CraZySacX https://github.com/slagyr/speclj/pull/90
 * Rerun all tests by pressing <Enter> in vigilant runner. @kevinbuch https://github.com/slagyr/speclj/issues/41
 * remove cljs? debug message. @kevinbuch https://github.com/slagyr/speclj/pull/84
