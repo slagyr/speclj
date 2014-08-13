@@ -41,9 +41,9 @@
   :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"
                                                      :pretty-print true}
-                                    :notify-command ["bin/specljs" "target/tests.js"]
+                                    :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
                                     }}
-              :test-commands {"unit" ["bin/specljs" "target/tests.js"]}}
+              :test-commands {"unit" ["phantomjs" "bin/specljs" "target/tests.js"]}}
 
   :aliases {"cljs" ["do" "clean," "cljx," "cljsbuild" "once" "dev"]
             "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}

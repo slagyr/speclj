@@ -8,7 +8,7 @@
   java.lang.Object
   (install [this description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
   nil
-  (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's not allowed."))))
+  (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probabaly not what you wanted."))))
   clojure.lang.Var
   (install [this description] (comment "Vars are cool.  Let them pass."))
   clojure.lang.Seqable
@@ -16,11 +16,18 @@
 
 #+cljs
 (extend-protocol SpecComponent
-  LazySeq (install [this description] (doseq [component (seq this)] (install component description)))
-  List (install [this description] (doseq [component (seq this)] (install component description)))
-  EmptyList (install [this description] (doseq [component (seq this)] (install component description)))
-  PersistentVector (install [this description] (doseq [component (seq this)] (install component description)))
-  object (install [this description] (comment "Whatever...  Let them pass.")))
+  LazySeq
+  (install [this description] (doseq [component (seq this)] (install component description)))
+  List
+  (install [this description] (doseq [component (seq this)] (install component description)))
+  EmptyList
+  (install [this description] (doseq [component (seq this)] (install component description)))
+  PersistentVector
+  (install [this description] (doseq [component (seq this)] (install component description)))
+  nil
+  (install [this description] (throw (ex-info (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probabaly not what you wanted.") {})))
+  object
+  (install [this description] (comment "Whatever...  Let them pass.")))
 
 (deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]
   SpecComponent

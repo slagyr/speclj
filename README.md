@@ -6,6 +6,8 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 
 # Installation
 
+Latest version: `3.1.0`
+
 ## From Scratch
 
 ```bash
@@ -19,9 +21,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 
 ```clojure
 ; - snip
-:dependencies [[org.clojure/clojure "1.5.1"]]
-:profiles {:dev {:dependencies [[speclj "3.0.0"]]}}
-:plugins [[speclj "3.0.0"]]
+:dependencies [[org.clojure/clojure "1.6.0"]]
+:profiles {:dev {:dependencies [[speclj "3.1.0"]]}}
+:plugins [[speclj "3.1.0"]]
 :test-paths ["spec"]
 ```
 
@@ -181,13 +183,14 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 [`lein-cljsbuild`](https://github.com/emezeske/lein-cljsbuild) is a Leiningen plugin that'll get you up and running with ClojureScript.  You'll need to add a `:cljsbuild` configuration map to your `project.clj`.
 
 ```clojure
+:plugins [[lein-cljsbuild "1.0.3"]]
 :cljsbuild {:builds        {:dev  {:source-paths ["src/cljs" "spec/cljs"]
                                    :compiler     {:output-to "path/to/compiled.js"}
-                                   :notify-command ["bin/speclj" "path/to/compiled.js"]}
+                                   :notify-command ["phantomjs" "bin/speclj" "path/to/compiled.js"]}
                             :prod {:source-paths  ["src/cljs"]
                                    :compiler      {:output-to "path/to/prod.js"
                                                    :optimizations :simple}}}
-            :test-commands {"test" ["bin/speclj" "path/to/compiled.js"]}}
+            :test-commands {"test" ["phantomjs"  "bin/speclj" "path/to/compiled.js"]}}
 ```
 Speclj works by operating on your compiled ClojureScript.  The `:notify-command` will execute the `bin/speclj` command after your cljs is compiled.  The `bin/speclj` command will use speclj to evaluate your compiled ClojureScript.
 
