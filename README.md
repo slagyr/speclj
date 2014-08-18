@@ -17,7 +17,7 @@ See [@trptcolin's speclj template](https://github.com/trptcolin/speclj-template)
 
 ## Using Leiningen (2.0 or later)
 
-Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change the `:test-path` to `"spec"`
+Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change the `:test-paths` to `"spec"`
 
 ```clojure
 ; - snip
