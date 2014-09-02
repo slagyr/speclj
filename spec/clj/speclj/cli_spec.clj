@@ -59,6 +59,15 @@
     (should= 0 (run "--help"))
     (should-not= -1 (.indexOf (to-s @output) "Usage")))
 
+  (it "parses the --speclj switch"
+    (should= nil (:speclj (parse-args "")))
+    (should= "on" (:speclj (parse-args "--speclj")))
+    (should= "on" (:speclj (parse-args "-S"))))
+
+  (it "handles the --speclj switch"
+    (should= 0 (run "--speclj"))
+    (should-not= -1 (.indexOf (to-s @output) "Usage")))
+
   (it "parses and translates the --autotest option"
     (let [options (parse-args "--autotest")]
       (should= "vigilant" (:runner options))

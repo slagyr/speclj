@@ -30,7 +30,7 @@
   (.addMultiOption "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
   (.addSwitchOption "h" "help" "You're looking at it.")
-  )
+  (.addSwitchOption "S" "speclj" "You're looking at it."))
 
 (defn- resolve-runner-alias [name]
   (cond
@@ -97,6 +97,6 @@
     (cond
       (:*errors config) (usage (:*errors config))
       (:version config) (do (print-version) 0)
-      (:help config) (usage nil)
+      (or (:speclj config) (:help config)) (usage nil)
       :else (or (do-specs config) 0))))
 
