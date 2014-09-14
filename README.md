@@ -161,7 +161,7 @@ To make your tests start up slightly faster, you can add `:speclj-eval-in :leini
 #ClojureScript
 
 ## File Structure
-All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
+All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.cljs' postfix.
 
 	| sample_project
 	|-- project.clj
