@@ -94,6 +94,11 @@
   [& body]
   `(speclj.components/new-after-all (fn [] ~@body)))
 
+(defmacro around-all
+  "Declares a function that is invoked once around all characteristics of the containing describe scope."
+  [context & body]
+  `(speclj.components/new-around-all (fn ~context ~@body)))
+
 (defn -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
         munged-name (if cljs?

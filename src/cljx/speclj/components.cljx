@@ -29,7 +29,7 @@
   object
   (install [this description] (comment "Whatever...  Let them pass.")))
 
-(deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds]
+(deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -38,7 +38,7 @@
   (toString [this] (str "Description: " \" name \")))
 
 (defn new-description [name ns]
-  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (deftype Characteristic [name parent body]
   SpecComponent
@@ -91,6 +91,14 @@
 
 (defn new-after-all [body]
   (AfterAll. body))
+
+(deftype AroundAll [body]
+  SpecComponent
+  (install [this description]
+    (swap! (.-around-alls description) conj this)))
+
+(defn new-around-all [body]
+  (AroundAll. body))
 
 #+clj
 (deftype With [name unique-name body value bang]

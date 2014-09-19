@@ -3,7 +3,8 @@
             [speclj.core :refer [describe it context tags
                                  should should-be-same should-not-be-same should=
                                  before after before-all after-all
-                                 with with! with-all with-all! around]])
+                                 with with! with-all with-all! around around-all
+                                 pending]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
@@ -110,40 +111,72 @@
   )
 
 
-;(def widget (atom 5))
-;(describe "around-all form"
-;  (around-all [context]
-;    (binding [*gewgaw* (swap! widget inc)]
-;      (context)))
-;
-;  (it "executes before all the specs"
-;    (should= 6 @widget)
-;    (should= 6 *gewgaw*))
-;
-;  (it "only executes onece"
-;    (should= 6 @widget)
-;    (should= 6 *gewgaw*))
-;
-;  (context "nested"
-;
-;    (around-all [context]
-;      (binding [*gewgaw* (swap! widget #(* 3 %))]
-;        (context)))
-;
-;    (around-all [context]
-;      (binding [*gewgaw* (swap! widget #(/ % 2))]
-;        (context)))
-;
-;    (it "will all execute before the characteristics"
-;      (should= 9 @widget)
-;      (should= 9 *gewgaw*))
-;
-;    (it "and still only execure once"
-;      (should= 9 @widget)
-;      (should= 9 *gewgaw*))
-;
-;    )
-;  )
+(describe "around-all form"
+  (describe "with nothing else"
+    (let [widget (atom 5)
+          call-count (atom 0)]
+
+      [
+      (around-all [context]
+        (swap! call-count inc)
+        (binding [*gewgaw* (swap! widget inc)]
+          (context)))
+
+      (it "executes before the specs"
+        (should= 6 @widget))
+
+      (it "executes around the specs"
+        (should= 6 *gewgaw*))
+
+      (it "only executes once"
+        (should= 1 @call-count))
+
+      (context "nested"
+        (around-all [context]
+          (swap! call-count inc)
+          (swap! widget #(/ % 2))
+          (context))
+
+        (around-all [context]
+          (swap! call-count inc)
+          (swap! widget #(- % 2))
+          (context))
+
+        (it "executes in the order in which they are defined"
+          (should= 1 @widget))
+
+        (it "and still only execute once"
+          (should= 3 @call-count)))]))
+
+  (describe "with before-alls"
+    (let [widget (atom 6)]
+      [
+      (around-all [context]
+        (swap! widget #(- % 2))
+        (context))
+
+      (before-all
+        (swap! widget #(/ % 2)))
+
+      ; TODO: Change this behavior eventually, so that execution order is dependent on definition order?
+      (it "executes after before-alls regardless of definition order"
+        (should= 1 @widget))]))
+
+  (describe "with withs"
+    (let [widget (atom 0)]
+      [
+      (with-all with-all-val (swap! widget inc))
+
+      (around-all [context]
+        (should= 0 @widget)
+        (should= 1 @with-all-val)
+        (context)
+        (should= 1 @with-all-val))
+
+      (it "enters after binding but before initializing with-alls and exits before resetting or unbinding"
+        :filler)
+
+      (it "enters before binding withs and exits with withs unbound")])))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
