@@ -36,6 +36,7 @@
   :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
                                   [org.clojure/clojurescript "0.0-2234"]]
                    :plugins      [[com.keminglabs/cljx "0.3.2"]
+                                  [org.clojure/clojurescript "0.0-2234"]
                                   [lein-cljsbuild "1.0.3"]]}}
 
   :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
