@@ -1,12 +1,6 @@
 (ns speclj.version
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [trptcolin.versioneer.core :as version]))
 
-(def major 3)
-(def minor 1)
-(def tiny 0)
-(def snapshot false)
-(def string
-  (str
-    (str/join "." (filter identity [major minor tiny]))
-    (if snapshot "-SNAPSHOT" "")))
+(def string (version/get-version "speclj" "speclj"))
 (def summary (str "speclj " string))

@@ -1,6 +1,4 @@
-(load-file "src/clj/speclj/version.clj")
-
-(defproject speclj speclj.version/string
+(defproject speclj "3.1.1-SNAPSHOT"
   :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
   :url "http://speclj.com"
   :license {:name         "The MIT License"
@@ -16,7 +14,8 @@
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [fresh "1.0.2"]
-                 [mmargs "1.2.0"]]
+                 [mmargs "1.2.0"]
+                 [trptcolin/versioneer "0.1.1"]]
 
   :cljx {:builds [{:source-paths ["src/cljx"]
                    :output-path  "target/classes"
