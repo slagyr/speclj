@@ -43,8 +43,7 @@
   {:specs     ["spec"]
    :runner    "standard"
    :reporters ["progress"]
-   :tags      []
-   })
+   :tags      []})
 
 #+clj
 (defn config-bindings

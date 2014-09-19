@@ -37,6 +37,13 @@
     (should= ["april" "mj"] (:reporters (parse-args "--reporter=april" "--reporter=mj")))
     (should= ["mj" "april"] (:reporters (parse-args "-f" "mj" "-f" "april"))))
 
+  (it "uses default-spec-dirs argument as a default for specs"
+    (should= ["april"] (:specs (parse-args "--default-spec-dirs=april")))
+    (should= ["mary-jane"] (:specs (parse-args "-D" "mary-jane")))
+    (should= ["april" "mj"] (:specs (parse-args "--default-spec-dirs=april" "--default-spec-dirs=mj")))
+    (should= ["mj" "april"] (:specs (parse-args "-D" "mj" "-D" "april")))
+    (should= ["foo/bar/baz"] (:specs (parse-args "--default-spec-dirs=april" "foo/bar/baz"))))
+
   (it "uses formatter as an alias to reporter"
     (should= ["silent"] (:reporters (parse-args "--format" "silent")))
     (should= ["silent" "progress"] (:reporters (parse-args "--format=silent" "--format=progress"))))

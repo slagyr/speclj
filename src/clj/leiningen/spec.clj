@@ -13,9 +13,9 @@
        (~exit-fn (min 255 failures#)))))
 
 (defn- with-paths [args project]
-  (if (some #(not (.startsWith % "-")) args)
-    args
-    (concat args (:test-paths project))))
+  (concat (interleave (repeat "--default-spec-dirs")
+                      (:test-paths project))
+          args))
 
 (defn- build-args [project args]
   (-> args

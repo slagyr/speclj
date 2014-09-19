@@ -1,5 +1,6 @@
 (ns speclj.cli
-  (:require [speclj.config :refer :all]
+  (:require [clojure.set :as set]
+            [speclj.config :refer :all]
             [speclj.platform :refer [endl]]
             [speclj.reporting :refer [stack-trace-str report-message*]]
             [speclj.run.standard]
@@ -18,6 +19,7 @@
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addSwitchOption "C" "no-color" "Disable colored output (helpful for writing to file).")
+  (.addMultiOption "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                "  [c]lojure-test:   (reporting via clojure.test/report)" endl
                                                "  [d]ocumentation:  (description/context and characteristic names)" endl
@@ -78,7 +80,10 @@
 (defn parse-args [& args]
   (let [parse-result (.parse arg-spec (into-array String args))
         options (reduce (fn [result entry] (assoc result (keyword (.getKey entry)) (.getValue entry))) {} parse-result)
-        options (resolve-aliases options)]
+        options (resolve-aliases options)
+        options (if (:specs options)
+                  options
+                  (clojure.set/rename-keys options {:default-spec-dirs :specs}))]
     (merge default-config options)))
 
 (defn do-specs [config]
