@@ -24,13 +24,15 @@
     (with-paths project)
     vec))
 
-(defn spec
+(defn ^:pass-through-help spec
   "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.
 
-You're currently using Speclj's Leiningen plugin.  To get the Speclj's help
+You're currently using Speclj's Leiningen plugin. To get Speclj's help
 documentation, as opposed to this message provided by Leiningen, try this:
 
-  lein spec --speclj
+  lein spec --help
+
+  (or lein spec --speclj if you're on leiningen 2.3.x or lower)
 
 That ought to do the trick."
   [project & args]
