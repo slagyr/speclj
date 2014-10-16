@@ -228,7 +228,7 @@ Checkout this example spec file. It would be located at `sample_project/spec/clj
 
 ```clojure
 (ns sample.core-spec
-  (:require-macros [speclj.core :refer [describe it should should-not run-specs])
+  (:require-macros [speclj.core :refer [describe it should should-not run-specs]])
   (:require [speclj.core]
             [sample.core :as my-core]))
 
