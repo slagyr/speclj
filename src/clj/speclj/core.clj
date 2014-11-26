@@ -424,7 +424,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
   []
   `(around [it#]
-           (binding [speclj.stub/*stubbed-invocations* (atom [])]
+           (with-redefs [speclj.stub/*stubbed-invocations* (atom [])]
              (it#))))
 
 (defmacro stub
