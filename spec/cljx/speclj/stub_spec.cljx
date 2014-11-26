@@ -7,11 +7,7 @@
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]))
 
-(defn fn-under-test []
-  1)
-
-(defn spawn-other-thread []
-  (doto (Thread. (fn [] (fn-under-test))) (.start) (.join)))
+(defn foo-bar-fn [] nil)
 
 (describe "Stubs"
 
@@ -62,13 +58,15 @@
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
 
   (context "multiple threads"
+
     (around [it]
-      (with-redefs [fn-under-test (stub :foo)]
+      (with-redefs [foo-bar-fn (stub :foo-bar-fn)]
         (it)))
 
+    #+clj
     (it "stubs the functions in the other thread"
-      (spawn-other-thread)
-      (should-have-invoked :foo {:times 1})))
+      (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join))
+      (should-have-invoked :foo-bar-fn {:times 1})))
       
   (context "invocations"
     (with foo (stub :foo))
