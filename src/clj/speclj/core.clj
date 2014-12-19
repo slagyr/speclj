@@ -3,6 +3,9 @@
   in both Clojure and ClojureScript."
   (:require [clojure.data]))
 
+(try (require 'speclj.run.standard)
+  (catch Exception _))
+
 (def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
 
 (defmacro -new-exception
