@@ -24,7 +24,7 @@
   (if cljs? `(speclj.platform.SpecPending. ~message) `(speclj.SpecPending. ~message)))
 
 (defmacro it
-  "body => any forms but aught to contain at least one assertion (should)
+  "body => any forms but ought to contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]

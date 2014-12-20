@@ -10,10 +10,24 @@
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
 
-(defn nested-fns [base fns]
+(defn- nested-fns-without-catching [base fns]
   (if (seq fns)
-    (partial (first fns) (nested-fns base (rest fns)))
+    (partial (first fns) (nested-fns-without-catching base (rest fns)))
     base))
+
+(defn nested-fns [base fns]
+  (let [base-error (atom nil)
+        safe-base (fn []
+                    (try (base)
+                         (catch
+                           #+clj Throwable
+                           #+cljs js/Object
+                           e
+                           (reset! base-error e))))]
+    (fn []
+      (let [result ((nested-fns-without-catching safe-base fns))]
+        (when @base-error (throw @base-error))
+        result))))
 
 (defn- eval-characteristic [befores body afters]
   (eval-components befores)

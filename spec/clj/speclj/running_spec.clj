@@ -65,6 +65,26 @@
     (run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
+  (it "runs complete arounds with failures"
+    (eval
+      '(describe "Dummy"
+         (around [it] (it) (reset! bauble nil))
+         (it "changes the bauble"
+           (reset! bauble :something)
+           (should-fail))))
+    (run-and-report *runner* *reporters*)
+    (should= nil @bauble))
+
+  (it "runs complete arounds with error"
+    (eval
+      '(describe "Dummy"
+         (around [it] (it) (reset! bauble nil))
+         (it "changes the bauble"
+           (reset! bauble :something)
+           (throw (Exception. "blah")))))
+    (run-and-report *runner* *reporters*)
+    (should= nil @bauble))
+
   (it "doesn't crash when declaring a with named the same as a pre-existing var"
     (let [spec
           `(describe "Dummy"
