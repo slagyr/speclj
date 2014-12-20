@@ -7,6 +7,8 @@
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]))
 
+(defn foo-bar-fn [] nil)
+
 (describe "Stubs"
 
   (with-stubs)
@@ -55,6 +57,17 @@
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
 
+  (context "multiple threads"
+
+    (around [it]
+      (with-redefs [foo-bar-fn (stub :foo-bar-fn)]
+        (it)))
+
+    #+clj
+    (it "stubs the functions in the other thread"
+      (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join))
+      (should-have-invoked :foo-bar-fn {:times 1})))
+      
   (context "invocations"
     (with foo (stub :foo))
     (with bar (stub :bar))

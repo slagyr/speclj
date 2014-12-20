@@ -290,7 +290,7 @@ $ cd speclj
 $ lein spec
 ```
 
-To make sure tests pass ClojureScript too:
+To make sure tests pass ClojureScript too, make sure you have [phantomjs](http://phantomjs.org/download.html) installed and then run:
 
 ```bash
 lein cljsbuild clean
