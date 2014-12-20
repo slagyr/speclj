@@ -560,8 +560,8 @@ When a string is also passed, it asserts that the message of the Exception is eq
 
 (defmacro with-stubbed-invocations [& body]
   `(if (not (speclj.platform/bound-by-should-invoke?))
-     (binding [speclj.stub/*stubbed-invocations* (atom [])
-               speclj.platform/*bound-by-should-invoke* true]
+     (with-redefs [speclj.stub/*stubbed-invocations* (atom [])
+                   speclj.platform/*bound-by-should-invoke* true]
        ~@body)
      (do ~@body)))
 

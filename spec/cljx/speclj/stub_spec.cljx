@@ -57,17 +57,22 @@
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
 
+  #+clj
   (context "multiple threads"
 
     (around [it]
       (with-redefs [foo-bar-fn (stub :foo-bar-fn)]
         (it)))
 
-    #+clj
     (it "stubs the functions in the other thread"
       (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join))
-      (should-have-invoked :foo-bar-fn {:times 1})))
-      
+      (should-have-invoked :foo-bar-fn {:times 1}))
+
+    (it "allows should-invoke to work as expected"
+      (should-invoke
+        foo-bar-fn {:times 1}
+        (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join)))))
+
   (context "invocations"
     (with foo (stub :foo))
     (with bar (stub :bar))
