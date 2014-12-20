@@ -1,8 +1,16 @@
+# 3.1.1
+* Add `around-all` @ryankinderman https://github.com/slagyr/speclj/pull/86
+* Allow `--speclj` as alternative help option @arlandism https://github.com/slagyr/speclj/pull/103
+* Allow `lein spec --help` in lein 2.4+
+* Support alternate test-paths (besides `spec`) more fully. https://github.com/slagyr/speclj/issues/101
+* Avoid using `load-file` for versioning. https://github.com/slagyr/speclj/issues/87
+* Avoid the dreaded `ClassNotFoundException: speclj.components` in the REPL. https://github.com/slagyr/speclj/issues/79
+
 # 3.1.0
 
 * upgrade to clojure 1.6
-* upgrade clojurescript to 0.0-2234 and cljsbuild to 1.0.3 
-* should-throw matches regex. @TakaGoto https://github.com/slagyr/speclj/pull/95 
+* upgrade clojurescript to 0.0-2234 and cljsbuild to 1.0.3
+* should-throw matches regex. @TakaGoto https://github.com/slagyr/speclj/pull/95
 * `lein spec` no longer hangs when exiting if agents were used. @sdegutis https://github.com/slagyr/speclj/issues/94
 * Fix for inproper exit-code on spec failures. @CraZySacX https://github.com/slagyr/speclj/pull/90
 * Rerun all tests by pressing <Enter> in vigilant runner. @kevinbuch https://github.com/slagyr/speclj/issues/41
@@ -25,7 +33,7 @@
 
 # 2.9.1
 
-* adds :* and fn matchers to stub invokation checking
+* adds `:*` and fn matchers to stub invokation checking
 
 # 2.9.0
 
