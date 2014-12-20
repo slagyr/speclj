@@ -5,6 +5,7 @@
 * Support alternate test-paths (besides `spec`) more fully. https://github.com/slagyr/speclj/issues/101
 * Avoid using `load-file` for versioning. https://github.com/slagyr/speclj/issues/87
 * Avoid the dreaded `ClassNotFoundException: speclj.components` in the REPL. https://github.com/slagyr/speclj/issues/79
+* Make stubs work in multithreaded or lazy situations @finn1317 https://github.com/slagyr/speclj/pull/114
 
 # 3.1.0
 
