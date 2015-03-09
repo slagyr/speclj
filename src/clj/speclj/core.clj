@@ -108,7 +108,7 @@
                       (with-meta
                         (symbol
                           ((ns-resolve 'cljs.compiler (symbol "munge"))
-                           (str name))) {:dynamic true})
+                            (str name))) {:dynamic true})
                       var-name)
         unique-name (gensym "with")]
     `(do
@@ -262,7 +262,7 @@
   `(let [expected# ~expected
          actual# ~actual]
      (cond
-       (nil? actual#) nil ; automatic pass!
+       (nil? actual#) nil                                   ; automatic pass!
        (and (string? expected#) (string? actual#))
        (when (not (= -1 (.indexOf actual# expected#)))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using .contains)")))
@@ -578,7 +578,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(let [options# ~options]
        (with-stubbed-invocations
          (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-                      ~@body)
+           ~@body)
          (should-have-invoked ~var-name options#)))))
 
 (defmacro should-not-invoke
@@ -595,8 +595,9 @@ When a string is also passed, it asserts that the message of the Exception is eq
     `(let [options# ~options]
        (with-stubbed-invocations
          (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-                      ~@body)
+           ~@body)
          (should-not-have-invoked ~var-name options#)))))
+
 
 (defmacro run-specs []
   "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
@@ -604,7 +605,8 @@ runner and reporter.  A call to this function is typically placed at the end of 
 are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
 
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
-  `(do
-     (require '[speclj.cli]) ; require all speclj files
-     (speclj.run.standard/run-specs)))
-
+  (if cljs?
+    (comment "Ignoring run-specs for clojurescript")
+    `(do
+       (require '[speclj.cli])                              ; require all speclj files
+       (speclj.run.standard/run-specs))))

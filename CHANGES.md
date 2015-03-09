@@ -1,4 +1,7 @@
-# 3.1.1
+# 3.2.0
+
+* fixes (run-spec) error in cljs - https://github.com/slagyr/speclj/issues/89
+* upgrade dependencies: clojurescript 0.0-3030, cljsbuild 1.0.5, cljx 0.6.0
 * Add `around-all` @ryankinderman https://github.com/slagyr/speclj/pull/86
 * Allow `--speclj` as alternative help option @arlandism https://github.com/slagyr/speclj/pull/103
 * Allow `lein spec --help` in lein 2.4+

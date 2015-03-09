@@ -3,12 +3,11 @@
 
 (declare ^:dynamic *stubbed-invocations*)
 
-
 (defn- check-recording []
   (when-not #+clj (bound? #'*stubbed-invocations*)
-                  #+cljs *stubbed-invocations*
-                  (throw (#+clj java.lang.Exception.
-                          #+cljs js/Error. "Stub recoding not bound.  Please add (with-stubs) to the decribe/context."))))
+            #+cljs *stubbed-invocations*
+    (throw (#+clj java.lang.Exception.
+             #+cljs js/Error. "Stub recoding not bound.  Please add (with-stubs) to the decribe/context."))))
 
 (defn -record-invocation [name args]
   (check-recording)
@@ -33,7 +32,7 @@
    (let [delegate (:invoke options)]
      (when (and delegate (not (ifn? delegate)))
        (throw (#+clj java.lang.Exception.
-               #+cljs js/Error. "stub's :invoke argument must be an ifn")))
+                #+cljs js/Error. "stub's :invoke argument must be an ifn")))
      (fn [& args]
        (-record-invocation name args)
        (let [result (if delegate (invoke-delegate name delegate args) nil)]
@@ -47,8 +46,8 @@
   "Returns a list of argument lists representing each invocation of the specified stub."
   [name]
   (map second
-       (filter #(= name (first %))
-               @*stubbed-invocations*)))
+    (filter #(= name (first %))
+      @*stubbed-invocations*)))
 
 (defn first-invocation-of
   "Returns the list of arguments passed into the first invocation of the specified stub, nil if it was never invoked."
@@ -66,11 +65,11 @@
     (sequential? actual)
     (= (count expected) (count actual))
     (every? true?
-            (map
-              (fn [e a]
-                (cond
-                  (= :* e) true
-                  (fn? e) (or (= e a) (e a))
-                  :else (= e a)))
-              expected actual))))
+      (map
+        (fn [e a]
+          (cond
+            (= :* e) true
+            (fn? e) (or (= e a) (e a))
+            :else (= e a)))
+        expected actual))))
 

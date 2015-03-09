@@ -1,4 +1,4 @@
-(defproject speclj "3.1.1-SNAPSHOT"
+(defproject speclj "3.2.0"
   :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
   :url "http://speclj.com"
   :license {:name         "The MIT License"
@@ -10,7 +10,6 @@
   :javac-options ["-target" "1.5" "-source" "1.5"]
   :source-paths ["src/clj" "src/cljs"]
   :test-paths ["spec/clj" "target/test-classes"]
-  :hooks [cljx.hooks]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [fresh "1.0.2"]
@@ -32,11 +31,11 @@
 
   :java-source-paths ["src/clj"]
 
-  :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.2"]
-                                  [org.clojure/clojurescript "0.0-2234"]]
-                   :plugins      [[com.keminglabs/cljx "0.3.2"]
-                                  [org.clojure/clojurescript "0.0-2234"]
-                                  [lein-cljsbuild "1.0.3"]]}}
+  :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.6.0"]
+                                  [org.clojure/clojurescript "0.0-3030"]]
+                   :plugins      [[com.keminglabs/cljx "0.6.0"]
+                                  [org.clojure/clojurescript "0.0-3030"]
+                                  [lein-cljsbuild "1.0.5"]]}}
 
   :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"
@@ -44,6 +43,8 @@
                                     :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
                                     }}
               :test-commands {"unit" ["phantomjs" "bin/specljs" "target/tests.js"]}}
+
+  :prep-tasks [["cljx" "once"] "javac" "compile"]
 
   :aliases {"cljs" ["do" "clean," "cljx," "cljsbuild" "once" "dev"]
             "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
