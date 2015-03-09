@@ -8,7 +8,7 @@
 
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :javac-options ["-target" "1.5" "-source" "1.5"]
-  :source-paths ["src/clj" "src/cljs"]
+  :source-paths ["src/clj" "src/cljs" "target/src/clj" "target/src/cljs"]
   :test-paths ["spec/clj" "target/src/clj"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
