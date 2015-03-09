@@ -3,9 +3,21 @@
   (:require [speclj.core]
             [project.core]))
 
-(describe "A ClojureScript test"
-  (it "fails. Fix it!"
-    (should= 0 1)))
+(describe "Core"
+
+  (it "failing spec"
+    (should= 0 1))
+
+  (it "throws an ex-info"
+    (throw (ex-info "I'm not a failure!" {:foo "bar"})))
+
+  (it "throws an error"
+    (throw (js/Error. "I'm not a failure either!")))
+
+  (it "throws an string"
+    (throw "I'm a string!"))
+
+  )
 
 
 (speclj.core/run-specs)

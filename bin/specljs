@@ -8,6 +8,12 @@ p.onConsoleMessage = function (x) {
     fs.write("/dev/stdout", x, "w");
 };
 
+if (!fs.exists(sys.args[1]))
+{
+    console.log("js file missing: " + sys.args[1]);
+    phantom.exit(-1);
+}
+
 p.injectJs(sys.args[1]);
 
 

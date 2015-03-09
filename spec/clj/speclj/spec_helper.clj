@@ -10,7 +10,7 @@
      ~@body
      :pass
      ~(if cljs?
-        '(catch js/Object e# e#)
+        '(catch :default e# e#)
         '(catch java.lang.Throwable e# e#))))
 
 (defmacro should-pass! [& body]

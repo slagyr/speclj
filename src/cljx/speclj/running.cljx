@@ -52,7 +52,7 @@
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
       (catch #+clj java.lang.Throwable
-             #+cljs js/Object
+             #+cljs :default
              e
         (if (pending? e)
           (report-result pending-result characteristic start-time reporters e)

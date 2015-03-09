@@ -63,7 +63,7 @@
   (try
     (dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
     (catch #+clj java.lang.Exception
-      #+cljs js/Object e
+      #+cljs :default e
       (throw (#+clj java.lang.Exception.
               #+cljs js/Error. (str "Failed to load runner: " name) e)))))
 
@@ -71,7 +71,7 @@
   (try
     (dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
     (catch #+clj java.lang.Exception
-      #+cljs js/Object e
+      #+cljs :default e
       (throw (#+clj java.lang.Exception.
               #+cljs js/Error. (str "Failed to load reporter: " name) e)))))
 

@@ -2,6 +2,12 @@
   (:require [speclj.core :refer :all]
             [project.core :refer :all]))
 
-(describe "A Clojure test"
-  (it "fails. Fix it!"
-    (should= 0 1)))
+(describe "Core"
+
+  (it "failing spec"
+    (should= 0 1))
+
+  (it "throws an ex-info"
+    (throw (ex-info "I'm not a failure" {:foo "bar"})))
+
+  )

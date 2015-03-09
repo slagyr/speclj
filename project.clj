@@ -9,7 +9,7 @@
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :javac-options ["-target" "1.5" "-source" "1.5"]
   :source-paths ["src/clj" "src/cljs"]
-  :test-paths ["spec/clj" "target/test-classes"]
+  :test-paths ["spec/clj" "target/src/clj"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [fresh "1.0.2"]
@@ -17,16 +17,16 @@
                  [trptcolin/versioneer "0.1.1"]]
 
   :cljx {:builds [{:source-paths ["src/cljx"]
-                   :output-path  "target/classes"
+                   :output-path  "target/src/clj"
                    :rules        :clj}
                   {:source-paths ["src/cljx"]
-                   :output-path  "target/classes"
+                   :output-path  "target/src/cljs"
                    :rules        :cljs}
                   {:source-paths ["spec/cljx"]
-                   :output-path  "target/test-classes"
+                   :output-path  "target/spec/clj"
                    :rules        :clj}
                   {:source-paths ["spec/cljx"]
-                   :output-path  "target/test-classes"
+                   :output-path  "target/spec/cljs"
                    :rules        :cljs}]}
 
   :java-source-paths ["src/clj"]
@@ -37,16 +37,17 @@
                                   [org.clojure/clojurescript "0.0-3030"]
                                   [lein-cljsbuild "1.0.5"]]}}
 
-  :cljsbuild {:builds        {:dev {:source-paths   ["target/classes" "src/cljs" "target/test-classes" "spec/cljs"]
+  :cljsbuild {:builds        {:dev {:source-paths   ["target/src/cljs" "src/cljs" "target/spec/cljs" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"
                                                      :pretty-print true}
                                     :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
                                     }}
-              :test-commands {"unit" ["phantomjs" "bin/specljs" "target/tests.js"]}}
+              ;:test-commands {"test" ["phantomjs" "bin/specljs" "target/tests.js"]}
+              }
 
   :prep-tasks [["cljx" "once"] "javac" "compile"]
 
-  :aliases {"cljs" ["do" "clean," "cljx," "cljsbuild" "once" "dev"]
+  :aliases {"cljs" ["do" "clean," "cljx" "once," "cljsbuild" "once" "dev"]
             "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
 
   :eval-in :leiningen ; to recognize spec task
