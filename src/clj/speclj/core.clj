@@ -81,6 +81,10 @@
   The characteristic will be passed in and the around function is responsible for invoking it.
 
   (around [it] (binding [*out* new-out] (it)))
+
+  Note that if you have cleanup that must run, use a finally block:
+
+  (around [it] (try (it) (finally :clean-up)))
   "
   [binding & body]
   `(speclj.components/new-around (fn ~binding ~@body)))
