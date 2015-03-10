@@ -6,21 +6,21 @@
 (try (require 'speclj.run.standard)
   (catch Exception _))
 
-(def ^:private cljs? (boolean (find-ns 'cljs.analyzer)))
+(def ^:private ^:no-doc cljs? (boolean (find-ns 'cljs.analyzer)))
 
-(defmacro -new-exception
+(defmacro ^:no-doc -new-exception
   ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
   ([message] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message)))
   ([message cause] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message ~cause))))
 
-(defmacro -new-throwable
+(defmacro ^:no-doc -new-throwable
   ([] (if cljs? `(js/Object.) `(java.lang.Throwable.)))
   ([message] (if cljs? `(js/Object. ~message) `(java.lang.Throwable. ~message))))
 
-(defmacro -new-failure [message]
+(defmacro ^:no-doc -new-failure [message]
   (if cljs? `(speclj.platform.SpecFailure. ~message) `(speclj.SpecFailure. ~message)))
 
-(defmacro -new-pending [message]
+(defmacro ^:no-doc -new-pending [message]
   (if cljs? `(speclj.platform.SpecPending. ~message) `(speclj.SpecPending. ~message)))
 
 (defmacro it
@@ -37,7 +37,7 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
-(defmacro when-not-bound [name & body]
+(defmacro ^:no-doc when-not-bound [name & body]
   (if cljs?
     `(when-not ~name ~@body)
     `(when-not (bound? (find-var '~name)) ~@body)))
@@ -163,10 +163,12 @@
   [name & body]
   (-make-with name body `speclj.components/new-with-all true))
 
-(defmacro -to-s [thing]
+(defmacro ^:no-doc -to-s [thing]
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
 
-(defmacro -fail [message]
+(defmacro -fail
+  "Useful for making custom assertions."
+  [message]
   `(throw (-new-failure ~message)))
 
 (defmacro should
@@ -281,7 +283,7 @@
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
        :else (throw (-new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
 
-(defmacro -remove-first [coll value]
+(defmacro ^:no-doc -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
      (if (empty? coll#)
        seen#
@@ -290,7 +292,7 @@
            (concat seen# (rest coll#))
            (recur (rest coll#) (conj seen# f#)))))))
 
-(defmacro -coll-difference [coll1 coll2]
+(defmacro ^:no-doc -coll-difference [coll1 coll2]
   `(if (map? ~coll1)
      (first (clojure.data/diff ~coll1 ~coll2))
      (loop [match-with# ~coll1 match-against# ~coll2 diff# []]
@@ -302,7 +304,7 @@
              (recur r# (-remove-first match-against# f#) diff#)
              (recur r# match-against# (conj diff# f#))))))))
 
-(defmacro -difference-message [expected actual extra missing]
+(defmacro ^:no-doc -difference-message [expected actual extra missing]
   `(str
      "Expected contents: " (-to-s ~expected) speclj.platform/endl
      "              got: " (-to-s ~actual) speclj.platform/endl
@@ -355,7 +357,7 @@
   ([] `(should-fail "Forced failure"))
   ([message] `(-fail ~message)))
 
-(defmacro -create-should-throw-failure [expected actual expr]
+(defmacro ^:no-doc -create-should-throw-failure [expected actual expr]
   `(let [expected-name# (speclj.platform/type-name ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
          actual-string# (if ~actual (pr-str ~actual) "<nothing thrown>")]
@@ -554,15 +556,15 @@ When a string is also passed, it asserts that the message of the Exception is eq
 
         ))))
 
-(def ^:dynamic *bound-by-should-invoke* false)
+(def ^:dynamic ^:no-doc *bound-by-should-invoke* false)
 
-(defmacro bound-by-should-invoke? []
+(defmacro ^:no-doc bound-by-should-invoke? []
   `(if cljs?
      *bound-by-should-invoke*
      (and (bound? #'*bound-by-should-invoke*)
           *bound-by-should-invoke*)))
 
-(defmacro with-stubbed-invocations [& body]
+(defmacro ^:no-doc with-stubbed-invocations [& body]
   `(if (not (speclj.platform/bound-by-should-invoke?))
      (with-redefs [speclj.stub/*stubbed-invocations* (atom [])
                    speclj.platform/*bound-by-should-invoke* true]
