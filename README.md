@@ -47,6 +47,8 @@ $ lein install
 
 ### [API Documentation](http://micahmartin.com/speclj/)
 
+Start with the `speclj.core` namespace.  That is Speclj's API and it's very unlikely you'll need anything else.
+
 ## Clojure
 
 ### File Structure
@@ -87,8 +89,8 @@ Checkout this example spec file. It would be located at `sample_project/spec/sam
 Your spec files should `:require` the `speclj.core` in it's entirety.  It's a clean namespace and you're likely going to use all the definitions within it.  Don't forget to pull in the library that you're testing as well (sample.core in this case).
 
 ```clojure
-(use 'speclj.core)
-(use 'sample.core)
+(require '[speclj.core :refer :all])
+(require '[sample.core :refer :all])
 ```
 
 #### describe
@@ -121,51 +123,50 @@ At the very end of the file is an invocation of `(run-specs)`.  This will invoke
 ```
 
 ### should Variants (Assertions)
-There are several ways to make assertions.  They are documented on the wiki: [Should Variants](https://github.com/slagyr/speclj/wiki/Should-variants)
+There are may ways to make assertions.  Check out the [API Documentation](http://micahmartin.com/speclj/speclj.core.html).  Take note of everything that starts with `should`.
 
 ### Spec Components
-`it` or characteristics are just one of several spec components allowed in a `describe`.  Others like `before`, `with`, `around`, etc are helpful in keeping your specs clean and dry.  Check out the listing on the wiki: [Spec Components](https://github.com/slagyr/speclj/wiki/Spec-components)
+`it` or characteristics are just one of several spec components allowed in a `describe`.  Others like `before`, `with`, `around`, etc are helpful in keeping your specs clean and dry.  The same [API Documentation](http://micahmartin.com/speclj/speclj.core.html) lists the spec component (everything that doesn't start with `should`).
 
 ## Running Specs
 
 ### With Leiningen
-Speclj includes a Leiningen task to execute `speclj.main`.
+Speclj includes a Leiningen task.
 
 ```bash
-$ lein spec
+$ lein spec <OPTIONS>
 ```
 
 ### Using `lein run`
-The command below will run all the specs found in `"spec"` directory.
+Speclj also includes a Clojure main namespace:
 
 ```bash
-$ lein run -m speclj.main
+$ lein run -m speclj.main <OPTIONS>
 ```
 
 ### As a Java command
-The command below will run all the specs found in `"spec"` directory.
+And sometimes it's just easier to run a Java command, like from an IDE.
 
 ```bash
-$ java -cp <...> speclj.main
+$ java -cp <...> speclj.main <OPTIONS>
+$ java -cp `lein classpath` speclj.main
 ```
 
 ### Autotest
-The command below will start a process that will watch the source files and run specs for any updated files.
+The `-a` options invokes the "vigilant" auto-runner.  This command will run all your specs, and then wait.  When you save any test(ed) code, it will run all the affected specs, and wait again.  It's HIGHLY recommended.
 
 ```bash
 $ lein spec -a
 ```
 
 ### Options
-There are several options for the runners.  Use the `--help` options to see them all.  Or visit [Command Line Options](https://github.com/slagyr/speclj/wiki/Command-Line-Options).
+There are several options for the runners.  Use the `--help` options to see them all.
 
 ```bash
 $ lein spec --help
 ```
-
 ### `:eval-in`
-To make your tests start up slightly faster, you can add `:speclj-eval-in :leiningen` to your project map.
-
+When using `lein spec` you can get a little faster startup by adding `:speclj-eval-in :leiningen` to your project map.  It will prevent Leiningen from spinning up another Java process and instead run the specs in Leiningen's process.  Use at your own risk.
 
 ## ClojureScript
 
@@ -252,13 +253,13 @@ Checkout this example spec file. It would be located at `sample_project/spec/clj
 (run-specs)
 ```
 
-### speclj.core namespace
-Your spec files should `:require` the `speclj.core` just like in clojure. Don't forget to pull in the library that you're testing as well (sample.core in this case).  
+### speclj.core namespace  
 
-You'll also need to `:require-macros` the `speclj.core` and `:refer` each speclj test word that you want to use.  In the example below, we are using __describe__, __it__, __should__, __should-not__, and __run-spec__.
-If you wanted to use __context__ you would simply add it to the current `:refer` collection.  For a list of speclj test words go to the [speclj documentation](http://speclj.com/docs)
+You'll need to `:require-macros` the `speclj.core` namespace and `:refer` each speclj test word that you want to use.  In the example below, we are using __describe__, __it__, __should__, __should-not__, and __run-spec__.  Yes, this is unfortunate, but unavoidable.  If you wanted to use __context__ you would simply add it to the current `:refer` collection.  For a list of speclj test words go to the [API Documentation](http://micahmartin.com/speclj/speclj.core.html)
 
-As a final note, your own library must be __aliased__ using `:as`.  This is a current ClojureScript requirement.
+Your spec files must `:require` the `speclj.core` too, even though we don't alias it or refer anything. Don't forget this! It loads all the needed speclj namespaces. Also pull in the library that you're testing (sample.core in this case).
+
+As a final note, when requiring your tested namespaces (sample.core in this case), you'll probabaly want to __alias__ it using `:as`. 
 
 ```clojure
 (:require-macros [speclj.core :refer [describe it should should-not run-specs])
