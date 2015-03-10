@@ -2,7 +2,7 @@
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
 
-[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript)
+[Installation](#installation) | [Clojure](#Clojure) | [ClojureScript](#ClojureScript)
 
 # Installation
 
@@ -38,9 +38,9 @@ $ lein install
 
 # Usage
 
-## [API Documentation](http://micahmartin.com/speclj/)
+### [API Documentation](http://micahmartin.com/speclj/)
 
-## Usage with Clojure
+## Clojure
 
 ### File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
@@ -160,7 +160,7 @@ $ lein spec --help
 To make your tests start up slightly faster, you can add `:speclj-eval-in :leiningen` to your project map.
 
 
-## Usage with ClojureScript
+## ClojureScript
 
 ### File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.cljs' postfix.
