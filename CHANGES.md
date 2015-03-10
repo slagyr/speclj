@@ -1,5 +1,6 @@
 # 3.2.0
 
+* cljs specs catch Strings thrown as exception - https://github.com/slagyr/speclj/issues/122
 * fixes (run-spec) error in cljs - https://github.com/slagyr/speclj/issues/89
 * upgrade dependencies: clojurescript 0.0-3030, cljsbuild 1.0.5, cljx 0.6.0
 * Add `around-all` @ryankinderman https://github.com/slagyr/speclj/pull/86
