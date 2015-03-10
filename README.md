@@ -36,11 +36,11 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 $ lein install
 ```
 
-# [API Documentation](http://micahmartin.com/speclj/)
+# Usage
 
-# Clojure
+## [API Documentation](http://micahmartin.com/speclj/)
 
-## Usage
+## Usage with Clojure
 
 ### File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
@@ -160,9 +160,9 @@ $ lein spec --help
 To make your tests start up slightly faster, you can add `:speclj-eval-in :leiningen` to your project map.
 
 
-#ClojureScript
+## Usage with ClojureScript
 
-## File Structure
+### File Structure
 All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.cljs' postfix.
 
 	| sample_project
@@ -180,7 +180,7 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 	        	|-- core_spec.cljs
 	       		| (All your other test code)
 
-## 1. Configure Your project.clj File
+### 1. Configure Your project.clj File
 
 [`lein-cljsbuild`](https://github.com/emezeske/lein-cljsbuild) is a Leiningen plugin that'll get you up and running with ClojureScript.  You'll need to add a `:cljsbuild` configuration map to your `project.clj`.
 
@@ -197,7 +197,7 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 Speclj works by operating on your compiled ClojureScript.  The `:notify-command` will execute the `bin/speclj` command after your cljs is compiled.  The `bin/speclj` command will use speclj to evaluate your compiled ClojureScript.
 
 
-## 2. Create test runner executable
+### 2. Create test runner executable
 
 Create a file named `speclj` in your `bin` directory and copy the code below:
 
@@ -225,7 +225,7 @@ phantom.exit(result);
 ```
 
 
-## A Sample Spec File
+### A Sample Spec File
 Checkout this example spec file. It would be located at `sample_project/spec/cljs/sample/core_spec.cljs`.  Below we'll look at it piece by piece.
 
 ```clojure
@@ -259,7 +259,7 @@ As a final note, your own library must be __aliased__ using `:as`.  This is a cu
           [sample.core :as my-core]))
 ```
 
-## Running Specs
+### Running ClojureScript Specs
 
 ### With Leiningen
 We defer to `cljsbuild` to run our test command.
@@ -277,6 +277,7 @@ $ bin/speclj path/to/compiled.js
 
 # Community
 
+* API Documentaiton [http://micahmartin.com/speclj/](http://micahmartin.com/speclj/)
 * Source code: [https://github.com/slagyr/speclj](https://github.com/slagyr/speclj)
 * Wiki: [https://github.com/slagyr/speclj/wiki](https://github.com/slagyr/speclj/wiki)
 * Email List: [http://groups.google.com/group/speclj](http://groups.google.com/group/speclj)
