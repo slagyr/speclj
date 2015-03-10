@@ -1,12 +1,6 @@
-lib
-classes
-out
-*.jar
+*.iml
 .idea
-target
-*.iml
-pom.xml*
 .lein*
-cljs/js
-cljs/*/translated
-*.iml
+doc
+pom.xml*
+target

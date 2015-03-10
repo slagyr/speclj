@@ -1,13 +1,12 @@
 (ns speclj.cli
-  (:require [clojure.set :as set]
-            [speclj.config :refer :all]
+  (:require [speclj.config :refer :all]
             [speclj.platform :refer [endl]]
             [speclj.reporting :refer [stack-trace-str report-message*]]
             [speclj.run.standard]
             [speclj.running :refer [run-directories run-and-report]]
             [speclj.stub]
             [speclj.tags :refer [describe-filter]]
-            [speclj.version])
+            [trptcolin.versioneer.core :as version])
   (:import [mmargs Arguments]))
 
 (def speclj-invocation (or (System/getProperty "speclj.invocation") "java -cp [...] speclj.main"))
@@ -66,7 +65,7 @@
       (println error)))
   (println)
   (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
-  (println "Copyright (c) 2010-2014 Micah Martin under The MIT Licenses.")
+  (println "Copyright (c) 2010-2015 Micah Martin under The MIT Licenses.")
   (println)
   (println "Usage: " speclj-invocation (.argString arg-spec))
   (println)
@@ -75,7 +74,7 @@
   (if (seq errors) -1 0))
 
 (defn print-version []
-  (println speclj.version/summary))
+  (println (str "speclj " (version/get-version "speclj" "speclj"))))
 
 (defn parse-args [& args]
   (let [parse-result (.parse arg-spec (into-array String args))
