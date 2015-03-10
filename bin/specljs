@@ -27,4 +27,4 @@ var result = p.evaluate(function () {
         );
 });
 
-phantom.exit(result);
+//phantom.exit(result);

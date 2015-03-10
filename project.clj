@@ -35,7 +35,8 @@
                                   [org.clojure/clojurescript "0.0-3030"]]
                    :plugins      [[com.keminglabs/cljx "0.6.0"]
                                   [org.clojure/clojurescript "0.0-3030"]
-                                  [lein-cljsbuild "1.0.5"]]}}
+                                  [lein-cljsbuild "1.0.5"]
+                                  [lein-pdo "0.1.1"]]}}
 
   :cljsbuild {:builds        {:dev {:source-paths   ["target/src/cljs" "src/cljs" "target/spec/cljs" "spec/cljs"]
                                     :compiler       {:output-to    "target/tests.js"

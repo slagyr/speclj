@@ -1,5 +1,6 @@
 (ns speclj.running
   (:require [clojure.string :as str]
+            [speclj.async :as async]
             [speclj.components :refer [reset-with]]
             [speclj.config :refer [*runner* active-reporters]]
             [speclj.platform :refer [pending? throwable secs-since current-time]]
@@ -48,9 +49,11 @@
         withs (collect-components #(deref (.-withs %)) description)
         start-time (current-time)]
     (try
-      (do
-        (full-body)
-        (report-result pass-result characteristic start-time reporters nil))
+      (if async/*async?*
+        (async/do-characteristic full-body (fn [result-fn e] (report-result result-fn characteristic start-time reporters e)))
+        (do
+          (full-body)
+          (report-result pass-result characteristic start-time reporters nil)))
       (catch #+clj java.lang.Throwable
              #+cljs :default
              e
@@ -94,14 +97,12 @@
         var-names (map #(str ns "." (name (.-name %))) withs)
         unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
     (doseq [[n un] (partition 2 (interleave var-names unique-names))]
-      (let [code (str n " = " un ";")]
-        (js* "eval(~{})" code)))
+      (js/eval (str n " = " un ";")))
     (try
       (body)
       (finally
         (doseq [[n] var-names]
-          (let [code (str n " = null;")]
-            (js* "eval(~{})" code)))))))
+          (js/eval (str n " = null;")))))))
 
 (defn- nested-results-for-context [description reporters]
   (let [results (results-for-context description reporters)]
@@ -118,12 +119,10 @@
       (with-withs-bound description
         (fn []
           (eval-components @(.-before-alls description))
-
           (try
             (with-around-alls
               description
               (partial nested-results-for-context description reporters))
-
             (finally
               (reset-withs @(.-with-alls description)))))))))
 
