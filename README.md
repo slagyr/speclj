@@ -1,8 +1,13 @@
+<img src="http://speclj.com/images/speclj.png" style="float: right; width: 100px;"/>
 # speclj [![Build Status](https://secure.travis-ci.org/slagyr/speclj.png?branch=master)](http://travis-ci.org/slagyr/speclj)
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
 
 [Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript)
+
+
+
+[![Clojars Project](http://clojars.org/speclj/latest-version.svg)](http://clojars.org/speclj)
 
 # Installation
 
