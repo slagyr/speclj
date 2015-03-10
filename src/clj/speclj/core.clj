@@ -106,7 +106,7 @@
   [context & body]
   `(speclj.components/new-around-all (fn ~context ~@body)))
 
-(defn -make-with [name body ctor bang?]
+(defn ^:no-doc -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
         munged-name (if cljs?
                       (with-meta
