@@ -13,7 +13,14 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 ```bash
 lein new speclj YOUR_PROJECT_NAME
 ```
-See [@trptcolin's speclj template](https://github.com/trptcolin/speclj-template)
+[@trptcolin's speclj template](https://github.com/trptcolin/speclj-template) will generate all the files you need.
+
+Or, if you're using ClojureScript:
+
+```bash
+lein new specljs YOUR_PROJECT_NAME
+```
+[@ecmendenhall's specljs template](https://github.com/ecmendenhall/specljs-template) will save you lots of time by getting you started with a running Clojure & ClojureScript setup.
 
 ## Using Leiningen (2.0 or later)
 
@@ -307,7 +314,7 @@ Post issues on the speclj github project:
 
 * [https://github.com/slagyr/speclj/issues](https://github.com/slagyr/speclj/issues)
 
-# Compatibility
+## Compatibility
 
 * Speclj 2.* requires Clojure 1.4.0+
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
