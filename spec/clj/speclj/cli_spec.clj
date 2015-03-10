@@ -3,7 +3,7 @@
             [speclj.core :refer :all]
             [speclj.cli :refer :all]
             [speclj.platform :refer [endl]]
-            [speclj.version])
+            [trptcolin.versioneer.core :as version])
   (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
 
 (defn to-s [output]
@@ -55,7 +55,7 @@
 
   (it "handles the --version switch"
     (should= 0 (run "--version"))
-    (should= (str "speclj " speclj.version/string endl) (to-s @output)))
+    (should= (str "speclj " (version/get-version "speclj" "speclj") endl) (to-s @output)))
 
   (it "parses the --help switch"
     (should= nil (:help (parse-args "")))
