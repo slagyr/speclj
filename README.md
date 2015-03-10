@@ -36,7 +36,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 $ lein install
 ```
 
-#Clojure
+# [API Documentation](http://micahmartin.com/speclj/)
+
+# Clojure
 
 ## Usage
 
