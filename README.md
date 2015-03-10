@@ -2,7 +2,7 @@
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
 
-[Installation](#installation) | [Clojure](#Clojure) | [ClojureScript](#ClojureScript)
+[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript)
 
 # Installation
 
