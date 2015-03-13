@@ -5,7 +5,7 @@
             ;cljs-include [goog.string] ;cljs bug?
             #+cljs [goog.string]
             [speclj.components :refer [new-description new-characteristic install]]
-            [speclj.config :refer [*color?* *full-stack-trace?*]]
+            [speclj.config :refer [*color?* *full-stack-trace?* *omit-pending?*]]
             [speclj.platform :refer [format-seconds]]
             [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
             [speclj.reporting :refer [report-description report-pass report-pending
@@ -15,7 +15,9 @@
 
 (describe "Progress Reporter"
   (with reporter (new-progress-reporter))
-  (around [spec] (binding [*color?* false] (spec)))
+  (around [spec] (binding [*color?* false
+                           *omit-pending?* nil]
+                   (spec)))
 
   (it "reports pass"
     (should= "."
@@ -120,6 +122,14 @@
       (should= (grey "    ; Not Yet Implemented") (nth lines 4))
       ;      (should= (grey "    ; /Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:117") (nth lines 5))
       ))
+
+   (it "doesn't report pending summary with omit-pending flag enabled"
+    (binding [*omit-pending?* "on"]
+      (let [description (new-description "Crazy" "some.ns")
+            char1 (new-characteristic "flips" description "flip")
+            result1 (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
+            printed-results (with-out-str (print-pendings [result1]))]
+        (should= "" printed-results))))
 
   (it "reports error run results"
     (binding [*color?* true]

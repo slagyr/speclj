@@ -35,6 +35,8 @@
 
 (def #^{:dynamic true} *color?* false)
 
+(def #^{:dynamic true} *omit-pending?* false)
+
 (def #^{:dynamic true} *full-stack-trace?* false)
 
 (def #^{:dynamic true} *tag-filter* {:include #{} :exclude #{}})
@@ -102,6 +104,7 @@
    #'*reporters*         (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
    #'*specs*             (:specs config)
    #'*color?*            (:color config)
+   #'*omit-pending?*     (:omit-pending config)
    #'*full-stack-trace?* (not (nil? (:stacktrace config)))
    #'*tag-filter*        (parse-tags (:tags config))})
 

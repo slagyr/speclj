@@ -1,5 +1,5 @@
 (ns speclj.report.progress
-  (:require [speclj.config :refer [default-reporters]]
+  (:require [speclj.config :refer [default-reporters *omit-pending?*]]
             [speclj.platform :as platform]
             [speclj.reporting :refer [tally-time red green yellow grey stack-trace-str indent prefix]]
             [speclj.results :refer [pass? fail? pending? categorize]]
@@ -29,14 +29,15 @@
     (print-failure (inc i) (nth failures i))))
 
 (defn print-pendings [pending-results]
-  (when (seq pending-results)
-    (println)
-    (println "Pending:"))
-  (doseq [result pending-results]
-    (println)
-    (println (yellow (str "  " (full-name (.-characteristic result)))))
-    (println (grey (str "    ; " (platform/error-message (.-exception result)))))
-    (println (grey (str "    ; " (platform/failure-source (.-exception result)))))))
+  (when-not *omit-pending?*
+    (when (seq pending-results)
+      (println)
+      (println "Pending:"))
+    (doseq [result pending-results]
+      (println)
+      (println (yellow (str "  " (full-name (.-characteristic result)))))
+      (println (grey (str "    ; " (platform/error-message (.-exception result)))))
+      (println (grey (str "    ; " (platform/failure-source (.-exception result))))))))
 
 (defn print-errors [error-results]
   (when (seq error-results)
