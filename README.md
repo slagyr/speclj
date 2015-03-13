@@ -52,7 +52,7 @@ Start with the `speclj.core` namespace.  That is Speclj's API and it's very unli
 ## Clojure
 
 ### File Structure
-All your `speclj` code should go into a a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
+All your `speclj` code should go into a directory named `spec` at the root of your project.  Conventionally, the `spec` directory will mirror the `src` directory structure except that all the `spec` files will have the '_spec.clj' postfix.
 
 	| sample_project
 	|-- project.clj
@@ -94,7 +94,7 @@ Your spec files should `:require` the `speclj.core` in it's entirety.  It's a cl
 ```
 
 #### describe
-`describe` is the outer most container for specs.  It takes a `String` name and any number of _spec components_.
+`describe` is the outermost container for specs.  It takes a `String` name and any number of _spec components_.
 
 ```clojure
 (describe "Truth" ...)
@@ -123,7 +123,7 @@ At the very end of the file is an invocation of `(run-specs)`.  This will invoke
 ```
 
 ### should Variants (Assertions)
-There are may ways to make assertions.  Check out the [API Documentation](http://micahmartin.com/speclj/speclj.core.html).  Take note of everything that starts with `should`.
+There are many ways to make assertions.  Check out the [API Documentation](http://micahmartin.com/speclj/speclj.core.html).  Take note of everything that starts with `should`.
 
 ### Spec Components
 `it` or characteristics are just one of several spec components allowed in a `describe`.  Others like `before`, `with`, `around`, etc are helpful in keeping your specs clean and dry.  The same [API Documentation](http://micahmartin.com/speclj/speclj.core.html) lists the spec component (everything that doesn't start with `should`).
@@ -253,13 +253,13 @@ Checkout this example spec file. It would be located at `sample_project/spec/clj
 (run-specs)
 ```
 
-### speclj.core namespace  
+### speclj.core namespace
 
 You'll need to `:require-macros` the `speclj.core` namespace and `:refer` each speclj test word that you want to use.  In the example below, we are using __describe__, __it__, __should__, __should-not__, and __run-spec__.  Yes, this is unfortunate, but unavoidable.  If you wanted to use __context__ you would simply add it to the current `:refer` collection.  For a list of speclj test words go to the [API Documentation](http://micahmartin.com/speclj/speclj.core.html)
 
 Your spec files must `:require` the `speclj.core` too, even though we don't alias it or refer anything. Don't forget this! It loads all the needed speclj namespaces. Also pull in the library that you're testing (sample.core in this case).
 
-As a final note, when requiring your tested namespaces (sample.core in this case), you'll probabaly want to __alias__ it using `:as`. 
+As a final note, when requiring your tested namespaces (sample.core in this case), you'll probabaly want to __alias__ it using `:as`.
 
 ```clojure
 (:require-macros [speclj.core :refer [describe it should should-not run-specs])
