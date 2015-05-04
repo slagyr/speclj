@@ -572,7 +572,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
      (do ~@body)))
 
 (defmacro should-invoke
-  "Creates a stub, and binds it to the specified var, evaluates thns-resolve 'cljs.compilere body, and checks the invocations.
+  "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.
 
   (should-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3]))
 
