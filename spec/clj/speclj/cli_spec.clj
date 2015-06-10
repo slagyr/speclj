@@ -98,7 +98,7 @@
       (should= nil (:color (parse-args "-c" "-C"))))
 
   (it "parses the --omit-pending option"
-    (should= nil (:omit-pending (parse-args "")))
+    (should= false (:omit-pending (parse-args "")))
     (should= "on" (:omit-pending (parse-args "-p")))
     (should= "on" (:omit-pending (parse-args "--omit-pending"))))
 

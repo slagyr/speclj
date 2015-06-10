@@ -16,7 +16,7 @@
 (describe "Progress Reporter"
   (with reporter (new-progress-reporter))
   (around [spec] (binding [*color?* false
-                           *omit-pending?* nil]
+                           *omit-pending?* false]
                    (spec)))
 
   (it "reports pass"
