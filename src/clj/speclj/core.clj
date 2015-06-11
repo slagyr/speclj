@@ -367,7 +367,10 @@
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
 When an class is passed, it assets that the thrown Exception is an instance of the class.
-When a string is also passed, it asserts that the message of the Exception is equal to the string."
+There are three options for passing different kinds of predicates:
+  - If a string, assert that the message of the Exception is equal to the string.
+  - If a regex, assertsthat the message of the Exception matches the regex.
+  - If a function, assert that calling the function on the Exception returns a truthy value."
   ([form] `(should-throw speclj.platform/throwable ~form))
   ([throwable-type form]
    `(try
@@ -378,14 +381,20 @@ When a string is also passed, it asserts that the message of the Exception is eq
           (speclj.platform/failure? e#) (throw e#)
           (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
           :else e#))))
-  ([throwable-type message form]
+  ([throwable-type predicate form]
    `(let [e# (should-throw ~throwable-type ~form)
           regex# ~(if cljs? `js/RegExp `java.util.regex.Pattern)]
       (try
-        (if (instance? regex# ~message)
-          (should-not-be-nil (re-find ~message (speclj.platform/error-message e#)))
-          (should= ~message (speclj.platform/error-message e#)))
-        (catch ~(if cljs? ':default 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+        (cond (instance? regex# ~predicate)
+              (should-not-be-nil (re-find ~predicate (speclj.platform/error-message e#)))
+
+              (instance? clojure.lang.IFn ~predicate)
+              (should= true (~predicate e#))
+
+              :else
+              (should= ~predicate (speclj.platform/error-message e#)))
+
+        (catch ~(if cljs? ':default 'Throwable) f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."

@@ -7,7 +7,7 @@
                                  should= should== -to-s -new-throwable -new-exception]]
             [speclj.spec-helper :refer [should-fail! should-pass! failure-message]]
          )
-  (:require [speclj.platform :refer [endl exception type-name throwable]]
+  (:require [speclj.platform :refer [endl error-message exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Should Assertions: "
@@ -374,8 +374,14 @@
     (should-fail! (should-throw exception "My message" (throw (-new-exception "Not my message"))))
     (should-fail! (should-throw exception "My message" (throw (throwable "My message"))))
     (should-fail! (should-throw exception "My message" (+ 1 1)))
-    (should= (str "Expected exception message didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
+    (should= (str "Expected exception predicate didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
       (failure-message (should-throw exception "My message" (throw (-new-exception "Not my message"))))))
+
+  (it "should-throw can test an exception by calling a passed function"
+    (should-pass! (should-throw exception #(empty? (speclj.platform/error-message %)) (throw (-new-exception ""))))
+    (should-fail! (should-throw exception #((not (empty? (speclj.platform/error-message %))) (throw (-new-exception "")))))
+    (should= (str "Expected exception predicate didn't match" endl "Expected: true" endl "     got: \"Not my message\" (using =)")
+             (failure-message (should-throw exception  #(speclj.platform/error-message %) (throw (-new-exception "Not my message"))))))
 
   (it "should-not-throw tests that nothing was thrown"
     (should-pass! (should-not-throw (+ 1 1)))
