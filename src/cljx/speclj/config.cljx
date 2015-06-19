@@ -33,6 +33,8 @@
 
 (declare #^{:dynamic true} *specs*)
 
+(def #^{:dynamic true} *omit-pending?* false)
+
 (def #^{:dynamic true} *color?* false)
 
 (def #^{:dynamic true} *full-stack-trace?* false)
@@ -43,7 +45,8 @@
   {:specs     ["spec"]
    :runner    "standard"
    :reporters ["progress"]
-   :tags      []})
+   :tags      []
+   :omit-pending false})
 
 #+clj
 (defn config-bindings
@@ -102,6 +105,7 @@
    #'*reporters*         (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
    #'*specs*             (:specs config)
    #'*color?*            (:color config)
+   #'*omit-pending?*     (:omit-pending config)
    #'*full-stack-trace?* (not (nil? (:stacktrace config)))
    #'*tag-filter*        (parse-tags (:tags config))})
 
@@ -116,6 +120,7 @@
             *reporters* (if (:reporters config) (mapv load-reporter (:reporters config)) (active-reporters))
             *specs* (:specs config)
             *color?* (:color config)
+            *omit-pending?* (:omit-pending config)
             *full-stack-trace?* (not (nil? (:stacktrace config)))
             *tag-filter* (parse-tags (:tags config))]
     (action)))

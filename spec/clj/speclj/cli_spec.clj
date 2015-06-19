@@ -97,6 +97,11 @@
       (should= nil (:color (parse-args "-C")))
       (should= nil (:color (parse-args "-c" "-C"))))
 
+  (it "parses the --omit-pending option"
+    (should= false (:omit-pending (parse-args "")))
+    (should= "on" (:omit-pending (parse-args "-p")))
+    (should= "on" (:omit-pending (parse-args "--omit-pending"))))
+
   (it "builds var mappings from config"
     (with-bindings (config/config-mappings {:runner "standard" :reporter "progress" :color true})
       (should= true config/*color?*)))
@@ -127,7 +132,6 @@
     (should= ["one"] (:tags (parse-args "-t" "one")))
     (should= ["one" "~two"] (:tags (parse-args "--tag=one" "--tag=~two")))
     (should= ["one" "~two"] (:tags (parse-args "-t" "one" "-t" "~two"))))
-
-  )
+)
 
 (run-specs)
