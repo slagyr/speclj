@@ -57,7 +57,7 @@
             :aliases {"cljs" ["do" "clean," "cljx" "once," "cljsbuild" "once" "dev"]
                       "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
 
-            :eval-in :leiningen                             ; to recognize spec task
+            ;:eval-in :leiningen                             ; to recognize spec task
 
             :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.2.0/"
                     :src-linenum-anchor-prefix "L"}
