@@ -4,7 +4,8 @@
     [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
   (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
             [speclj.platform :refer [endl exception]]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :refer [run-specs]]
+            #?(:cljs [clojure.data])))
 
 (defn foo-bar-fn [] nil)
 

@@ -9,7 +9,7 @@
  Each run produced/touches a timestamp file, .specljs-timestamp
  */
 
-var outputDir = "target/classes";
+var outputDir = "target/cljs";
 var nsPrefix = "speclj";
 var runnerFile = "bin/specs.html";
 
@@ -25,7 +25,7 @@ String.prototype.startsWith = function (str) {
 };
 
 p.onConsoleMessage = function (x) {
-  fs.write("/dev/stdout", x + "\n", "w");
+  fs.write("/dev/stdout", x, "w");
 };
 
 var timestampFile = ".specljs-timestamp";
