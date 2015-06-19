@@ -104,4 +104,4 @@
 
   )
 
-(run-specs)
+(run-specs :color true)

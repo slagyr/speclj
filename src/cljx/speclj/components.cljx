@@ -128,7 +128,7 @@
 
 (defn new-with [name unique-name body bang]
   (let [with (With. name unique-name body (atom ::none) bang)]
-    (when bang (deref with))
+    (when bang (deref with)) ; TODO - MDM: This is the wrong place to deref.  Should do it in body right after arounds.
     with))
 
 #+clj
