@@ -4,7 +4,7 @@
   (:require [clojure.data]))
 
 (try (require 'speclj.run.standard)
-  (catch Exception _))
+     (catch Exception _))
 
 (def ^:private ^:no-doc cljs? (boolean (find-ns 'cljs.analyzer)))
 
@@ -367,7 +367,10 @@
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
 When an class is passed, it assets that the thrown Exception is an instance of the class.
-When a string is also passed, it asserts that the message of the Exception is equal to the string."
+There are three options for passing different kinds of predicates:
+  - If a string, assert that the message of the Exception is equal to the string.
+  - If a regex, assertsthat the message of the Exception matches the regex.
+  - If a function, assert that calling the function on the Exception returns a truthy value."
   ([form] `(should-throw speclj.platform/throwable ~form))
   ([throwable-type form]
    `(try
@@ -378,14 +381,21 @@ When a string is also passed, it asserts that the message of the Exception is eq
           (speclj.platform/failure? e#) (throw e#)
           (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
           :else e#))))
-  ([throwable-type message form]
+  ([throwable-type predicate form]
    `(let [e# (should-throw ~throwable-type ~form)
           regex# ~(if cljs? `js/RegExp `java.util.regex.Pattern)]
       (try
-        (if (instance? regex# ~message)
-          (should-not-be-nil (re-find ~message (speclj.platform/error-message e#)))
-          (should= ~message (speclj.platform/error-message e#)))
-        (catch ~(if cljs? ':default 'Throwable) f# (-fail (str "Expected exception message didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+        (cond (instance? regex# ~predicate)
+              (should-not-be-nil (re-find ~predicate (speclj.platform/error-message e#)))
+
+              (ifn? ~predicate)
+              (should= true (~predicate e#))
+              
+              :else
+              (should= ~predicate (speclj.platform/error-message e#)))
+
+        (catch ~(if cljs? ':default 'Throwable) f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
@@ -393,7 +403,7 @@ When a string is also passed, it asserts that the message of the Exception is eq
   `(try
      ~form
      (catch ~(if cljs? ':default 'Throwable) e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
-                                                             "                     but got: " (pr-str e#))))))
+                                                            "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
@@ -433,8 +443,8 @@ When a string is also passed, it asserts that the message of the Exception is eq
   "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
   []
   `(around [it#]
-           (with-redefs [speclj.stub/*stubbed-invocations* (atom [])]
-             (it#))))
+     (with-redefs [speclj.stub/*stubbed-invocations* (atom [])]
+       (it#))))
 
 (defmacro stub
   "Creates a stub function.  Each call to the stub will be recorded an can later be looked up using the specified name.

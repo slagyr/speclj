@@ -19,16 +19,7 @@
                            [trptcolin/versioneer "0.1.1"]]
 
             :profiles {:dev {:dependencies [[org.clojure/clojurescript "0.0-3308"]]
-                             :plugins      [
-                                            ;[lein-cljsbuild "1.0.6"]
-                                            [codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
-
-            ;:cljsbuild {:builds {:dev {:source-paths   ["src"]
-            ;                           :compiler       {:output-to    "target/tests.js"
-            ;                                            :pretty-print true}
-            ;                           ;:notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
-            ;                           :notify-command ["phantomjs" "bin/speclj.js"]
-            ;                           }}}
+                             :plugins      [[codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
 
             :prep-tasks ["javac" "compile"]
 

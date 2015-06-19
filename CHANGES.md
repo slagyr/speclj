@@ -1,3 +1,10 @@
+# 3.3.0
+
+* Uses Clojure 1.7 (RC2) with reader conditionals
+* upgrade to clojurescript 0.0.3308
+* dev - no more cljx or cljsbuild
+* Can ommit pending specs from output by @arlandism - https://github.com/slagyr/speclj/pull/125
+
 # 3.2.0
 
 * cljs specs catch Strings thrown as exception - https://github.com/slagyr/speclj/issues/122
