@@ -4,14 +4,17 @@
             :license {:name         "The MIT License"
                       :url          "file://LICENSE"
                       :distribution :repo
-                      :comments     "Copyright 2011-2014 Micah Martin All Rights Reserved."}
+                      :comments     "Copyright 2011-2015 Micah Martin All Rights Reserved."}
 
             :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
             :javac-options ["-target" "1.5" "-source" "1.5"]
             :source-paths ["src/clj" "src/cljs" "target/src/clj" "target/src/cljs"]
             :test-paths ["spec/clj" "target/spec/clj"]
 
-            :dependencies [[org.clojure/clojure "1.6.0"]
+            :dependencies [
+                           [org.clojure/clojure "1.7.0-RC2"]
+                           ;[org.clojure/clojure "1.6.0"]
+                           [org.clojure/clojurescript "0.0-3308"]
                            [fresh "1.0.2"]
                            [mmargs "1.2.0"]
                            [trptcolin/versioneer "0.1.1"]]
@@ -32,13 +35,13 @@
             :java-source-paths ["src/clj"]
 
             :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.6.0"]
-                                            [org.clojure/clojurescript "0.0-3030"]]
+                                            ;[org.clojure/clojurescript "0.0-3308"]
+                                            ]
                              :plugins      [[com.keminglabs/cljx "0.6.0"]
-                                            [org.clojure/clojurescript "0.0-3030"]
-                                            [lein-cljsbuild "1.0.5"]
+                                            [lein-cljsbuild "1.0.6"]
                                             [codox "0.8.11"]]}}
 
-            :cljsbuild {:builds {:dev {:source-paths   ["target/src/cljs" "src/cljs" "target/spec/cljs" "spec/cljs"]
+            :cljsbuild {:builds {:dev {:source-paths   ["src/clj" "target/src/cljs" "src/cljs" "target/spec/cljs" "spec/cljs"]
                                        :compiler       {:output-to    "target/tests.js"
                                                         :pretty-print true}
                                        :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
