@@ -390,7 +390,7 @@ There are three options for passing different kinds of predicates:
 
               (ifn? ~predicate)
               (should= true (~predicate e#))
-              
+
               :else
               (should= ~predicate (speclj.platform/error-message e#)))
 

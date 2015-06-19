@@ -4,6 +4,8 @@
 * upgrade to clojurescript 0.0.3308
 * dev - no more cljx or cljsbuild
 * Can ommit pending specs from output by @arlandism - https://github.com/slagyr/speclj/pull/125
+* should-throw allow arbitrary exception validation by @tjarvstrand - https://github.com/slagyr/speclj/pull/132
+* merge pull request by @ryankinderman - https://github.com/slagyr/speclj/pull/129 
 
 # 3.2.0
 
