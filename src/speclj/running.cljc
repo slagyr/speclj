@@ -51,14 +51,14 @@
       (do
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
-      (catch #+clj java.lang.Throwable
-             #+cljs :default
+      (catch #?(:clj  java.lang.Throwable
+                :cljs :default)
              e
         (if (pending? e)
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
       (finally
-        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
+        (reset-withs withs)))))                             ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
@@ -80,28 +80,28 @@
     (do-characteristics @(.-charcteristics context) reporters)
     []))
 
-#+clj
-(defn- with-withs-bound [description body]
-  (let [withs (concat @(.-withs description) @(.-with-alls description))
-        ns (the-ns (symbol (.-ns description)))
-        with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
-    (with-bindings* with-mappings body)))
+#?(:clj
+   (defn- with-withs-bound [description body]
+     (let [withs (concat @(.-withs description) @(.-with-alls description))
+           ns (the-ns (symbol (.-ns description)))
+           with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
+       (with-bindings* with-mappings body)))
 
-#+cljs
-(defn- with-withs-bound [description body]
-  (let [withs (concat @(.-withs description) @(.-with-alls description))
-        ns (str/replace (.-ns description) "-" "_")
-        var-names (map #(str ns "." (name (.-name %))) withs)
-        unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
-    (doseq [[n un] (partition 2 (interleave var-names unique-names))]
-      (let [code (str n " = " un ";")]
-        (js* "eval(~{})" code)))
-    (try
-      (body)
-      (finally
-        (doseq [[n] var-names]
-          (let [code (str n " = null;")]
-            (js* "eval(~{})" code)))))))
+   :cljs
+   (defn- with-withs-bound [description body]
+     (let [withs (concat @(.-withs description) @(.-with-alls description))
+           ns (str/replace (.-ns description) "-" "_")
+           var-names (map #(str ns "." (name (.-name %))) withs)
+           unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
+       (doseq [[n un] (partition 2 (interleave var-names unique-names))]
+         (let [code (str n " = " un ";")]
+           (js* "eval(~{})" code)))
+       (try
+         (body)
+         (finally
+           (doseq [[n] var-names]
+             (let [code (str n " = null;")]
+               (js* "eval(~{})" code))))))))
 
 (defn- nested-results-for-context [description reporters]
   (let [results (results-for-context description reporters)]
@@ -116,16 +116,16 @@
     (when (some pass-tag-filter? tag-sets)
       (report-description* reporters description)
       (with-withs-bound description
-        (fn []
-          (eval-components @(.-before-alls description))
+                        (fn []
+                          (eval-components @(.-before-alls description))
 
-          (try
-            (with-around-alls
-              description
-              (partial nested-results-for-context description reporters))
+                          (try
+                            (with-around-alls
+                              description
+                              (partial nested-results-for-context description reporters))
 
-            (finally
-              (reset-withs @(.-with-alls description)))))))))
+                            (finally
+                              (reset-withs @(.-with-alls description)))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]

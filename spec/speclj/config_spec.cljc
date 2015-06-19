@@ -1,6 +1,6 @@
 (ns speclj.config-spec
-  (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
+  (#?(:cljs :require-macros :clj :require)
+    [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
   (:require [speclj.config :refer [load-runner load-reporter default-config
                                    parse-tags config-mappings *tag-filter* config-bindings]]
             [speclj.platform :as platform]
@@ -8,19 +8,18 @@
             [speclj.report.silent]
             [speclj.run.standard :refer [run-specs]]))
 
+
 (describe "Config"
   (it "dynamically loads StandardRunner"
     (let [runner (load-runner "standard")]
       (should-not= nil runner)
       (should= speclj.run.standard.StandardRunner (type runner))))
 
-  ;cljs-ignore->
-  #+clj
-  (it "dynamically loads VigilantRunner"
-    (let [runner (load-runner "vigilant")]
-      (should-not= nil runner)
-      (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner)))))
-  ;<-cljs-ignore
+  #?(:clj
+     (it "dynamically loads VigilantRunner"
+       (let [runner (load-runner "vigilant")]
+         (should-not= nil runner)
+         (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner))))))
 
   (it "throws exception with unrecognized runner"
     (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah"))
@@ -54,20 +53,19 @@
     (should= {:includes #{} :excludes #{:one :two}} (parse-tags ["~one" "~two"]))
     (should= {:includes #{:two} :excludes #{:one}} (parse-tags ["~one" "two"])))
 
-  ;cljs-ignore->
-  #+clj
-  (it "should translate tags in config-bindings"
-    (let [mappings (config-mappings (assoc default-config :tags ["one" "~two"]))]
-      (should=
-        {:includes #{:one} :excludes #{:two}}
-        (get mappings #'*tag-filter*))))
-
-  #+clj
-  (it "doesn't include *parent-description* in config-bindings"
-    (let [cb (config-bindings)]
-      (should-not-contain #'speclj.config/*parent-description* cb)))
-  ;<-cljs-ignore
+  #?(:clj
+     (it "should translate tags in config-bindings"
+       (let [mappings (config-mappings (assoc default-config :tags ["one" "~two"]))]
+         (should=
+           {:includes #{:one} :excludes #{:two}}
+           (get mappings #'*tag-filter*)))))
+  #?(:clj
+     (it "doesn't include *parent-description* in config-bindings"
+       (let [cb (config-bindings)]
+         (should-not-contain #'speclj.config/*parent-description* cb))))
 
   )
 
 (run-specs)
+
+

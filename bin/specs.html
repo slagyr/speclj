@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="iso-8859-1" content="text/html" http-equiv="Content-Type"/>
+    <title>Speclj Specs</title>
+    <!--<script src="../js/es5-shim.js" type="text/javascript"></script>-->
+    <script src="../target/cljs/goog/base.js" type="text/javascript"></script>
+    <script src="../target/specs.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        String.prototype.endsWith = function (suffix) {
+            return this.indexOf(suffix, this.length - suffix.length) !== -1;
+        };
+
+        for(var name in goog.dependencies_.nameToPath) {
+            if(name.endsWith("_spec")) {
+                goog.require(name)
+            }
+        }
+
+        runSpecsConfigured = function (color, reporter) {
+            speclj.run.standard.armed = true;
+            return speclj.run.standard.run_specs(
+                    cljs.core.keyword("color"), color
+                    , cljs.core.keyword("reporters"), [reporter]
+            );
+        };
+
+        runSpecs = function () {
+            runSpecsConfigured(false, "documentation");
+        }
+
+        runSpecsPhantom = function (affectedSpecs) {
+            if(affectedSpecs != null) {
+                console.log("Only running affected specs:");
+                var descriptionAtom = speclj.config.active_runner().descriptions;
+                cljs.core.swap_BANG_(descriptionAtom, function (descriptions) {
+                    return cljs.core.filter(function (description) {
+                        return description.ns in affectedSpecs;
+                    }, descriptions);
+                });
+                cljs.core.doall(cljs.core.map(function (description) {
+                    console.log("  ", description.ns);
+                }, cljs.core.deref(descriptionAtom)));
+            }
+            runSpecsConfigured(true, "documentation");
+        }
+    </script>
+</head>
+<body>
+<h3 style="margin: 1em">Speclj CLJS Specs</h3>
+
+<p style="margin: 1em; width: 400px;">
+    Typically these specs are run using phantomjs on the command line.
+    But you can run them here if you like.
+    That is, assuming all the cljs has been compiled in development.
+    <br/>
+    Open up the browser console:
+</p>
+<pre style="margin: 1em; padding: 1em; width: 400px; border: 1px dotted slategray; background-color: lightgray;">
+    runSpecs()
+</pre>
+</body>
+</html>

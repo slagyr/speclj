@@ -1,6 +1,7 @@
 *.iml
 .idea
 .lein*
+.specljs-timestamp
 doc
 pom.xml*
 target

@@ -1,58 +1,41 @@
-(defproject speclj "3.2.0"
+(defproject speclj "3.3.0"
             :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
             :url "http://speclj.com"
             :license {:name         "The MIT License"
                       :url          "file://LICENSE"
                       :distribution :repo
-                      :comments     "Copyright 2011-2014 Micah Martin All Rights Reserved."}
+                      :comments     "Copyright 2011-2015 Micah Martin All Rights Reserved."}
 
             :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
             :javac-options ["-target" "1.5" "-source" "1.5"]
-            :source-paths ["src/clj" "src/cljs" "target/src/clj" "target/src/cljs"]
-            :test-paths ["spec/clj" "target/spec/clj"]
 
-            :dependencies [[org.clojure/clojure "1.6.0"]
-                           [fresh "1.0.2"]
+            :source-paths ["src"]
+            :test-paths ["spec" "dev"]
+            :java-source-paths ["src"]
+
+            :dependencies [[org.clojure/clojure "1.7.0-RC2"]
+                           [fresh "1.1.1"]
                            [mmargs "1.2.0"]
                            [trptcolin/versioneer "0.1.1"]]
 
-            :cljx {:builds [{:source-paths ["src/cljx"]
-                             :output-path  "target/src/clj"
-                             :rules        :clj}
-                            {:source-paths ["src/cljx"]
-                             :output-path  "target/src/cljs"
-                             :rules        :cljs}
-                            {:source-paths ["spec/cljx"]
-                             :output-path  "target/spec/clj"
-                             :rules        :clj}
-                            {:source-paths ["spec/cljx"]
-                             :output-path  "target/spec/cljs"
-                             :rules        :cljs}]}
+            :profiles {:dev {:dependencies [[org.clojure/clojurescript "0.0-3308"]]
+                             :plugins      [
+                                            ;[lein-cljsbuild "1.0.6"]
+                                            [codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
 
-            :java-source-paths ["src/clj"]
+            ;:cljsbuild {:builds {:dev {:source-paths   ["src"]
+            ;                           :compiler       {:output-to    "target/tests.js"
+            ;                                            :pretty-print true}
+            ;                           ;:notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
+            ;                           :notify-command ["phantomjs" "bin/speclj.js"]
+            ;                           }}}
 
-            :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.6.0"]
-                                            [org.clojure/clojurescript "0.0-3030"]]
-                             :plugins      [[com.keminglabs/cljx "0.6.0"]
-                                            [org.clojure/clojurescript "0.0-3030"]
-                                            [lein-cljsbuild "1.0.5"]
-                                            [codox "0.8.11"]]}}
+            :prep-tasks ["javac" "compile"]
 
-            :cljsbuild {:builds {:dev {:source-paths   ["target/src/cljs" "src/cljs" "target/spec/cljs" "spec/cljs"]
-                                       :compiler       {:output-to    "target/tests.js"
-                                                        :pretty-print true}
-                                       :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
-                                       }}
-                        ;:test-commands {"test" ["phantomjs" "bin/specljs" "target/tests.js"]}
-                        }
+            :aliases {"cljs" ["do" "clean," "run" "-m" "speclj.dev.cljs"]
+                      "spec" ["do" "run" "-m" "speclj.dev.spec"]
+                      "ci"   ["do" "spec," "cljs"]}
 
-            :prep-tasks [["cljx" "once"] "javac" "compile"]
-
-            :aliases {"cljs" ["do" "clean," "cljx" "once," "cljsbuild" "once" "dev"]
-                      "ci"   ["do" "clean," "javac," "spec," "cljsbuild" "once" "dev"]}
-
-            :eval-in :leiningen                             ; to recognize spec task
-
-            :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.2.0/"
+            :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.3.0/"
                     :src-linenum-anchor-prefix "L"}
             )

@@ -1,9 +1,8 @@
 (ns speclj.report.progress-spec
-  (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [around before context describe it should should= with -new-exception -new-failure -new-pending]])
+  (#?(:clj :require :cljs :require-macros)
+    [speclj.core :refer [around before context describe it should should= with -new-exception -new-failure -new-pending]])
   (:require [clojure.string :as str]
-            ;cljs-include [goog.string] ;cljs bug?
-            #+cljs [goog.string]
+    #?(:cljs [goog.string])                                 ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?* *omit-pending?*]]
             [speclj.platform :refer [format-seconds]]
@@ -21,38 +20,38 @@
 
   (it "reports pass"
     (should= "."
-      (with-out-str (report-pass @reporter nil))))
+             (with-out-str (report-pass @reporter nil))))
 
   (it "reports pass in green with color"
     (binding [*color?* true]
       (should= (green ".")
-        (with-out-str (report-pass @reporter nil)))))
+               (with-out-str (report-pass @reporter nil)))))
 
   (it "reports pending"
     (should= "*"
-      (with-out-str (report-pending @reporter nil))))
+             (with-out-str (report-pending @reporter nil))))
 
   (it "reports pending in yellow with color"
     (binding [*color?* true]
       (should= (yellow "*")
-        (with-out-str (report-pending @reporter nil)))))
+               (with-out-str (report-pending @reporter nil)))))
 
   (it "reports fail"
     (should= "F"
-      (with-out-str (report-fail @reporter nil))))
+             (with-out-str (report-fail @reporter nil))))
 
   (it "reports fail in red with color"
     (binding [*color?* true]
       (should= (red "F")
-        (with-out-str (report-fail @reporter nil)))))
+               (with-out-str (report-fail @reporter nil)))))
 
   (it "doesnt report description"
     (should= ""
-      (with-out-str (report-description @reporter nil))))
+             (with-out-str (report-description @reporter nil))))
 
   (it "reports errors"
     (should= "E"
-      (with-out-str (report-error @reporter (-new-exception "Compilation failed")))))
+             (with-out-str (report-error @reporter (-new-exception "Compilation failed")))))
 
   (it "reports passing run results"
     (binding [*color?* true]

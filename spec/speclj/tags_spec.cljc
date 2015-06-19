@@ -1,6 +1,6 @@
 (ns speclj.tags-spec
-  (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [around context describe it should= tags]])
+  (#?(:clj :require :cljs :require-macros)
+    [speclj.core :refer [around context describe it should= tags]])
   (:require [clojure.string :as str]
             [speclj.config :refer [*runner* *reporters*]]
             [speclj.report.silent :refer [new-silent-reporter]]
@@ -42,38 +42,36 @@
     (should= "Filtering tags. Including: one, two." (str/trim (describe-filter {:includes #{:one :two} :excludes #{}})))
     (should= "Filtering tags. Including: one. Excluding: two." (str/trim (describe-filter {:includes #{:one} :excludes #{:two}}))))
 
-  ;cljs-ignore->
-  #+clj
-  (context "with fake runner/reporter"
-    (around [_]
-      (binding [*runner* (new-standard-runner)
-                *reporters* (new-silent-reporter)
-                *ns* (the-ns 'speclj.tags-spec)]
-        (_)))
+  #?(:clj
+     (context "with fake runner/reporter"
+       (around [_]
+         (binding [*runner* (new-standard-runner)
+                   *reporters* (new-silent-reporter)
+                   *ns* (the-ns 'speclj.tags-spec)]
+           (_)))
 
-    (it "finds all the tag sets with one context"
-      (let [spec (eval '(describe "foo"))]
-        (should= [#{}] (tag-sets-for spec)))
-      (let [spec (eval '(describe "foo" (tags :one)))]
-        (should= [#{:one}] (tag-sets-for spec))))
+       (it "finds all the tag sets with one context"
+         (let [spec (eval '(describe "foo"))]
+           (should= [#{}] (tag-sets-for spec)))
+         (let [spec (eval '(describe "foo" (tags :one)))]
+           (should= [#{:one}] (tag-sets-for spec))))
 
-    (it "finds all the tag sets with nested contexts"
-      (let [spec
-            (eval '(describe "foo" (tags :one)
-                     (context "child" (tags :two)
-                       (context "grandchild" (tags :three :four))
-                       (context "grandchild2" (tags :five)))
-                     (context "child2" (tags :six))))
-            tag-sets (tag-sets-for spec)]
-        (should= 5 (count tag-sets))
-        (should= #{:one} (nth tag-sets 0))
-        (should= #{:one :two} (nth tag-sets 1))
-        (should= #{:one :two :three :four} (nth tag-sets 2))
-        (should= #{:one :two :five} (nth tag-sets 3))
-        (should= #{:one :six} (nth tag-sets 4))))
+       (it "finds all the tag sets with nested contexts"
+         (let [spec
+               (eval '(describe "foo" (tags :one)
+                        (context "child" (tags :two)
+                          (context "grandchild" (tags :three :four))
+                          (context "grandchild2" (tags :five)))
+                        (context "child2" (tags :six))))
+               tag-sets (tag-sets-for spec)]
+           (should= 5 (count tag-sets))
+           (should= #{:one} (nth tag-sets 0))
+           (should= #{:one :two} (nth tag-sets 1))
+           (should= #{:one :two :three :four} (nth tag-sets 2))
+           (should= #{:one :two :five} (nth tag-sets 3))
+           (should= #{:one :six} (nth tag-sets 4))))
 
-    )
-  ;<-cljs-ignore
+       ))
   )
 
 (run-specs)

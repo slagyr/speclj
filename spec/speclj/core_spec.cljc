@@ -1,10 +1,10 @@
 (ns speclj.core-spec
-  (#+clj :require #+cljs :require-macros ;cljs-macros
-            [speclj.core :refer [describe it context tags
-                                 should should-be-same should-not-be-same should=
-                                 before after before-all after-all
-                                 with with! with-all with-all! around around-all
-                                 pending]])
+  (#?(:clj :require :cljs :require-macros)
+    [speclj.core :refer [describe it context tags
+                         should should-be-same should-not-be-same should=
+                         before after before-all after-all
+                         with with! with-all with-all! around around-all
+                         pending]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
@@ -117,66 +117,66 @@
           call-count (atom 0)]
 
       [
-      (around-all [context]
-        (swap! call-count inc)
-        (binding [*gewgaw* (swap! widget inc)]
-          (context)))
+       (around-all [context]
+                   (swap! call-count inc)
+                   (binding [*gewgaw* (swap! widget inc)]
+                     (context)))
 
-      (it "executes before the specs"
-        (should= 6 @widget))
+       (it "executes before the specs"
+         (should= 6 @widget))
 
-      (it "executes around the specs"
-        (should= 6 *gewgaw*))
+       (it "executes around the specs"
+         (should= 6 *gewgaw*))
 
-      (it "only executes once"
-        (should= 1 @call-count))
+       (it "only executes once"
+         (should= 1 @call-count))
 
-      (context "nested"
-        (around-all [context]
-          (swap! call-count inc)
-          (swap! widget #(/ % 2))
-          (context))
+       (context "nested"
+         (around-all [context]
+                     (swap! call-count inc)
+                     (swap! widget #(/ % 2))
+                     (context))
 
-        (around-all [context]
-          (swap! call-count inc)
-          (swap! widget #(- % 2))
-          (context))
+         (around-all [context]
+                     (swap! call-count inc)
+                     (swap! widget #(- % 2))
+                     (context))
 
-        (it "executes in the order in which they are defined"
-          (should= 1 @widget))
+         (it "executes in the order in which they are defined"
+           (should= 1 @widget))
 
-        (it "and still only execute once"
-          (should= 3 @call-count)))]))
+         (it "and still only execute once"
+           (should= 3 @call-count)))]))
 
   (describe "with before-alls"
     (let [widget (atom 6)]
       [
-      (around-all [context]
-        (swap! widget #(- % 2))
-        (context))
+       (around-all [context]
+                   (swap! widget #(- % 2))
+                   (context))
 
-      (before-all
-        (swap! widget #(/ % 2)))
+       (before-all
+         (swap! widget #(/ % 2)))
 
-      ; TODO: Change this behavior eventually, so that execution order is dependent on definition order?
-      (it "executes after before-alls regardless of definition order"
-        (should= 1 @widget))]))
+       ; TODO: Change this behavior eventually, so that execution order is dependent on definition order?
+       (it "executes after before-alls regardless of definition order"
+         (should= 1 @widget))]))
 
   (describe "with withs"
     (let [widget (atom 0)]
       [
-      (with-all with-all-val (swap! widget inc))
+       (with-all with-all-val (swap! widget inc))
 
-      (around-all [context]
-        (should= 0 @widget)
-        (should= 1 @with-all-val)
-        (context)
-        (should= 1 @with-all-val))
+       (around-all [context]
+                   (should= 0 @widget)
+                   (should= 1 @with-all-val)
+                   (context)
+                   (should= 1 @with-all-val))
 
-      (it "enters after binding but before initializing with-alls and exits before resetting or unbinding"
-        :filler)
+       (it "enters after binding but before initializing with-alls and exits before resetting or unbinding"
+         :filler)
 
-      (it "enters before binding withs and exits with withs unbound")])))
+       (it "enters before binding withs and exits with withs unbound")])))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
@@ -285,7 +285,7 @@
 (describe "with"
   (def lazy-calls (atom 0))
   (with with-example
-    (swap! lazy-calls inc))
+        (swap! lazy-calls inc))
 
   (it "never deref'ed with-example"
     (should= 0 @lazy-calls))
@@ -300,7 +300,7 @@
 (describe "with!"
   (def non-lazy-calls (atom 0))
   (with! with-bang-example
-    (swap! non-lazy-calls inc))
+         (swap! non-lazy-calls inc))
 
   (it "has been deref'ed upon instantiation"
     (should= 1 @non-lazy-calls))
@@ -311,7 +311,7 @@
 (describe "with-all"
   (def lazy-with-all-calls (atom 0))
   (with-all with-all-example
-    (swap! lazy-with-all-calls inc))
+            (swap! lazy-with-all-calls inc))
 
   (it "never deref'ed with-all-example"
     (should= 0 @lazy-with-all-calls))
@@ -325,14 +325,14 @@
 (describe "with-all!"
   (def non-lazy-with-all-calls (atom 0))
   (with-all! with-bang-example
-    (swap! non-lazy-with-all-calls inc))
+             (swap! non-lazy-with-all-calls inc))
 
   (it "has been deref'ed upon instantiation"
     (should= 1 @non-lazy-with-all-calls))
 
   (it "has not been reset and deref'ed"
     (should= 1 @non-lazy-with-all-calls))
-         )
+  )
 
 ;(run-specs :tags ["two"])
 (run-specs)
