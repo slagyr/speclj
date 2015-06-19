@@ -2,11 +2,11 @@
 
 (def build-options
   {
-   :optimizations  :whitespace
+   :optimizations  :none
    :output-to      "target/tests.js"
    :output-dir     "target/classes"
-   ;:cache-analysis true
-   ;:source-map     true
+   :cache-analysis true
+   :source-map     true
    :pretty-print   true
    :verbose        true
    :watch-fn       (fn [] (println "Success!"))})

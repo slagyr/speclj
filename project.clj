@@ -47,7 +47,8 @@
             :cljsbuild {:builds {:dev {:source-paths   ["src"]
                                        :compiler       {:output-to    "target/tests.js"
                                                         :pretty-print true}
-                                       :notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
+                                       ;:notify-command ["phantomjs" "bin/specljs" "target/tests.js"]
+                                       :notify-command ["phantomjs" "bin/speclj.js"]
                                        }}
                         ;:test-commands {"test" ["phantomjs" "bin/specljs" "target/tests.js"]}
                         }
