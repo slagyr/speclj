@@ -11,4 +11,4 @@
    :verbose        true
    :watch-fn       (fn [] (println "Success!"))})
 
-(cljs.build.api/build "." build-options)
+(cljs.build.api/build "spec" build-options)

@@ -1,7 +1,6 @@
 (ns speclj.config-spec
-  #?(:cljs (:require-macros [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
-     :clj
-           (:require [speclj.core :refer :all]))
+  (#?(:cljs :require-macros :clj :require)
+    [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
   (:require [speclj.config :refer [load-runner load-reporter default-config
                                    parse-tags config-mappings *tag-filter* config-bindings]]
             [speclj.platform :as platform]
