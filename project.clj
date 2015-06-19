@@ -35,12 +35,14 @@
             ;                 :output-path  "target/spec/cljs"
             ;                 :rules        :cljs}]}
 
-            :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.6.0"]
+            :profiles {:dev {:dependencies [
+                                            ;[com.keminglabs/cljx "0.6.0"]
                                             ;[org.clojure/clojurescript "0.0-3308"]
                                             ]
-                             :plugins      [[com.keminglabs/cljx "0.6.0"]
+                             :plugins      [
+                                            ;[com.keminglabs/cljx "0.6.0"]
                                             [lein-cljsbuild "1.0.6"]
-                                            [codox "0.8.11"]]}}
+                                            [codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
 
             :cljsbuild {:builds {:dev {:source-paths   ["src"]
                                        :compiler       {:output-to    "target/tests.js"
