@@ -1,3 +1,7 @@
+# 3.3.1
+
+* fixes reader conditionals in require form 
+
 # 3.3.0
 
 * Uses Clojure 1.7 (RC2) with reader conditionals

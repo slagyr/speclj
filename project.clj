@@ -1,4 +1,4 @@
-(defproject speclj "3.3.0"
+(defproject speclj "3.3.1"
             :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
             :url "http://speclj.com"
             :license {:name         "The MIT License"
@@ -14,7 +14,7 @@
             :java-source-paths ["src"]
 
             :dependencies [[org.clojure/clojure "1.7.0-RC2"]
-                           [fresh "1.1.1"]
+                           [fresh "1.1.2"]
                            [mmargs "1.2.0"]
                            [trptcolin/versioneer "0.1.1"]]
 
