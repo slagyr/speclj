@@ -8,6 +8,8 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 
 [![Clojars Project](http://clojars.org/speclj/latest-version.svg)](http://clojars.org/speclj)
 
+NOTE: Speclj 3.3+ requires Clojure 1.7+.
+
 ## From Scratch
 
 ```bash
