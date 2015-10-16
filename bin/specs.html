@@ -26,7 +26,7 @@
         };
 
         runSpecs = function () {
-            runSpecsConfigured(false, "documentation");
+            return runSpecsConfigured(false, "documentation");
         }
 
         runSpecsPhantom = function (affectedSpecs) {
@@ -42,7 +42,7 @@
                     console.log("  ", description.ns);
                 }, cljs.core.deref(descriptionAtom)));
             }
-            runSpecsConfigured(true, "documentation");
+            return runSpecsConfigured(true, "documentation");
         }
     </script>
 </head>
