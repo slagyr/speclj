@@ -1,4 +1,4 @@
-package speclj;
+package speclj.platform;
 
 public class SpecFailure extends Exception
 {
