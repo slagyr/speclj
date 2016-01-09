@@ -2,10 +2,22 @@
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   (:require [clojure.data]
-            [speclj.platform :refer [if-cljs try-catch-anything]]))
+            [speclj.components]
+            [speclj.config]
+            #?(:clj  [speclj.platform :refer [if-cljs try-catch-anything]]
+               :cljs [speclj.platform])
+            [speclj.reporting]
+            [speclj.results]
+            [speclj.running]
+            [speclj.stub]
+            [speclj.tags]
+            [speclj.report.documentation]
+            [speclj.report.progress]
+            [speclj.report.silent]
+            [speclj.run.standard]))
 
-(try (require 'speclj.run.standard)
-     (catch Exception _))
+#?(:clj (try (require 'speclj.run.standard)
+          (catch Exception _)))
 
 (defmacro ^:no-doc -new-exception
   ([] `(if-cljs (js/Error.) (java.lang.Exception.)))
