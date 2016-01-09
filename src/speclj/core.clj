@@ -1,21 +1,20 @@
 (ns speclj.core
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
-  (:require [clojure.data]))
+  (:require [clojure.data]
+            [speclj.platform :refer [if-cljs try-catch-anything]]))
 
 (try (require 'speclj.run.standard)
      (catch Exception _))
 
-(def ^:private ^:no-doc cljs? (boolean (find-ns 'cljs.analyzer)))
-
 (defmacro ^:no-doc -new-exception
-  ([] (if cljs? `(js/Error.) `(java.lang.Exception.)))
-  ([message] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message)))
-  ([message cause] (if cljs? `(js/Error. ~message) `(java.lang.Exception. ~message ~cause))))
+  ([] `(if-cljs (js/Error.) (java.lang.Exception.)))
+  ([message] `(if-cljs (js/Error. ~message) (java.lang.Exception. ~message)))
+  ([message cause] `(if-cljs (js/Error. ~message) (java.lang.Exception. ~message ~cause))))
 
 (defmacro ^:no-doc -new-throwable
-  ([] (if cljs? `(js/Object.) `(java.lang.Throwable.)))
-  ([message] (if cljs? `(js/Object. ~message) `(java.lang.Throwable. ~message))))
+  ([] `(if-cljs (js/Object.) (java.lang.Throwable.)))
+  ([message] `(if-cljs (js/Object. ~message) (java.lang.Throwable. ~message))))
 
 (defmacro ^:no-doc -new-failure [message]
   `(speclj.platform.SpecFailure. ~message))
@@ -38,9 +37,9 @@
   `(it ~name (pending) ~@body))
 
 (defmacro ^:no-doc when-not-bound [name & body]
-  (if cljs?
-    `(when-not ~name ~@body)
-    `(when-not (bound? (find-var '~name)) ~@body)))
+  `(if-cljs
+    (when-not ~name ~@body)
+    (when-not (bound? (find-var '~name)) ~@body)))
 
 (defmacro describe
   "body => & spec-components
@@ -52,9 +51,9 @@
        ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediatly
        (doseq [component# (vector ~@components)]
          (speclj.components/install component# description#)))
-     (when-not ~(if (not cljs?)
-                  `(bound? #'speclj.config/*parent-description*)
-                  `speclj.config/*parent-description*)
+     (when-not (if-cljs
+                  speclj.config/*parent-description*
+                  (bound? #'speclj.config/*parent-description*))
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -106,14 +105,18 @@
   [context & body]
   `(speclj.components/new-around-all (fn ~context ~@body)))
 
+(def cljs-munge
+  (when (find-ns 'cljs.compiler)
+    (ns-resolve 'cljs.compiler (symbol "munge"))))
+
 (defn ^:no-doc -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
-        munged-name (if cljs?
-                      (with-meta
-                        (symbol
-                          ((ns-resolve 'cljs.compiler (symbol "munge"))
-                            (str name))) {:dynamic true})
-                      var-name)
+        munged-name (if cljs-munge
+                        (with-meta
+                          (symbol
+                            (cljs-munge (str name)))
+                          {:dynamic true})
+                        var-name)
         unique-name (gensym "with")]
     `(do
        (declare ~var-name)
@@ -373,18 +376,18 @@ There are three options for passing different kinds of predicates:
   - If a function, assert that calling the function on the Exception returns a truthy value."
   ([form] `(should-throw speclj.platform/throwable ~form))
   ([throwable-type form]
-   `(try
+   `(try-catch-anything
       ~form
       (throw (-create-should-throw-failure ~throwable-type nil '~form))
-      (catch ~(if cljs? ':default 'Throwable) e#
+      (catch e#
         (cond
           (speclj.platform/failure? e#) (throw e#)
           (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
           :else e#))))
   ([throwable-type predicate form]
    `(let [e# (should-throw ~throwable-type ~form)
-          regex# ~(if cljs? `js/RegExp `java.util.regex.Pattern)]
-      (try
+          regex# (if-cljs js/RegExp java.util.regex.Pattern)]
+      (try-catch-anything
         (cond (instance? regex# ~predicate)
               (should-not-be-nil (re-find ~predicate (speclj.platform/error-message e#)))
 
@@ -394,16 +397,17 @@ There are three options for passing different kinds of predicates:
               :else
               (should= ~predicate (speclj.platform/error-message e#)))
 
-        (catch ~(if cljs? ':default 'Throwable) f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+        (catch f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
-  `(try
+  `(try-catch-anything
      ~form
-     (catch ~(if cljs? ':default 'Throwable) e# (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
-                                                            "                     but got: " (pr-str e#))))))
+     (catch e#
+       (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
+                   "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
@@ -569,7 +573,7 @@ There are three options for passing different kinds of predicates:
 (def ^:dynamic ^:no-doc *bound-by-should-invoke* false)
 
 (defmacro ^:no-doc bound-by-should-invoke? []
-  `(if cljs?
+  `(if-cljs
      *bound-by-should-invoke*
      (and (bound? #'*bound-by-should-invoke*)
           *bound-by-should-invoke*)))
@@ -621,8 +625,8 @@ runner and reporter.  A call to this function is typically placed at the end of 
 are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
 
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
-  (if cljs?
-    (comment "Ignoring run-specs for clojurescript")
-    `(do
+  `(if-cljs
+     (comment "Ignoring run-specs for clojurescript")
+     (do
        (require '[speclj.cli])                              ; require all speclj files
        (speclj.run.standard/run-specs))))

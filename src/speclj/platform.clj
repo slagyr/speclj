@@ -2,6 +2,25 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string :refer [split]]))
 
+(defmacro if-cljs
+  "Return then if we are generating cljs code and else for Clojure code.
+   http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
+  [then else]
+  (if (:ns &env) then else))
+
+(defmacro try-catch-anything
+  "Tries forms up until the last form, which is expected to be a `catch` form,
+  except its type is missing; instead, `:default` is used in ClojureScript and
+  `java.lang.Throwable` is used in Clojure JVM."
+  [& forms]
+  (let [body (butlast forms)
+        [catch-sym binding & catch-forms] (last forms)]
+    `(if-cljs
+      (try ~@body
+        (catch :default ~binding ~@catch-forms))
+      (try ~@body
+        (catch java.lang.Throwable ~binding ~@catch-forms)))))
+
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
 
