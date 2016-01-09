@@ -14,12 +14,16 @@
   `java.lang.Throwable` is used in Clojure JVM."
   [& forms]
   (let [body (butlast forms)
-        [catch-sym binding & catch-forms] (last forms)]
-    `(if-cljs
-      (try ~@body
-        (catch :default ~binding ~@catch-forms))
-      (try ~@body
-        (catch java.lang.Throwable ~binding ~@catch-forms)))))
+        catch-form (last forms)
+        [catch-sym binding & catch-forms] (if (sequential? catch-form) catch-form [nil nil nil])
+        catch-valid? (and (= 'catch catch-sym) (symbol? binding))]
+    (if catch-valid?
+        `(if-cljs
+           (try ~@body
+             (catch :default ~binding ~@catch-forms))
+           (try ~@body
+             (catch java.lang.Throwable ~binding ~@catch-forms)))
+        `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
 
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
