@@ -118,8 +118,10 @@
   `(speclj.components/new-around-all (fn ~context ~@body)))
 
 (def cljs-munge
-  (when (find-ns 'cljs.compiler)
-    (ns-resolve 'cljs.compiler (symbol "munge"))))
+  #?(:clj
+     (when (find-ns 'cljs.compiler)
+       (ns-resolve 'cljs.compiler (symbol "munge")))
+     :cljs nil))
 
 (defn ^:no-doc -make-with [name body ctor bang?]
   (let [var-name (with-meta (symbol name) {:dynamic true})
