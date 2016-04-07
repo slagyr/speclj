@@ -386,7 +386,7 @@
 When an class is passed, it assets that the thrown Exception is an instance of the class.
 There are three options for passing different kinds of predicates:
   - If a string, assert that the message of the Exception is equal to the string.
-  - If a regex, assertsthat the message of the Exception matches the regex.
+  - If a regex, asserts that the message of the Exception matches the regex.
   - If a function, assert that calling the function on the Exception returns a truthy value."
   ([form] `(should-throw speclj.platform/throwable ~form))
   ([throwable-type form]
@@ -396,7 +396,7 @@ There are three options for passing different kinds of predicates:
       (catch e#
         (cond
           (speclj.platform/failure? e#) (throw e#)
-          (not (isa? (type e#) ~throwable-type)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
+          (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
           :else e#))))
   ([throwable-type predicate form]
    `(let [e# (should-throw ~throwable-type ~form)
