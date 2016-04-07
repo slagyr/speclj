@@ -1,4 +1,4 @@
-(defproject speclj "3.3.2-SNAPSHOT"
+(defproject speclj "3.3.2"
             :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
             :url "http://speclj.com"
             :license {:name         "The MIT License"
@@ -13,12 +13,12 @@
             :test-paths ["spec" "dev"]
             :java-source-paths ["src"]
 
-            :dependencies [[org.clojure/clojure "1.7.0-RC2"]
+            :dependencies [[org.clojure/clojure "1.8.0"]
                            [fresh "1.1.2"]
                            [mmargs "1.2.0"]
                            [trptcolin/versioneer "0.1.1"]]
 
-            :profiles {:dev {:dependencies [[org.clojure/clojurescript "0.0-3308"]]
+            :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.8.40"]]
                              :plugins      [[codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
 
             :prep-tasks ["javac" "compile"]
@@ -27,6 +27,6 @@
                       "spec" ["do" "run" "-m" "speclj.dev.spec"]
                       "ci"   ["do" "spec," "cljs"]}
 
-            :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.3.0/"
+            :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.3.2/"
                     :src-linenum-anchor-prefix "L"}
             )

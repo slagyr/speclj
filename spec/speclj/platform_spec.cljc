@@ -6,7 +6,7 @@
     [speclj.run.standard :refer [run-specs]]))
 
 (defmacro which-env []
-  `(if-cljs :cljs :clj))
+  (if-cljs :cljs :clj))
 
 (describe "platform-specific bits"
   #?(:cljs

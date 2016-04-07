@@ -355,7 +355,7 @@
              (failure-message (should-throw exception (+ 1 1))))
     #?(:cljs
        (should=
-         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl "                     but got: #<some message>")
+         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl "                     but got: #object[String some message]")
          (failure-message (should-not-throw (throw (-new-throwable "some message")))))
        :clj
        (should-contain
@@ -388,7 +388,7 @@
     (should-fail! (should-not-throw (throw (-new-throwable "error"))))
     #?(:cljs
        (should=
-         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #<error>")
+         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
          (failure-message (should-not-throw (throw (-new-throwable "error")))))
        :clj
        (should-contain

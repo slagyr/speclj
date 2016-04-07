@@ -1,3 +1,10 @@
+# 3.3.2
+
+* upgrade to clojure 1.8.0
+* upgrade clojurescript to 1.8.40
+* .cljc support by @eyelidlessness https://github.com/slagyr/speclj/pull/150
+* better platform support by @eyelidlessness https://github.com/slagyr/speclj/pull/152
+
 # 3.3.1
 
 * fixes reader conditionals in require form 
