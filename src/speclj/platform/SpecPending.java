@@ -1,4 +1,4 @@
-package speclj;
+package speclj.platform;
 
 public class SpecPending extends Exception
 {

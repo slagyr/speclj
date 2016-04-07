@@ -18,10 +18,10 @@
   ([message] (if cljs? `(js/Object. ~message) `(java.lang.Throwable. ~message))))
 
 (defmacro ^:no-doc -new-failure [message]
-  (if cljs? `(speclj.platform.SpecFailure. ~message) `(speclj.SpecFailure. ~message)))
+  `(speclj.platform.SpecFailure. ~message))
 
 (defmacro ^:no-doc -new-pending [message]
-  (if cljs? `(speclj.platform.SpecPending. ~message) `(speclj.SpecPending. ~message)))
+  `(speclj.platform.SpecPending. ~message))
 
 (defmacro it
   "body => any forms but aught to contain at least one assertion (should)
