@@ -14,7 +14,7 @@
 (def arg-spec (Arguments.))
 (doto arg-spec
   (.addMultiParameter "specs" "directories/files specifying which specs to run.")
-  (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'specdoc' reporter.")
+  (.addSwitchOption "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
   (.addSwitchOption "b" "stacktrace" "Output full stacktrace")
   (.addSwitchOption "c" "color" "Show colored (red/green) output.")
   (.addSwitchOption "C" "no-color" "Disable colored output (helpful for writing to file).")
