@@ -142,7 +142,7 @@
   describe scope.  The body may contain any forms, the last of which will be the value of the dereferenced symbol.
 
   (with meaning 42)
-  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  (it \"knows the meaning of life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   (-make-with name body `speclj.components/new-with false))
 
@@ -161,7 +161,7 @@
    the last of which will be the value of the dereferenced symbol.
 
   (with-all meaning 42)
-  (it \"knows the meaining life\" (should= @meaning (the-meaning-of :life)))"
+  (it \"knows the meaning of life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
   (-make-with name body `speclj.components/new-with-all false))
 
@@ -465,7 +465,7 @@ There are three options for passing different kinds of predicates:
        (it#))))
 
 (defmacro stub
-  "Creates a stub function.  Each call to the stub will be recorded an can later be looked up using the specified name.
+  "Creates a stub function.  Each call to the stub will be recorded and can later be looked up using the specified name.
 
   Options:
     :invoke - a function that will be invoked when the stub is invoked.  All the arguments passed to the stub will
