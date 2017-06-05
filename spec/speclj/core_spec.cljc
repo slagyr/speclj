@@ -91,8 +91,7 @@
   (it "only executes once"
     (should= 2 @gadget)
     (should= 0 @widget)
-    (should= 2 @bauble))
-  )
+    (should= 2 @bauble)))
 
 (def #^{:dynamic true} *gewgaw* 0)
 (describe "around forms"
@@ -106,9 +105,7 @@
 
   (context "with before and after"
     (before (should= 42 *gewgaw*))
-    (it "executes around all of them" :filler)
-    )
-  )
+    (it "executes around all of them" :filler)))
 
 
 (describe "around-all form"
@@ -116,7 +113,6 @@
     (let [widget (atom 5)
           call-count (atom 0)]
 
-      [
        (around-all [context]
                    (swap! call-count inc)
                    (binding [*gewgaw* (swap! widget inc)]
@@ -146,11 +142,10 @@
            (should= 1 @widget))
 
          (it "and still only execute once"
-           (should= 3 @call-count)))]))
+           (should= 3 @call-count)))))
 
   (describe "with before-alls"
     (let [widget (atom 6)]
-      [
        (around-all [context]
                    (swap! widget #(- % 2))
                    (context))
@@ -159,24 +154,21 @@
          (swap! widget #(/ % 2)))
 
        (it "executes after before-alls regardless of definition order"
-         (should= 1 @widget))]))
+         (should= 1 @widget))))
 
   (describe "with withs"
     (let [widget (atom 6)]
-      [
-       (describe "with after-alls"
-         [(after-all
-            (swap! widget #(/ % 2)))
+      (describe "with after-alls"
+        (after-all
+           (swap! widget #(/ % 2)))
 
-          (around-all [context]
-                      (context))
-          (swap! widget #(- % 2))
-          ])
+         (around-all [context]
+                     (context))
+         (swap! widget #(- % 2)))
 
-       (describe "previous after-all and around-all forms"
-         (it "executes before after-alls regardless of definition order"
-           (should= 2 @widget)))
-       ])
+      (describe "previous after-all and around-all forms"
+        (it "executes before after-alls regardless of definition order"
+          (should= 2 @widget))))
 
     (describe "with with-alls"
       (with-all with-all-val 1)
@@ -187,8 +179,7 @@
                   (should= 1 @with-all-val))
 
       (it "enters after binding with-alls and exits before unbinding"
-        :filler)))
-  )
+        :filler))))
 
 (def frippery (atom []))
 (def gimcrack (atom "gimcrack"))
@@ -257,10 +248,7 @@
 
       (it ": the with value has changed"
         (should= @@bibelot @@gimcrack)
-        (should (not (identical? @bibelot @gimcrack))))
-      )
-    )
-  )
+        (should (not (identical? @bibelot @gimcrack)))))))
 
 (describe "Nested contexts"
   (it "execute all the components in the right order"
@@ -291,8 +279,7 @@
 
   (context "child2"
     (tags :four :five)
-    (it "tag :one :three :four" :filler))
-  )
+    (it "tag :one :three :four" :filler)))
 
 (describe "with"
   (def lazy-calls (atom 0))
@@ -343,8 +330,17 @@
     (should= 1 @non-lazy-with-all-calls))
 
   (it "has not been reset and deref'ed"
-    (should= 1 @non-lazy-with-all-calls))
-  )
+    (should= 1 @non-lazy-with-all-calls)))
+
+(describe "Nesting components inside let"
+  (let [a (atom 0)]
+    (it "first one runs"
+      (swap! a inc))
+    (it "second one runs"
+      (swap! a inc))
+    (it "third one runs"
+      (swap! a inc)
+      (should= 3 @a))))
 
 ;(run-specs :tags ["two"])
 (run-specs)
