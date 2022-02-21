@@ -2,6 +2,7 @@
   "Speclj's API.  It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   (:require [clojure.data]
+            [clojure.string]
             [speclj.components]
             [speclj.config]
             #?(:clj  [speclj.platform :refer [if-cljs try-catch-anything]]
@@ -320,6 +321,112 @@
            (if (some #(= % f#) match-against#)
              (recur r# (-remove-first match-against# f#) diff#)
              (recur r# match-against# (conj diff# f#))))))))
+
+(defmacro should-start-with
+  "Assertion of prefix in strings and sequences.
+
+  (should-start-with \"foo\" \"foobar\")            ; looks for string prefix
+  (should-start-with [1 2] [1 2 3 4])               ; looks for a subset at start of collection"
+  [prefix whole]
+  `(let [prefix# ~prefix
+         whole#  ~whole]
+     (cond
+       (and (string? prefix#) (string? whole#))
+       (when-not (clojure.string/starts-with? whole# prefix#)
+         (-fail (str "Expected \"" whole# "\" to start" speclj.platform/endl
+                     "    with \"" prefix# "\"")))
+
+       (and (coll? whole#) (coll? prefix#))
+       (let [actual#  (take (count prefix#) whole#)
+             extra#   (-coll-difference actual# prefix#)
+             missing# (-coll-difference prefix# actual#)]
+         (when-not (and (empty? extra#) (empty? missing#))
+           (-fail (str "Expected " (-to-s whole#) " to start" speclj.platform/endl
+                       "    with " (-to-s prefix#)))))
+
+       :else
+       (throw (-new-exception (str "should-start-with doesn't know how to handle these types: ["
+                                   (speclj.platform/type-name (type prefix#)) " "
+                                   (speclj.platform/type-name (type whole#)) "]"))))))
+
+(defmacro should-not-start-with
+  "The inverse of should-start-with."
+  [prefix whole]
+  `(let [prefix# ~prefix
+         whole#  ~whole]
+     (cond
+       (and (string? prefix#) (string? whole#))
+       (when (clojure.string/starts-with? whole# prefix#)
+         (-fail (str "Expected \"" whole# "\" to NOT start" speclj.platform/endl
+                     "    with \"" prefix# "\"")))
+
+       (and (coll? whole#) (coll? prefix#))
+       (let [actual#  (take (count prefix#) whole#)
+             extra#   (-coll-difference actual# prefix#)
+             missing# (-coll-difference prefix# actual#)]
+         (when (and (empty? extra#) (empty? missing#))
+           (-fail (str "Expected " (-to-s whole#) " to NOT start" speclj.platform/endl
+                       "    with " (-to-s prefix#)))))
+
+       :else (throw (-new-exception (str "should-not-start-with doesn't know how to handle these types: [" (speclj.platform/type-name (type prefix#)) " " (speclj.platform/type-name (type whole#)) "]"))))))
+
+(defmacro should-end-with
+  "Assertion of suffix in strings and sequences.
+
+  (should-end-with \"foo\" \"foobar\")            ; looks for string suffix
+  (should-end-with [1 2] [1 2 3 4])               ; looks for a subset at end of collection"
+  [suffix whole]
+  `(let [suffix# ~suffix
+         whole#  ~whole]
+     (cond
+       (and (string? suffix#) (string? whole#))
+       (when-not (clojure.string/ends-with? whole# suffix#)
+         (let [padding# (apply str (repeat (- (count whole#) (count suffix#)) " "))]
+           (-fail (str "Expected [" whole# "] to end\n" padding#
+                       "    with [" suffix# "]"))))
+
+       (and (coll? whole#) (coll? suffix#))
+       (let [actual#  (take-last (count suffix#) whole#)
+             extra#   (-coll-difference actual# suffix#)
+             missing# (-coll-difference suffix# actual#)]
+         (when-not (and (empty? extra#) (empty? missing#))
+           (let [whole#   (-to-s whole#)
+                 suffix#  (-to-s suffix#)
+                 padding# (apply str (repeat (- (count whole#) (count suffix#)) " "))]
+             (-fail (str "Expected " whole# " to end\n" padding#
+                         "    with " suffix#)))))
+
+       :else
+       (throw (-new-exception (str "should-end-with doesn't know how to handle these types: ["
+                                   (speclj.platform/type-name (type suffix#)) " "
+                                   (speclj.platform/type-name (type whole#)) "]"))))))
+
+(defmacro should-not-end-with
+  "The inverse of should-end-with."
+  [prefix whole]
+  `(let [prefix# ~prefix
+         whole#  ~whole]
+     (cond
+       (and (string? prefix#) (string? whole#))
+       (when (clojure.string/ends-with? whole# prefix#)
+         (let [padding# (apply str (repeat (- (count whole#) (count prefix#)) " "))]
+           (-fail (str "Expected [" whole# "] to NOT end\n" padding#
+                       "    with [" prefix# "]"))))
+
+       (and (coll? whole#) (coll? prefix#))
+       (let [actual#  (take-last (count prefix#) whole#)
+             extra#   (-coll-difference actual# prefix#)
+             missing# (-coll-difference prefix# actual#)]
+         (when (and (empty? extra#) (empty? missing#))
+           (let [whole#   (-to-s whole#)
+                 prefix#  (-to-s prefix#)
+                 padding# (apply str (repeat (- (count whole#) (count prefix#)) " "))]
+             (-fail (str "Expected " whole# " to NOT end\n" padding#
+                         "    with " prefix#)))))
+
+       :else (throw (-new-exception (str "should-not-end-with doesn't know how to handle these types: ["
+                                         (speclj.platform/type-name (type prefix#)) " "
+                                         (speclj.platform/type-name (type whole#)) "]"))))))
 
 (defmacro ^:no-doc -difference-message [expected actual extra missing]
   `(str

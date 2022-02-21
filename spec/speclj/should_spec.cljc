@@ -1,11 +1,13 @@
 (ns speclj.should-spec
   (#?(:clj :require :cljs :require-macros)
-    [speclj.core :refer [context describe it should should-be-a should-be-nil should-be should-not-be
-                         should-be-same should-contain should-fail should-not should-not-be-a
-                         should-not-be-nil should-not-be-same should-not-contain
-                         should-not-throw should-not= should-not== should-throw
-                         should= should== -to-s -new-throwable -new-exception]]
-    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
+   [speclj.core :refer [context describe it should should-be-a should-be-nil should-be should-not-be
+                        should-be-same should-contain should-fail should-not should-not-be-a
+                        should-not-be-nil should-not-be-same should-not-contain
+                        should-not-throw should-not= should-not== should-throw
+                        should= should== -to-s -new-throwable -new-exception
+                        should-start-with should-not-start-with
+                        should-end-with should-not-end-with]]
+   [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
   (:require [speclj.platform :refer [endl error-message exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
@@ -333,6 +335,80 @@
   (it "should-fail can take a string as the error message"
     (should-fail! (should-fail "some message"))
     (should= "some message" (failure-message (should-fail "some message"))))
+
+  (it "should-start-with checks for prefix in strings"
+    (should-pass! (should-start-with "abc" "abcdefg"))
+    (should-fail! (should-start-with "abc" "ab"))
+    (should-fail! (should-start-with "bcd" "abcdefg"))
+    (should= (str "Expected \"abcdefg\" to start\n"
+                  "    with \"bcd\"")
+             (failure-message (should-start-with "bcd" "abcdefg"))))
+
+  (it "should-start-with checks for prefix in collections"
+    (should-pass! (should-start-with [1 2] [1 2 3 4 5]))
+    (should-fail! (should-start-with [2 3] [1 2 3 4 5]))
+    (should= (str "Expected [1 2 3 4 5] to start\n"
+                  "    with [2 3]")
+             (failure-message (should-start-with [2 3] [1 2 3 4 5]))))
+
+  (it "should-start-with errors on unexpected types"
+    (should-throw exception (str "should-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                  (should-start-with 1 2)))
+
+  (it "should-not-start-with checks for prefix in strings"
+    (should-pass! (should-not-start-with "bcd" "abcdefg"))
+    (should-fail! (should-not-start-with "abc" "abcdefg"))
+    (should= (str "Expected \"abcdefg\" to NOT start\n"
+                  "    with \"abc\"")
+             (failure-message (should-not-start-with "abc" "abcdefg"))))
+
+  (it "should-not-start-with checks for prefix in collections"
+    (should-pass! (should-not-start-with [2 3] [1 2 3 4 5]))
+    (should-fail! (should-not-start-with [1 2] [1 2 3 4 5]))
+    (should= (str "Expected [1 2 3 4 5] to NOT start\n"
+                  "    with [1 2]")
+             (failure-message (should-not-start-with [1 2] [1 2 3 4 5]))))
+
+  (it "should-not-start-with errors on unexpected types"
+    (should-throw exception (str "should-not-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                  (should-not-start-with 1 2)))
+
+  (it "should-end-with checks for prefix in strings"
+    (should-pass! (should-end-with "xyz" "tuvwxyz"))
+    (should-fail! (should-end-with "xyz" ""))
+    (should-fail! (should-end-with "wxy" "tuvwxyz"))
+    (should= (str "Expected [tuvwxyz] to end\n"
+                  "        with [wxy]")
+             (failure-message (should-end-with "wxy" "tuvwxyz"))))
+
+  (it "should-end-with checks for prefix in collections"
+    (should-pass! (should-end-with [4 5] [1 2 3 4 5]))
+    (should-fail! (should-end-with [3 4] [1 2 3 4 5]))
+    (should= (str "Expected [1 2 3 4 5] to end\n"
+                  "          with [3 4]")
+             (failure-message (should-end-with [3 4] [1 2 3 4 5]))))
+
+  (it "should-end-with errors on unexpected types"
+    (should-throw exception (str "should-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                  (should-end-with 1 2)))
+
+  (it "should-not-end-with checks for prefix in strings"
+    (should-pass! (should-not-end-with "wxy" "tuvwxyz"))
+    (should-fail! (should-not-end-with "xyz" "tuvwxyz"))
+    (should= (str "Expected [tuvwxyz] to NOT end\n"
+                  "        with [xyz]")
+             (failure-message (should-not-end-with "xyz" "tuvwxyz"))))
+
+  (it "should-not-end-with checks for prefix in collections"
+    (should-pass! (should-not-end-with [3 4] [1 2 3 4 5]))
+    (should-fail! (should-not-end-with [4 5] [1 2 3 4 5]))
+    (should= (str "Expected [1 2 3 4 5] to NOT end\n"
+                  "          with [4 5]")
+             (failure-message (should-not-end-with [4 5] [1 2 3 4 5]))))
+
+  (it "should-not-end-with errors on unexpected types"
+    (should-throw exception (str "should-not-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                  (should-not-end-with 1 2)))
 
   #?(:clj
      (it "should-throw tests that any Throwable is thrown"
