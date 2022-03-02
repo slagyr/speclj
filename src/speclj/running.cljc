@@ -77,7 +77,7 @@
 
 (defn- results-for-context [context reporters]
   (if (pass-tag-filter? (tags-for context))
-    (do-characteristics @(.-charcteristics context) reporters)
+    (do-characteristics @(.-characteristics context) reporters)
     []))
 
 #?(:clj

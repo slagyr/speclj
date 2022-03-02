@@ -29,7 +29,7 @@
      object
      (install [this description] (comment "Whatever...  Let them pass."))))
 
-(deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
+(deftype Description [name ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -44,7 +44,7 @@
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
-    (swap! (.-charcteristics description) conj this))
+    (swap! (.-characteristics description) conj this))
   Object
   (toString [this] (str \" name \")))
 
