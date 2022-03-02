@@ -1,5 +1,5 @@
 (ns speclj.core
-  "Speclj's API.  It contains nothing but macros, so that it can be used
+  "Speclj's API. It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   (:require [clojure.data]
             [speclj.components]
@@ -56,7 +56,7 @@
 (defmacro describe
   "body => & spec-components
 
-  Declares a new spec.  The body can contain any forms that evaluate to spec compoenents (it, before, after, with ...)."
+  Declares a new spec.  The body can contain any forms that evaluate to spec components (it, before, after, with ...)."
   [name & components]
   `(let [description# (speclj.components/new-description ~name ~(clojure.core/name (.name *ns*)))]
      (binding [speclj.config/*parent-description* description#]
@@ -93,7 +93,7 @@
 
   (around [it] (binding [*out* new-out] (it)))
 
-  Note that if you have cleanup that must run, use a finally block:
+  Note that if you have cleanup that must run, use a 'finally' block:
 
   (around [it] (try (it) (finally :clean-up)))
   "
@@ -228,7 +228,7 @@
        (-fail (str "Expected " (-to-s actual#) " not to satisfy: " ~(str f-form))))))
 
 (defmacro should-not=
-  "Asserts that two forms evaluate to inequal values, with the unexpected value as the first parameter."
+  "Asserts that two forms evaluate to unequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
   `(let [expected# ~expected-form actual# ~actual-form]
      (when (= expected# actual#)
@@ -254,7 +254,7 @@
   `(should= nil ~form))
 
 (defmacro should-contain
-  "Multi-purpose assertion of containment.  Works strings, regular expressions, sequences, and maps.
+  "Multi-purpose assertion of containment.  Works on strings, regular expressions, sequences, and maps.
 
   (should-contain \"foo\" \"foobar\")            ; looks for sub-string
   (should-contain #\"hello.*\" \"hello, world\") ; looks for regular expression
@@ -383,7 +383,7 @@
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
-When an class is passed, it assets that the thrown Exception is an instance of the class.
+When an class is passed, it asserts that the thrown Exception is an instance of the class.
 There are three options for passing different kinds of predicates:
   - If a string, assert that the message of the Exception is equal to the string.
   - If a regex, asserts that the message of the Exception matches the regex.
@@ -433,7 +433,7 @@ There are three options for passing different kinds of predicates:
        (-fail (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) speclj.platform/endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)")))))
 
 (defmacro should-not-be-a
-  "Asserts that the type of the given form does not derives from or equals the expected type"
+  "Asserts that the type of the given form does not derived from or equals the expected type"
   [expected-type actual-form]
   `(let [actual# ~actual-form
          actual-type# (type actual#)
@@ -442,7 +442,7 @@ There are three options for passing different kinds of predicates:
        (-fail (str "Expected " (-to-s actual#) " not to be an instance of " (-to-s expected-type#) " but was (using isa?)")))))
 
 (defmacro pending
-  "When added to a characteristic, it is markes as pending.  If a message is provided it will be printed
+  "When added to a characteristic, it is marked as pending.  If a message is provided it will be printed
   in the run report"
   ([] `(pending "Not Yet Implemented"))
   ([message]
@@ -469,8 +469,8 @@ There are three options for passing different kinds of predicates:
 
   Options:
     :invoke - a function that will be invoked when the stub is invoked.  All the arguments passed to the stub will
-      be passed to the :invoke value and it's return value returned by the stub.
-    :return - a value that will be returned by the stub.  This overides the result of the :invoke value, if specified.
+      be passed to the :invoke value and its return value returned by the stub.
+    :return - a value that will be returned by the stub.  This overrides the result of the :invoke value, if specified.
     :throw - an exception that will be thrown by the stub."
   ([name] `(speclj.stub/stub ~name {}))
   ([name options] `(speclj.stub/stub ~name ~options)))
@@ -634,9 +634,9 @@ There are three options for passing different kinds of predicates:
 
 
 (defmacro run-specs []
-  "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
+  "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
-are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
+are evaluated by evaluation the file as a script.  Optional configuration parameters may be passed in:
 
 (run-specs :stacktrace true :color false :reporter \"documentation\")"
   `(if-cljs

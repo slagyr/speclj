@@ -19,7 +19,7 @@
   (let [reporters (active-reporters)
         reloads (:reloaded report)]
     (when (seq reloads)
-      (report-message* reporters (str endl "----- " (str (java.util.Date.) " -------------------------------------------------------------------")))
+      (report-message* reporters (str endl "----- " (str (java.util.Date.) " -----")))
       (report-message* reporters (str "took " (format-seconds (secs-since @start-time)) " to determine file statuses."))
       (report-message* reporters "reloading files:")
       (doseq [file reloads] (report-message* reporters (str "  " (.getCanonicalPath file))))))

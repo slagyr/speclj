@@ -45,9 +45,9 @@
 (def armed false)
 
 (defn run-specs [& configurations]
-  "If evaluated outsite the context of a spec run, it will run all the specs that have been evaulated using the default
+  "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
 runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
-are evaluated by evaluation the file as a script.  Optional configuration paramters may be passed in:
+are evaluated by evaluation the file as a script.  Optional configuration parameters may be passed in:
 
 (run-specs :stacktrace true :color false :reporters [\"documentation\"])"
   (when armed
