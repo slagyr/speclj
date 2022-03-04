@@ -17,7 +17,7 @@
             [speclj.run.standard]))
 
 #?(:clj (try (require 'speclj.run.standard)
-          (catch Exception _)))
+             (catch Exception _)))
 
 (defmacro ^:no-doc -new-exception
   ([] `(if-cljs (js/Error.) (java.lang.Exception.)))
@@ -35,13 +35,26 @@
   `(speclj.platform.SpecPending. ~message))
 
 (defmacro it
-  "body => any forms but aught to contain at least one assertion (should)
+  "body => any forms, but aught to contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]
   (if (seq body)
     `(speclj.components/new-characteristic ~name (fn [] ~@body))
     `(speclj.components/new-characteristic ~name (fn [] (pending)))))
+
+(defmacro focus-it
+  "body => any forms, but aught to contain at least one assertion (should)
+
+  Declares a new characteristic (example in rspec).
+
+  Meant to facilitate temporary debugging, characteristics defined with
+  this macro will be executed along with any other characteristics thus
+  defined but all other characteristics defined with 'it' will be ignored."
+  [name & body]
+  (if (seq body)
+    `(speclj.components/new-characteristic ~name (with-meta (fn [] ~@body) {:focused? true}))
+    `(speclj.components/new-characteristic ~name (with-meta (fn [] (pending)) {:focused? true}))))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
@@ -50,8 +63,8 @@
 
 (defmacro ^:no-doc when-not-bound [name & body]
   `(if-cljs
-    (when-not ~name ~@body)
-    (when-not (bound? (find-var '~name)) ~@body)))
+     (when-not ~name ~@body)
+     (when-not (bound? (find-var '~name)) ~@body)))
 
 (defmacro describe
   "body => & spec-components
@@ -62,10 +75,11 @@
      (binding [speclj.config/*parent-description* description#]
        ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediatly
        (doseq [component# (vector ~@components)]
-         (speclj.components/install component# description#)))
+         (speclj.components/install component# description#))
+       (speclj.components/track-focus! description#))
      (when-not (if-cljs
-                  speclj.config/*parent-description*
-                  (bound? #'speclj.config/*parent-description*))
+                 speclj.config/*parent-description*
+                 (bound? #'speclj.config/*parent-description*))
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
@@ -124,13 +138,13 @@
      :cljs nil))
 
 (defn ^:no-doc -make-with [name body ctor bang?]
-  (let [var-name (with-meta (symbol name) {:dynamic true})
+  (let [var-name    (with-meta (symbol name) {:dynamic true})
         munged-name (if cljs-munge
-                        (with-meta
-                          (symbol
-                            (cljs-munge (str name)))
-                          {:dynamic true})
-                        var-name)
+                      (with-meta
+                        (symbol
+                          (cljs-munge (str name)))
+                        {:dynamic true})
+                      var-name)
         unique-name (gensym "with")]
     `(do
        (declare ~var-name)
@@ -262,7 +276,7 @@
   (should-contain 3 [1 2 3 4])               ; looks for an object in a collection"
   [expected actual]
   `(let [expected# ~expected
-         actual# ~actual]
+         actual#   ~actual]
      (cond
        (nil? actual#) (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: nil"))
        (and (string? expected#) (string? actual#))
@@ -283,7 +297,7 @@
   "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
   [expected actual]
   `(let [expected# ~expected
-         actual# ~actual]
+         actual#   ~actual]
      (cond
        (nil? actual#) nil                                   ; automatic pass!
        (and (string? expected#) (string? actual#))
@@ -334,10 +348,10 @@
   For anything else it will assert that clojure.core/== returns true."
   [expected actual]
   `(let [expected# ~expected
-         actual# ~actual]
+         actual#   ~actual]
      (cond
        (and (coll? expected#) (coll? actual#))
-       (let [extra# (-coll-difference actual# expected#)
+       (let [extra#   (-coll-difference actual# expected#)
              missing# (-coll-difference expected# actual#)]
          (when-not (and (empty? extra#) (empty? missing#))
            (-fail (-difference-message expected# actual# extra# missing#))))
@@ -352,10 +366,10 @@
   For anything else it will assert that clojure.core/== returns false."
   [expected actual]
   `(let [expected# ~expected
-         actual# ~actual]
+         actual#   ~actual]
      (cond
        (and (coll? expected#) (coll? actual#))
-       (let [extra# (-coll-difference actual# expected#)
+       (let [extra#   (-coll-difference actual# expected#)
              missing# (-coll-difference expected# actual#)]
          (when (and (empty? extra#) (empty? missing#))
            (-fail (str "Expected contents: " (-to-s expected#) speclj.platform/endl "   to differ from: " (-to-s actual#)))))
@@ -394,12 +408,12 @@ There are three options for passing different kinds of predicates:
       ~form
       (throw (-create-should-throw-failure ~throwable-type nil '~form))
       (catch e#
-        (cond
-          (speclj.platform/failure? e#) (throw e#)
-          (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
-          :else e#))))
+             (cond
+               (speclj.platform/failure? e#) (throw e#)
+               (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
+               :else e#))))
   ([throwable-type predicate form]
-   `(let [e# (should-throw ~throwable-type ~form)
+   `(let [e#     (should-throw ~throwable-type ~form)
           regex# (if-cljs js/RegExp java.util.regex.Pattern)]
       (try-catch-anything
         (cond (instance? regex# ~predicate)
@@ -420,14 +434,14 @@ There are three options for passing different kinds of predicates:
   `(try-catch-anything
      ~form
      (catch e#
-       (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
-                   "                     but got: " (pr-str e#))))))
+            (-fail (str "Expected nothing thrown from: " (pr-str '~form) speclj.platform/endl
+                        "                     but got: " (pr-str e#))))))
 
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
   [expected-type actual-form]
-  `(let [actual# ~actual-form
-         actual-type# (type actual#)
+  `(let [actual#        ~actual-form
+         actual-type#   (type actual#)
          expected-type# ~expected-type]
      (when-not (isa? actual-type# expected-type#)
        (-fail (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) speclj.platform/endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)")))))
@@ -435,8 +449,8 @@ There are three options for passing different kinds of predicates:
 (defmacro should-not-be-a
   "Asserts that the type of the given form does not derived from or equals the expected type"
   [expected-type actual-form]
-  `(let [actual# ~actual-form
-         actual-type# (type actual#)
+  `(let [actual#        ~actual-form
+         actual-type#   (type actual#)
          expected-type# ~expected-type]
      (when (isa? actual-type# expected-type#)
        (-fail (str "Expected " (-to-s actual#) " not to be an instance of " (-to-s expected-type#) " but was (using isa?)")))))
@@ -501,20 +515,20 @@ There are three options for passing different kinds of predicates:
     )"
   ([name] `(should-have-invoked ~name {}))
   ([name options]
-   `(let [name# ~name
-          options# ~options
-          invocations# (speclj.stub/invocations-of name#)
-          times# (:times options#)
-          times?# (number? times#)
-          check-params?# (contains? options# :with)
-          with# (:with options#)
-          with# (if (nil? with#) [] with#)
+   `(let [name#            ~name
+          options#         ~options
+          invocations#     (speclj.stub/invocations-of name#)
+          times#           (:times options#)
+          times?#          (number? times#)
+          check-params?#   (contains? options# :with)
+          with#            (:with options#)
+          with#            (if (nil? with#) [] with#)
           invocations-str# #(if (= 1 %) "invocation" "invocations")]
       (cond
 
         (and times?# check-params?#)
         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
-              matching-count# (count matching-invocations#)]
+              matching-count#       (count matching-invocations#)]
           (when-not (= times# matching-count#)
             (-fail (str "Expected: " times# " " (invocations-str# times#) " of " name# " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " " (invocations-str# matching-count#)))))
 
@@ -554,19 +568,19 @@ There are three options for passing different kinds of predicates:
     )"
   ([name] `(should-not-have-invoked ~name {}))
   ([name options]
-   `(let [name# ~name
-          options# ~options
-          invocations# (speclj.stub/invocations-of name#)
-          times# (:times options#)
-          times?# (number? times#)
+   `(let [name#          ~name
+          options#       ~options
+          invocations#   (speclj.stub/invocations-of name#)
+          times#         (:times options#)
+          times?#        (number? times#)
           check-params?# (contains? options# :with)
-          with# (:with options#)
-          with# (if (nil? with#) [] with#)
-          add-s# #(if (= 1 %) "" "s")]
+          with#          (:with options#)
+          with#          (if (nil? with#) [] with#)
+          add-s#         #(if (= 1 %) "" "s")]
       (cond
         (and times?# check-params?#)
         (let [matching-invocations# (filter #(speclj.stub/params-match? with# %) invocations#)
-              matching-count# (count matching-invocations#)]
+              matching-count#       (count matching-invocations#)]
           (when (= times# matching-count#)
             (-fail (str "Expected: " name# " not to have been invoked " times# " time" (add-s# matching-count#) " with " (pr-str with#) speclj.platform/endl "     got: " matching-count# " invocation" (add-s# matching-count#)))))
 
@@ -594,7 +608,7 @@ There are three options for passing different kinds of predicates:
 
 (defmacro ^:no-doc with-stubbed-invocations [& body]
   `(if (not (speclj.platform/bound-by-should-invoke?))
-     (with-redefs [speclj.stub/*stubbed-invocations* (atom [])
+     (with-redefs [speclj.stub/*stubbed-invocations*        (atom [])
                    speclj.platform/*bound-by-should-invoke* true]
        ~@body)
      (do ~@body)))

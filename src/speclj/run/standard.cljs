@@ -1,11 +1,11 @@
 (ns speclj.run.standard
   (:require [speclj.components]
-            [speclj.config :refer [default-config default-runner-fn default-runner with-config
-                                   active-reporters active-runner]]
-            [speclj.report.progress] ; so that we can load the default reporter
-            [speclj.reporting :refer [report-runs* report-message*]]
+            [speclj.config :refer [active-reporters active-runner default-config default-runner
+                                   default-runner-fn with-config]]
+            [speclj.report.progress]                        ; so that we can load the default reporter
+            [speclj.reporting :refer [report-message* report-runs*]]
             [speclj.results :refer [fail-count]]
-            [speclj.running :refer [do-description run-and-report run-description]]
+            [speclj.running :refer [do-description filter-focused run-and-report run-description]]
             [speclj.tags :refer [describe-filter]]))
 
 (def counter (atom 0))
@@ -23,7 +23,7 @@
       (swap! results into run-results)))
 
   (run-and-report [this reporters]
-    (doseq [description @descriptions]
+    (doseq [description (filter-focused @descriptions)]
       (run-description this description reporters))
     (report-runs* reporters @results)))
 
@@ -51,11 +51,10 @@ are evaluated by evaluation the file as a script.  Optional configuration parame
 
 (run-specs :stacktrace true :color false :reporters [\"documentation\"])"
   (when armed
-    (let [config (apply hash-map configurations)
-          config (merge (dissoc default-config :runner) config)]
-      (with-config config
-        (fn []
-          (if-let [filter-msg (describe-filter)]
-            (report-message* (active-reporters) filter-msg))
-          (run-and-report (active-runner) (active-reporters))
-          (fail-count @(.-results (active-runner))))))))
+    (with-config
+      (merge (dissoc default-config :runner) (apply hash-map configurations))
+      (fn []
+        (if-let [filter-msg (describe-filter)]
+          (report-message* (active-reporters) filter-msg))
+        (run-and-report (active-runner) (active-reporters))
+        (fail-count @(.-results (active-runner)))))))
