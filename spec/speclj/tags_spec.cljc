@@ -1,6 +1,6 @@
 (ns speclj.tags-spec
   (#?(:clj :require :cljs :require-macros)
-    [speclj.core :refer [around context describe it should= tags]])
+   [speclj.core :refer [around context describe it should= tags]])
   (:require [clojure.string :as str]
             [speclj.config :refer [*runner* *reporters*]]
             [speclj.report.silent :refer [new-silent-reporter]]
@@ -45,9 +45,9 @@
   #?(:clj
      (context "with fake runner/reporter"
        (around [_]
-         (binding [*runner* (new-standard-runner)
+         (binding [*runner*    (new-standard-runner)
                    *reporters* (new-silent-reporter)
-                   *ns* (the-ns 'speclj.tags-spec)]
+                   *ns*        (the-ns 'speclj.tags-spec)]
            (_)))
 
        (it "finds all the tag sets with one context"
@@ -58,11 +58,11 @@
 
        (it "finds all the tag sets with nested contexts"
          (let [spec
-               (eval '(describe "foo" (tags :one)
-                        (context "child" (tags :two)
-                          (context "grandchild" (tags :three :four))
-                          (context "grandchild2" (tags :five)))
-                        (context "child2" (tags :six))))
+                        (eval '(describe "foo" (tags :one)
+                                               (context "child" (tags :two)
+                                                                (context "grandchild" (tags :three :four))
+                                                                (context "grandchild2" (tags :five)))
+                                               (context "child2" (tags :six))))
                tag-sets (tag-sets-for spec)]
            (should= 5 (count tag-sets))
            (should= #{:one} (nth tag-sets 0))

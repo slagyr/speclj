@@ -1,13 +1,13 @@
 (ns speclj.cli
   (:require [speclj.config :refer :all]
             [speclj.platform :refer [endl]]
-            [speclj.reporting :refer [stack-trace-str report-message*]]
+            [speclj.reporting :refer [report-message* stack-trace-str]]
             [speclj.run.standard]
-            [speclj.running :refer [run-directories run-and-report]]
+            [speclj.running :refer [run-directories]]
             [speclj.stub]
             [speclj.tags :refer [describe-filter]]
             [trptcolin.versioneer.core :as version])
-  (:import [mmargs Arguments]))
+  (:import (mmargs Arguments)))
 
 (def speclj-invocation (or (System/getProperty "speclj.invocation") "java -cp [...] speclj.main"))
 
@@ -21,14 +21,14 @@
   (.addSwitchOption "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
   (.addMultiOption "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
   (.addMultiOption "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
-                                               "  [c]lojure-test:   (reporting via clojure.test/report)" endl
-                                               "  [d]ocumentation:  (description/context and characteristic names)" endl
-                                               "  [p]rogress:       (default - dots)" endl
-                                               "  [s]ilent:         (no output)" endl))
+                                                  "  [c]lojure-test:   (reporting via clojure.test/report)" endl
+                                                  "  [d]ocumentation:  (description/context and characteristic names)" endl
+                                                  "  [p]rogress:       (default - dots)" endl
+                                                  "  [s]ilent:         (no output)" endl))
   (.addMultiOption "f" "format" "FORMAT" "An alias for reporter.")
   (.addValueOption "r" "runner" "RUNNER" (str "Specifies the spec runner.  Builtin runners:" endl
-                                           "  [s]tandard:  (default) Runs all the specs once" endl
-                                           "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+                                              "  [s]tandard:  (default) Runs all the specs once" endl
+                                              "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
   (.addMultiOption "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
   (.addSwitchOption "v" "version" "Shows the current speclj version.")
   (.addSwitchOption "h" "help" "You're looking at it.")
@@ -79,11 +79,11 @@
 
 (defn parse-args [& args]
   (let [parse-result (.parse arg-spec (into-array String args))
-        options (reduce (fn [result entry] (assoc result (keyword (.getKey entry)) (.getValue entry))) {} parse-result)
-        options (resolve-aliases options)
-        options (if (:specs options)
-                  options
-                  (clojure.set/rename-keys options {:default-spec-dirs :specs}))]
+        options      (reduce (fn [result entry] (assoc result (keyword (.getKey entry)) (.getValue entry))) {} parse-result)
+        options      (resolve-aliases options)
+        options      (if (:specs options)
+                       options
+                       (clojure.set/rename-keys options {:default-spec-dirs :specs}))]
     (merge default-config options)))
 
 (defn do-specs [config]

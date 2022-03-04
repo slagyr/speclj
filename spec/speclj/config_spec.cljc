@@ -1,6 +1,6 @@
 (ns speclj.config-spec
   (#?(:cljs :require-macros :clj :require)
-    [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
+   [speclj.core :refer [describe it should-not= should= should-throw should-not-contain should-be-same]])
   (:require [speclj.config :refer [load-runner load-reporter default-config
                                    parse-tags config-mappings *tag-filter* config-bindings]]
             [speclj.platform :as platform]
@@ -22,8 +22,7 @@
          (should= "speclj.run.vigilant.VigilantRunner" (.getName (type runner))))))
 
   (it "throws exception with unrecognized runner"
-    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah"))
-    )
+    (should-throw platform/exception "Failed to load runner: blah" (load-runner "blah")))
 
   (it "dynamically loads ProgressReporter"
     (let [reporter (load-reporter "progress")]
@@ -40,7 +39,7 @@
 
   (it "can be given a pre-fabricated reporter"
     (let [pre-fabricated-reporter (speclj.report.silent/new-silent-reporter)
-          reporter (load-reporter pre-fabricated-reporter)]
+          reporter                (load-reporter pre-fabricated-reporter)]
       (should-not= nil reporter)
       (should-be-same reporter pre-fabricated-reporter)))
 

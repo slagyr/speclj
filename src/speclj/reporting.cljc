@@ -1,6 +1,6 @@
 (ns speclj.reporting
   (:require [clojure.string :as string :refer [split join]]
-    #?(:cljs [goog.string])                                 ;cljs bug?
+            #?(:cljs [goog.string])                         ;cljs bug?
             [speclj.config :refer [*reporters* *color?* *full-stack-trace?*]]
             [speclj.platform :refer [endl file-separator failure-source stack-trace cause print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))
@@ -91,13 +91,13 @@
       (print-exception nil exception))))
 
 (defn prefix [pre & args]
-  (let [value (apply str args)
-        lines (split value #"[\r\n]+")
+  (let [value          (apply str args)
+        lines          (split value #"[\r\n]+")
         prefixed-lines (map #(str pre %) lines)]
     (join endl prefixed-lines)))
 
 (defn indent [n & args]
-  (let [spaces (int (* n 2.0))
+  (let [spaces    (int (* n 2.0))
         indention (reduce (fn [p _] (str " " p)) "" (range spaces))]
     (apply prefix indention args)))
 

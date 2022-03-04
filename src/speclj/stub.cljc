@@ -1,12 +1,11 @@
-(ns speclj.stub
-  (:require [speclj.platform :refer [endl]]))
+(ns speclj.stub)
 
 (declare ^:dynamic *stubbed-invocations*)
 
 (defn- check-recording []
   (when-not #?(:clj  (bound? #'*stubbed-invocations*)
                :cljs *stubbed-invocations*)
-    (throw (new #?(:clj  java.lang.Exception :cljs js/Error)
+    (throw (new #?(:clj java.lang.Exception :cljs js/Error)
                 "Stub recoding not bound.  Please add (with-stubs) to the decribe/context."))))
 
 (defn -record-invocation [name args]

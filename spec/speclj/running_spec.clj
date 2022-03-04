@@ -1,13 +1,13 @@
 (ns speclj.running-spec
-  (:require [speclj.core :refer [after around before before-all context describe
+  (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
+            [speclj.core :refer [after around before-all context describe
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.platform :as platform]
-            [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.report.silent :refer [new-silent-reporter]]
-            [speclj.results :refer [pass? fail?]]
-            [speclj.run.standard :refer [run-specs new-standard-runner]]
+            [speclj.results :refer [fail?]]
+            [speclj.run.standard :refer [new-standard-runner run-specs]]
             [speclj.running :refer [run-and-report]]))
 
 (def bauble (atom nil))
@@ -15,9 +15,9 @@
 (describe "Running"
   (with runner (new-standard-runner))
   (around [_]
-    (binding [*runner* @runner
+    (binding [*runner*    @runner
               *reporters* [(new-silent-reporter)]
-              *ns* (the-ns 'speclj.running-spec)]
+              *ns*        (the-ns 'speclj.running-spec)]
       (_)))
 
   (it "tracks one pass"
@@ -27,7 +27,7 @@
            (should (= 1 1)))))
     (run-and-report *runner* *reporters*)
     (let [results @(.-results *runner*)
-          result (first results)]
+          result  (first results)]
       (should= 1 (count results))
       (should= "has a pass" (.-name (.-characteristic result)))
       (should-not (fail? result))))
@@ -39,7 +39,7 @@
            (should= 1 2))))
     (run-and-report *runner* *reporters*)
     (let [results @(.-results *runner*)
-          result (first results)]
+          result  (first results)]
       (should= 1 (count results))
       (should= "has a fail" (.-name (.-characteristic result)))
       (should-not= nil (.-failure result))
@@ -74,16 +74,16 @@
       (should-not-throw (eval spec))
       (run-and-report *runner* *reporters*)
       (let [results @(.-results *runner*)
-            result (first results)]
+            result  (first results)]
         (should= 1 (count results))
         (should-not (fail? result)))))
 
   (it "only executes contexts that pass the tag filter"
     (eval
       `(describe "Dummy" (tags :one)
-         (it "one tag" :filler)
-         (context "Fool" (tags :two)
-           (it "one, two tag" :filler))))
+                         (it "one tag" :filler)
+                         (context "Fool" (tags :two)
+                                         (it "one, two tag" :filler))))
     (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
       (run-and-report *runner* *reporters*))
     (let [results @(.-results *runner*)]

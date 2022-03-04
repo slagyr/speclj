@@ -1,10 +1,10 @@
 (ns speclj.cli-spec
-  (:require [speclj.config :as config]
+  (:require [speclj.cli :refer :all]
+            [speclj.config :as config]
             [speclj.core :refer :all]
-            [speclj.cli :refer :all]
             [speclj.platform :refer [endl]]
             [trptcolin.versioneer.core :as version])
-  (:import [java.io ByteArrayOutputStream OutputStreamWriter]))
+  (:import (java.io ByteArrayOutputStream OutputStreamWriter)))
 
 (defn to-s [output]
   (String. (.toByteArray output)))
@@ -94,8 +94,8 @@
     (should= "on" (:color (parse-args "-c"))))
 
   (it "parses the --no-color switch"
-      (should= nil (:color (parse-args "-C")))
-      (should= nil (:color (parse-args "-c" "-C"))))
+    (should= nil (:color (parse-args "-C")))
+    (should= nil (:color (parse-args "-c" "-C"))))
 
   (it "parses the --omit-pending option"
     (should= false (:omit-pending (parse-args "")))
@@ -132,6 +132,6 @@
     (should= ["one"] (:tags (parse-args "-t" "one")))
     (should= ["one" "~two"] (:tags (parse-args "--tag=one" "--tag=~two")))
     (should= ["one" "~two"] (:tags (parse-args "-t" "one" "-t" "~two"))))
-)
+  )
 
 (run-specs)

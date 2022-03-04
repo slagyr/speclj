@@ -1,7 +1,7 @@
 (ns speclj.stub-spec
   (#?(:clj :require :cljs :require-macros)
-    [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
-    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
+   [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
+   [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
   (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]
@@ -37,9 +37,9 @@
 
   (it "can invoke"
     (let [trail (atom [])
-          foo (stub :foo {:invoke #(swap! trail conj :foo)})
-          bar (stub :bar {:invoke #(swap! trail conj %1)})
-          fizz (stub :fizz {:invoke #(swap! trail conj [%1 %2])})]
+          foo   (stub :foo {:invoke #(swap! trail conj :foo)})
+          bar   (stub :bar {:invoke #(swap! trail conj %1)})
+          fizz  (stub :fizz {:invoke #(swap! trail conj [%1 %2])})]
       (foo)
       (bar 1)
       (fizz 2 3)
@@ -271,17 +271,17 @@
       (it "uses options on stubbing and checking - passing"
         (should-pass!
           (should-invoke reverse {:return 42 :times 2}
-            (should= 42 (reverse [1 2]))
-            (should= 42 (reverse [3 4])))))
+                         (should= 42 (reverse [1 2]))
+                         (should= 42 (reverse [3 4])))))
 
       (it "uses options on stubbing and checking - failure"
         (should-fail!
           (should-invoke reverse {:return 42 :times 2}
-            (should= 42 (reverse [1 2]))))
+                         (should= 42 (reverse [1 2]))))
         (should= "Expected: 2 invocations of reverse\n     got: 1"
                  (failure-message
                    (should-invoke reverse {:return 42 :times 2}
-                     (should= 42 (reverse [1 2]))))))
+                                  (should= 42 (reverse [1 2]))))))
 
       (it "stubs and checks it was not called - failing"
         (should-fail! (should-not-invoke println {} (println "Hello!")))
@@ -299,17 +299,17 @@
       (it "allows for nested should-invoke's"
         (should-pass!
           (should-invoke reverse {:times 1}
-            (should-invoke println {:times 1}
-              (println "hello!")
-              (reverse [1 2])))))
+                         (should-invoke println {:times 1}
+                                        (println "hello!")
+                                        (reverse [1 2])))))
 
       (it "allows for nested should-not-invoke's"
         (should-pass!
           (should-invoke reverse {:times 2}
-            (reverse [1 2])
-            (should-not-invoke println {:times 2}
-                               (println "hello!")
-                               (reverse [1 2])))))
+                         (reverse [1 2])
+                         (should-not-invoke println {:times 2}
+                                            (println "hello!")
+                                            (reverse [1 2])))))
 
       )
     )

@@ -27,10 +27,10 @@
 
 (defn categorize [results]
   (reduce (fn [tally result]
-    (cond
-      (pending? result) (update-in tally [:pending] conj result)
-      (error? result) (update-in tally [:error] conj result)
-      (fail? result) (update-in tally [:fail] conj result)
-      :else (update-in tally [:pass] conj result)))
-    {:pending [] :fail [] :pass [] :error []}
-    results))
+            (cond
+              (pending? result) (update-in tally [:pending] conj result)
+              (error? result) (update-in tally [:error] conj result)
+              (fail? result) (update-in tally [:fail] conj result)
+              :else (update-in tally [:pass] conj result)))
+          {:pending [] :fail [] :pass [] :error []}
+          results))

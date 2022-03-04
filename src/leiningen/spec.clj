@@ -1,6 +1,5 @@
 (ns leiningen.spec
-  (:require [leiningen.core.eval :refer [eval-in-project]]
-            [leiningen.core.main :as main]))
+  (:require [leiningen.core.main :as main]))
 
 (defn make-run-form [project speclj-args]
   (let [exit-fn (if (or (:eval-in-leiningen project)
@@ -19,10 +18,10 @@
 
 (defn- build-args [project args]
   (-> args
-    seq
-    (conj "-c")
-    (with-paths project)
-    vec))
+      seq
+      (conj "-c")
+      (with-paths project)
+      vec))
 
 (defn ^:pass-through-help spec
   "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.
@@ -36,8 +35,8 @@ documentation, as opposed to this message provided by Leiningen, try this:
 
 That ought to do the trick."
   [project & args]
-  (let [project (assoc project :eval-in (get project :speclj-eval-in :subprocess))
+  (let [project     (assoc project :eval-in (get project :speclj-eval-in :subprocess))
         speclj-args (build-args project args)
-        run-form (make-run-form project speclj-args)
-        init-form '(require 'speclj.cli)]
-      (eval-in-project project run-form init-form)))
+        run-form    (make-run-form project speclj-args)
+        init-form   '(require 'speclj.cli)]
+    (eval-in-project project run-form init-form)))

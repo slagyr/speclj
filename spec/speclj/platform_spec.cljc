@@ -1,7 +1,7 @@
 (ns speclj.platform-spec
   (#?(:clj :require :cljs :require-macros)
-    [speclj.core :refer [describe it should= should-throw]]
-    [speclj.platform :refer [if-cljs try-catch-anything]])
+   [speclj.core :refer [describe it should= should-throw]]
+   [speclj.platform :refer [if-cljs try-catch-anything]])
   (:require
     [speclj.run.standard :refer [run-specs]]))
 
@@ -24,17 +24,17 @@
         (try-catch-anything
           (throw throwable)
           (catch e
-            (should= e throwable))))
+                 (should= e throwable))))
 
-    (it "throws if the last form is not a catch"
-      (should-throw
-        (try-catch-anything
-          :nope)))
+      (it "throws if the last form is not a catch"
+        (should-throw
+          (try-catch-anything
+            :nope)))
 
-    (it "throws if the binding is not a symbol"
-      (should-throw
-        (try-catch-anything
-          :yep
-          (catch :nope 'whatever)))))))
+      (it "throws if the binding is not a symbol"
+        (should-throw
+          (try-catch-anything
+            :yep
+            (catch :nope 'whatever)))))))
 
 (run-specs)

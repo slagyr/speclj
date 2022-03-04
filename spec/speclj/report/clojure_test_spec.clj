@@ -1,17 +1,14 @@
 (ns speclj.report.clojure-test-spec
-  (:require ;cljs-macros
-            [speclj.core :refer [around before context describe it should should= should-contain with -new-exception -new-failure]])
-  (:require [clojure.string :as str]
-            ;cljs-include [goog.string] ;cljs bug?
-            [speclj.components :refer [new-description new-characteristic install]]
-            [speclj.config :refer [*color?* *full-stack-trace?*]]
-            [speclj.platform :refer [format-seconds]]
-            [speclj.report.clojure-test :refer [new-clojure-test-reporter]]
-            [speclj.reporting :refer [report-description report-pass report-pending
-                                      report-fail report-error red green yellow grey report-runs]]
-            [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :refer [run-specs]]
-            [clojure.test]))
+  (:require                                                 ;cljs-macros
+    [clojure.string :as str]
+    [clojure.test]
+    ;cljs-include [goog.string] ;cljs bug?
+    [speclj.components :refer [new-characteristic new-description]]
+    [speclj.core :refer [-new-exception -new-failure describe it should-contain should= with]]
+    [speclj.report.clojure-test :refer [new-clojure-test-reporter]]
+    [speclj.reporting :refer [report-error report-fail report-pass report-pending report-runs]]
+    [speclj.results :refer [error-result fail-result]]
+    [speclj.run.standard :refer [run-specs]]))
 
 (defmacro with-test-out-str [& body]
   `(let [s# (new java.io.StringWriter)]
@@ -27,17 +24,17 @@
   (it "reports pass"
     (with-test-out-str (report-pass @reporter nil))
     (should= 1
-      (:pass (deref (.report-counters @reporter)))))
+             (:pass (deref (.report-counters @reporter)))))
 
   (it "reports pending"
     (with-test-out-str (report-pending @reporter nil))
     (should= 1
-      (:pending (deref (.report-counters @reporter)))))
+             (:pending (deref (.report-counters @reporter)))))
 
   (it "reports fail"
     (with-test-out-str (report-fail @reporter @a-failure))
     (should= 1
-      (:fail (deref (.report-counters @reporter)))))
+             (:fail (deref (.report-counters @reporter)))))
 
   (it "reports failure message"
     (let [lines (str/split-lines (with-test-out-str (report-fail @reporter @a-failure)))]
@@ -47,7 +44,7 @@
   (it "reports error"
     (with-test-out-str (report-error @reporter @an-error))
     (should= 1
-      (:error (deref (.report-counters @reporter)))))
+             (:error (deref (.report-counters @reporter)))))
 
   (it "reports error message"
     (let [lines (str/split-lines (with-test-out-str (report-error @reporter @an-error)))]
@@ -62,7 +59,7 @@
       (report-fail @reporter @a-failure)
       (report-error @reporter @an-error))
     (let [output (with-test-out-str (report-runs @reporter nil))
-          lines (str/split-lines output)]
+          lines  (str/split-lines output)]
       (should= 3 (count lines))
       (should= "Ran 3 tests containing 3 assertions." (nth lines 1))
       (should= "1 failures, 1 errors." (nth lines 2))))

@@ -3,27 +3,28 @@
             [clojure.string :as string :refer [split]]))
 
 (defmacro if-cljs
-  "Return then if we are generating cljs code and else for Clojure code.
-   http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
+          "Return then if we are generating cljs code and else for Clojure code.
+           http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
+           https://github.com/nberger/more-macro-musings"
   [then else]
   (if (:ns &env) then else))
 
 (defmacro try-catch-anything
-  "Tries forms up until the last form, which is expected to be a `catch` form,
-  except its type is missing; instead, `:default` is used in ClojureScript and
-  `java.lang.Throwable` is used in Clojure JVM."
+          "Tries forms up until the last form, which is expected to be a `catch` form,
+          except its type is missing; instead, `:default` is used in ClojureScript and
+          `java.lang.Throwable` is used in Clojure JVM."
   [& forms]
-  (let [body (butlast forms)
-        catch-form (last forms)
+  (let [body         (butlast forms)
+        catch-form   (last forms)
         [catch-sym binding & catch-forms] (if (sequential? catch-form) catch-form [nil nil nil])
         catch-valid? (and (= 'catch catch-sym) (symbol? binding))]
     (if catch-valid?
-        `(if-cljs
-           (try ~@body
-             (catch :default ~binding ~@catch-forms))
-           (try ~@body
-             (catch java.lang.Throwable ~binding ~@catch-forms)))
-        `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
+      `(if-cljs
+         (try ~@body
+              (catch :default ~binding ~@catch-forms))
+         (try ~@body
+              (catch java.lang.Throwable ~binding ~@catch-forms)))
+      `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
 
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
@@ -52,7 +53,7 @@
        *bound-by-should-invoke*))
 
 (defn difference-greater-than-delta? [expected actual delta]
-    (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
+  (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
 
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
@@ -61,9 +62,9 @@
   (.printStackTrace e (java.io.PrintWriter. *out* true)))
 
 (defn failure-source [exception]
-  (let [source (nth (.getStackTrace exception) 0)
+  (let [source    (nth (.getStackTrace exception) 0)
         classname (.getClassName source)
-        filename (classname->filename classname)]
+        filename  (classname->filename classname)]
     (if-let [url (io/resource filename)]
       (str (.getFile url) ":" (.getLineNumber source))
       (str filename ":" (.getLineNumber source)))))
@@ -85,7 +86,7 @@
 (defn dynamically-invoke [ns-name fn-name]
   (let [ns-sym (symbol ns-name)
         fn-sym (symbol (str ns-name "/" fn-name))
-        expr `(do (require '~ns-sym) (~fn-sym))]
+        expr   `(do (require '~ns-sym) (~fn-sym))]
     (eval expr)))
 
 (def new-line 10)

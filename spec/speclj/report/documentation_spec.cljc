@@ -1,10 +1,8 @@
 (ns speclj.report.documentation-spec
   (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [around before context describe it should= with -new-exception -new-failure -new-pending]])
-  (:require [clojure.string :refer [split-lines]]
-            #?(:cljs [goog.string])                         ;cljs bug?
+   [speclj.core :refer [before context describe it should= with -new-exception -new-failure -new-pending]])
+  (:require #?(:cljs [goog.string])                         ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
-            [speclj.config :refer [*color?*]]
             [speclj.platform :refer [endl]]
             [speclj.report.documentation :refer [new-documentation-reporter]]
             [speclj.reporting :refer [report-description report-pass report-pending

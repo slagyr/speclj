@@ -1,10 +1,9 @@
 (ns speclj.core-spec
   (#?(:clj :require :cljs :require-macros)
-    [speclj.core :refer [describe it context tags
-                         should should-be-same should-not-be-same should=
-                         before after before-all after-all
-                         with with! with-all with-all! around around-all
-                         pending]])
+   [speclj.core :refer [describe it context tags
+                        should should-be-same should-not-be-same should=
+                        before after before-all after-all
+                        with with! with-all with-all! around around-all]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
@@ -110,61 +109,61 @@
 
 (describe "around-all form"
   (describe "with nothing else"
-    (let [widget (atom 5)
+    (let [widget     (atom 5)
           call-count (atom 0)]
 
-       (around-all [context]
-                   (swap! call-count inc)
-                   (binding [*gewgaw* (swap! widget inc)]
-                     (context)))
+      (around-all [context]
+                  (swap! call-count inc)
+                  (binding [*gewgaw* (swap! widget inc)]
+                    (context)))
 
-       (it "executes before the specs"
-         (should= 6 @widget))
+      (it "executes before the specs"
+        (should= 6 @widget))
 
-       (it "executes around the specs"
-         (should= 6 *gewgaw*))
+      (it "executes around the specs"
+        (should= 6 *gewgaw*))
 
-       (it "only executes once"
-         (should= 1 @call-count))
+      (it "only executes once"
+        (should= 1 @call-count))
 
-       (context "nested"
-         (around-all [context]
-                     (swap! call-count inc)
-                     (swap! widget #(/ % 2))
-                     (context))
+      (context "nested"
+        (around-all [context]
+                    (swap! call-count inc)
+                    (swap! widget #(/ % 2))
+                    (context))
 
-         (around-all [context]
-                     (swap! call-count inc)
-                     (swap! widget #(- % 2))
-                     (context))
+        (around-all [context]
+                    (swap! call-count inc)
+                    (swap! widget #(- % 2))
+                    (context))
 
-         (it "executes in the order in which they are defined"
-           (should= 1 @widget))
+        (it "executes in the order in which they are defined"
+          (should= 1 @widget))
 
-         (it "and still only execute once"
-           (should= 3 @call-count)))))
+        (it "and still only execute once"
+          (should= 3 @call-count)))))
 
   (describe "with before-alls"
     (let [widget (atom 6)]
-       (around-all [context]
-                   (swap! widget #(- % 2))
-                   (context))
+      (around-all [context]
+                  (swap! widget #(- % 2))
+                  (context))
 
-       (before-all
-         (swap! widget #(/ % 2)))
+      (before-all
+        (swap! widget #(/ % 2)))
 
-       (it "executes after before-alls regardless of definition order"
-         (should= 1 @widget))))
+      (it "executes after before-alls regardless of definition order"
+        (should= 1 @widget))))
 
   (describe "with withs"
     (let [widget (atom 6)]
       (describe "with after-alls"
         (after-all
-           (swap! widget #(/ % 2)))
+          (swap! widget #(/ % 2)))
 
-         (around-all [context]
-                     (context))
-         (swap! widget #(- % 2)))
+        (around-all [context]
+                    (context))
+        (swap! widget #(- % 2)))
 
       (describe "previous after-all and around-all forms"
         (it "executes before after-alls regardless of definition order"

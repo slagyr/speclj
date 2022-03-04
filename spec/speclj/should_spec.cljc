@@ -8,7 +8,7 @@
                         should-start-with should-not-start-with
                         should-end-with should-not-end-with]]
    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
-  (:require [speclj.platform :refer [endl error-message exception type-name throwable]]
+  (:require [speclj.platform :refer [endl exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Should Assertions: "

@@ -1,9 +1,9 @@
 (ns speclj.report.progress
-  (:require [speclj.config :refer [default-reporters *omit-pending?*]]
+  (:require [clojure.string :as str]
+            [speclj.config :refer [*omit-pending?* default-reporters]]
             [speclj.platform :as platform]
-            [speclj.reporting :refer [tally-time red green yellow grey stack-trace-str indent prefix]]
-            [speclj.results :refer [pass? fail? pending? categorize]]
-            [clojure.string :as str]))
+            [speclj.reporting :refer [green grey indent red stack-trace-str tally-time yellow]]
+            [speclj.results :refer [categorize]]))
 
 (defn full-name [characteristic]
   (loop [context @(.-parent characteristic) name (.-name characteristic)]
@@ -13,7 +13,7 @@
 
 (defn print-failure [id result]
   (let [characteristic (.-characteristic result)
-        failure (.-failure result)]
+        failure        (.-failure result)]
     (println)
     (println (indent 1 id ") " (full-name characteristic)))
     (println (red (indent 2.5 (platform/error-message failure))))
@@ -70,13 +70,13 @@
     report))
 
 (defn describe-counts-for [result-map]
-  (let [tally (zipmap (keys result-map) (map count (vals result-map)))
+  (let [tally            (zipmap (keys result-map) (map count (vals result-map)))
         always-on-counts [(str (apply + (vals tally)) " examples")
                           (str (:fail tally) " failures")]]
     (str/join ", "
-      (-> always-on-counts
-        (apply-pending-tally tally)
-        (apply-error-tally tally)))))
+              (-> always-on-counts
+                  (apply-pending-tally tally)
+                  (apply-error-tally tally)))))
 
 (defn- print-tally [result-map]
   (let [color-fn (color-fn-for result-map)]

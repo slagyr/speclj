@@ -1,10 +1,9 @@
 (ns speclj.reporting-spec
-  (#?(:clj :require :cljs :require-macros) [speclj.core :refer [describe context with before around it should should=]])
+  (#?(:clj :require :cljs :require-macros)
+   [speclj.core :refer [describe context around it should=]])
   (:require [speclj.config :refer [*color?* *full-stack-trace?*]]
             [speclj.run.standard :refer [run-specs]]
-            [speclj.reporting :refer [green grey indent red report-description report-error
-                                      report-fail report-pass report-pending
-                                      prefix stack-trace-str yellow]]))
+            [speclj.reporting :refer [green grey indent red prefix stack-trace-str yellow]]))
 
 (describe "Reporting"
   (context "without color"
@@ -38,7 +37,7 @@
     #?(:clj
        (it "prints elided stack traces"
          (let [exception (Exception. "Test Exception")
-               expected "java.lang.Exception: Test Exception
+               expected  "java.lang.Exception: Test Exception
 \tat my_code$start.invoke(my_file.clj:123)
 \tat clojure_my_code.invoke(my_file.clj:666)
 \tat speclj-my-code.invoke(my_file.clj:666)
@@ -62,9 +61,9 @@
 
     #?(:clj
        (it "prints elided stack traces of caused exceptions"
-         (let [cause (Exception. "Cause")
+         (let [cause     (Exception. "Cause")
                exception (Exception. "Test Exception" cause)
-               expected "java.lang.Exception: Test Exception
+               expected  "java.lang.Exception: Test Exception
 \tat my_code$outside.invoke(my_file.clj:321)
 Caused by: java.lang.Exception: Cause
 \tat my_code$start.invoke(my_file.clj:123)

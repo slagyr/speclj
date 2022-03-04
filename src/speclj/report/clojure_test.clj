@@ -1,11 +1,9 @@
 (ns speclj.report.clojure-test
-  (:require [speclj.config :refer [default-reporters]]
-            [speclj.platform]
-            [speclj.reporting :refer [tally-time red green yellow grey stack-trace-str indent prefix]]
-            [speclj.results :refer [pass? fail? pending? categorize]]
-            [clojure.string :as str]
+  (:require [clojure.string]
+            [clojure.string :as string :refer [split]]
             [clojure.test]
-            [clojure.string :as string :refer [split]]))
+            [speclj.platform]
+            [speclj.reporting]))
 
 (defn error-message [e] (.getMessage e))
 
@@ -24,9 +22,9 @@
       ".clj")))
 
 (defn failure-source [failure]
-  (let [source (nth (.getStackTrace failure) 0)
+  (let [source    (nth (.getStackTrace failure) 0)
         classname (.getClassName source)
-        filename (classname->filename classname)]
+        filename  (classname->filename classname)]
     (if-let [url (.getResource (clojure.lang.RT/baseLoader) filename)]
       {:file (.getFile url) :line (.getLineNumber source)}
       {:file filename :line (.getLineNumber source)})))
@@ -35,46 +33,46 @@
   speclj.reporting/Reporter
   (report-message [this message]
     (println message) (flush))
-  
+
   (report-description [this description])
-  
+
   (report-pass [this result]
     (binding [clojure.test/*report-counters* report-counters]
       (clojure.test/inc-report-counter :test)
       (clojure.test/report {:type :pass})))
-  
+
   (report-pending [this result]
     (binding [clojure.test/*report-counters* report-counters]
       (clojure.test/inc-report-counter :test)
       (clojure.test/inc-report-counter :pending)))
-  
+
   (report-fail [this result]
     (binding [clojure.test/*report-counters* report-counters]
       (clojure.test/inc-report-counter :test)
-      (let [characteristic (.-characteristic result)
-            failure (.-failure result)
+      (let [characteristic      (.-characteristic result)
+            failure             (.-failure result)
             characteristic-text (full-name characteristic)]
         (binding [clojure.test/*testing-vars* [(with-meta {} {:name (symbol characteristic-text)})]]
           (clojure.test/report
-           (merge 
-             {:type :fail} 
-             (failure-source failure) 
-             {:message (error-message failure) 
-              :expected "see above" 
-              :actual "see above"}))))))
-  
+            (merge
+              {:type :fail}
+              (failure-source failure)
+              {:message  (error-message failure)
+               :expected "see above"
+               :actual   "see above"}))))))
+
   (report-error [this result]
     (binding [clojure.test/*report-counters* report-counters]
       (let [ex (.-exception result)]
-      (binding [clojure.test/*testing-vars* [(with-meta {} {:name (symbol "unknown")})]]
-        (clojure.test/report
-         (merge 
-           {:type :error} 
-           (failure-source ex) 
-           {:message (.getMessage ex) 
-            :expected "not recorded" 
-            :actual ex}))))))
-  
+        (binding [clojure.test/*testing-vars* [(with-meta {} {:name (symbol "unknown")})]]
+          (clojure.test/report
+            (merge
+              {:type :error}
+              (failure-source ex)
+              {:message  (.getMessage ex)
+               :expected "not recorded"
+               :actual   ex}))))))
+
   (report-runs [this results]
     (binding [clojure.test/*report-counters* report-counters]
       (clojure.test/report (merge {:type :summary} @report-counters)))))

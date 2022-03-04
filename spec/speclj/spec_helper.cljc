@@ -1,12 +1,12 @@
 (ns speclj.spec-helper
   (#?(:clj :require :cljs :require-macros)
-     [speclj.core :refer [-fail]]
-     [speclj.platform :refer [try-catch-anything]]))
+   [speclj.core :refer [-fail]]
+   [speclj.platform :refer [try-catch-anything]]))
 
 (defmacro run-result [& body]
   `(try-catch-anything
-    ~@body :pass
-    (catch e# e#)))
+     ~@body :pass
+     (catch e# e#)))
 
 (defmacro should-pass! [& body]
   `(let [result# (run-result ~@body)]
