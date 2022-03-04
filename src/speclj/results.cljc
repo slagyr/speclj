@@ -21,9 +21,8 @@
 (defn fail? [result] (= (type result) FailResult))
 (defn pending? [result] (= (type result) PendingResult))
 (defn error? [result] (= (type result) ErrorResult))
-
-(defn fail-count [results]
-  (reduce #(if (or (fail? %2) (error? %2)) (inc %) %) 0 results))
+(defn failure? [result] (or (fail? result) (error? result)))
+(defn fail-count [results] (count (filter failure? results)))
 
 (defn categorize [results]
   (reduce (fn [tally result]

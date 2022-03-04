@@ -35,7 +35,7 @@
 (defmacro ^:no-doc -new-pending [message]
   `(speclj.platform.SpecPending. ~message))
 
-(defn install-component [x]
+(defn- install-component [x]
   (when (bound? #'speclj.config/*parent-description*)
     (speclj.components/install x speclj.config/*parent-description*))
   x)
@@ -73,32 +73,41 @@
 (def install-new-around-all
   (comp install-component speclj.components/new-around-all))
 
+(defmacro ^:no-doc help-it [name focused? & body]
+  (if (seq body)
+    `(install-new-characteristic ~name (fn [] ~@body) ~focused?)
+    `(install-new-characteristic ~name (fn [] (pending)) ~focused?)))
+
+(defmacro ^:no-doc help-describe [name focused? & components]
+  `(let [description# (install-new-description ~name ~focused? ~(clojure.core/name (.name *ns*)))]
+     (binding [speclj.config/*parent-description* description#]
+       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
+       (vector ~@components))
+     (when-not (if-cljs
+                 speclj.config/*parent-description*
+                 (bound? #'speclj.config/*parent-description*))
+       (speclj.running/submit-description (speclj.config/active-runner) description#))
+     description#))
+
 (defmacro it
-  "body => any forms, but aught to contain at least one assertion (should)
+  "body => any forms, but should contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]
-  (if (seq body)
-    `(install-new-characteristic ~name (fn [] ~@body))
-    `(install-new-characteristic ~name (fn [] (pending)))))
-
-(defmacro focus-it
-  "body => any forms, but aught to contain at least one assertion (should)
-
-  Declares a new characteristic (example in rspec).
-
-  Meant to facilitate temporary debugging, characteristics defined with
-  this macro will be executed along with any other characteristics thus
-  defined but all other characteristics defined with 'it' will be ignored."
-  [name & body]
-  (if (seq body)
-    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? true}))
-    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? true}))))
+  `(help-it ~name false ~@body))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
   [name & body]
   `(it ~name (pending) ~@body))
+
+(defmacro focus-it
+  "Same as 'it', but it is meant to facilitate temporary debugging.
+  Characteristics defined with this macro will be executed along with any
+  other characteristics thus defined, but all other characteristic defined
+  with 'it' will be ignored."
+  [name & body]
+  `(help-it ~name true ~@body))
 
 (defmacro ^:no-doc when-not-bound [name & body]
   `(if-cljs
@@ -110,22 +119,29 @@
 
   Declares a new spec.  The body can contain any forms that evaluate to spec components (it, before, after, with ...)."
   [name & components]
-  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
-     (binding [speclj.config/*parent-description* description#]
-       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
-       (vector ~@components)
-       (speclj.components/track-focus! description#))
-     (when-not (if-cljs
-                 speclj.config/*parent-description*
-                 (bound? #'speclj.config/*parent-description*))
-       (speclj.running/submit-description (speclj.config/active-runner) description#))
-     description#))
+  `(help-describe ~name false ~@components))
+
+(defmacro focus-describe
+  "Same as 'describe', but it is meant to facilitate temporary debugging.
+   Components defined with this macro will be fully executed along with any
+   other components thus defined, but all other sibling components defined
+   with 'describe' will be ignored."
+  [name & components]
+  `(help-describe ~name true ~@components))
 
 (defmacro context
   "Same as describe, but should be used to nest testing contexts inside the outer describe.
   Contexts can be nested any number of times."
   [name & components]
   `(describe ~name ~@components))
+
+(defmacro focus-context
+  "Same as 'context', but it is meant to facilitate temporary debugging.
+   Components defined with this macro will be fully executed along with any
+   other components thus defined, but all other sibling components defined
+   with 'context' will be ignored."
+  [name & components]
+  `(focus-describe ~name ~@components))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
@@ -147,8 +163,7 @@
 
   Note that if you have cleanup that must run, use a 'finally' block:
 
-  (around [it] (try (it) (finally :clean-up)))
-  "
+  (around [it] (try (it) (finally :clean-up)))"
   [binding & body]
   `(install-new-around (fn ~binding ~@body)))
 

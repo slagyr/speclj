@@ -1,5 +1,5 @@
 (ns speclj.run.standard-spec
-  (:require [speclj.core :refer [describe it should= with]]
+  (:require [speclj.core :refer [describe focus-it it should= with]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.run.standard :refer :all]
             [speclj.running :refer [run-directories]])
@@ -16,7 +16,7 @@
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
 (def failures-dir (.getCanonicalPath (File. examples-dir "failures")))
-(def focused-dir (.getCanonicalPath (File. examples-dir "focused")))
+(def focus-dir (.getCanonicalPath (File. examples-dir "focus")))
 
 (describe "StandardRunner"
   (with runner (new-standard-runner))
@@ -29,7 +29,11 @@
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
   (it "limits execution to focused components"
-    (should= 3 (run-directories @runner [focused-dir] @reporters)))
+    (should= 6 (run-directories @runner [focus-dir] @reporters))
+    (should= ["yes-1" "yes-2" "yes-3" "yes-4" "yes-5" "yes-6"]
+             (->> @(.-results @runner)
+                  (map #(.-characteristic %))
+                  (map #(.-name %)))))
 
   )
 
