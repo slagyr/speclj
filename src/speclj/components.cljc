@@ -8,7 +8,7 @@
      java.lang.Object
      (install [this description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
      nil
-     (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probabaly not what you wanted."))))
+     (install [this description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probably not what you wanted."))))
      clojure.lang.Var
      (install [this description] (comment "Vars are cool.  Let them pass."))
      clojure.lang.Seqable
@@ -25,11 +25,21 @@
      PersistentVector
      (install [this description] (doseq [component (seq this)] (install component description)))
      nil
-     (install [this description] (throw (ex-info (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probabaly not what you wanted.") {})))
+     (install [this description] (throw (ex-info (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probably not what you wanted.") {})))
      object
      (install [this description] (comment "Whatever...  Let them pass."))))
 
-(deftype Description [name ns parent children charcteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
+(defn focused? [component] @(.focused? component))
+
+(defn has-focused-component? [description]
+  (let [components (concat @(.-children description)
+                           @(.-characteristics description))]
+    (not (empty? (filter focused? components)))))
+
+(defn track-focus! [description]
+  (reset! (.-focused? description) (has-focused-component? description)))
+
+(deftype Description [name ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls focused?]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -38,19 +48,19 @@
   (toString [this] (str "Description: " \" name \")))
 
 (defn new-description [name ns]
-  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom false)))
 
-(deftype Characteristic [name parent body]
+(deftype Characteristic [name parent body focused?]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
-    (swap! (.-charcteristics description) conj this))
+    (swap! (.-characteristics description) conj this))
   Object
   (toString [this] (str \" name \")))
 
 (defn new-characteristic
-  ([name body] (Characteristic. name (atom nil) body))
-  ([name description body] (Characteristic. name (atom description) body)))
+  ([name body] (Characteristic. name (atom nil) body (atom (or (:focused? (meta body)) false))))
+  ([name description body] (Characteristic. name (atom description) body (atom (or (:focused? (meta body)) false)))))
 
 (deftype Before [body]
   SpecComponent
@@ -128,7 +138,7 @@
 
 (defn new-with [name unique-name body bang]
   (let [with (With. name unique-name body (atom ::none) bang)]
-    (when bang (deref with)) ; TODO - MDM: This is the wrong place to deref.  Should do it in body right after arounds.
+    (when bang (deref with))                                ; TODO - MDM: This is the wrong place to deref.  Should do it in body right after arounds.
     with))
 
 #?(:clj

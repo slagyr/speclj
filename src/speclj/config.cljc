@@ -44,7 +44,7 @@
 
 #?(:clj
    (defn config-bindings
-     "Retuns a map of vars to values for all the ear-muffed vars in the speclj.config namespace.
+     "Returns a map of vars to values for all the ear-muffed vars in the speclj.config namespace.
      Can be used in (with-bindings ...) call to load a configuration state"
      []
      (let [ns (the-ns 'speclj.config)
@@ -101,10 +101,10 @@
 
 
    :cljs
-   (defn config-mappings [_] (throw "Not Supportedin ClojureScript")))
+   (defn config-mappings [_] (throw "Not Supported in ClojureScript")))
 
 (defn with-config
-  "Runs the given function with all the cofigurations set.  Useful in cljs because config-mappings can't be used."
+  "Runs the given function with all the configurations set.  Useful in cljs because config-mappings can't be used."
   [config action]
   (binding [*runner* (if (:runner config) (do (println "loading runner in config") (load-runner (:runner config))) (active-runner))
             *reporters* (if (:reporters config) (mapv load-reporter (:reporters config)) (active-reporters))

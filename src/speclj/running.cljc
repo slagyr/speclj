@@ -1,11 +1,17 @@
 (ns speclj.running
   (:require [clojure.string :as str]
-            [speclj.components :refer [reset-with]]
-            [speclj.config :refer [*runner* active-reporters]]
-            [speclj.platform :refer [pending? throwable secs-since current-time]]
-            [speclj.reporting :refer [report-runs* report-run report-description*]]
-            [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.tags :refer [tags-for tag-sets-for pass-tag-filter? context-with-tags-seq]]))
+            [speclj.components :refer [focused? reset-with]]
+            [speclj.config :refer [active-reporters]]
+            [speclj.platform :refer [current-time pending? secs-since]]
+            [speclj.reporting :refer [report-description* report-run]]
+            [speclj.results :refer [error-result fail-result pass-result pending-result]]
+            [speclj.tags :refer [pass-tag-filter? tag-sets-for tags-for]]))
+
+(defn filter-focused [descriptions]
+  (or (seq (filter focused? descriptions)) descriptions))
+
+(defn filter-focused-children [component children]
+  (if-not (focused? component) children (filter focused? children)))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
@@ -33,27 +39,25 @@
 
 (defn- report-result [result-constructor characteristic start-time reporters failure]
   (let [present-args (filter identity [characteristic (secs-since start-time) failure])
-        result (apply result-constructor present-args)]
+        result       (apply result-constructor present-args)]
     (report-run result reporters)
     result))
 
 (defn- do-characteristic [characteristic reporters]
-  (let [description @(.-parent characteristic)
-        befores (collect-components #(deref (.-befores %)) description)
-        afters (collect-components #(deref (.-afters %)) description)
-        core-body (.-body characteristic)
+  (let [description           @(.-parent characteristic)
+        befores               (collect-components #(deref (.-befores %)) description)
+        afters                (collect-components #(deref (.-afters %)) description)
+        core-body             (.-body characteristic)
         before-and-after-body (fn [] (eval-characteristic befores core-body afters))
-        arounds (collect-components #(deref (.-arounds %)) description)
-        full-body (nested-fns before-and-after-body (map #(.-body %) arounds))
-        withs (collect-components #(deref (.-withs %)) description)
-        start-time (current-time)]
+        arounds               (collect-components #(deref (.-arounds %)) description)
+        full-body             (nested-fns before-and-after-body (map #(.-body %) arounds))
+        withs                 (collect-components #(deref (.-withs %)) description)
+        start-time            (current-time)]
     (try
       (do
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
-      (catch #?(:clj  java.lang.Throwable
-                :cljs :default)
-             e
+      (catch #?(:clj java.lang.Throwable :cljs :default) e
         (if (pending? e)
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
@@ -68,30 +72,31 @@
 (declare do-description)
 
 (defn- do-child-contexts [context results reporters]
-  (loop [results results contexts @(.-children context)]
-    (if (seq contexts)
-      (recur (concat results (do-description (first contexts) reporters)) (rest contexts))
+  (loop [results  results
+         children (filter-focused-children context @(.-children context))]
+    (if (seq children)
+      (recur (concat results (do-description (first children) reporters)) (rest children))
       (do
         (eval-components @(.-after-alls context))
         results))))
 
 (defn- results-for-context [context reporters]
   (if (pass-tag-filter? (tags-for context))
-    (do-characteristics @(.-charcteristics context) reporters)
+    (do-characteristics (filter-focused-children context @(.-characteristics context)) reporters)
     []))
 
 #?(:clj
    (defn- with-withs-bound [description body]
-     (let [withs (concat @(.-withs description) @(.-with-alls description))
-           ns (the-ns (symbol (.-ns description)))
+     (let [withs         (concat @(.-withs description) @(.-with-alls description))
+           ns            (the-ns (symbol (.-ns description)))
            with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
        (with-bindings* with-mappings body)))
 
    :cljs
    (defn- with-withs-bound [description body]
-     (let [withs (concat @(.-withs description) @(.-with-alls description))
-           ns (str/replace (.-ns description) "-" "_")
-           var-names (map #(str ns "." (name (.-name %))) withs)
+     (let [withs        (concat @(.-withs description) @(.-with-alls description))
+           ns           (str/replace (.-ns description) "-" "_")
+           var-names    (map #(str ns "." (name (.-name %))) withs)
            unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
        (doseq [[n un] (partition 2 (interleave var-names unique-names))]
          (let [code (str n " = " un ";")]
