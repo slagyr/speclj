@@ -1,9 +1,8 @@
 (ns speclj.report.documentation
-  (:require [speclj.config :refer [default-reporters]]
-            [speclj.platform :refer [endl error-message failure-source]]
+  (:require [speclj.components :refer [focused?]]
+            [speclj.platform :refer [error-message]]
             [speclj.report.progress :refer [print-summary]]
-            [speclj.reporting :refer [tally-time green red yellow indent]]
-            [speclj.results :refer [pass? fail?]]))
+            [speclj.reporting :refer [green indent red yellow]]))
 
 (defn level-of [component]
   (loop [component @(.-parent component) level 0]
@@ -21,16 +20,18 @@
       (println (str (indent level (.-name description)))) (flush)))
   (report-pass [this result]
     (let [characteristic (.-characteristic result)
-          level (level-of characteristic)]
-      (println (green (indent (dec level) "- " (.-name characteristic)))) (flush)))
+          level          (level-of characteristic)]
+      (print (green (indent (dec level) "- " (.-name characteristic))))
+      (when (focused? characteristic) (print (str " " (yellow "[FOCUS]")))) (println) (flush)))
   (report-pending [this result]
     (let [characteristic (.-characteristic result)
-          level (level-of characteristic)]
+          level          (level-of characteristic)]
       (println (yellow (indent (dec level) "- " (.-name characteristic) " (PENDING: " (error-message (.-exception result)) ")"))) (flush)))
   (report-fail [this result]
     (let [characteristic (.-characteristic result)
-          level (level-of characteristic)]
-      (println (red (indent (dec level) "- " (.-name characteristic) " (FAILED)"))) (flush)))
+          level          (level-of characteristic)]
+      (print (red (indent (dec level) "- " (.-name characteristic) " (FAILED)")))
+      (when (focused? characteristic) (print (str " " (yellow "[FOCUS]")))) (println) (flush)))
   (report-error [this result]
     (println (red (.toString (.-exception result)))))
   (report-runs [this results]
