@@ -16,7 +16,7 @@
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
 (def failures-dir (.getCanonicalPath (File. examples-dir "failures")))
-(def focused-dir (.getCanonicalPath (File. examples-dir "focused")))
+(def focus-it-dir (.getCanonicalPath (File. examples-dir "focus-it")))
 
 (describe "StandardRunner"
   (with runner (new-standard-runner))
@@ -28,8 +28,8 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
-  (it "limits execution to focused components"
-    (should= 3 (run-directories @runner [focused-dir] @reporters)))
+  (it "limits execution to focused characteristics (focus-it)"
+    (should= 3 (run-directories @runner [focus-it-dir] @reporters)))
 
   )
 
