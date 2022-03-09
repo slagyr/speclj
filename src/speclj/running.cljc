@@ -11,7 +11,11 @@
   (or (seq (filter focused? descriptions)) descriptions))
 
 (defn filter-focused-children [component children]
-  (if-not (focused? component) children (filter focused? children)))
+  (if-not (focused? component)
+    children
+    (if-let [filtered (seq (filter focused? children))]
+      filtered
+      children)))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))

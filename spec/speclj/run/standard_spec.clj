@@ -17,6 +17,7 @@
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
 (def failures-dir (.getCanonicalPath (File. examples-dir "failures")))
 (def focus-it-dir (.getCanonicalPath (File. examples-dir "focus-it")))
+(def focus-component-dir (.getCanonicalPath (File. examples-dir "focus-component")))
 
 (describe "StandardRunner"
   (with runner (new-standard-runner))
@@ -30,6 +31,9 @@
 
   (it "limits execution to focused characteristics (focus-it)"
     (should= 3 (run-directories @runner [focus-it-dir] @reporters)))
+
+  (it "limits execution to focused contexts"
+    (should= 4 (run-directories @runner [focus-component-dir] @reporters)))
 
   )
 

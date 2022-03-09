@@ -1,4 +1,5 @@
-(ns speclj.components)
+(ns speclj.components
+  (:require [clojure.pprint]))
 
 (defprotocol SpecComponent
   (install [this description]))
@@ -36,8 +37,19 @@
                            @(.-characteristics description))]
     (not (empty? (filter focused? components)))))
 
+(defn focus! [component]
+  (reset! (.-focused? component) true))
+
 (defn track-focus! [description]
-  (reset! (.-focused? description) (has-focused-component? description)))
+  (when (has-focused-component? description)
+    (focus! description)))
+
+(defn focus-all! [component]
+  (when component
+    (focus! component)
+    (map focus! @(.-characteristics component))
+    (map focus-all! @(.-children component))
+    component))
 
 (deftype Description [name ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls focused?]
   SpecComponent

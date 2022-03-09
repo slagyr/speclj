@@ -2,6 +2,7 @@
   "Speclj's API. It contains nothing but macros, so that it can be used
   in both Clojure and ClojureScript."
   (:require [clojure.data]
+            [clojure.pprint]
             [clojure.string]
             [speclj.components]
             [speclj.config]
@@ -82,19 +83,6 @@
     `(install-new-characteristic ~name (fn [] ~@body))
     `(install-new-characteristic ~name (fn [] (pending)))))
 
-(defmacro focus-it
-  "body => any forms, but aught to contain at least one assertion (should)
-
-  Declares a new characteristic (example in rspec).
-
-  Meant to facilitate temporary debugging, characteristics defined with
-  this macro will be executed along with any other characteristics thus
-  defined but all other characteristics defined with 'it' will be ignored."
-  [name & body]
-  (if (seq body)
-    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? true}))
-    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? true}))))
-
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
   [name & body]
@@ -126,6 +114,46 @@
   Contexts can be nested any number of times."
   [name & components]
   `(describe ~name ~@components))
+
+(defmacro focus-describe
+  "Same as 'describe', but it is meant to facilitate temporary debugging.
+   Components defined with this macro will be executed along with any
+   other components thus defined, but all other sibling components
+   defined with 'describe' will be ignored."
+  [name & components]
+  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
+     (binding [speclj.config/*parent-description* description#]
+       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
+       (vector ~@components)
+       (speclj.components/track-focus! description#)
+       (speclj.components/focus-all! description#)
+       )
+     (when-not (if-cljs
+                 speclj.config/*parent-description*
+                 (bound? #'speclj.config/*parent-description*))
+       (speclj.running/submit-description (speclj.config/active-runner) description#))
+     description#))
+
+(defmacro focus-context
+  "Same as 'context', but it is meant to facilitate temporary debugging.
+   Components defined with this macro will be executed along with any
+   other components thus defined, but all other sibling components
+   defined with 'context' will be ignored."
+  [name & components]
+  `(focus-describe ~name ~@components))
+
+(defmacro focus-it
+  "body => any forms, but aught to contain at least one assertion (should)
+
+  Declares a new characteristic (example in rspec).
+
+  Meant to facilitate temporary debugging, characteristics defined with
+  this macro will be executed along with any other characteristics thus
+  defined, but all other characteristics defined with 'it' will be ignored."
+  [name & body]
+  (if (seq body)
+    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? true}))
+    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? true}))))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body

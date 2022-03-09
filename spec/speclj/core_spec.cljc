@@ -1,12 +1,36 @@
 (ns speclj.core-spec
   (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [describe it context tags
+   [speclj.core :refer [describe it context tags focus-describe focus-context focus-it
                         should should-be-same should-not-be-same should=
                         before after before-all after-all
                         with with! with-all with-all! around around-all]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; TODO: REMOVE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#_(describe "A"
+  (it "1" (should= 1 2))                                    ; NO (but yes)
+  (focus-context "a"
+    (it "2" (should= 1 1))                                  ; YES (but no)
+    (focus-it "3" (should= 1 1)))                           ; YES
+  (it "4" (should= 1 2)))                                   ; NO (but yes)
+
+#_(focus-describe "B"
+  (it "1" (should= 1 1))                                    ; YES
+  (context "b"
+    (it "2" (should= 1 1))))                                ; YES
+
+#_(focus-describe "C"
+  (it "1" (should= 1 1))                                    ; YES (but no)
+  (focus-it "2" (should= 1 1)))                             ; YES
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; TODO: END REMOVE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (describe "The basic spec structure"
   (tags :one)
