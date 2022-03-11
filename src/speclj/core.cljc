@@ -74,15 +74,18 @@
 (def install-new-around-all
   (comp install-component speclj.components/new-around-all))
 
-; TODO: 2. Extract contents of this macro to a new (private) function that also receives a parameter for `focused?` (false for this invocation)
+(defmacro help-it
+  [name focused? & body]
+  (if (seq body)
+    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? ~focused?}))
+    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? ~focused?}))))
+
 (defmacro it
-  "body => any forms, but aught to contain at least one assertion (should)
+  "body => any forms, but should contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]
-  (if (seq body)
-    `(install-new-characteristic ~name (fn [] ~@body))
-    `(install-new-characteristic ~name (fn [] (pending)))))
+  `(help-it ~name false ~@body))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
@@ -134,9 +137,8 @@
   [name & components]
   `(focus-describe ~name ~@components))
 
-; TODO: 4. call extracted function (see step 2) with true for focused? parameter
 (defmacro focus-it
-  "body => any forms, but aught to contain at least one assertion (should)
+  "body => any forms, but should contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec).
 
@@ -144,9 +146,7 @@
   this macro will be executed along with any other characteristics thus
   defined, but all other characteristics defined with 'it' will be ignored."
   [name & body]
-  (if (seq body)
-    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? true}))
-    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? true}))))
+  `(help-it ~name true ~@body))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
