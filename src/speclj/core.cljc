@@ -36,7 +36,7 @@
 (defmacro ^:no-doc -new-pending [message]
   `(speclj.platform.SpecPending. ~message))
 
-(defn install-component [x]
+(defn- install-component [x]
   (when (bound? #'speclj.config/*parent-description*)
     (speclj.components/install x speclj.config/*parent-description*))
   x)
@@ -74,10 +74,22 @@
 (def install-new-around-all
   (comp install-component speclj.components/new-around-all))
 
-(defmacro help-it [name focused? & body]
+(defmacro ^:no-doc help-it [name focused? & body]
   (if (seq body)
     `(install-new-characteristic ~name (fn [] ~@body) ~focused?)
     `(install-new-characteristic ~name (fn [] (pending)) ~focused?)))
+
+(defmacro ^:no-doc help-describe [name focused? & components]
+  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
+     (binding [speclj.config/*parent-description* description#]
+       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
+       (vector ~@components)
+       (speclj.components/track-focus! description#))
+     (when-not (if-cljs
+                 speclj.config/*parent-description*
+                 (bound? #'speclj.config/*parent-description*))
+       (speclj.running/submit-description (speclj.config/active-runner) description#))
+     description#))
 
 (defmacro it
   "body => any forms, but should contain at least one assertion (should)
@@ -96,22 +108,12 @@
      (when-not ~name ~@body)
      (when-not (bound? (find-var '~name)) ~@body)))
 
-; TODO: 3. Extract contents of this macro to a new (private) function that also receives a parameter for `focused?` (false for this invocation)
 (defmacro describe
   "body => & spec-components
 
   Declares a new spec.  The body can contain any forms that evaluate to spec components (it, before, after, with ...)."
   [name & components]
-  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
-     (binding [speclj.config/*parent-description* description#]
-       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
-       (vector ~@components)
-       (speclj.components/track-focus! description#))
-     (when-not (if-cljs
-                 speclj.config/*parent-description*
-                 (bound? #'speclj.config/*parent-description*))
-       (speclj.running/submit-description (speclj.config/active-runner) description#))
-     description#))
+  `(help-describe ~name false ~@components))
 
 (defmacro context
   "Same as describe, but should be used to nest testing contexts inside the outer describe.
@@ -119,14 +121,13 @@
   [name & components]
   `(describe ~name ~@components))
 
-; TODO: 5. call extracted function (see step 3) with true for focused? parameter
 (defmacro focus-describe
   "Same as 'describe', but it is meant to facilitate temporary debugging.
    Components defined with this macro will be executed along with any
    other components thus defined, but all other sibling components
    defined with 'describe' will be ignored."
   [name & components]
-  `(describe ~name ~@components))
+  `(help-describe ~name true ~@components))
 
 (defmacro focus-context
   "Same as 'context', but it is meant to facilitate temporary debugging.
@@ -167,8 +168,7 @@
 
   Note that if you have cleanup that must run, use a 'finally' block:
 
-  (around [it] (try (it) (finally :clean-up)))
-  "
+  (around [it] (try (it) (finally :clean-up)))"
   [binding & body]
   `(install-new-around (fn ~binding ~@body)))
 
