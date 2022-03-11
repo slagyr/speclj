@@ -51,7 +51,7 @@
     (map focus-all! @(.-children component))
     component))
 
-(deftype Description [name ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls focused?]
+(deftype Description [name focused? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -59,8 +59,8 @@
   Object
   (toString [this] (str "Description: " \" name \")))
 
-(defn new-description [name ns]
-  (Description. name ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom false)))
+(defn new-description [name focused? ns]
+  (Description. name (atom focused?) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
 (deftype Characteristic [name parent body focused?]
   SpecComponent

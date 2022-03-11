@@ -18,7 +18,7 @@
 
 (describe "Clojure Test Reporter"
   (with reporter (new-clojure-test-reporter))
-  (with a-failure (fail-result (new-characteristic "flips" (new-description "Crazy" "some.ns") "flip" false) 0.3 (-new-failure "Expected flips")))
+  (with a-failure (fail-result (new-characteristic "flips" (new-description "Crazy" false "some.ns") "flip" false) 0.3 (-new-failure "Expected flips")))
   (with an-error (error-result (-new-exception "Compilation failed")))
 
   (it "reports pass"

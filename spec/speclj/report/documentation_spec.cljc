@@ -13,7 +13,7 @@
 
 (describe "Speccdoc Reporter"
   (with reporter (new-documentation-reporter))
-  (with description (new-description "Verbosity" "some-ns"))
+  (with description (new-description "Verbosity" false "some-ns"))
 
   (it "reports descriptions"
     (should= (str endl "Verbosity" endl)
@@ -54,7 +54,7 @@
                (with-out-str (report-fail @reporter result)))))
 
   (context "with nested description"
-    (with nested-description (new-description "Nesting" "some.ns"))
+    (with nested-description (new-description "Nesting" false "some.ns"))
     (before (install @nested-description @description))
 
     (it "indents nested description"

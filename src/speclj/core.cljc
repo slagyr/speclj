@@ -80,11 +80,10 @@
     `(install-new-characteristic ~name (fn [] (pending)) ~focused?)))
 
 (defmacro ^:no-doc help-describe [name focused? & components]
-  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
+  `(let [description# (install-new-description ~name ~focused? ~(clojure.core/name (.name *ns*)))]
      (binding [speclj.config/*parent-description* description#]
        ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
-       (vector ~@components)
-       (speclj.components/track-focus! description#))
+       (vector ~@components))
      (when-not (if-cljs
                  speclj.config/*parent-description*
                  (bound? #'speclj.config/*parent-description*))
