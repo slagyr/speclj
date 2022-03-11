@@ -3,7 +3,7 @@
     [clojure.string :as str]
     [clojure.test]
     ;cljs-include [goog.string] ;cljs bug?
-    [speclj.components :refer [new-test-characteristic new-description]]
+    [speclj.components :refer [new-characteristic new-description]]
     [speclj.core :refer [-new-exception -new-failure describe it should-contain should= with]]
     [speclj.report.clojure-test :refer [new-clojure-test-reporter]]
     [speclj.reporting :refer [report-error report-fail report-pass report-pending report-runs]]
@@ -18,7 +18,7 @@
 
 (describe "Clojure Test Reporter"
   (with reporter (new-clojure-test-reporter))
-  (with a-failure (fail-result (new-test-characteristic "flips" (new-description "Crazy" "some.ns") "flip") 0.3 (-new-failure "Expected flips")))
+  (with a-failure (fail-result (new-characteristic "flips" (new-description "Crazy" "some.ns") "flip" false) 0.3 (-new-failure "Expected flips")))
   (with an-error (error-result (-new-exception "Compilation failed")))
 
   (it "reports pass"

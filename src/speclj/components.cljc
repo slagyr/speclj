@@ -70,13 +70,9 @@
   Object
   (toString [this] (str \" name \")))
 
-(defn new-characteristic [name body]
-  (Characteristic. name (atom nil) body (atom (or (:focused? (meta body)) false))))
-
-(defn new-test-characteristic [name description body]
-  (let [characteristic (new-characteristic name body)]
-    (reset! (.-parent characteristic) description)
-    characteristic))
+(defn new-characteristic
+  ([name body focused?] (Characteristic. name (atom nil) body (atom focused?)))
+  ([name description body focused?] (Characteristic. name (atom description) body (atom focused?))))
 
 (deftype Before [body]
   SpecComponent

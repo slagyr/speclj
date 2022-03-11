@@ -2,7 +2,7 @@
   (#?(:clj :require :cljs :require-macros)
    [speclj.core :refer [before context describe it should= with -new-exception -new-failure -new-pending]])
   (:require #?(:cljs [goog.string])                         ;cljs bug?
-            [speclj.components :refer [new-description new-characteristic new-test-characteristic install]]
+            [speclj.components :refer [new-description new-characteristic install]]
             [speclj.platform :refer [endl]]
             [speclj.report.documentation :refer [new-documentation-reporter]]
             [speclj.reporting :refer [report-description report-pass report-pending
@@ -24,31 +24,31 @@
              (with-out-str (report-error @reporter (error-result (-new-exception "Compilation failed"))))))
 
   (it "reports pass"
-    (let [characteristic (new-test-characteristic "says pass" @description "pass")
+    (let [characteristic (new-characteristic "says pass" @description "pass" false)
           result         (pass-result characteristic 1)]
       (should= (str (green "- says pass") endl)
                (with-out-str (report-pass @reporter result)))))
 
   (it "reports focused pass"
-    (let [characteristic (new-test-characteristic "says pass" @description (with-meta #() {:focused? true}))
+    (let [characteristic (new-characteristic "says pass" @description #() true)
           result         (pass-result characteristic 1)]
       (should= (str (green "- says pass") " " (yellow "[FOCUS]") endl)
                (with-out-str (report-pass @reporter result)))))
 
   (it "reports pending"
-    (let [characteristic (new-characteristic "pending!" `(pending))
+    (let [characteristic (new-characteristic "pending!" nil `(pending) false)
           result         (pending-result characteristic 1 (-new-pending "some reason for pendiness"))]
       (should= (str (yellow "- pending! (PENDING: some reason for pendiness)") endl)
                (with-out-str (report-pending @reporter result)))))
 
   (it "reports fail"
-    (let [characteristic (new-test-characteristic "says fail" @description "fail")
+    (let [characteristic (new-characteristic "says fail" @description "fail" false)
           result         (fail-result characteristic 2 (-new-failure "blah"))]
       (should= (str (red "- says fail (FAILED)") endl)
                (with-out-str (report-fail @reporter result)))))
 
   (it "reports focused fail"
-    (let [characteristic (new-test-characteristic "says fail" @description (with-meta #() {:focused? true}))
+    (let [characteristic (new-characteristic "says fail" @description #() true)
           result         (fail-result characteristic 2 (-new-failure "blah"))]
       (should= (str (red "- says fail (FAILED)") " " (yellow "[FOCUS]") endl)
                (with-out-str (report-fail @reporter result)))))
@@ -62,13 +62,13 @@
                (with-out-str (report-description @reporter @nested-description))))
 
     (it "reports nested pass"
-      (let [characteristic (new-test-characteristic "nested pass" @nested-description "pass")
+      (let [characteristic (new-characteristic "nested pass" @nested-description "pass" false)
             result         (pass-result characteristic 1)]
         (should= (str (green "  - nested pass") endl)
                  (with-out-str (report-pass @reporter result)))))
 
     (it "reports nested failure"
-      (let [characteristic (new-test-characteristic "nested fail" @nested-description "fail")
+      (let [characteristic (new-characteristic "nested fail" @nested-description "fail" false)
             result         (fail-result characteristic 2 (-new-failure "blah"))]
         (should= (str (red "  - nested fail (FAILED)") endl)
                  (with-out-str (report-fail @reporter result)))))

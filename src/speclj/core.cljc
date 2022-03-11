@@ -74,11 +74,10 @@
 (def install-new-around-all
   (comp install-component speclj.components/new-around-all))
 
-(defmacro help-it
-  [name focused? & body]
+(defmacro help-it [name focused? & body]
   (if (seq body)
-    `(install-new-characteristic ~name (with-meta (fn [] ~@body) {:focused? ~focused?}))
-    `(install-new-characteristic ~name (with-meta (fn [] (pending)) {:focused? ~focused?}))))
+    `(install-new-characteristic ~name (fn [] ~@body) ~focused?)
+    `(install-new-characteristic ~name (fn [] (pending)) ~focused?)))
 
 (defmacro it
   "body => any forms, but should contain at least one assertion (should)
