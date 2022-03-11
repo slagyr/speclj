@@ -1,6 +1,6 @@
 (ns speclj.running
   (:require [clojure.string :as str]
-            [speclj.components :refer [focus-mode? focused? can-run? reset-with]]
+            [speclj.components :refer [focus-mode? can-run? reset-with]]
             [speclj.config :refer [active-reporters]]
             [speclj.platform :refer [current-time pending? secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
@@ -9,13 +9,6 @@
 
 (defn filter-focused [descriptions]
   (or (seq (filter focus-mode? descriptions)) descriptions))
-
-(defn filter-focused-children [component children]
-  (if-not (focused? component)
-    children
-    (if-let [filtered (seq (filter focused? children))]
-      filtered
-      children)))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
