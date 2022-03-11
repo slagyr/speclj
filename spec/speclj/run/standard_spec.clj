@@ -29,10 +29,10 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
-  (xit "limits execution to focused characteristics (focus-it)"
+  (it "limits execution to focused characteristics (focus-it)"
     (should= 3 (run-directories @runner [focus-it-dir] @reporters)))
 
-  (xit "limits execution to focused contexts"
+  (it "limits execution to focused contexts"
     (should= 4 (run-directories @runner [focus-component-dir] @reporters)))
 
   )

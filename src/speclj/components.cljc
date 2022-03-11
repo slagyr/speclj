@@ -30,49 +30,58 @@
      object
      (install [this description] (comment "Whatever...  Let them pass."))))
 
-(defn focused? [component] @(.focused? component))
+(defn enable-focus-mode [component]
+  (reset! (.-has-focus? component) true)
+  (when-let [parent @(.-parent component)]
+    (recur parent)))
 
-(defn has-focused-component? [description]
-  (let [components (concat @(.-children description)
-                           @(.-characteristics description))]
-    (not (empty? (filter focused? components)))))
+(defn focused? [component]
+  (when component @(.-is-focused? component)))
 
 (defn focus! [component]
-  (reset! (.-focused? component) true))
+  (reset! (.-is-focused? component) true))
 
-(defn track-focus! [description]
-  (when (has-focused-component? description)
-    (focus! description)))
-
-(defn focus-all! [component]
-  (when component
-    (focus! component)
-    (map focus! @(.-characteristics component))
-    (map focus-all! @(.-children component))
-    component))
-
-(deftype Description [name focused? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
+(deftype Description [name is-focused? has-focus? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
-    (swap! (.-children description) conj this))
+    (swap! (.-children description) conj this)
+    (when (focused? this) (enable-focus-mode description))
+    (when (focused? description) (focus! this)))
   Object
   (toString [this] (str "Description: " \" name \")))
 
-(defn new-description [name focused? ns]
-  (Description. name (atom focused?) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+(defn new-description [name is-focused? ns]
+  (Description. name (atom is-focused?) (atom false) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
 
-(deftype Characteristic [name parent body focused?]
+(deftype Characteristic [name parent body is-focused?]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
-    (swap! (.-characteristics description) conj this))
+    (swap! (.-characteristics description) conj this)
+    (when (focused? this) (enable-focus-mode description))
+    (when (focused? description) (focus! this)))
   Object
   (toString [this] (str \" name \")))
 
 (defn new-characteristic
-  ([name body focused?] (Characteristic. name (atom nil) body (atom focused?)))
-  ([name description body focused?] (Characteristic. name (atom description) body (atom focused?))))
+  ([name body is-focused?] (Characteristic. name (atom nil) body (atom is-focused?)))
+  ([name description body is-focused?] (Characteristic. name (atom description) body (atom is-focused?))))
+
+(defn has-focus? [component]
+  (when (and component (instance? Description component))
+    @(.-has-focus? component)))
+
+(defn focus-mode? [component]
+  (or (focused? component)
+      (has-focus? component)
+      (when-let [parent @(.-parent component)]
+        (recur parent))))
+
+(defn can-run? [component]
+  (or (focused? component)
+      (has-focus? component)
+      (not (focus-mode? component))))
 
 (deftype Before [body]
   SpecComponent

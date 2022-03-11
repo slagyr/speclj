@@ -21,14 +21,14 @@
         (it "4" (should= 1 1))))                            ; YES
     (it "5" (should= 1 2)))                                 ; NO
 
-#_(focus-describe "B"
-    (it "1" (should= 1 1))                                  ; YES
-    (context "b"
+#_(describe "B"
+    (it "1" (should= 1 1))                                  ; NO
+    (focus-context "b"
       (it "2" (should= 1 1))))                              ; YES
 
-#_(focus-describe "C"
-    (it "1" (should= 1 1))                                  ; YES
-    (focus-it "2" (should= 1 1)))                           ; YES
+(focus-describe "C"
+  (it "1" (should= 1 1))                                    ; YES
+  (it "2" (should= 1 1)))                                   ; YES
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; TODO: END REMOVE
