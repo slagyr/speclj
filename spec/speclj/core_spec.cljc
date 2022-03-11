@@ -13,22 +13,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #_(describe "A"
-    (it "1" (should= 1 2))                                  ; NO
+    (it "no" (should true))
     (focus-context "a"
-      (it "2" (should= 1 1))                                ; YES
-      (focus-it "3" (should= 1 1))                          ; YES
-      (context "aa"
-        (it "4" (should= 1 1))))                            ; YES
-    (it "5" (should= 1 2)))                                 ; NO
+      (it "yes-1" (should true))
+      (focus-it "yes-2" (should true))
+      (context "b"
+        (it "yes-3" (should true))))
+    (it "no" (should true)))
 
 #_(describe "B"
-    (it "1" (should= 1 1))                                  ; NO
+    (it "no" (should true))
     (focus-context "b"
-      (it "2" (should= 1 1))))                              ; YES
+      (it "yes-4" (should true))))
 
 #_(focus-describe "C"
-    (it "1" (should= 1 1))                                  ; YES
-    (it "2" (should= 1 1)))                                 ; YES
+    (it "yes-5" (should true))
+    (it "yes-6" (should true)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
