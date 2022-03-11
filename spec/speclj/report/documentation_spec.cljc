@@ -2,7 +2,7 @@
   (#?(:clj :require :cljs :require-macros)
    [speclj.core :refer [before context describe it should= with -new-exception -new-failure -new-pending]])
   (:require #?(:cljs [goog.string])                         ;cljs bug?
-            [speclj.components :refer [new-description new-characteristic install]]
+            [speclj.components :refer [new-description new-characteristic install focus!]]
             [speclj.platform :refer [endl]]
             [speclj.report.documentation :refer [new-documentation-reporter]]
             [speclj.reporting :refer [report-description report-pass report-pending
@@ -18,6 +18,11 @@
   (it "reports descriptions"
     (should= (str endl "Verbosity" endl)
              (with-out-str (report-description @reporter @description))))
+
+  (it "reports focused descriptions"
+    (let [description (new-description "Verbosity" true "some-ns")]
+      (should= (str endl "Verbosity " (yellow "[FOCUS]") endl)
+               (with-out-str (report-description @reporter description)))))
 
   (it "reports errors"
     (should= (str (red (str (-new-exception "Compilation failed"))) "\n")

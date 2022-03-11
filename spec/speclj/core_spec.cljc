@@ -26,7 +26,7 @@
     (focus-context "b"
       (it "2" (should= 1 1))))                              ; YES
 
-(focus-describe "C"
+#_(focus-describe "C"
   (it "1" (should= 1 1))                                    ; YES
   (it "2" (should= 1 1)))                                   ; YES
 

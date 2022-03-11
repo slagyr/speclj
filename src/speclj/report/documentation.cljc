@@ -10,30 +10,41 @@
       (recur @(.-parent component) (inc level))
       level)))
 
+(defn maybe-focused [component text]
+  (if-not (focused? component) text (str text " " (yellow "[FOCUS]"))))
+
 (deftype DocumentationReporter []
   speclj.reporting/Reporter
+
   (report-message [this message]
     (println message) (flush))
+
   (report-description [this description]
     (let [level (level-of description)]
       (when (zero? level) (println))
-      (println (str (indent level (.-name description)))) (flush)))
+      (println (maybe-focused description (str (indent level (.-name description)))))
+      (flush)))
+
   (report-pass [this result]
     (let [characteristic (.-characteristic result)
           level          (level-of characteristic)]
-      (print (green (indent (dec level) "- " (.-name characteristic))))
-      (when (focused? characteristic) (print (str " " (yellow "[FOCUS]")))) (println) (flush)))
+      (println (maybe-focused characteristic (green (indent (dec level) "- " (.-name characteristic)))))
+      (flush)))
+
   (report-pending [this result]
     (let [characteristic (.-characteristic result)
           level          (level-of characteristic)]
       (println (yellow (indent (dec level) "- " (.-name characteristic) " (PENDING: " (error-message (.-exception result)) ")"))) (flush)))
+
   (report-fail [this result]
     (let [characteristic (.-characteristic result)
           level          (level-of characteristic)]
-      (print (red (indent (dec level) "- " (.-name characteristic) " (FAILED)")))
-      (when (focused? characteristic) (print (str " " (yellow "[FOCUS]")))) (println) (flush)))
+      (println (maybe-focused characteristic (red (indent (dec level) "- " (.-name characteristic) " (FAILED)"))))
+      (flush)))
+
   (report-error [this result]
     (println (red (.toString (.-exception result)))))
+
   (report-runs [this results]
     (print-summary results)))
 
