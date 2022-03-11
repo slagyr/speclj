@@ -73,6 +73,7 @@
 (defn new-characteristic
   ([name body] (Characteristic. name (atom nil) body (atom (or (:focused? (meta body)) false))))
   ([name description body] (Characteristic. name (atom description) body (atom (or (:focused? (meta body)) false)))))
+; TODO: 1. Move second overload to test namespace, or create totally separate, named function: new-test-characteristic
 
 (deftype Before [body]
   SpecComponent

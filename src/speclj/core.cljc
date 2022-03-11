@@ -74,6 +74,7 @@
 (def install-new-around-all
   (comp install-component speclj.components/new-around-all))
 
+; TODO: 2. Extract contents of this macro to a new (private) function that also receives a parameter for `focused?` (false for this invocation)
 (defmacro it
   "body => any forms, but aught to contain at least one assertion (should)
 
@@ -93,6 +94,7 @@
      (when-not ~name ~@body)
      (when-not (bound? (find-var '~name)) ~@body)))
 
+; TODO: 3. Extract contents of this macro to a new (private) function that also receives a parameter for `focused?` (false for this invocation)
 (defmacro describe
   "body => & spec-components
 
@@ -115,24 +117,14 @@
   [name & components]
   `(describe ~name ~@components))
 
+; TODO: 5. call extracted function (see step 3) with true for focused? parameter
 (defmacro focus-describe
   "Same as 'describe', but it is meant to facilitate temporary debugging.
    Components defined with this macro will be executed along with any
    other components thus defined, but all other sibling components
    defined with 'describe' will be ignored."
   [name & components]
-  `(let [description# (install-new-description ~name ~(clojure.core/name (.name *ns*)))]
-     (binding [speclj.config/*parent-description* description#]
-       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
-       (vector ~@components)
-       (speclj.components/track-focus! description#)
-       (speclj.components/focus-all! description#)
-       )
-     (when-not (if-cljs
-                 speclj.config/*parent-description*
-                 (bound? #'speclj.config/*parent-description*))
-       (speclj.running/submit-description (speclj.config/active-runner) description#))
-     description#))
+  `(describe ~name ~@components))
 
 (defmacro focus-context
   "Same as 'context', but it is meant to facilitate temporary debugging.
@@ -142,6 +134,7 @@
   [name & components]
   `(focus-describe ~name ~@components))
 
+; TODO: 4. call extracted function (see step 2) with true for focused? parameter
 (defmacro focus-it
   "body => any forms, but aught to contain at least one assertion (should)
 

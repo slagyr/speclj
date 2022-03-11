@@ -13,20 +13,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #_(describe "A"
-  (it "1" (should= 1 2))                                    ; NO (but yes)
-  (focus-context "a"
-    (it "2" (should= 1 1))                                  ; YES (but no)
-    (focus-it "3" (should= 1 1)))                           ; YES
-  (it "4" (should= 1 2)))                                   ; NO (but yes)
+    (it "1" (should= 1 2))                                  ; NO
+    (focus-context "a"
+      (it "2" (should= 1 1))                                ; YES
+      (focus-it "3" (should= 1 1))                          ; YES
+      (context "aa"
+        (it "4" (should= 1 1))))                            ; YES
+    (it "5" (should= 1 2)))                                 ; NO
 
 #_(focus-describe "B"
-  (it "1" (should= 1 1))                                    ; YES
-  (context "b"
-    (it "2" (should= 1 1))))                                ; YES
+    (it "1" (should= 1 1))                                  ; YES
+    (context "b"
+      (it "2" (should= 1 1))))                              ; YES
 
 #_(focus-describe "C"
-  (it "1" (should= 1 1))                                    ; YES (but no)
-  (focus-it "2" (should= 1 1)))                             ; YES
+    (it "1" (should= 1 1))                                  ; YES
+    (focus-it "2" (should= 1 1)))                           ; YES
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; TODO: END REMOVE
