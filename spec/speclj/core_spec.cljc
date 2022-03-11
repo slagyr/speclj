@@ -8,9 +8,9 @@
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; TODO: REMOVE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FOCUS SPECS (remain commented except when 'fiddling') ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #_(describe "A"
     (it "1" (should= 1 2))                                  ; NO
@@ -27,12 +27,10 @@
       (it "2" (should= 1 1))))                              ; YES
 
 #_(focus-describe "C"
-  (it "1" (should= 1 1))                                    ; YES
-  (it "2" (should= 1 1)))                                   ; YES
+    (it "1" (should= 1 1))                                  ; YES
+    (it "2" (should= 1 1)))                                 ; YES
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; TODO: END REMOVE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (describe "The basic spec structure"
   (tags :one)
