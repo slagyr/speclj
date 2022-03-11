@@ -1,9 +1,3 @@
-# 3.4.0
-
-* Allow defining multiple characteristics (`it` forms) within, say, a `let` form, by @trptcolin - https://github.com/slagyr/speclj/pull/164
-* Adds `should-start-with`, `should-not-start-with`, `should-end-with`, and `should-not-end-with` for assertion of presence or absence of a prefix or suffix in strings and sequences, by @mdwhatcott - https://github.com/slagyr/speclj/pull/170
-* Adds `focus-it`, which causes the runner to ignore all `it` characteristics (facilitates temporary debugging scenarios), by @mdwhatcott - https://github.com/slagyr/speclj/pull/171
-
 # 3.3.2
 
 * upgrade to clojure 1.8.0
@@ -20,7 +14,7 @@
 * Uses Clojure 1.7 (RC2) with reader conditionals
 * upgrade to clojurescript 0.0.3308
 * dev - no more cljx or cljsbuild
-* Can omit pending specs from output by @arlandism - https://github.com/slagyr/speclj/pull/125
+* Can ommit pending specs from output by @arlandism - https://github.com/slagyr/speclj/pull/125
 * should-throw allow arbitrary exception validation by @tjarvstrand - https://github.com/slagyr/speclj/pull/132
 * merge pull request by @ryankinderman - https://github.com/slagyr/speclj/pull/129 
 
