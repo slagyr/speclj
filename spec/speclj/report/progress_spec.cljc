@@ -3,7 +3,7 @@
    [speclj.core :refer [around describe it should should= with -new-exception -new-failure -new-pending]])
   (:require [clojure.string :as str]
             #?(:cljs [goog.string])                         ;cljs bug?
-            [speclj.components :refer [new-description new-characteristic install]]
+            [speclj.components :refer [new-description new-test-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?* *omit-pending?*]]
             [speclj.platform :refer [format-seconds]]
             [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
@@ -70,9 +70,9 @@
   (it "reports failing run results"
     (binding [*color?* true]
       (let [description (new-description "Crazy" "some.ns")
-            char1       (new-characteristic "flips" description "flip")
-            char2       (new-characteristic "spins" description "spin")
-            char3       (new-characteristic "dives" description "dive")
+            char1       (new-test-characteristic "flips" description "flip")
+            char2       (new-test-characteristic "spins" description "spin")
+            char3       (new-test-characteristic "dives" description "dive")
             result1     (fail-result char1 0.3 (-new-failure "Expected flips"))
             result2     (fail-result char2 0.02 (-new-failure "Expected spins"))
             result3     (fail-result char3 0.001 (-new-failure "Expected dives"))
@@ -100,7 +100,7 @@
   (it "reports pending run results"
     (binding [*color?* true]
       (let [description (new-description "Crazy" "some.ns")
-            char1       (new-characteristic "flips" description "flip")
+            char1       (new-test-characteristic "flips" description "flip")
             result1     (pass-result char1 0.1)
             result2     (pass-result char1 0.02)
             result3     (pending-result char1 0.003 (-new-pending "Blah"))
@@ -110,7 +110,7 @@
 
   (it "reports pending summary"
     (let [description (new-description "Crazy" "some.ns")
-          char1       (new-characteristic "flips" description "flip")
+          char1       (new-test-characteristic "flips" description "flip")
           result1     (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
           lines       (str/split-lines (with-out-str (print-pendings [result1])))]
       (should= 6 (count lines))
@@ -125,7 +125,7 @@
   (it "doesn't report pending summary with omit-pending flag enabled"
     (binding [*omit-pending?* "on"]
       (let [description     (new-description "Crazy" "some.ns")
-            char1           (new-characteristic "flips" description "flip")
+            char1           (new-test-characteristic "flips" description "flip")
             result1         (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
             printed-results (with-out-str (print-pendings [result1]))]
         (should= "" printed-results))))
@@ -133,7 +133,7 @@
   (it "reports error run results"
     (binding [*color?* true]
       (let [description (new-description "Crazy" "some.ns")
-            char1       (new-characteristic "flips" description "flip")
+            char1       (new-test-characteristic "flips" description "flip")
             result1     (pass-result char1 0.1)
             result2     (pass-result char1 0.02)
             result3     (error-result (-new-exception "blah"))
@@ -144,7 +144,7 @@
   (it "reports error summary"
     (binding [*full-stack-trace?* false]
       (let [description (new-description "Crazy" "some.ns")
-            char1       (new-characteristic "flips" description "flip")
+            char1       (new-test-characteristic "flips" description "flip")
             result1     (error-result (-new-exception "blah"))
             lines       (str/split-lines (with-out-str (print-errors [result1])))]
         (should (> (count lines) 3))
@@ -156,7 +156,7 @@
   (it "can calculate the full name of a characteristic"
     (let [outer (new-description "Outer" "some.ns")
           inner (new-description "Inner" "some.ns")
-          char  (new-characteristic "char" inner "char")]
+          char  (new-test-characteristic "char" inner "char")]
       (install inner outer)
       (should= "Outer Inner char" (full-name char))))
   )
