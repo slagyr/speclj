@@ -16,8 +16,7 @@
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
 (def failures-dir (.getCanonicalPath (File. examples-dir "failures")))
-(def focus-it-dir (.getCanonicalPath (File. examples-dir "focus-it")))
-(def focus-component-dir (.getCanonicalPath (File. examples-dir "focus-component")))
+(def focus-dir (.getCanonicalPath (File. examples-dir "focus")))
 
 (describe "StandardRunner"
   (with runner (new-standard-runner))
@@ -29,11 +28,8 @@
   (it "returns lots-o failures when running failure example"
     (should= 8 (run-directories @runner [failures-dir] @reporters)))
 
-  (it "limits execution to focused characteristics (focus-it)"
-    (should= 3 (run-directories @runner [focus-it-dir] @reporters)))
-
-  (it "limits execution to focused contexts"
-    (should= 6 (run-directories @runner [focus-component-dir] @reporters))
+  (it "limits execution to focused components"
+    (should= 6 (run-directories @runner [focus-dir] @reporters))
     (should= ["yes-1" "yes-2" "yes-3" "yes-4" "yes-5" "yes-6"]
              (->> @(.-results @runner)
                   (map #(.-characteristic %))

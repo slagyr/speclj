@@ -1,4 +1,4 @@
-(ns focus-component
+(ns focus
   (:require [speclj.core :refer :all]))
 
 (describe "A"
