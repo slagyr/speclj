@@ -102,6 +102,14 @@
   [name & body]
   `(it ~name (pending) ~@body))
 
+(defmacro focus-it
+  "Same as 'it', but it is meant to facilitate temporary debugging.
+  Characteristics defined with this macro will be executed along with any
+  other characteristics thus defined, but all other characteristic defined
+  with 'it' will be ignored."
+  [name & body]
+  `(help-it ~name true ~@body))
+
 (defmacro ^:no-doc when-not-bound [name & body]
   `(if-cljs
      (when-not ~name ~@body)
@@ -114,38 +122,27 @@
   [name & components]
   `(help-describe ~name false ~@components))
 
+(defmacro focus-describe
+  "Same as 'describe', but it is meant to facilitate temporary debugging.
+   Components defined with this macro will be fully executed along with any
+   other components thus defined, but all other sibling components defined
+   with 'describe' will be ignored."
+  [name & components]
+  `(help-describe ~name true ~@components))
+
 (defmacro context
   "Same as describe, but should be used to nest testing contexts inside the outer describe.
   Contexts can be nested any number of times."
   [name & components]
   `(describe ~name ~@components))
 
-(defmacro focus-describe
-  "Same as 'describe', but it is meant to facilitate temporary debugging.
-   Components defined with this macro will be executed along with any
-   other components thus defined, but all other sibling components
-   defined with 'describe' will be ignored."
-  [name & components]
-  `(help-describe ~name true ~@components))
-
 (defmacro focus-context
   "Same as 'context', but it is meant to facilitate temporary debugging.
-   Components defined with this macro will be executed along with any
-   other components thus defined, but all other sibling components
-   defined with 'context' will be ignored."
+   Components defined with this macro will be fully executed along with any
+   other components thus defined, but all other sibling components defined
+   with 'context' will be ignored."
   [name & components]
   `(focus-describe ~name ~@components))
-
-(defmacro focus-it
-  "body => any forms, but should contain at least one assertion (should)
-
-  Declares a new characteristic (example in rspec).
-
-  Meant to facilitate temporary debugging, characteristics defined with
-  this macro will be executed along with any other characteristics thus
-  defined, but all other characteristics defined with 'it' will be ignored."
-  [name & body]
-  `(help-it ~name true ~@body))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
