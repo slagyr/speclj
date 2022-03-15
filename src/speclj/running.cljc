@@ -1,6 +1,6 @@
 (ns speclj.running
   (:require [clojure.string :as str]
-            [speclj.components :refer [focused? reset-with]]
+            [speclj.components :refer [focus-mode? can-run? reset-with]]
             [speclj.config :refer [active-reporters]]
             [speclj.platform :refer [current-time pending? secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
@@ -8,10 +8,7 @@
             [speclj.tags :refer [pass-tag-filter? tag-sets-for tags-for]]))
 
 (defn filter-focused [descriptions]
-  (or (seq (filter focused? descriptions)) descriptions))
-
-(defn filter-focused-children [component children]
-  (if-not (focused? component) children (filter focused? children)))
+  (or (seq (filter focus-mode? descriptions)) descriptions))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
@@ -66,14 +63,14 @@
 
 (defn- do-characteristics [characteristics reporters]
   (doall
-    (for [characteristic characteristics]
+    (for [characteristic characteristics :when (can-run? characteristic)]
       (do-characteristic characteristic reporters))))
 
 (declare do-description)
 
 (defn- do-child-contexts [context results reporters]
   (loop [results  results
-         children (filter-focused-children context @(.-children context))]
+         children @(.-children context)]
     (if (seq children)
       (recur (concat results (do-description (first children) reporters)) (rest children))
       (do
@@ -82,7 +79,7 @@
 
 (defn- results-for-context [context reporters]
   (if (pass-tag-filter? (tags-for context))
-    (do-characteristics (filter-focused-children context @(.-characteristics context)) reporters)
+    (do-characteristics @(.-characteristics context) reporters)
     []))
 
 #?(:clj
@@ -117,20 +114,21 @@
                (map #(.-body %) @(.-around-alls description)))))
 
 (defn do-description [description reporters]
-  (let [tag-sets (tag-sets-for description)]
-    (when (some pass-tag-filter? tag-sets)
-      (report-description* reporters description)
-      (with-withs-bound description
-                        (fn []
-                          (eval-components @(.-before-alls description))
+  (when (can-run? description)
+    (let [tag-sets (tag-sets-for description)]
+      (when (some pass-tag-filter? tag-sets)
+        (report-description* reporters description)
+        (with-withs-bound description
+                          (fn []
+                            (eval-components @(.-before-alls description))
 
-                          (try
-                            (with-around-alls
-                              description
-                              (partial nested-results-for-context description reporters))
+                            (try
+                              (with-around-alls
+                                description
+                                (partial nested-results-for-context description reporters))
 
-                            (finally
-                              (reset-withs @(.-with-alls description)))))))))
+                              (finally
+                                (reset-withs @(.-with-alls description))))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]
