@@ -1,12 +1,23 @@
 (ns speclj.should-spec
   (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [context describe it should should-be-a should-be-nil should-be should-not-be
-                        should-be-same should-contain should-fail should-not should-not-be-a
-                        should-not-be-nil should-not-be-same should-not-contain
-                        should-not-throw should-not= should-not== should-throw
-                        should= should== -to-s -new-throwable -new-exception
+   [speclj.core :refer [it xit focus-it
+                        context focus-context
+                        describe focus-describe
+                        should should-not
+                        should= should-not=
+                        should== should-not==
+                        should-be should-not-be
+                        should-be-a should-not-be-a
+                        should-be-nil should-not-be-nil
+                        should-be-same should-not-be-same
+                        should-contain should-not-contain
                         should-start-with should-not-start-with
-                        should-end-with should-not-end-with]]
+                        should-end-with should-not-end-with
+                        should-throw should-not-throw
+                        should< should<=
+                        should> should>=
+                        should-fail
+                        -to-s -new-throwable -new-exception]]
    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
   (:require [speclj.platform :refer [endl exception type-name throwable]]
             [speclj.run.standard :refer [run-specs]]))
@@ -509,6 +520,77 @@
         (failure-message (should-not-be-a (type :foo) :bar))))
 
     )
+
+  (context "should<"
+    (it "degenerate cases"
+      (should-throw exception (str "should< doesn't know how to handle these types: [nil nil]")
+                    (should< nil nil))
+      (should-throw exception (str "should< doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
+                    (should< "a" \a)))
+
+    (it "failure cases"
+      (should-fail! (should< 1 0))
+      (should-fail! (should< 1 1))
+      (should= "expected 2 to be less than 1 but got: (< 2 1)" (failure-message (should< 2 1))))
+
+    (it "passing cases"
+      (should-pass! (should< 1 2))
+      (should-pass! (should< 1/4 2/4))
+      (should-pass! (should< 1.0 1.000001))))
+
+  (context "should>"
+    (it "degenerate cases"
+      (should-throw exception (str "should> doesn't know how to handle these types: [nil nil]")
+                    (should> nil nil))
+      (should-throw exception (str "should> doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
+                    (should> "a" \a)))
+
+    (it "failure cases"
+      (should-fail! (should> 0 1))
+      (should-fail! (should> 1 1))
+      (should= "expected 1 to be greater than 2 but got: (> 1 2)" (failure-message (should> 1 2))))
+
+    (it "passing cases"
+      (should-pass! (should> 2 1))
+      (should-pass! (should> 2/4 1/4))
+      (should-pass! (should> 1.000001 1.0))))
+
+  (context "should<="
+    (it "degenerate cases"
+      (should-throw exception (str "should<= doesn't know how to handle these types: [nil nil]")
+                    (should<= nil nil))
+      (should-throw exception (str "should<= doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
+                    (should<= "a" \a)))
+
+    (it "failure cases"
+      (should-fail! (should<= 1 0))
+      (should= "expected 2 to be less than or equal to 1 but got: (<= 2 1)" (failure-message (should<= 2 1))))
+
+    (it "passing cases"
+      (should-pass! (should<= 1 1))
+      (should-pass! (should<= 1 1.0))
+      (should-pass! (should<= 1 2))
+      (should-pass! (should<= 1/4 2/4))
+      (should-pass! (should<= 1.0 1.000001))))
+
+  (context "should>="
+    (it "degenerate cases"
+      (should-throw exception (str "should>= doesn't know how to handle these types: [nil nil]")
+                    (should>= nil nil))
+      (should-throw exception (str "should>= doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
+                    (should>= "a" \a)))
+
+    (it "failure cases"
+      (should-fail! (should>= 0 1))
+      (should= "expected 1 to be greater than or equal to 2 but got: (>= 1 2)" (failure-message (should>= 1 2))))
+
+    (it "passing cases"
+      (should-pass! (should>= 1 1))
+      (should-pass! (should>= 1 1.0))
+      (should-pass! (should>= 2 1))
+      (should-pass! (should>= 2/4 1/4))
+      (should-pass! (should>= 1.000001 1.0))))
+
   )
 
 (run-specs :stacktrace true)

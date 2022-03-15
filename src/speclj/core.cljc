@@ -240,6 +240,11 @@
   [message]
   `(throw (-new-failure ~message)))
 
+(defmacro ^:no-doc wrong-types [assertion a b]
+  `(let [type-a# (if (nil? ~a) "nil" (speclj.platform/type-name (type ~a)))
+         type-b# (if (nil? ~b) "nil" (speclj.platform/type-name (type ~b)))]
+     (str ~assertion " doesn't know how to handle these types: [" type-a# " " type-b# "]")))
+
 (defmacro should
   "Asserts the truthy-ness of a form"
   [form]
@@ -329,7 +334,7 @@
        (coll? actual#)
        (when (not (some #(= expected# %) actual#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (-new-exception (str "should-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (-new-exception (wrong-types "should-contain" expected# actual#))))))
 
 (defmacro should-not-contain
   "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
@@ -350,7 +355,7 @@
        (coll? actual#)
        (when (some #(= expected# %) actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
-       :else (throw (-new-exception (str "should-not-contain doesn't know how to handle these types: [" (speclj.platform/type-name (type expected#)) " " (speclj.platform/type-name (type actual#)) "]"))))))
+       :else (throw (-new-exception (wrong-types "should-not-contain" expected# actual#))))))
 
 (defmacro ^:no-doc -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
@@ -396,9 +401,7 @@
                        "    with " (-to-s prefix#)))))
 
        :else
-       (throw (-new-exception (str "should-start-with doesn't know how to handle these types: ["
-                                   (speclj.platform/type-name (type prefix#)) " "
-                                   (speclj.platform/type-name (type whole#)) "]"))))))
+       (throw (-new-exception (wrong-types "should-start-with" prefix# whole#))))))
 
 (defmacro should-not-start-with
   "The inverse of should-start-with."
@@ -419,7 +422,7 @@
            (-fail (str "Expected " (-to-s whole#) " to NOT start" speclj.platform/endl
                        "    with " (-to-s prefix#)))))
 
-       :else (throw (-new-exception (str "should-not-start-with doesn't know how to handle these types: [" (speclj.platform/type-name (type prefix#)) " " (speclj.platform/type-name (type whole#)) "]"))))))
+       :else (throw (-new-exception (wrong-types "should-not-start-with" prefix# whole#))))))
 
 (defmacro should-end-with
   "Assertion of suffix in strings and sequences.
@@ -448,9 +451,7 @@
                          "    with " suffix#)))))
 
        :else
-       (throw (-new-exception (str "should-end-with doesn't know how to handle these types: ["
-                                   (speclj.platform/type-name (type suffix#)) " "
-                                   (speclj.platform/type-name (type whole#)) "]"))))))
+       (throw (-new-exception (wrong-types "should-end-with" suffix# whole#))))))
 
 (defmacro should-not-end-with
   "The inverse of should-end-with."
@@ -475,9 +476,7 @@
              (-fail (str "Expected " whole# " to NOT end\n" padding#
                          "    with " prefix#)))))
 
-       :else (throw (-new-exception (str "should-not-end-with doesn't know how to handle these types: ["
-                                         (speclj.platform/type-name (type prefix#)) " "
-                                         (speclj.platform/type-name (type whole#)) "]"))))))
+       :else (throw (-new-exception (wrong-types "should-not-end-with" prefix# whole#))))))
 
 (defmacro ^:no-doc -difference-message [expected actual extra missing]
   `(str
@@ -502,7 +501,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (== expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using ==)")))
-       :else (throw (-new-exception (str "should== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (-new-exception (wrong-types "should==" expected# actual#))))))
 
 (defmacro should-not==
   "Asserts 'non-equivalency'.
@@ -520,7 +519,7 @@
        (and (number? expected#) (number? actual#))
        (when-not (not (== expected# actual#))
          (-fail (str " Expected: " (-to-s expected#) speclj.platform/endl "not to ==: " (-to-s actual#) " (using ==)")))
-       :else (throw (-new-exception (str "should-not== doesn't know how to handle these types: " [(type expected#) (type actual#)]))))))
+       :else (throw (-new-exception (wrong-types "should-not==" expected# actual#))))))
 
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
@@ -790,6 +789,33 @@ There are three options for passing different kinds of predicates:
            ~@body)
          (should-not-have-invoked ~var-name options#)))))
 
+(defmacro should<
+  "Asserts that the first numeric form is less than the second numeric form, using the built-in < function."
+  [a b]
+  `(cond
+     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should<" ~a ~b)))
+     :else (when-not (< ~a ~b) (-fail (str "expected " ~a " to be less than " ~b " but got: (< " ~a " " ~b ")")))))
+
+(defmacro should>
+  "Asserts that the first numeric form is greater than the second numeric form, using the built-in > function."
+  [a b]
+  `(cond
+     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should>" ~a ~b)))
+     :else (when-not (> ~a ~b) (-fail (str "expected " ~a " to be greater than " ~b " but got: (> " ~a " " ~b ")")))))
+
+(defmacro should<=
+  "Asserts that the first numeric form is less than or equal to the second numeric form, using the built-in <= function."
+  [a b]
+  `(cond
+     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should<=" ~a ~b)))
+     :else (when-not (<= ~a ~b) (-fail (str "expected " ~a " to be less than or equal to " ~b " but got: (<= " ~a " " ~b ")")))))
+
+(defmacro should>=
+  "Asserts that the first numeric form is greater than or equal to the second numeric form, using the built-in >= function."
+  [a b]
+  `(cond
+     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should>=" ~a ~b)))
+     :else (when-not (>= ~a ~b) (-fail (str "expected " ~a " to be greater than or equal to " ~b " but got: (>= " ~a " " ~b ")")))))
 
 (defmacro run-specs []
   "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
