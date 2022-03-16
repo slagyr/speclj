@@ -11,9 +11,15 @@
             return this.indexOf(suffix, this.length - suffix.length) !== -1;
         };
 
-        for(var name in goog.dependencies_.nameToPath) {
-            if(name.endsWith("_spec")) {
-                goog.require(name)
+        // Load all the specs
+        for(var k in goog.debugLoader_.dependencies_) {
+            var dep = goog.debugLoader_.dependencies_[k];
+            for (var i = 0; i < dep.provides.length; i++) {
+                var ns = dep.provides[i];
+                // console.log(ns);
+                if (ns.endsWith("_spec")) {
+                    goog.require(ns)
+                }
             }
         }
 
@@ -26,10 +32,10 @@
         };
 
         runSpecs = function () {
-            runSpecsConfigured(false, "documentation");
+            return runSpecsConfigured(false, "documentation");
         }
 
-        runSpecsPhantom = function (affectedSpecs) {
+        runSpecsFiltered = function (affectedSpecs) {
             if(affectedSpecs != null) {
                 console.log("Only running affected specs:");
                 var descriptionAtom = speclj.config.active_runner().descriptions;
@@ -42,7 +48,7 @@
                     console.log("  ", description.ns);
                 }, cljs.core.deref(descriptionAtom)));
             }
-            runSpecsConfigured(true, "documentation");
+            return runSpecsConfigured(true, "documentation");
         }
     </script>
 </head>
@@ -50,7 +56,7 @@
 <h3 style="margin: 1em">Speclj CLJS Specs</h3>
 
 <p style="margin: 1em; width: 400px;">
-    Typically these specs are run using phantomjs on the command line.
+    Typically these specs are run using a headless browser driven by a script.
     But you can run them here if you like.
     That is, assuming all the cljs has been compiled in development.
     <br/>

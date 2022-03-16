@@ -13,13 +13,13 @@
             :test-paths ["spec" "dev"]
             :java-source-paths ["src"]
 
-            :dependencies [[org.clojure/clojure "1.8.0"]
+            :dependencies [[org.clojure/clojure "1.10.3"]
                            [fresh "1.1.2"]
                            [mmargs "1.2.0"]
                            [trptcolin/versioneer "0.1.1"]]
 
-            :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.8.40"]]
-                             :plugins      [[codox "0.8.11" :exclusions [org.clojure/clojure]]]}}
+            :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.10.764"]]
+                             :plugins      [[codox "0.10.8" :exclusions [org.clojure/clojure]]]}}
 
             :prep-tasks ["javac" "compile"]
 

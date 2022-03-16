@@ -535,7 +535,6 @@
 
     (it "passing cases"
       (should-pass! (should< 1 2))
-      (should-pass! (should< 1/4 2/4))
       (should-pass! (should< 1.0 1.000001))))
 
   (context "should>"
@@ -552,7 +551,6 @@
 
     (it "passing cases"
       (should-pass! (should> 2 1))
-      (should-pass! (should> 2/4 1/4))
       (should-pass! (should> 1.000001 1.0))))
 
   (context "should<="
@@ -570,7 +568,6 @@
       (should-pass! (should<= 1 1))
       (should-pass! (should<= 1 1.0))
       (should-pass! (should<= 1 2))
-      (should-pass! (should<= 1/4 2/4))
       (should-pass! (should<= 1.0 1.000001))))
 
   (context "should>="
@@ -588,7 +585,6 @@
       (should-pass! (should>= 1 1))
       (should-pass! (should>= 1 1.0))
       (should-pass! (should>= 2 1))
-      (should-pass! (should>= 2/4 1/4))
       (should-pass! (should>= 1.000001 1.0))))
 
   )

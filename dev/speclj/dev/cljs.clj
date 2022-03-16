@@ -15,9 +15,9 @@
    })
 
 (defn run-specs []
-  (let [process (.exec (Runtime/getRuntime) "phantomjs bin/speclj.js")
-        output (.getInputStream process)
-        error (.getErrorStream process)]
+  (let [process (.exec (Runtime/getRuntime) "node bin/speclj.js")
+        output  (.getInputStream process)
+        error   (.getErrorStream process)]
     (io/copy output (System/out))
     (io/copy error (System/err))
     (System/exit (.waitFor process))))

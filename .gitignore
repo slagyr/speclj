@@ -5,3 +5,5 @@
 doc
 pom.xml*
 target
+node_modules
+package-lock.json
