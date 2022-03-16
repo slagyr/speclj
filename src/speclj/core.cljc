@@ -35,51 +35,13 @@
 (defmacro ^:no-doc -new-pending [message]
   `(speclj.platform.SpecPending. ~message))
 
-(defn- install-component [x]
-  (when (bound? #'speclj.config/*parent-description*)
-    (speclj.components/install x speclj.config/*parent-description*))
-  x)
-
-(def install-new-description
-  (comp install-component speclj.components/new-description))
-
-(def install-new-characteristic
-  (comp install-component speclj.components/new-characteristic))
-
-(def install-new-tag
-  (comp install-component speclj.components/new-tag))
-
-(def install-new-with
-  (comp install-component speclj.components/new-with))
-
-(def install-new-with-all
-  (comp install-component speclj.components/new-with-all))
-
-(def install-new-before
-  (comp install-component speclj.components/new-before))
-
-(def install-new-before-all
-  (comp install-component speclj.components/new-before-all))
-
-(def install-new-after
-  (comp install-component speclj.components/new-after))
-
-(def install-new-after-all
-  (comp install-component speclj.components/new-after-all))
-
-(def install-new-around
-  (comp install-component speclj.components/new-around))
-
-(def install-new-around-all
-  (comp install-component speclj.components/new-around-all))
-
 (defmacro ^:no-doc help-it [name focused? & body]
   (if (seq body)
-    `(install-new-characteristic ~name (fn [] ~@body) ~focused?)
-    `(install-new-characteristic ~name (fn [] (pending)) ~focused?)))
+    `(speclj.components/install-new-characteristic ~name (fn [] ~@body) ~focused?)
+    `(speclj.components/install-new-characteristic ~name (fn [] (pending)) ~focused?)))
 
 (defmacro ^:no-doc help-describe [name focused? & components]
-  `(let [description# (install-new-description ~name ~focused? ~(clojure.core/name (.name *ns*)))]
+  `(let [description# (speclj.components/install-new-description ~name ~focused? ~(clojure.core/name (.name *ns*)))]
      (binding [speclj.config/*parent-description* description#]
        ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
        (vector ~@components))
@@ -147,13 +109,13 @@
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(install-new-before (fn [] ~@body)))
+  `(speclj.components/install-new-before (fn [] ~@body)))
 
 (defmacro after
   "Declares a function that is invoked after each characteristic in the containing describe scope is evaluated. The body
   may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(install-new-after (fn [] ~@body)))
+  `(speclj.components/install-new-after (fn [] ~@body)))
 
 (defmacro around
   "Declares a function that will be invoked around each characteristic of the containing describe scope.
@@ -165,24 +127,24 @@
 
   (around [it] (try (it) (finally :clean-up)))"
   [binding & body]
-  `(install-new-around (fn ~binding ~@body)))
+  `(speclj.components/install-new-around (fn ~binding ~@body)))
 
 (defmacro before-all
   "Declares a function that is invoked once before any characteristic in the containing describe scope is evaluated. The
   body may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(install-new-before-all (fn [] ~@body)))
+  `(speclj.components/install-new-before-all (fn [] ~@body)))
 
 (defmacro after-all
   "Declares a function that is invoked once after all the characteristics in the containing describe scope have been
   evaluated.  The body may consist of any forms, presumably ones that perform side effects."
   [& body]
-  `(install-new-after-all (fn [] ~@body)))
+  `(speclj.components/install-new-after-all (fn [] ~@body)))
 
 (defmacro around-all
   "Declares a function that is invoked once around all characteristics of the containing describe scope."
   [context & body]
-  `(install-new-around-all (fn ~context ~@body)))
+  `(speclj.components/install-new-around-all (fn ~context ~@body)))
 
 (def cljs-munge
   #?(:clj
@@ -211,7 +173,7 @@
   (with meaning 42)
   (it \"knows the meaning of life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (-make-with name body `install-new-with false))
+  (-make-with name body `speclj.components/install-new-with false))
 
 (defmacro with!
   "Declares a reference-able symbol that will be evaluated immediately and reset once per characteristic of the containing
@@ -221,7 +183,7 @@
   (with! my-with! (swap! my-num inc))
   (it \"increments my-num before being accessed\" (should= 1 @my-num) (should= 2 @my-with!))"
   [name & body]
-  (-make-with name body `install-new-with true))
+  (-make-with name body `speclj.components/install-new-with true))
 
 (defmacro with-all
   "Declares a reference-able symbol that will be lazily evaluated once per context. The body may contain any forms,
@@ -230,7 +192,7 @@
   (with-all meaning 42)
   (it \"knows the meaning of life\" (should= @meaning (the-meaning-of :life)))"
   [name & body]
-  (-make-with name body `install-new-with-all false))
+  (-make-with name body `speclj.components/install-new-with-all false))
 
 (defmacro with-all!
   "Declares a reference-able symbol that will be immediately evaluated once per context. The body may contain any forms,
@@ -245,7 +207,7 @@
     (should= 1 @my-num)
     (should= 2 @my-with!))"
   [name & body]
-  (-make-with name body `install-new-with-all true))
+  (-make-with name body `speclj.components/install-new-with-all true))
 
 (defmacro ^:no-doc -to-s [thing]
   `(if (nil? ~thing) "nil" (pr-str ~thing)))
@@ -627,7 +589,7 @@ There are three options for passing different kinds of predicates:
   (tags :one :two)"
   [& values]
   (let [tag-kws (mapv keyword values)]
-    `(mapv install-new-tag ~tag-kws)))
+    `(mapv speclj.components/install-new-tag ~tag-kws)))
 
 (defmacro with-stubs
   "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
