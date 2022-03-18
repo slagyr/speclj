@@ -1,5 +1,4 @@
-(ns speclj.components
-  (:require [speclj.config]))
+(ns speclj.components)
 
 (defprotocol SpecComponent
   (install [this description]))
@@ -196,41 +195,3 @@
 
 (defn new-tag [name]
   (Tag. name))
-
-(defn pre-install [x]
-  (when #?(:clj (bound? #'speclj.config/*parent-description*) :cljs speclj.config/*runner*)
-    (install x speclj.config/*parent-description*))
-  x)
-
-(def install-new-description
-  (comp pre-install new-description))
-
-(def install-new-characteristic
-  (comp pre-install new-characteristic))
-
-(def install-new-tag
-  (comp pre-install new-tag))
-
-(def install-new-with
-  (comp pre-install new-with))
-
-(def install-new-with-all
-  (comp pre-install new-with-all))
-
-(def install-new-before
-  (comp pre-install new-before))
-
-(def install-new-before-all
-  (comp pre-install new-before-all))
-
-(def install-new-after
-  (comp pre-install new-after))
-
-(def install-new-after-all
-  (comp pre-install new-after-all))
-
-(def install-new-around
-  (comp pre-install new-around))
-
-(def install-new-around-all
-  (comp pre-install new-around-all))
