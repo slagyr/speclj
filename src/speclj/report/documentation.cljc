@@ -1,6 +1,5 @@
 (ns speclj.report.documentation
-  (:require [speclj.components :refer [focused?]]
-            [speclj.platform :refer [error-message]]
+  (:require [speclj.platform :refer [error-message]]
             [speclj.report.progress :refer [print-summary]]
             [speclj.reporting :refer [green indent red yellow]]))
 
@@ -11,7 +10,7 @@
       level)))
 
 (defn maybe-focused [component text]
-  (if-not (focused? component) text (str text " " (yellow "[FOCUS]"))))
+  (if-not @(.-is-focused? component) text (str text " " (yellow "[FOCUS]"))))
 
 (deftype DocumentationReporter []
   speclj.reporting/Reporter

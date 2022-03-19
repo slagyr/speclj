@@ -6,7 +6,7 @@
   (focus-context "a"
     (it "yes-1" (should false))
     (focus-it "yes-2" (should false))
-    (context "b"
+    (context "aa"
       (it "yes-3" (should false))))
   (it "no" (should false)))
 

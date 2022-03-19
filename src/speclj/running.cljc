@@ -1,13 +1,76 @@
 (ns speclj.running
   (:require [clojure.string :as str]
-            [speclj.components :refer [focus-mode? can-run? reset-with]]
+            [speclj.components :as components]
             [speclj.config :refer [active-reporters]]
             [speclj.platform :refer [current-time pending? secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
             [speclj.results :refer [error-result fail-result pass-result pending-result]]
             [speclj.tags :refer [pass-tag-filter? tag-sets-for tags-for]]))
 
+(defn focusable? [component]
+  (and (some? component)
+       (or (components/is-description? component)
+           (components/is-characteristic? component))))
+
+(defn focused? [component]
+  @(.-is-focused? component))
+
+(defn has-focus? [component]
+  (and (components/is-description? component)
+       @(.-has-focus? component)))
+
+(defn focus-mode? [component]
+  (or (focused? component)
+      (has-focus? component)
+      (when-let [parent @(.-parent component)]
+        (recur parent))))
+
+(defn can-run? [component]
+  (or (focused? component)
+      (has-focus? component)
+      (not (focus-mode? component))))
+
+(defn all-children [component]
+  (if (components/is-description? component)
+    (concat @(.-characteristics component) @(.-children component))
+    []))
+
+(defn focus! [component]
+  (reset! (.-is-focused? component) true))
+
+(defn focus-characteristics! [component]
+  (focus! component)
+  (doall (map focus! @(.-characteristics component))))
+
+(defn focus-children! [component]
+  (focus! component)
+  (doall (map focus-children! @(.-children component))))
+
+(defn enable-focus-mode! [component]
+  (when-let [parent @(.-parent component)]
+    (reset! (.-has-focus? parent) true)
+    (recur parent)))
+
+(defn track-focused-descriptions! [descriptions]
+  (doseq [component descriptions]
+    (when (focused? component)
+      (enable-focus-mode! component)
+      (focus-children! component)
+      (focus-characteristics! component))))
+
+(defn track-focused-characteristics! [characteristics]
+  (doseq [characteristic characteristics
+          :when (focused? characteristic)]
+    (enable-focus-mode! characteristic)))
+
+(defn scan-for-focus! [description]
+  (let [all (->> (tree-seq some? all-children description))]
+    (track-focused-descriptions! (filter components/is-description? all))
+    (track-focused-characteristics! (filter components/is-characteristic? all))
+    description))
+
 (defn filter-focused [descriptions]
+  (doseq [description descriptions] (scan-for-focus! description))
   (or (seq (filter focus-mode? descriptions)) descriptions))
 
 (defn- eval-components [components]
@@ -26,7 +89,7 @@
       (eval-components afters))))
 
 (defn- reset-withs [withs]
-  (doseq [with withs] (reset-with with)))
+  (doseq [with withs] (components/reset-with with)))
 
 (defn- collect-components [getter description]
   (loop [description description components []]

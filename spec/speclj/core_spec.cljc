@@ -17,7 +17,7 @@
     (focus-context "a"
       (it "yes-1" (should true))
       (focus-it "yes-2" (should true))
-      (context "b"
+      (context "aa"
         (it "yes-3" (should true))))
     (it "no" (should true)))
 
@@ -30,7 +30,7 @@
     (it "yes-5" (should true))
     (it "yes-6" (should true)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (describe "The basic spec structure"
   (tags :one)
