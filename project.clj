@@ -1,32 +1,33 @@
 (defproject speclj "3.3.2"
-            :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
-            :url "http://speclj.com"
-            :license {:name         "The MIT License"
-                      :url          "file://LICENSE"
-                      :distribution :repo
-                      :comments     "Copyright 2011-2015 Micah Martin All Rights Reserved."}
+  :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
+  :url "http://speclj.com"
+  :license {:name         "The MIT License"
+            :url          "file://LICENSE"
+            :distribution :repo
+            :comments     "Copyright 2011-2015 Micah Martin All Rights Reserved."}
 
-            :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
-            :javac-options ["-target" "1.5" "-source" "1.5"]
+  :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
+  :javac-options ["-target" "1.5" "-source" "1.5"]
 
-            :source-paths ["src"]
-            :test-paths ["spec" "dev"]
-            :java-source-paths ["src"]
+  :source-paths ["src"]
+  :test-paths ["spec" "dev"]
+  :java-source-paths ["src"]
 
-            :dependencies [[org.clojure/clojure "1.10.3"]
-                           [fresh "1.1.2"]
-                           [mmargs "1.2.0"]
-                           [trptcolin/versioneer "0.1.1"]]
+  :dependencies [[org.clojure/clojure "1.10.3"]
+                 [fresh "1.1.2"]
+                 [mmargs "1.2.0"]
+                 [trptcolin/versioneer "0.1.1"]]
 
-            :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.10.764"]]
-                             :plugins      [[codox "0.10.8" :exclusions [org.clojure/clojure]]]}}
+  :profiles {:dev {:dependencies [[org.clojure/clojurescript "1.10.764"]]}}
+  :plugins [[lein-codox "0.10.8"]]
 
-            :prep-tasks ["javac" "compile"]
+  :prep-tasks ["javac" "compile"]
 
-            :aliases {"cljs" ["do" "clean," "run" "-m" "speclj.dev.cljs"]
-                      "spec" ["do" "run" "-m" "speclj.dev.spec"]
-                      "ci"   ["do" "spec," "cljs"]}
+  :aliases {"cljs" ["do" "clean," "run" "-m" "speclj.dev.cljs"]
+            "spec" ["do" "run" "-m" "speclj.dev.spec"]
+            "ci"   ["do" "spec," "cljs"]}
 
-            :codox {:src-dir-uri               "http://github.com/slagyr/speclj/blob/3.3.2/"
-                    :src-linenum-anchor-prefix "L"}
-            )
+  :codox {:namespaces  [speclj.core]
+          :output-path "doc"
+          :source-uri  "https://github.com/slagyr/speclj/blob/{version}/{filepath}#L{line}"}
+  )
