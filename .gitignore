@@ -2,6 +2,7 @@
 .idea
 .lein*
 .specljs-timestamp
+.DS_Store
 doc
 pom.xml*
 target

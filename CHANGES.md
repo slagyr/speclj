@@ -1,3 +1,7 @@
+# 3.4.1
+
+* fix Leiningen plugin
+
 # 3.4.0
 
 * focus - run only the specs that have focus and ignore all others

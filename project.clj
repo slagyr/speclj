@@ -1,4 +1,4 @@
-(defproject speclj "3.4.0"
+(defproject speclj "3.4.1"
   :description "speclj: Pronounced 'speckle', is a Behavior Driven Development framework for Clojure."
   :url "http://speclj.com"
   :license {:name         "The MIT License"

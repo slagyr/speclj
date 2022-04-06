@@ -1,5 +1,6 @@
 (ns leiningen.spec
-  (:require [leiningen.core.main :as main]))
+  (:require [leiningen.core.main :as main]
+            [leiningen.core.eval :refer [eval-in-project]]))
 
 (defn make-run-form [project speclj-args]
   (let [exit-fn (if (or (:eval-in-leiningen project)
