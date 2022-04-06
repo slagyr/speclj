@@ -1,3 +1,21 @@
+# 3.4.0
+
+* focus - run only the specs that have focus and ignore all others
+  * focus-it
+  * focus-context
+  * focus-describe
+* should>
+* should>=
+* should<
+* should<=
+* should-start-with
+* should-end-with
+* should-not-start-with
+* should-not-end-with
+* upgrade to clojure 1.11.1
+* upgrade to clojurescript 1.11.4
+* clojurescript specs run on headless chrome
+
 # 3.3.2
 
 * upgrade to clojure 1.8.0
