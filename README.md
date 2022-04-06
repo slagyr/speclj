@@ -272,10 +272,9 @@ As a final note, when requiring your tested namespaces (sample.core in this case
 ### Running ClojureScript Specs
 
 ### With Leiningen
-We defer to `cljsbuild` to run our test command.
 
 ```bash
-$ lein cljsbuild test
+$ lein cljs
 ```
 
 ### Bash
@@ -303,11 +302,12 @@ $ cd speclj
 $ lein spec
 ```
 
-To make sure tests pass ClojureScript too, make sure you have [phantomjs](http://phantomjs.org/download.html) installed and then run:
+To make sure tests pass ClojureScript too, make sure you have npm:
 
 ```bash
-lein cljsbuild clean
-lein cljsbuild once
+npm install
+lein clean
+lein cljs 
 ```
 
 Make patches and submit them along with an issue (see below).
@@ -323,6 +323,6 @@ Post issues on the speclj github project:
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
 
 # License
-Copyright (C) 2010-2014 Micah Martin All Rights Reserved.
+Copyright (C) 2010-2022 Micah Martin All Rights Reserved.
 
 Distributed under the The MIT License.
