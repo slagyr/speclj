@@ -335,6 +335,43 @@
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using =)")))
        :else (throw (-new-exception (wrong-types "should-not-contain" expected# actual#))))))
 
+(defmacro should-have-count
+  "Multi-purpose assertion on (count %). Works on strings, sequences, and maps.
+
+  (should-have-count 6 \"foobar\")
+  (should-have-count 2 [1 2]})
+  (should-have-count 1 {:foo :bar})
+  (should-have-count 0 [])
+  (should-have-count 0 nil)"
+  [expected coll]
+  `(let [expected# ~expected
+         coll#     ~coll]
+     (if-not (and (number? expected#) (or (nil? coll#) (string? coll#) (counted? coll#)))
+       (throw (-new-exception (wrong-types "should-have-count" expected# coll#)))
+       (let [actual# (count coll#)]
+         (when-not (= expected# actual#)
+           (-fail (str "Expected count: " expected# speclj.platform/endl
+                       "Actual count:   " actual# speclj.platform/endl
+                       "Actual coll:    " (-to-s coll#))))))))
+
+(defmacro should-not-have-count
+  "Multi-purpose assertion on (not= (count %)). Works on strings, sequences, and maps.
+
+  (should-not-have-count 1 \"foobar\")
+  (should-not-have-count 1 [1 2]})
+  (should-not-have-count 42 {:foo :bar})
+  (should-not-have-count 1 [])
+  (should-not-have-count 1 nil)"
+  [expected coll]
+  `(let [expected# ~expected
+         coll#     ~coll]
+     (if-not (and (number? expected#) (or (nil? coll#) (string? coll#) (counted? coll#)))
+       (throw (-new-exception (wrong-types "should-not-have-count" expected# coll#)))
+       (let [actual# (count coll#)]
+         (when (= expected# actual#)
+           (-fail (str "Expected count to not equal " expected# " (but it did!)" speclj.platform/endl
+                       "Collection: " (-to-s coll#))))))))
+
 (defmacro ^:no-doc -remove-first [coll value]
   `(loop [coll# ~coll seen# []]
      (if (empty? coll#)
@@ -547,7 +584,6 @@ There are three options for passing different kinds of predicates:
               (should= ~predicate (speclj.platform/error-message e#)))
 
         (catch f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
-
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
