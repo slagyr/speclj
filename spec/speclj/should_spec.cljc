@@ -11,6 +11,7 @@
                         should-be-nil should-not-be-nil
                         should-be-same should-not-be-same
                         should-contain should-not-contain
+                        should-have-count should-not-have-count
                         should-start-with should-not-start-with
                         should-end-with should-not-end-with
                         should-throw should-not-throw
@@ -344,6 +345,56 @@
     (it "handles nil containers gracefully"
       (should-pass! (should-not-contain "foo" nil))
       (should-pass! (should-not-contain nil nil))))
+
+  (context "should-have-count"
+    (it "checks for an exact count"
+      (should-pass! (should-have-count 0 nil))
+      (should-pass! (should-have-count 0 []))
+      (should-pass! (should-have-count 1 [1]))
+      (should-pass! (should-have-count 2 {1 :a 2 :b}))
+      (should-pass! (should-have-count 3 "123"))
+      (should-pass! (should-have-count 100 (range 100)))
+
+      (should-fail! (should-have-count 2 [1]))
+      (should-fail! (should-have-count 2 "a"))
+      (should-fail! (should-have-count 2 {1 :a}))
+      (should-fail! (should-have-count -2 {1 :a})))
+
+    (it "communicates the failure"
+      (let [message (str "Expected count: 42" endl
+                         "Actual count:   1" endl
+                         "Actual coll:    [1]")]
+        (should= message (failure-message (should-have-count 42 [1])))))
+
+    (it "errors on unhandled types"
+      (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
+                    (should-have-count 1 :not-countable))
+      (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
+                    (should-have-count :nan []))))
+
+  (context "should-not-have-count"
+    (it "checks for anything but an exact count"
+      (should-pass! (should-not-have-count 1 nil))
+      (should-pass! (should-not-have-count 1 []))
+      (should-pass! (should-not-have-count 2 [1]))
+      (should-pass! (should-not-have-count 3 {1 :a 2 :b}))
+      (should-pass! (should-not-have-count 4 "123"))
+      (should-pass! (should-not-have-count 101 (range 100)))
+
+      (should-fail! (should-not-have-count 1 [1]))
+      (should-fail! (should-not-have-count 1 "a"))
+      (should-fail! (should-not-have-count 1 {1 :a})))
+
+    (it "communicates the failure"
+      (let [message (str "Expected count to not equal 9 (but it did!)" endl
+                         "Collection: (1 2 3 4 5 6 7 8 9)")]
+        (should= message (failure-message (should-not-have-count 9 (range 1 10))))))
+
+    (it "errors on unhandled types"
+      (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
+                    (should-not-have-count 1 :not-countable))
+      (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
+                    (should-not-have-count :nan []))))
 
   (context "should-not-be-nil"
     (it "checks for inequality with nil"

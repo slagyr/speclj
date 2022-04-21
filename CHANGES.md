@@ -1,3 +1,8 @@
+# 3.4.2
+
+* should-have-count
+* should-not-have-count
+
 # 3.4.1
 
 * fix Leiningen plugin
