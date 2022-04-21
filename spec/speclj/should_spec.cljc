@@ -23,100 +23,109 @@
             [speclj.run.standard :refer [run-specs]]))
 
 (describe "Should Assertions: "
-  (it "should tests truthy"
-    (should-pass! (should true))
-    (should-fail! (should false)))
+  (context "should"
+    (it "tests truthy"
+      (should-pass! (should true))
+      (should-fail! (should false)))
 
-  (it "should-not tests falsy"
-    (should-fail! (should-not true))
-    (should-pass! (should-not false)))
+    (it "failure message is nice"
+      (should= "Expected truthy but was: false" (failure-message (should false)))
+      (should= "Expected truthy but was: nil" (failure-message (should nil)))))
 
-  (it "should failure message is nice"
-    (should= "Expected truthy but was: false" (failure-message (should false)))
-    (should= "Expected truthy but was: nil" (failure-message (should nil))))
+  (context "should-not"
+    (it "tests falsy"
+      (should-fail! (should-not true))
+      (should-pass! (should-not false)))
 
-  (it "should failure message is nice"
-    (should= "Expected falsy but was: true" (failure-message (should-not true)))
-    (should= "Expected falsy but was: 1" (failure-message (should-not 1))))
+    (it "failure message is nice"
+      (should= "Expected falsy but was: true" (failure-message (should-not true)))
+      (should= "Expected falsy but was: 1" (failure-message (should-not 1)))))
 
-  (it "should= tests equality"
-    (should-pass! (should= 1 1))
-    (should-pass! (should= "hello" "hello"))
-    (should-fail! (should= 1 2))
-    (should-fail! (should= "hello" "goodbye")))
+  (context "should="
+    (it "tests equality"
+      (should-pass! (should= 1 1))
+      (should-pass! (should= "hello" "hello"))
+      (should-fail! (should= 1 2))
+      (should-fail! (should= "hello" "goodbye")))
 
-  (it "should-be tests functionality"
-    (should-pass! (should-be empty? []))
-    (should-fail! (should-be empty? [1 2 3]))
-    (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-be empty? [1 2 (+ 1 2)])))
-    (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-be (comp zero? first) [1 2 (+ 1 2)]))))
+    (it "should= checks equality of doubles within a delta"
+      (should-pass! (should= 1.0 1.0 0.1))
+      (should-pass! (should= 1.0 1.09 0.1))
+      (should-pass! (should= 1.0 0.91 0.1))
+      (should-fail! (should= 1.0 1.2 0.1))
+      (should-pass! (should= 3.141592 3.141592 0.000001))
+      (should-pass! (should= 3.141592 3.141593 0.000001))
+      (should-fail! (should= 3.141592 3.141594 0.000001)))
 
-  (it "should-not-be tests complementary functionality"
-    (should-pass! (should-not-be empty? [1 2 3]))
-    (should-fail! (should-not-be empty? []))
-    (should= "Expected 1 not to satisfy: pos?" (failure-message (should-not-be pos? 1)))
-    (should= "Expected 1 not to satisfy: (comp pos? inc)" (failure-message (should-not-be (comp pos? inc) 1))))
+    (it "should= failure message is nice"
+      (should= (str "Expected: 1" endl "     got: 2 (using =)") (failure-message (should= 1 2))))
 
-  (it "should= checks equality of doubles within a delta"
-    (should-pass! (should= 1.0 1.0 0.1))
-    (should-pass! (should= 1.0 1.09 0.1))
-    (should-pass! (should= 1.0 0.91 0.1))
-    (should-fail! (should= 1.0 1.2 0.1))
-    (should-pass! (should= 3.141592 3.141592 0.000001))
-    (should-pass! (should= 3.141592 3.141593 0.000001))
-    (should-fail! (should= 3.141592 3.141594 0.000001)))
+    (it "nil is printed as 'nil' instead of blank"
+      (should= (str "Expected: 1" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
 
-  (it "should= failure message is nice"
-    (should= (str "Expected: 1" endl "     got: 2 (using =)") (failure-message (should= 1 2))))
+    (it "should= failure message with delta is nice"
+      (should= (str "Expected: 1" endl "     got: 2 (using delta: 0.1)") (failure-message (should= 1 2 0.1))))
 
-  (it "nil is printed as 'nil' instead of blank"
-    (should= (str "Expected: 1" endl "     got: nil (using =)") (failure-message (should= 1 nil))))
+    (it "prints lazy seqs nicely"
+      (should= (str "Expected: (1 2 3)" endl "     got: (3 2 1) (using =)")
+               (failure-message (should= '(1 2 3) (concat '(3) '(2 1)))))))
 
-  (it "should= failure message with delta is nice"
-    (should= (str "Expected: 1" endl "     got: 2 (using delta: 0.1)") (failure-message (should= 1 2 0.1))))
+  (context "should-be"
+    (it "tests functionality"
+      (should-pass! (should-be empty? []))
+      (should-fail! (should-be empty? [1 2 3]))
+      (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-be empty? [1 2 (+ 1 2)])))
+      (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-be (comp zero? first) [1 2 (+ 1 2)])))))
 
-  (it "prints lazy seqs nicely"
-    (should= (str "Expected: (1 2 3)" endl "     got: (3 2 1) (using =)")
-             (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
+  (context "should-not-be"
+    (it "tests complementary functionality"
+      (should-pass! (should-not-be empty? [1 2 3]))
+      (should-fail! (should-not-be empty? []))
+      (should= "Expected 1 not to satisfy: pos?" (failure-message (should-not-be pos? 1)))
+      (should= "Expected 1 not to satisfy: (comp pos? inc)" (failure-message (should-not-be (comp pos? inc) 1)))))
 
-  (it "should_not= tests inequality"
-    (should-pass! (should-not= 1 2))
-    (should-fail! (should-not= 1 1)))
+  (context "should-not="
+    (it "tests inequality"
+      (should-pass! (should-not= 1 2))
+      (should-fail! (should-not= 1 1)))
 
-  (it "should_not= failure message is nice"
-    (should=
-      (str "Expected: 1" endl "not to =: 1")
-      (failure-message (should-not= 1 1))))
+    (it "failure message is nice"
+      (should=
+        (str "Expected: 1" endl "not to =: 1")
+        (failure-message (should-not= 1 1)))))
 
-  (it "should-be-same tests identity"
-    (should-pass! (should-be-same "foo" "foo"))
-    (should-pass! (should-be-same 1 1))
-    (should-fail! (should-be-same [] ()))
-    #?(:clj
-       (should-fail! (should-be-same 1 1.0)))
-    )
+  (context "should-be-same"
+    (it "tests identity"
+      (should-pass! (should-be-same "foo" "foo"))
+      (should-pass! (should-be-same 1 1))
+      (should-fail! (should-be-same [] ()))
+      #?(:clj
+         (should-fail! (should-be-same 1 1.0)))
+      )
 
-  (it "should-be-same failure message is nice"
-    (should= (str "         Expected: 1" endl "to be the same as: 2 (using identical?)")
-             (failure-message (should-be-same 1 2))))
+    (it "failure message is nice"
+      (should= (str "         Expected: 1" endl "to be the same as: 2 (using identical?)")
+               (failure-message (should-be-same 1 2)))))
 
-  (it "should-not-be-same tests identity"
-    (should-fail! (should-not-be-same "foo" "foo"))
-    (should-fail! (should-not-be-same 1 1))
-    (should-pass! (should-not-be-same [] ()))
+  (context "should-not-be-same"
+    (it "tests identity"
+      (should-fail! (should-not-be-same "foo" "foo"))
+      (should-fail! (should-not-be-same 1 1))
+      (should-pass! (should-not-be-same [] ()))
 
-    #?(:clj
-       (should-pass! (should-not-be-same 1 1.0)))
-    )
+      #?(:clj
+         (should-pass! (should-not-be-same 1 1.0)))
+      )
 
-  (it "should-not-be-same failure message is nice"
-    (should= (str "             Expected: 1" endl "not to be the same as: 1 (using identical?)")
-             (failure-message (should-not-be-same 1 1))))
+    (it "failure message is nice"
+      (should= (str "             Expected: 1" endl "not to be the same as: 1 (using identical?)")
+               (failure-message (should-not-be-same 1 1)))))
 
-  (it "should-be-nil checks for equality with nil"
-    (should-pass! (should-be-nil nil))
-    (should-fail! (should-be-nil true))
-    (should-fail! (should-be-nil false)))
+  (context "should-be-nil"
+    (it "checks for equality with nil"
+      (should-pass! (should-be-nil nil))
+      (should-fail! (should-be-nil true))
+      (should-fail! (should-be-nil false))))
 
   (context "should=="
 
@@ -266,222 +275,232 @@
       )
     )
 
-  (it "should-contain checks for containmentship of precise strings"
-    (should-pass! (should-contain "foo" "foobar"))
-    (should-fail! (should-contain "foo" "bar"))
-    (should-fail! (should-contain "foo" "Foo")))
+  (context "should-contain"
+    (it "checks for membership of precise strings"
+      (should-pass! (should-contain "foo" "foobar"))
+      (should-fail! (should-contain "foo" "bar"))
+      (should-fail! (should-contain "foo" "Foo")))
 
-  (it "should-not-contain checks for non-containmentship of precise strings"
-    (should-fail! (should-not-contain "foo" "foobar"))
-    (should-pass! (should-not-contain "foo" "bar"))
-    (should-pass! (should-not-contain "foo" "Foo")))
+    (it "checks for matching of regular expressions"
+      (should-pass! (should-contain #"hello.*" "hello, world"))
+      (should-fail! (should-contain #"hello.*" "hola!"))
+      (should-pass! (should-contain #"tea" "I'm a little teapot"))
+      (should-fail! (should-contain #"coffee" "I'm a little teapot")))
 
-  (it "should-contain checks for containmentship of regular expressions"
-    (should-pass! (should-contain #"hello.*" "hello, world"))
-    (should-fail! (should-contain #"hello.*" "hola!"))
-    (should-pass! (should-contain #"tea" "I'm a little teapot"))
-    (should-fail! (should-contain #"coffee" "I'm a little teapot")))
+    (it "checks for membership of collection items"
+      (should-pass! (should-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
+      (should-pass! (should-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
+      (should-pass! (should-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
+      (should-pass! (should-contain 1 [1 2 3]))
+      (should-fail! (should-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
+      (should-fail! (should-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
+      (should-fail! (should-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
 
-  (it "should-not-contain checks for non-containmentship of regular expressions"
-    (should-fail! (should-not-contain #"hello.*" "hello, world"))
-    (should-pass! (should-not-contain #"hello.*" "hola!"))
-    (should-fail! (should-not-contain #"tea" "I'm a little teapot"))
-    (should-pass! (should-not-contain #"coffee" "I'm a little teapot")))
+    (it "checks for membership of keys"
+      (should-pass! (should-contain "foo" {"foo" :bar}))
+      (should-fail! (should-contain :bar {"foo" :bar}))
+      (should-pass! (should-contain 1 {"foo" :bar 1 2}))
+      (should-fail! (should-contain 2 {"foo" :bar 1 2})))
 
-  (it "should-contain checks for containmentship of collection items"
-    (should-pass! (should-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
-    (should-pass! (should-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
-    (should-pass! (should-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
-    (should-pass! (should-contain 1 [1 2 3]))
-    (should-fail! (should-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
-    (should-fail! (should-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
-    (should-fail! (should-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
+    (it "errors on unhandled types"
+      (should-throw exception (str "should-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-contain 1 2)))
 
-  (it "should-not-contain checks for non-containmentship of collection items"
-    (should-fail! (should-not-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
-    (should-fail! (should-not-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
-    (should-fail! (should-not-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
-    (should-fail! (should-not-contain 1 [1 2 3]))
-    (should-pass! (should-not-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
-    (should-pass! (should-not-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
-    (should-pass! (should-not-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
+    (it "handles nil containers gracefully"
+      (should-fail! (should-contain "foo" nil))
+      (should-fail! (should-contain nil nil))))
 
-  (it "should-contain checks for containmentship of keys"
-    (should-pass! (should-contain "foo" {"foo" :bar}))
-    (should-fail! (should-contain :bar {"foo" :bar}))
-    (should-pass! (should-contain 1 {"foo" :bar 1 2}))
-    (should-fail! (should-contain 2 {"foo" :bar 1 2})))
+  (context "should-not-contain"
+    (it "checks for non-membership of precise strings"
+      (should-fail! (should-not-contain "foo" "foobar"))
+      (should-pass! (should-not-contain "foo" "bar"))
+      (should-pass! (should-not-contain "foo" "Foo")))
 
-  (it "should-not-contain checks for non-containmentship of keys"
-    (should-fail! (should-not-contain "foo" {"foo" :bar}))
-    (should-pass! (should-not-contain :bar {"foo" :bar}))
-    (should-fail! (should-not-contain 1 {"foo" :bar 1 2}))
-    (should-pass! (should-not-contain 2 {"foo" :bar 1 2})))
+    (it "checks for non-matching of regular expressions"
+      (should-fail! (should-not-contain #"hello.*" "hello, world"))
+      (should-pass! (should-not-contain #"hello.*" "hola!"))
+      (should-fail! (should-not-contain #"tea" "I'm a little teapot"))
+      (should-pass! (should-not-contain #"coffee" "I'm a little teapot")))
 
-  (it "should-contain errors on unhandled types"
-    (should-throw exception (str "should-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-contain 1 2)))
+    (it "checks for non-membership of collection items"
+      (should-fail! (should-not-contain "tea" ["i'm" "a" "little" "tea" "pot"]))
+      (should-fail! (should-not-contain "tea" (list "i'm" "a" "little" "tea" "pot")))
+      (should-fail! (should-not-contain "tea" (set ["i'm" "a" "little" "tea" "pot"])))
+      (should-fail! (should-not-contain 1 [1 2 3]))
+      (should-pass! (should-not-contain "coffee" ["i'm" "a" "little" "tea" "pot"]))
+      (should-pass! (should-not-contain "coffee" (list "i'm" "a" "little" "tea" "pot")))
+      (should-pass! (should-not-contain "coffee" (set ["i'm" "a" "little" "tea" "pot"]))))
 
-  (it "should-not-contain errors on unhandled types"
-    (should-throw exception (str "should-not-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-not-contain 1 2)))
+    (it "checks for non-membership of keys"
+      (should-fail! (should-not-contain "foo" {"foo" :bar}))
+      (should-pass! (should-not-contain :bar {"foo" :bar}))
+      (should-fail! (should-not-contain 1 {"foo" :bar 1 2}))
+      (should-pass! (should-not-contain 2 {"foo" :bar 1 2})))
 
-  (it "should-not-be-nil checks for inequality with nil"
-    (should-fail! (should-not-be-nil nil))
-    (should-pass! (should-not-be-nil true))
-    (should-pass! (should-not-be-nil false)))
+    (it "errors on unhandled types"
+      (should-throw exception (str "should-not-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-not-contain 1 2)))
 
-  (it "should-contain handles nil containers gracefully"
-    (should-fail! (should-contain "foo" nil))
-    (should-fail! (should-contain nil nil)))
+    (it "handles nil containers gracefully"
+      (should-pass! (should-not-contain "foo" nil))
+      (should-pass! (should-not-contain nil nil))))
 
-  (it "should-not-contain handles nil containers gracefully"
-    (should-pass! (should-not-contain "foo" nil))
-    (should-pass! (should-not-contain nil nil)))
+  (context "should-not-be-nil"
+    (it "checks for inequality with nil"
+      (should-fail! (should-not-be-nil nil))
+      (should-pass! (should-not-be-nil true))
+      (should-pass! (should-not-be-nil false))))
 
-  (it "should-fail is an automatic failure"
-    (should-fail! (should-fail))
-    (should= "Forced failure" (failure-message (should-fail))))
+  (context "should-fail"
+    (it "is an automatic failure"
+      (should-fail! (should-fail))
+      (should= "Forced failure" (failure-message (should-fail))))
 
-  (it "should-fail can take a string as the error message"
-    (should-fail! (should-fail "some message"))
-    (should= "some message" (failure-message (should-fail "some message"))))
+    (it "can take a string as the error message"
+      (should-fail! (should-fail "some message"))
+      (should= "some message" (failure-message (should-fail "some message")))))
 
-  (it "should-start-with checks for prefix in strings"
-    (should-pass! (should-start-with "abc" "abcdefg"))
-    (should-fail! (should-start-with "abc" "ab"))
-    (should-fail! (should-start-with "bcd" "abcdefg"))
-    (should= (str "Expected \"abcdefg\" to start\n"
-                  "    with \"bcd\"")
-             (failure-message (should-start-with "bcd" "abcdefg"))))
+  (context "should-start-with"
+    (it "checks for prefix in strings"
+      (should-pass! (should-start-with "abc" "abcdefg"))
+      (should-fail! (should-start-with "abc" "ab"))
+      (should-fail! (should-start-with "bcd" "abcdefg"))
+      (should= (str "Expected \"abcdefg\" to start\n"
+                    "    with \"bcd\"")
+               (failure-message (should-start-with "bcd" "abcdefg"))))
 
-  (it "should-start-with checks for prefix in collections"
-    (should-pass! (should-start-with [1 2] [1 2 3 4 5]))
-    (should-fail! (should-start-with [2 3] [1 2 3 4 5]))
-    (should= (str "Expected [1 2 3 4 5] to start\n"
-                  "    with [2 3]")
-             (failure-message (should-start-with [2 3] [1 2 3 4 5]))))
+    (it "checks for prefix in collections"
+      (should-pass! (should-start-with [1 2] [1 2 3 4 5]))
+      (should-fail! (should-start-with [2 3] [1 2 3 4 5]))
+      (should= (str "Expected [1 2 3 4 5] to start\n"
+                    "    with [2 3]")
+               (failure-message (should-start-with [2 3] [1 2 3 4 5]))))
 
-  (it "should-start-with errors on unexpected types"
-    (should-throw exception (str "should-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-start-with 1 2)))
+    (it "errors on unexpected types"
+      (should-throw exception (str "should-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-start-with 1 2))))
 
-  (it "should-not-start-with checks for prefix in strings"
-    (should-pass! (should-not-start-with "bcd" "abcdefg"))
-    (should-fail! (should-not-start-with "abc" "abcdefg"))
-    (should= (str "Expected \"abcdefg\" to NOT start\n"
-                  "    with \"abc\"")
-             (failure-message (should-not-start-with "abc" "abcdefg"))))
+  (context "should-not-start-with"
+    (it "checks for prefix in strings"
+      (should-pass! (should-not-start-with "bcd" "abcdefg"))
+      (should-fail! (should-not-start-with "abc" "abcdefg"))
+      (should= (str "Expected \"abcdefg\" to NOT start\n"
+                    "    with \"abc\"")
+               (failure-message (should-not-start-with "abc" "abcdefg"))))
 
-  (it "should-not-start-with checks for prefix in collections"
-    (should-pass! (should-not-start-with [2 3] [1 2 3 4 5]))
-    (should-fail! (should-not-start-with [1 2] [1 2 3 4 5]))
-    (should= (str "Expected [1 2 3 4 5] to NOT start\n"
-                  "    with [1 2]")
-             (failure-message (should-not-start-with [1 2] [1 2 3 4 5]))))
+    (it "checks for prefix in collections"
+      (should-pass! (should-not-start-with [2 3] [1 2 3 4 5]))
+      (should-fail! (should-not-start-with [1 2] [1 2 3 4 5]))
+      (should= (str "Expected [1 2 3 4 5] to NOT start\n"
+                    "    with [1 2]")
+               (failure-message (should-not-start-with [1 2] [1 2 3 4 5]))))
 
-  (it "should-not-start-with errors on unexpected types"
-    (should-throw exception (str "should-not-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-not-start-with 1 2)))
+    (it "errors on unexpected types"
+      (should-throw exception (str "should-not-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-not-start-with 1 2))))
 
-  (it "should-end-with checks for prefix in strings"
-    (should-pass! (should-end-with "xyz" "tuvwxyz"))
-    (should-fail! (should-end-with "xyz" ""))
-    (should-fail! (should-end-with "wxy" "tuvwxyz"))
-    (should= (str "Expected [tuvwxyz] to end\n"
-                  "        with [wxy]")
-             (failure-message (should-end-with "wxy" "tuvwxyz"))))
+  (context "should-end-with"
+    (it "checks for prefix in strings"
+      (should-pass! (should-end-with "xyz" "tuvwxyz"))
+      (should-fail! (should-end-with "xyz" ""))
+      (should-fail! (should-end-with "wxy" "tuvwxyz"))
+      (should= (str "Expected [tuvwxyz] to end\n"
+                    "        with [wxy]")
+               (failure-message (should-end-with "wxy" "tuvwxyz"))))
 
-  (it "should-end-with checks for prefix in collections"
-    (should-pass! (should-end-with [4 5] [1 2 3 4 5]))
-    (should-fail! (should-end-with [3 4] [1 2 3 4 5]))
-    (should= (str "Expected [1 2 3 4 5] to end\n"
-                  "          with [3 4]")
-             (failure-message (should-end-with [3 4] [1 2 3 4 5]))))
+    (it "checks for prefix in collections"
+      (should-pass! (should-end-with [4 5] [1 2 3 4 5]))
+      (should-fail! (should-end-with [3 4] [1 2 3 4 5]))
+      (should= (str "Expected [1 2 3 4 5] to end\n"
+                    "          with [3 4]")
+               (failure-message (should-end-with [3 4] [1 2 3 4 5]))))
 
-  (it "should-end-with errors on unexpected types"
-    (should-throw exception (str "should-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-end-with 1 2)))
+    (it "errors on unexpected types"
+      (should-throw exception (str "should-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-end-with 1 2))))
 
-  (it "should-not-end-with checks for prefix in strings"
-    (should-pass! (should-not-end-with "wxy" "tuvwxyz"))
-    (should-fail! (should-not-end-with "xyz" "tuvwxyz"))
-    (should= (str "Expected [tuvwxyz] to NOT end\n"
-                  "        with [xyz]")
-             (failure-message (should-not-end-with "xyz" "tuvwxyz"))))
+  (context "should-not-end-with"
+    (it "checks for prefix in strings"
+      (should-pass! (should-not-end-with "wxy" "tuvwxyz"))
+      (should-fail! (should-not-end-with "xyz" "tuvwxyz"))
+      (should= (str "Expected [tuvwxyz] to NOT end\n"
+                    "        with [xyz]")
+               (failure-message (should-not-end-with "xyz" "tuvwxyz"))))
 
-  (it "should-not-end-with checks for prefix in collections"
-    (should-pass! (should-not-end-with [3 4] [1 2 3 4 5]))
-    (should-fail! (should-not-end-with [4 5] [1 2 3 4 5]))
-    (should= (str "Expected [1 2 3 4 5] to NOT end\n"
-                  "          with [4 5]")
-             (failure-message (should-not-end-with [4 5] [1 2 3 4 5]))))
+    (it "checks for prefix in collections"
+      (should-pass! (should-not-end-with [3 4] [1 2 3 4 5]))
+      (should-fail! (should-not-end-with [4 5] [1 2 3 4 5]))
+      (should= (str "Expected [1 2 3 4 5] to NOT end\n"
+                    "          with [4 5]")
+               (failure-message (should-not-end-with [4 5] [1 2 3 4 5]))))
 
-  (it "should-not-end-with errors on unexpected types"
-    (should-throw exception (str "should-not-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                  (should-not-end-with 1 2)))
+    (it "errors on unexpected types"
+      (should-throw exception (str "should-not-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
+                    (should-not-end-with 1 2))))
 
-  #?(:clj
-     (it "should-throw tests that any Throwable is thrown"
-       (should-pass! (should-throw (throw (java.lang.Throwable. "error"))))
-       (should-fail! (should-throw (+ 1 1)))
-       (should= (str "Expected " (type-name java.lang.Throwable) " thrown from: (+ 1 1)" endl
-                     (apply str (take (count (type-name java.lang.Throwable)) (repeat " "))) "              but got: <nothing thrown>")
-                (failure-message (should-throw (+ 1 1))))))
-
-  (it "should-throw can test an expected throwable type"
-    (should-pass! (should-throw exception (throw (-new-exception))))
-
+  (context "should-throw"
     #?(:clj
-       (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.)))))
+       (it "tests that any Throwable is thrown"
+         (should-pass! (should-throw (throw (java.lang.Throwable. "error"))))
+         (should-fail! (should-throw (+ 1 1)))
+         (should= (str "Expected " (type-name java.lang.Throwable) " thrown from: (+ 1 1)" endl
+                       (apply str (take (count (type-name java.lang.Throwable)) (repeat " "))) "              but got: <nothing thrown>")
+                  (failure-message (should-throw (+ 1 1))))))
 
-    (should-fail! (should-throw exception (throw (-new-throwable))))
-    (should-fail! (should-throw exception (+ 1 1)))
-    (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
-                  (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
-             (failure-message (should-throw exception (+ 1 1))))
-    #?(:cljs
-       (should=
-         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl "                     but got: #object[String some message]")
-         (failure-message (should-not-throw (throw (-new-throwable "some message")))))
-       :clj
-       (should-contain
-         (str "Expected " (type-name exception) " thrown from: (throw (-new-throwable \"some message\"))" endl
-              (apply str (take (count (type-name exception)) (repeat " ")))
-              "              but got: #error {\n :cause \"some message\"\n :via\n [{:type java.lang.Throwable\n")
-         (failure-message (should-throw exception (throw (-new-throwable "some message"))))))
-    )
+    (it "can test an expected throwable type"
+      (should-pass! (should-throw exception (throw (-new-exception))))
 
-  (it "should-throw can test the message of the exception with regex"
-    (should-pass! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "my message"))))
-    (should-fail! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "123456")))))
+      #?(:clj
+         (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.)))))
 
-  (it "should-throw can test the message of the exception"
-    (should-pass! (should-throw exception "My message" (throw (-new-exception "My message"))))
-    (should-fail! (should-throw exception "My message" (throw (-new-exception "Not my message"))))
-    (should-fail! (should-throw exception "My message" (throw (throwable "My message"))))
-    (should-fail! (should-throw exception "My message" (+ 1 1)))
-    (should= (str "Expected exception predicate didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
-             (failure-message (should-throw exception "My message" (throw (-new-exception "Not my message"))))))
+      (should-fail! (should-throw exception (throw (-new-throwable))))
+      (should-fail! (should-throw exception (+ 1 1)))
+      (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
+                    (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
+               (failure-message (should-throw exception (+ 1 1))))
+      #?(:cljs
+         (should=
+           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl "                     but got: #object[String some message]")
+           (failure-message (should-not-throw (throw (-new-throwable "some message")))))
+         :clj
+         (should-contain
+           (str "Expected " (type-name exception) " thrown from: (throw (-new-throwable \"some message\"))" endl
+                (apply str (take (count (type-name exception)) (repeat " ")))
+                "              but got: #error {\n :cause \"some message\"\n :via\n [{:type java.lang.Throwable\n")
+           (failure-message (should-throw exception (throw (-new-throwable "some message"))))))
+      )
 
-  (it "should-throw can test an exception by calling a passed function"
-    (should-pass! (should-throw exception #(empty? (speclj.platform/error-message %)) (throw (-new-exception ""))))
-    (should-fail! (should-throw exception #((not (empty? (speclj.platform/error-message %))) (throw (-new-exception "")))))
-    (should= (str "Expected exception predicate didn't match" endl "Expected: true" endl "     got: \"Not my message\" (using =)")
-             (failure-message (should-throw exception #(speclj.platform/error-message %) (throw (-new-exception "Not my message"))))))
+    (it "can test the message of the exception with regex"
+      (should-pass! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "my message"))))
+      (should-fail! (should-throw exception #"[a-zA-Z]" (throw (-new-exception "123456")))))
 
-  (it "should-not-throw tests that nothing was thrown"
-    (should-pass! (should-not-throw (+ 1 1)))
-    (should-fail! (should-not-throw (throw (-new-throwable "error"))))
-    #?(:cljs
-       (should=
-         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
-         (failure-message (should-not-throw (throw (-new-throwable "error")))))
-       :clj
-       (should-contain
-         (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
-              "                     but got: #error {\n :cause \"error\"\n :via\n [{:type java.lang.Throwable\n   :message \"error\"\n")
-         (failure-message (should-not-throw (throw (-new-throwable "error")))))))
+    (it "can test the message of the exception"
+      (should-pass! (should-throw exception "My message" (throw (-new-exception "My message"))))
+      (should-fail! (should-throw exception "My message" (throw (-new-exception "Not my message"))))
+      (should-fail! (should-throw exception "My message" (throw (throwable "My message"))))
+      (should-fail! (should-throw exception "My message" (+ 1 1)))
+      (should= (str "Expected exception predicate didn't match" endl "Expected: \"My message\"" endl "     got: \"Not my message\" (using =)")
+               (failure-message (should-throw exception "My message" (throw (-new-exception "Not my message"))))))
+
+    (it "can test an exception by calling a passed function"
+      (should-pass! (should-throw exception #(empty? (speclj.platform/error-message %)) (throw (-new-exception ""))))
+      (should-fail! (should-throw exception #((not (empty? (speclj.platform/error-message %))) (throw (-new-exception "")))))
+      (should= (str "Expected exception predicate didn't match" endl "Expected: true" endl "     got: \"Not my message\" (using =)")
+               (failure-message (should-throw exception #(speclj.platform/error-message %) (throw (-new-exception "Not my message")))))))
+
+  (context "should-not-throw"
+   (it "tests that nothing was thrown"
+     (should-pass! (should-not-throw (+ 1 1)))
+     (should-fail! (should-not-throw (throw (-new-throwable "error"))))
+     #?(:cljs
+        (should=
+          (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
+          (failure-message (should-not-throw (throw (-new-throwable "error")))))
+        :clj
+        (should-contain
+          (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
+               "                     but got: #error {\n :cause \"error\"\n :via\n [{:type java.lang.Throwable\n   :message \"error\"\n")
+          (failure-message (should-not-throw (throw (-new-throwable "error"))))))))
 
 
   (context "should-be-a"
@@ -498,9 +517,7 @@
     (it "fails with an error message"
       (should=
         (str "Expected 1 to be an instance of: " (-to-s (type :foo)) endl "           but was an instance of: " (-to-s (type 1)) " (using isa?)")
-        (failure-message (should-be-a (type :foo) 1))))
-
-    )
+        (failure-message (should-be-a (type :foo) 1)))))
 
   (context "should-not-be-a"
 
@@ -517,9 +534,7 @@
     (it "fails with an error message"
       (should=
         (str "Expected :bar not to be an instance of " (-to-s (type :bar)) " but was (using isa?)")
-        (failure-message (should-not-be-a (type :foo) :bar))))
-
-    )
+        (failure-message (should-not-be-a (type :foo) :bar)))))
 
   (context "should<"
     (it "degenerate cases"
