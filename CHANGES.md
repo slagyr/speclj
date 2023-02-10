@@ -1,3 +1,7 @@
+# 3.4.3
+
+* redefs-around
+
 # 3.4.2
 
 * should-have-count
