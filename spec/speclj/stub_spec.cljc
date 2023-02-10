@@ -2,7 +2,7 @@
   (#?(:clj :require :cljs :require-macros)
    [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
-  (:require [speclj.stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
+  (:require [speclj.stub :as stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :refer [run-specs]]
             #?(:cljs [clojure.data])))
@@ -96,6 +96,18 @@
       (it "last"
         (should= [2] (last-invocation-of :foo))
         (should= [4] (last-invocation-of :bar)))
+      )
+
+    (context "clearing"
+
+      (before (@foo 1)
+              (@bar 2)
+              (stub/clear!))
+
+      (it "removes all invocations"
+        (should= [] (invocations-of :foo))
+        (should= [] (invocations-of :bar)))
+
       )
 
     (context "checking"

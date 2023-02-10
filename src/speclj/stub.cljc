@@ -8,6 +8,11 @@
     (throw (new #?(:clj java.lang.Exception :cljs js/Error)
                 "Stub recoding not bound.  Please add (with-stubs) to the decribe/context."))))
 
+(defn clear! []
+  (check-recording)
+  (reset! *stubbed-invocations* [])
+  )
+
 (defn -record-invocation [name args]
   (check-recording)
   (let [args (if (= nil args) [] (vec args))]

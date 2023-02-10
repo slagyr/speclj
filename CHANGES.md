@@ -2,6 +2,7 @@
 
 * should-have-count
 * should-not-have-count
+* stub/clear!
 
 # 3.4.1
 
