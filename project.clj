@@ -4,7 +4,7 @@
   :license {:name         "The MIT License"
             :url          "file://LICENSE"
             :distribution :repo
-            :comments     "Copyright 2011-2022 Micah Martin All Rights Reserved."}
+            :comments     "Copyright 2011-2023 Micah Martin All Rights Reserved."}
 
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :javac-options ["-target" "1.7" "-source" "1.7"]

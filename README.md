@@ -323,6 +323,6 @@ Post issues on the speclj github project:
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
 
 # License
-Copyright (C) 2010-2022 Micah Martin All Rights Reserved.
+Copyright (C) 2010-2023 Micah Martin All Rights Reserved.
 
 Distributed under the The MIT License.
