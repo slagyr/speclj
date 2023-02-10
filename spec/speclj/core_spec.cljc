@@ -3,7 +3,7 @@
    [speclj.core :refer [describe it context tags focus-describe focus-context focus-it
                         should should-be-same should-not-be-same should=
                         before after before-all after-all
-                        with with! with-all with-all! around around-all]])
+                        with with! with-all with-all! around around-all redefs-around]])
   (:require [speclj.platform]
             [speclj.components]
             [speclj.run.standard :refer [run-specs]]))
@@ -123,13 +123,24 @@
     (binding [*gewgaw* 42]
       (it)))
 
-  (it ": characteristcs will be evaluated within around form"
+  (it ": characteristics will be evaluated within around form"
     (should= 42 *gewgaw*))
 
   (context "with before and after"
     (before (should= 42 *gewgaw*))
     (it "executes around all of them" :filler)))
 
+(describe "redefs-around forms"
+  (it "allows characteristics to be wrapped by other forms" :filler)
+  (redefs-around [*gewgaw* 21])
+
+  (it ": characteristics will be evaluated within around form"
+    (should= 21 *gewgaw*))
+
+  (context "with before and after"
+    (before (should= 21 *gewgaw*))
+    (it "executes around all of them" :filler)
+    (after (should= 21 *gewgaw*))))
 
 (describe "around-all form"
   (describe "with nothing else"

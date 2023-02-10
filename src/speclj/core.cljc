@@ -130,6 +130,11 @@
   [binding & body]
   `(speclj.components/new-around (fn ~binding ~@body)))
 
+(defmacro redefs-around
+  "Redefines the bindings around each characteristic of the containing describe scope."
+  [bindings]
+  `(around [it#] (with-redefs ~bindings (it#))))
+
 (defmacro before-all
   "Declares a function that is invoked once before any characteristic in the containing describe scope is evaluated. The
   body may consist of any forms, presumably ones that perform side effects."
