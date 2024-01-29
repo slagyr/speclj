@@ -147,10 +147,11 @@
 
 #?(:clj
    (defn- with-withs-bound [description body]
-     (let [withs         (concat @(.-withs description) @(.-with-alls description))
-           ns            (the-ns (symbol (.-ns description)))
-           with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)]
-       (with-bindings* with-mappings body)))
+     (let [withs                (concat @(.-withs description) @(.-with-alls description))
+           ns                   (the-ns (symbol (.-ns description)))
+           with-mappings        (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)
+           with-and-ns-mappings (assoc with-mappings #'*ns* ns)]
+       (with-bindings* with-and-ns-mappings body)))
 
    :cljs
    (defn- with-withs-bound [description body]

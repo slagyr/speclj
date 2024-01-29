@@ -1,7 +1,7 @@
 (ns speclj.running-spec
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.core :refer [after around before-all context describe
-                                 it should should-fail should-not
+                                 it focus-it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.platform :as platform]
@@ -104,4 +104,8 @@
 
   )
 
-(run-specs :color true)
+(describe "namespace"
+  (it "runs in the current namespace"
+    (should= 'speclj.running-spec (.name *ns*))))
+
+;(run-specs :color true)
