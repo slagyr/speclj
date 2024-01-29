@@ -1,3 +1,7 @@
+# 3.4.5
+
+* 3.4.4 was a failed deploy... no compiled java code.
+
 # 3.4.4
 
 * fixes bug where `it` blocks were not executing within the namespace where they were declared.
