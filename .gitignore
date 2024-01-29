@@ -1,10 +1,11 @@
 *.iml
+.cpcache
+.DS_Store
 .idea
 .lein*
 .specljs-timestamp
-.DS_Store
 doc
-pom.xml*
-target
 node_modules
 package-lock.json
+pom.xml*
+target
