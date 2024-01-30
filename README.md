@@ -1,4 +1,4 @@
-# speclj [![Build Status](https://secure.travis-ci.org/slagyr/speclj.png?branch=master)](http://travis-ci.org/slagyr/speclj)
+# speclj
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
 
@@ -42,7 +42,7 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 2. Install it:
 
 ```bash
-$ lein install
+$ clj -T:build install
 ```
 
 # Usage
@@ -131,6 +131,24 @@ There are many ways to make assertions.  Check out the [API Documentation](http:
 `it` or characteristics are just one of several spec components allowed in a `describe`.  Others like `before`, `with`, `around`, etc are helpful in keeping your specs clean and dry.  The same [API Documentation](http://micahmartin.com/speclj/speclj.core.html) lists the spec component (everything that doesn't start with `should`).
 
 ## Running Specs
+
+### With `deps.edn`
+Add a `spec` alias to your `deps.edn`.
+
+```clojure
+{
+ :aliases {:spec  {:main-opts ["-m" "speclj.main" "-c"]
+                   :extra-deps  {speclj/speclj {:mvn/version "3.4.5"}}
+                   :extra-paths ["spec"]}}
+ }
+```
+
+Run specs.
+```bash
+clj -M:spec     # printing dots
+clj -M:spec -a  # auto running with doc output
+clj -M:spec <OPTIONS>
+```
 
 ### With Leiningen
 Speclj includes a Leiningen task.
@@ -292,22 +310,20 @@ $ bin/speclj path/to/compiled.js
 * Email List: [http://groups.google.com/group/speclj](http://groups.google.com/group/speclj)
 
 # Contributing
-speclj uses [Leiningen](https://github.com/technomancy/leiningen) version 2.0.0 or later.
-
 Clone the master branch, build, and run all the tests:
 
 ```bash
 $ git clone https://github.com/slagyr/speclj.git
 $ cd speclj
-$ lein spec
+$ clj -M:test:spec
 ```
 
 To make sure tests pass ClojureScript too, make sure you have npm:
 
 ```bash
 npm install
-lein clean
-lein cljs 
+clj -T:build clean
+clj -M:test:cljs 
 ```
 
 Make patches and submit them along with an issue (see below).

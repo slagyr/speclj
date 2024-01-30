@@ -45,6 +45,7 @@
   (println "building" jar-file)
   (b/copy-dir {:src-dirs   src-dirs
                :target-dir class-dir})
+  (b/copy-file {:src "LICENSE" :target "target/classes/LICENSE"})
   (b/jar {:class-dir class-dir
           :jar-file  jar-file}))
 

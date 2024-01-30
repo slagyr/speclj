@@ -1,6 +1,6 @@
 #! /bin/sh
 
-lein codox
+clj -X:test:codox
 pushd doc
 git checkout gh-pages # To be sure you're on the right branch
 git add .

@@ -11,12 +11,18 @@
                                  io.github.clojure/tools.build       {:mvn/version "0.9.5"}
                                  org.clojure/clojurescript           {:mvn/version "1.11.60"}
                                  }
-                   :extra-paths ["dev" "spec"]}
+                   :extra-paths ["dev" "spec" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"]}
-           :cljs  {:main-opts ["-m" "cljs"]}
+           :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
            :build {:extra-deps  {io.github.clojure/tools.build {:mvn/version "0.9.5"}
                                  clj-commons/pomegranate       {:mvn/version "1.2.23"}}
                    :ns-default  build
                    :extra-paths ["dev"]}
+           :codox {:extra-deps {codox/codox {:mvn/version "0.10.8"}}
+                   :exec-fn codox.main/generate-docs
+                   :exec-args {:source-paths ["src"]
+                               :output-path "doc"
+                               :source-uri  "https://github.com/slagyr/speclj/blob/master/{filepath}#L{line}"}
+                   }
            }
  }

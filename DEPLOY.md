@@ -1,12 +1,10 @@
 # Step for deployment
 
-1) Run specs `lein spec`
-2) Run cljs specs `lein cljs`
+1) Run specs `clj -M:test:spec`
+2) Run cljs specs `clj -M:test:cljs`
 3) Increase version in project.clj
 4) Update CHANGES.md with changes in version
-5) `lein install`, update some other project to use the new version, try it out (clj and cljs)
+5) `clj -T:build install`, update some other project to use the new version, try it out (clj and cljs)
 6) `git commit` changes
-7) `git tag -a X.Y.Z -m ''`
-8) `git push origin master --tags`
-9) `lein deploy clojars` (need pgp config, micah may need to do this)
+7) `clj -T:build deploy`
 10) `bin/doc.sh` - generate and publish new documentation
