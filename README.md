@@ -315,6 +315,7 @@ Clone the master branch, build, and run all the tests:
 ```bash
 $ git clone https://github.com/slagyr/speclj.git
 $ cd speclj
+$ clj -T:build javac
 $ clj -M:test:spec
 ```
 

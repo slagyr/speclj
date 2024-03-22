@@ -5,6 +5,7 @@
            mmargs/mmargs        {:mvn/version "1.2.0"}
            org.clojure/clojure  {:mvn/version "1.11.1"}
            trptcolin/versioneer {:mvn/version "0.1.1"}
+           cloverage/cloverage  {:mvn/version "1.2.4"}
            }
  :aliases {
            :test  {:extra-deps  {
