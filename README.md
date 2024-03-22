@@ -30,9 +30,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 
 ```clojure
 ; - snip
-:dependencies [[org.clojure/clojure "1.6.0"]]
-:profiles {:dev {:dependencies [[speclj "3.3.0"]]}}
-:plugins [[speclj "3.3.0"]]
+:dependencies [[org.clojure/clojure "1.11.2"]]
+:profiles {:dev {:dependencies [[speclj "3.4.6"]]}}
+:plugins [[speclj "3.4.6"]]
 :test-paths ["spec"]
 ```
 
@@ -138,7 +138,7 @@ Add a `spec` alias to your `deps.edn`.
 ```clojure
 {
  :aliases {:spec  {:main-opts ["-m" "speclj.main" "-c"]
-                   :extra-deps  {speclj/speclj {:mvn/version "3.4.5"}}
+                   :extra-deps  {speclj/speclj {:mvn/version "3.4.6"}}
                    :extra-paths ["spec"]}}
  }
 ```
@@ -301,6 +301,23 @@ The command below will start a process that will watch the source files and run 
 ```bash
 $ bin/speclj path/to/compiled.js
 ```
+
+# Code Coverage
+
+Speclj integrated with [Cloverage](https://github.com/cloverage/cloverage) for all your code coverage needs.  Make sure
+speclj 3.4.6 or above is included in the classpath and use Cloverage's `--runner :speclj` command line option.
+
+Here's an example alias for your `deps.edn`.
+
+```clojure
+{:aliases {:cov {:main-opts ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec" ]
+                 :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}
+                              speclj/speclj {:mvn/version "3.4.6"}}}}}
+```
+
+Sadly, Cloverage doesn't offer a way to pass arguments to the runner (Speclj in this case).  Speclj will use the
+standard runner and progress reporter by default.  If you'd like different options, you can use the `speclj.cloverage` 
+namespace as a model to create your own cloverage/speclj runner in your project.
 
 # Community
 

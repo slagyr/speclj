@@ -2,17 +2,19 @@
   (:require [cloverage.coverage :as coverage]
             [speclj.config :refer [*reporters* *runner*]]
             [speclj.report.documentation]
+            [speclj.report.progress :as progress]
             [speclj.results :as results]
-            [speclj.run.standard]
-            [speclj.running :refer [run-and-report]])
-  (:import (speclj.report.documentation DocumentationReporter)
-           (speclj.run.standard StandardRunner)))
+            [speclj.run.standard :as standard]
+            [speclj.running :refer [run-and-report]]))
+
+;; Assumes that cloverage is already in the classpath.
 
 (defmethod coverage/runner-fn :speclj [_opts]
+  (prn "_opts: " _opts)
   (fn [nses]
     (let [results (atom [])
-          runner (StandardRunner. (atom []) results)
-          reporters [(DocumentationReporter.)]]
+          runner (standard/->StandardRunner (atom []) results)
+          reporters [(progress/->ProgressReporter)]]
       (binding [*runner* runner *reporters* reporters]
         (apply require (map symbol nses))
         (run-and-report runner reporters))
