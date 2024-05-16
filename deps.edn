@@ -3,14 +3,14 @@
  :deps    {
            fresh/fresh          {:mvn/version "1.1.2"}
            mmargs/mmargs        {:mvn/version "1.2.0"}
-           org.clojure/clojure  {:mvn/version "1.11.1"}
+           org.clojure/clojure  {:mvn/version "1.11.3"}
            trptcolin/versioneer {:mvn/version "0.1.1"}
            }
  :aliases {
            :test  {:extra-deps  {
                                  io.github.clojure/tools.build {:mvn/version "0.9.5"}
-                                 org.clojure/clojurescript     {:mvn/version "1.11.60"}
-                                 cloverage/cloverage {:mvn/version "1.2.4"}
+                                 org.clojure/clojurescript     {:mvn/version "1.11.132"}
+                                 cloverage/cloverage           {:mvn/version "1.2.4"}
                                  }
                    :extra-paths ["dev" "spec" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"]}
@@ -19,7 +19,7 @@
                                  clj-commons/pomegranate       {:mvn/version "1.2.23"}}
                    :ns-default  build
                    :extra-paths ["dev"]}
-           :cov   {:main-opts  ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec" "-e" "leiningen.spec" "--foo" "bar"]}
+           :cov   {:main-opts ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec" "-e" "leiningen.spec" "--foo" "bar"]}
            :codox {:extra-deps {codox/codox {:mvn/version "0.10.8"}}
                    :exec-fn    codox.main/generate-docs
                    :exec-args  {:source-paths ["src"]
