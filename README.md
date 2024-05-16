@@ -344,6 +344,20 @@ clj -T:build clean
 clj -M:test:cljs 
 ```
 
+To include in a local project
+
+```bash
+clj -T:build clean
+clj -T:build javac
+clj -T:build jar
+```
+
+In deps.edn
+
+```clojure
+{speclj/speclj {:local/root "/path/to/speclj/target/speclj-3.4.6.jar"}}
+```
+
 Make patches and submit them along with an issue (see below).
 
 ## Issues
