@@ -200,8 +200,9 @@
            (swap! widget #(/ % 2)))
 
          (around-all [context]
+                     (swap! widget #(- % 2))
                      (context))
-         (swap! widget #(- % 2)))
+         )
 
        (describe "previous after-all and around-all forms"
          (it "executes before after-alls regardless of definition order"

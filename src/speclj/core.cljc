@@ -216,7 +216,7 @@
   (-make-with name body `speclj.components/new-with-all true))
 
 (defmacro ^:no-doc -to-s [thing]
-  `(if (nil? ~thing) "nil" (pr-str ~thing)))
+  `(if-some [thing# ~thing] (pr-str thing#) "nil"))
 
 (defmacro -fail
   "Useful for making custom assertions."
@@ -224,23 +224,24 @@
   `(throw (-new-failure ~message)))
 
 (defmacro ^:no-doc wrong-types [assertion a b]
-  `(let [type-a# (if (nil? ~a) "nil" (speclj.platform/type-name (type ~a)))
-         type-b# (if (nil? ~b) "nil" (speclj.platform/type-name (type ~b)))]
+  `(let [a#      ~a
+         b#      ~b
+         type-a# (if (nil? a#) "nil" (speclj.platform/type-name (type a#)))
+         type-b# (if (nil? b#) "nil" (speclj.platform/type-name (type b#)))]
      (str ~assertion " doesn't know how to handle these types: [" type-a# " " type-b# "]")))
 
 (defmacro should
   "Asserts the truthy-ness of a form"
   [form]
   `(let [value# ~form]
-     (if-not value#
+     (when-not value#
        (-fail (str "Expected truthy but was: " (-to-s value#) "")))))
 
 (defmacro should-not
   "Asserts the falsy-ness of a form"
   [form]
-  `(let [value# ~form]
-     (when value#
-       (-fail (str "Expected falsy but was: " (-to-s value#))))))
+  `(when-let [value# ~form]
+     (-fail (str "Expected falsy but was: " (-to-s value#)))))
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
@@ -325,7 +326,7 @@
   `(let [expected# ~expected
          actual#   ~actual]
      (cond
-       (nil? actual#) nil                                   ; automatic pass!
+       (nil? actual#) nil ; automatic pass!
        (and (string? expected#) (string? actual#))
        (when (not (= -1 (.indexOf actual# expected#)))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using .contains)")))
@@ -378,25 +379,28 @@
                        "Collection: " (-to-s coll#))))))))
 
 (defmacro ^:no-doc -remove-first [coll value]
-  `(loop [coll# ~coll seen# []]
-     (if (empty? coll#)
-       seen#
-       (let [f# (first coll#)]
-         (if (= f# ~value)
-           (concat seen# (rest coll#))
-           (recur (rest coll#) (conj seen# f#)))))))
+  `(let [value# ~value]
+     (loop [coll# ~coll seen# []]
+       (if (empty? coll#)
+         seen#
+         (let [f# (first coll#)]
+           (if (= f# value#)
+             (concat seen# (rest coll#))
+             (recur (rest coll#) (conj seen# f#))))))))
 
 (defmacro ^:no-doc -coll-difference [coll1 coll2]
-  `(if (map? ~coll1)
-     (first (clojure.data/diff ~coll1 ~coll2))
-     (loop [match-with# ~coll1 match-against# ~coll2 diff# []]
-       (if (empty? match-with#)
-         diff#
-         (let [f# (first match-with#)
-               r# (rest match-with#)]
-           (if (some #(= % f#) match-against#)
-             (recur r# (-remove-first match-against# f#) diff#)
-             (recur r# match-against# (conj diff# f#))))))))
+  `(let [coll1# ~coll1
+         coll2# ~coll2]
+     (if (map? coll1#)
+       (first (clojure.data/diff coll1# coll2#))
+       (loop [match-with# coll1# match-against# coll2# diff# []]
+         (if (empty? match-with#)
+           diff#
+           (let [f# (first match-with#)
+                 r# (rest match-with#)]
+             (if (some #(= % f#) match-against#)
+               (recur r# (-remove-first match-against# f#) diff#)
+               (recur r# match-against# (conj diff# f#)))))))))
 
 (defmacro should-start-with
   "Assertion of prefix in strings and sequences.
@@ -554,7 +558,7 @@
 (defmacro ^:no-doc -create-should-throw-failure [expected actual expr]
   `(let [expected-name# (speclj.platform/type-name ~expected)
          expected-gaps# (apply str (repeat (count expected-name#) " "))
-         actual-string# (if ~actual (pr-str ~actual) "<nothing thrown>")]
+         actual-string# (if-let [actual# ~actual] (pr-str actual#) "<nothing thrown>")]
      (-new-failure (str "Expected " expected-name# " thrown from: " (pr-str ~expr) speclj.platform/endl
                         "         " expected-gaps# "     but got: " actual-string#))))
 
@@ -579,14 +583,15 @@ There are three options for passing different kinds of predicates:
    `(let [e#     (should-throw ~throwable-type ~form)
           regex# (if-cljs js/RegExp java.util.regex.Pattern)]
       (try-catch-anything
-        (cond (instance? regex# ~predicate)
-              (should-not-be-nil (re-find ~predicate (speclj.platform/error-message e#)))
+        (let [predicate# ~predicate]
+          (cond (instance? regex# predicate#)
+                (should-not-be-nil (re-find predicate# (speclj.platform/error-message e#)))
 
-              (ifn? ~predicate)
-              (should= true (~predicate e#))
+                (ifn? predicate#)
+                (should= true (predicate# e#))
 
-              :else
-              (should= ~predicate (speclj.platform/error-message e#)))
+                :else
+                (should= predicate# (speclj.platform/error-message e#))))
 
         (catch f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
 
@@ -811,30 +816,34 @@ There are three options for passing different kinds of predicates:
 (defmacro should<
   "Asserts that the first numeric form is less than the second numeric form, using the built-in < function."
   [a b]
-  `(cond
-     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should<" ~a ~b)))
-     :else (when-not (< ~a ~b) (-fail (str "expected " ~a " to be less than " ~b " but got: (< " ~a " " ~b ")")))))
+  `(let [a# ~a b# ~b]
+     (if (and (number? a#) (number? b#))
+       (when-not (< a# b#) (-fail (str "expected " a# " to be less than " b# " but got: (< " a# " " b# ")")))
+       (throw (-new-exception (wrong-types "should<" a# b#))))))
 
 (defmacro should>
   "Asserts that the first numeric form is greater than the second numeric form, using the built-in > function."
   [a b]
-  `(cond
-     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should>" ~a ~b)))
-     :else (when-not (> ~a ~b) (-fail (str "expected " ~a " to be greater than " ~b " but got: (> " ~a " " ~b ")")))))
+  `(let [a# ~a b# ~b]
+     (if (and (number? a#) (number? b#))
+       (when-not (> a# b#) (-fail (str "expected " a# " to be greater than " b# " but got: (> " a# " " b# ")")))
+       (throw (-new-exception (wrong-types "should>" a# b#))))))
 
 (defmacro should<=
   "Asserts that the first numeric form is less than or equal to the second numeric form, using the built-in <= function."
   [a b]
-  `(cond
-     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should<=" ~a ~b)))
-     :else (when-not (<= ~a ~b) (-fail (str "expected " ~a " to be less than or equal to " ~b " but got: (<= " ~a " " ~b ")")))))
+  `(let [a# ~a b# ~b]
+     (if (and (number? a#) (number? b#))
+       (when-not (<= a# b#) (-fail (str "expected " a# " to be less than or equal to " b# " but got: (<= " a# " " b# ")")))
+       (throw (-new-exception (wrong-types "should<=" a# b#))))))
 
 (defmacro should>=
   "Asserts that the first numeric form is greater than or equal to the second numeric form, using the built-in >= function."
   [a b]
-  `(cond
-     (not (and (number? ~a) (number? ~b))) (throw (-new-exception (wrong-types "should>=" ~a ~b)))
-     :else (when-not (>= ~a ~b) (-fail (str "expected " ~a " to be greater than or equal to " ~b " but got: (>= " ~a " " ~b ")")))))
+  `(let [a# ~a b# ~b]
+     (if (and (number? a#) (number? b#))
+       (when-not (>= a# b#) (-fail (str "expected " a# " to be greater than or equal to " b# " but got: (>= " a# " " b# ")")))
+       (throw (-new-exception (wrong-types "should>=" a# b#))))))
 
 (defmacro run-specs []
   "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
@@ -845,5 +854,5 @@ are evaluated by evaluation the file as a script.  Optional configuration parame
   `(if-cljs
      (comment "Ignoring run-specs for clojurescript")
      (do
-       (require '[speclj.cli])                              ; require all speclj files
+       (require '[speclj.cli]) ; require all speclj files
        (speclj.run.standard/run-specs))))

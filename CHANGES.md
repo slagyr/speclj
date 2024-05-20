@@ -1,3 +1,14 @@
+# 3.4.7
+
+* fixes bug where `should-throw` would expand string predicates improperly under cljs whitespace optimizations.
+* fixes `should<`, `should<=`, `should>`, `should>=`, and other macros to only evaluate forms once.
+* upgrades to clojure 1.11.3
+* upgrades to clojurescript 1.11.132
+
+# 3.4.6
+
+* adds cloverage support
+
 # 3.4.5
 
 * 3.4.4 was a failed deploy... no compiled java code.
