@@ -1,4 +1,4 @@
-name: Run Specs
+name: Speclj Build
 
 on:
   push:

@@ -1,6 +1,8 @@
-# speclj
+# speclj 
 ### (pronounced "speckle" [spek-uhl]) ###
 It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](http://clojurescript.org/), based on [RSpec](http://rspec.info/).
+
+[![Speclj Build](https://github.com/slagyr/speclj/actions/workflows/test.yml/badge.svg)](https://github.com/slagyr/speclj/actions/workflows/test.yml)
 
 [Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript)
 
