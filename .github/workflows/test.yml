@@ -31,7 +31,7 @@ jobs:
         run: curl -O https://download.clojure.org/install/linux-install-1.11.1.1119.sh && chmod +x linux-install-1.11.1.1119.sh && sudo ./linux-install-1.11.1.1119.sh
 
       - name: Build JAR
-        run: clojure -T:build jar
+        run: clojure -T:build javac
 
       - name: Install NPM Dependencies
         run: npm install
