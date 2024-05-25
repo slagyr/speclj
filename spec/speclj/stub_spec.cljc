@@ -1,10 +1,9 @@
 (ns speclj.stub-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
-   [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
-  (:require [speclj.stub :as stub :refer [*stubbed-invocations* invocations-of first-invocation-of last-invocation-of]]
+  (:require [speclj.spec-helper #?(:clj :refer :cljs :refer-macros) [should-fail! should-pass! failure-message]]
+            [speclj.core #?(:clj :refer :cljs :refer-macros) [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
+            [speclj.stub :as stub]
             [speclj.platform :refer [endl exception]]
-            [speclj.run.standard :refer [run-specs]]
+            [speclj.run.standard :as standard]
             #?(:cljs [clojure.data])))
 
 (defn foo-bar-fn [] nil)
@@ -20,11 +19,11 @@
   (it "invocations are recorded"
     (let [stub-fn (stub "fizz")]
       (stub-fn)
-      (should= [["fizz" []]] @*stubbed-invocations*)
+      (should= [["fizz" []]] @stub/*stubbed-invocations*)
       (stub-fn :bang)
-      (should= [["fizz" []] ["fizz" [:bang]]] @*stubbed-invocations*)
+      (should= [["fizz" []] ["fizz" [:bang]]] @stub/*stubbed-invocations*)
       (stub-fn :foo :bar)
-      (should= [["fizz" []] ["fizz" [:bang]] ["fizz" [:foo :bar]]] @*stubbed-invocations*)))
+      (should= [["fizz" []] ["fizz" [:bang]] ["fizz" [:foo :bar]]] @stub/*stubbed-invocations*)))
 
   (it "return values"
     (should= nil ((stub :foo)))
@@ -52,7 +51,7 @@
   #?(:clj
      (it "invoke with wrong number of params"
        (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
-                     ((stub :foo {:invoke (fn [a] a)})))))
+         ((stub :foo {:invoke (fn [a] a)})))))
 
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
@@ -86,16 +85,16 @@
         (@bar 4))
 
       (it "all"
-        (should= [[1] [2]] (invocations-of :foo))
-        (should= [[3] [4]] (invocations-of :bar)))
+        (should= [[1] [2]] (stub/invocations-of :foo))
+        (should= [[3] [4]] (stub/invocations-of :bar)))
 
       (it "first"
-        (should= [1] (first-invocation-of :foo))
-        (should= [3] (first-invocation-of :bar)))
+        (should= [1] (stub/first-invocation-of :foo))
+        (should= [3] (stub/first-invocation-of :bar)))
 
       (it "last"
-        (should= [2] (last-invocation-of :foo))
-        (should= [4] (last-invocation-of :bar)))
+        (should= [2] (stub/last-invocation-of :foo))
+        (should= [4] (stub/last-invocation-of :bar)))
       )
 
     (context "clearing"
@@ -105,8 +104,8 @@
               (stub/clear!))
 
       (it "removes all invocations"
-        (should= [] (invocations-of :foo))
-        (should= [] (invocations-of :bar)))
+        (should= [] (stub/invocations-of :foo))
+        (should= [] (stub/invocations-of :bar)))
 
       )
 
@@ -327,4 +326,4 @@
     )
   )
 
-(run-specs)
+(standard/run-specs)

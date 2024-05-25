@@ -1,47 +1,46 @@
 (ns speclj.run.standard
-  (:require [speclj.components]
-            [speclj.config :refer [active-reporters active-runner default-config default-runner
-                                   default-runner-fn with-config]]
-            [speclj.report.progress]                        ; so that we can load the default reporter
-            [speclj.reporting :refer [report-message* report-runs*]]
-            [speclj.results :refer [fail-count]]
-            [speclj.running :refer [do-description filter-focused run-and-report run-description]]
-            [speclj.tags :refer [describe-filter]]))
+  (:require [speclj.components :as components]
+            [speclj.config :as config]
+            [speclj.report.progress] ; so that we can load the default reporter
+            [speclj.reporting :as reporting]
+            [speclj.results :as results]
+            [speclj.running :as running]
+            [speclj.tags :as tags]))
 
 (def counter (atom 0))
 
 (deftype StandardRunner [num descriptions results]
-  speclj.running/Runner
-  (run-directories [this directories reporters]
+  running/Runner
+  (run-directories [_this _directories _reporters]
     (js/alert "StandardRunner.run-directories:  I don't know how to do this."))
 
-  (submit-description [this description]
+  (submit-description [_this description]
     (swap! descriptions conj description))
 
-  (run-description [this description reporters]
-    (let [run-results (do-description description reporters)]
+  (run-description [_this description reporters]
+    (let [run-results (running/do-description description reporters)]
       (swap! results into run-results)))
 
   (run-and-report [this reporters]
-    (doseq [description (filter-focused @descriptions)]
-      (run-description this description reporters))
-    (report-runs* reporters @results)))
+    (doseq [description (running/filter-focused @descriptions)]
+      (running/run-description this description reporters))
+    (reporting/report-runs* reporters @results)))
 
 (extend-protocol IPrintWithWriter
-  speclj.run.standard.StandardRunner
+  StandardRunner
   (-pr-writer [x writer opts]
     (-write writer (str "#<speclj.run.standard.StandardRunner(num: " (.-num x) ", descriptions: "))
     (-pr-writer @(.-descriptions x) writer opts)
     (-write writer ")>"))
-  speclj.components.Description
-  (-pr-writer [x writer opts]
+  components/Description
+  (-pr-writer [x writer _opts]
     (-write writer (str "#<speclj.component.Description(name: " (.-name x) ")>"))))
 
 (defn new-standard-runner []
   (StandardRunner. (swap! counter inc) (atom []) (atom [])))
 
-(reset! default-runner-fn new-standard-runner)
-(reset! default-runner (new-standard-runner))
+(reset! config/default-runner-fn new-standard-runner)
+(reset! config/default-runner (new-standard-runner))
 (def armed false)
 
 (defn run-specs [& configurations]
@@ -51,10 +50,10 @@ are evaluated by evaluation the file as a script.  Optional configuration parame
 
 (run-specs :stacktrace true :color false :reporters [\"documentation\"])"
   (when armed
-    (with-config
-      (merge (dissoc default-config :runner) (apply hash-map configurations))
+    (config/with-config
+      (merge (dissoc config/default-config :runner) (apply hash-map configurations))
       (fn []
-        (if-let [filter-msg (describe-filter)]
-          (report-message* (active-reporters) filter-msg))
-        (run-and-report (active-runner) (active-reporters))
-        (fail-count @(.-results (active-runner)))))))
+        (if-let [filter-msg (tags/describe-filter)]
+          (reporting/report-message* (config/active-reporters) filter-msg))
+        (running/run-and-report (config/active-runner) (config/active-reporters))
+        (results/fail-count @(.-results (config/active-runner)))))))

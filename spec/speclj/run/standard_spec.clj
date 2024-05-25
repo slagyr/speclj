@@ -1,5 +1,5 @@
 (ns speclj.run.standard-spec
-  (:require [speclj.core :refer [describe focus-it it should= with]]
+  (:require [speclj.core :refer [describe it should= with]]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.run.standard :refer :all]
             [speclj.running :refer [run-directories]])

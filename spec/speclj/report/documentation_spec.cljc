@@ -1,15 +1,13 @@
 (ns speclj.report.documentation-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [before context describe it should= with -new-exception -new-failure -new-pending]])
-  (:require #?(:cljs [goog.string])                         ;cljs bug?
+  (:require #?(:cljs [goog.string]) ;cljs bug?
+            [speclj.core #?(:clj :refer :cljs :refer-macros) [before context describe it should= with -new-exception -new-failure -new-pending]]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.platform :refer [endl]]
             [speclj.report.documentation :refer [new-documentation-reporter]]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :refer [run-specs]])
-  )
+            [speclj.run.standard :as standard]))
 
 (describe "Speccdoc Reporter"
   (with reporter (new-documentation-reporter))
@@ -80,5 +78,4 @@
     )
   )
 
-
-(run-specs)
+(standard/run-specs)

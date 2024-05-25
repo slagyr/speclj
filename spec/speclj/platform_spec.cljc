@@ -1,9 +1,7 @@
 (ns speclj.platform-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [describe it should= should-throw]]
-   [speclj.platform :refer [if-cljs try-catch-anything]])
-  (:require
-    [speclj.run.standard :refer [run-specs]]))
+  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe it should= should-throw]]
+            [speclj.platform #?(:clj :refer :cljs :refer-macros) [if-cljs try-catch-anything]]
+            [speclj.run.standard :as standard]))
 
 (defmacro which-env []
   (if-cljs :cljs :clj))
@@ -37,4 +35,4 @@
             :yep
             (catch :nope 'whatever)))))))
 
-(run-specs)
+(standard/run-specs)

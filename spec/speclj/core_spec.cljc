@@ -5,8 +5,7 @@
                         before after before-all after-all
                         with with! with-all with-all! around around-all redefs-around]])
   (:require [speclj.platform]
-            [speclj.components]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.components]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FOCUS SPECS (remain commented except when 'fiddling') ;;
@@ -322,7 +321,7 @@
 (describe "with"
   (def lazy-calls (atom 0))
   (with with-example
-        (swap! lazy-calls inc))
+    (swap! lazy-calls inc))
 
   (it "never deref'ed with-example"
     (should= 0 @lazy-calls))
@@ -369,6 +368,3 @@
 
   (it "has not been reset and deref'ed"
     (should= 1 @non-lazy-with-all-calls)))
-
-;(run-specs :tags ["two"])
-;(run-specs)

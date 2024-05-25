@@ -1,16 +1,15 @@
 (ns speclj.report.progress-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [around describe it should should= with -new-exception -new-failure -new-pending]])
-  (:require [clojure.string :as str]
-            #?(:cljs [goog.string])                         ;cljs bug?
+  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [around describe it should should= with -new-exception -new-failure -new-pending]]
+            [clojure.string :as str]
+            #?(:cljs [goog.string]) ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?* *omit-pending?*]]
-            [speclj.platform :refer [format-seconds]]
+            [speclj.platform :as platform]
             [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow grey report-runs]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :as standard]))
 
 (describe "Progress Reporter"
   (with reporter (new-progress-reporter))
@@ -64,7 +63,7 @@
         (should= 4 (count lines))
         (should= "" (nth lines 0))
         (should= "" (nth lines 1))
-        (should= (str "Finished in " (format-seconds 0.123) " seconds") (nth lines 2))
+        (should= (str "Finished in " (platform/format-seconds 0.123) " seconds") (nth lines 2))
         (should= (green "3 examples, 0 failures") (nth lines 3)))))
 
   (it "reports failing run results"
@@ -94,7 +93,7 @@
         (should= (red "     Expected dives") (nth lines 13))
         ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (nth lines 14))
         (should= "" (nth lines 15))
-        (should= (str "Finished in " (format-seconds 0.321) " seconds") (nth lines 16))
+        (should= (str "Finished in " (platform/format-seconds 0.321) " seconds") (nth lines 16))
         (should= (red "3 examples, 3 failures") (nth lines 17)))))
 
   (it "reports pending run results"
@@ -161,4 +160,4 @@
       (should= "Outer Inner char" (full-name char))))
   )
 
-(run-specs :stacktrace true)
+(standard/run-specs :stacktrace true)

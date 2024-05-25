@@ -6,7 +6,7 @@
             [speclj.platform :as platform]
             [speclj.report.progress]
             [speclj.report.silent]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :as standard]))
 
 
 (describe "Config"
@@ -65,6 +65,4 @@
 
   )
 
-(run-specs)
-
-
+(standard/run-specs)

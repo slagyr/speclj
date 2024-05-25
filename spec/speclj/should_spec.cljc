@@ -1,8 +1,8 @@
 (ns speclj.should-spec
   (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [it xit focus-it
-                        context focus-context
-                        describe focus-describe
+   [speclj.core :refer [it
+                        context
+                        describe
                         should should-not
                         should= should-not=
                         should== should-not==
@@ -21,7 +21,7 @@
                         -to-s -new-throwable -new-exception]]
    [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
   (:require [speclj.platform :refer [endl exception type-name throwable]]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :as standard]))
 
 (describe "Should Assertions: "
   (context "should"
@@ -305,7 +305,7 @@
 
     (it "errors on unhandled types"
       (should-throw exception (str "should-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-contain 1 2)))
+        (should-contain 1 2)))
 
     (it "handles nil containers gracefully"
       (should-fail! (should-contain "foo" nil))
@@ -340,7 +340,7 @@
 
     (it "errors on unhandled types"
       (should-throw exception (str "should-not-contain doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-not-contain 1 2)))
+        (should-not-contain 1 2)))
 
     (it "handles nil containers gracefully"
       (should-pass! (should-not-contain "foo" nil))
@@ -368,9 +368,9 @@
 
     (it "errors on unhandled types"
       (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
-                    (should-have-count 1 :not-countable))
+        (should-have-count 1 :not-countable))
       (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
-                    (should-have-count :nan []))))
+        (should-have-count :nan []))))
 
   (context "should-not-have-count"
     (it "checks for anything but an exact count"
@@ -392,9 +392,9 @@
 
     (it "errors on unhandled types"
       (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
-                    (should-not-have-count 1 :not-countable))
+        (should-not-have-count 1 :not-countable))
       (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
-                    (should-not-have-count :nan []))))
+        (should-not-have-count :nan []))))
 
   (context "should-not-be-nil"
     (it "checks for inequality with nil"
@@ -429,7 +429,7 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-start-with 1 2))))
+        (should-start-with 1 2))))
 
   (context "should-not-start-with"
     (it "checks for prefix in strings"
@@ -448,7 +448,7 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-not-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-not-start-with 1 2))))
+        (should-not-start-with 1 2))))
 
   (context "should-end-with"
     (it "checks for prefix in strings"
@@ -468,7 +468,7 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-end-with 1 2))))
+        (should-end-with 1 2))))
 
   (context "should-not-end-with"
     (it "checks for prefix in strings"
@@ -487,7 +487,7 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-not-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-                    (should-not-end-with 1 2))))
+        (should-not-end-with 1 2))))
 
   (context "should-throw"
     #?(:clj
@@ -540,18 +540,18 @@
                (failure-message (should-throw exception #(speclj.platform/error-message %) (throw (-new-exception "Not my message")))))))
 
   (context "should-not-throw"
-   (it "tests that nothing was thrown"
-     (should-pass! (should-not-throw (+ 1 1)))
-     (should-fail! (should-not-throw (throw (-new-throwable "error"))))
-     #?(:cljs
-        (should=
-          (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
-          (failure-message (should-not-throw (throw (-new-throwable "error")))))
-        :clj
-        (should-contain
-          (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
-               "                     but got: #error {\n :cause \"error\"\n :via\n [{:type java.lang.Throwable\n   :message \"error\"\n")
-          (failure-message (should-not-throw (throw (-new-throwable "error"))))))))
+    (it "tests that nothing was thrown"
+      (should-pass! (should-not-throw (+ 1 1)))
+      (should-fail! (should-not-throw (throw (-new-throwable "error"))))
+      #?(:cljs
+         (should=
+           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
+           (failure-message (should-not-throw (throw (-new-throwable "error")))))
+         :clj
+         (should-contain
+           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
+                "                     but got: #error {\n :cause \"error\"\n :via\n [{:type java.lang.Throwable\n   :message \"error\"\n")
+           (failure-message (should-not-throw (throw (-new-throwable "error"))))))))
 
 
   (context "should-be-a"
@@ -590,9 +590,9 @@
   (context "should<"
     (it "degenerate cases"
       (should-throw exception (str "should< doesn't know how to handle these types: [nil nil]")
-                    (should< nil nil))
+        (should< nil nil))
       (should-throw exception (str "should< doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
-                    (should< "a" \a)))
+        (should< "a" \a)))
 
     (it "failure cases"
       (should-fail! (should< 1 0))
@@ -606,9 +606,9 @@
   (context "should>"
     (it "degenerate cases"
       (should-throw exception (str "should> doesn't know how to handle these types: [nil nil]")
-                    (should> nil nil))
+        (should> nil nil))
       (should-throw exception (str "should> doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
-                    (should> "a" \a)))
+        (should> "a" \a)))
 
     (it "failure cases"
       (should-fail! (should> 0 1))
@@ -622,9 +622,9 @@
   (context "should<="
     (it "degenerate cases"
       (should-throw exception (str "should<= doesn't know how to handle these types: [nil nil]")
-                    (should<= nil nil))
+        (should<= nil nil))
       (should-throw exception (str "should<= doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
-                    (should<= "a" \a)))
+        (should<= "a" \a)))
 
     (it "failure cases"
       (should-fail! (should<= 1 0))
@@ -639,9 +639,9 @@
   (context "should>="
     (it "degenerate cases"
       (should-throw exception (str "should>= doesn't know how to handle these types: [nil nil]")
-                    (should>= nil nil))
+        (should>= nil nil))
       (should-throw exception (str "should>= doesn't know how to handle these types: [" (type-name (type "a")) " " (type-name (type \a)) "]")
-                    (should>= "a" \a)))
+        (should>= "a" \a)))
 
     (it "failure cases"
       (should-fail! (should>= 0 1))
@@ -655,4 +655,4 @@
 
   )
 
-(run-specs :stacktrace true)
+(standard/run-specs :stacktrace true)
