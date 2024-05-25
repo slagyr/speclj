@@ -100,7 +100,7 @@
       #'*specs*             (:specs config)
       #'*color?*            (:color config)
       #'*omit-pending?*     (:omit-pending config)
-      #'*full-stack-trace?* (not (nil? (:stacktrace config)))
+      #'*full-stack-trace?* (some? (:stacktrace config))
       #'*tag-filter*        (parse-tags (:tags config))})
 
    :cljs
