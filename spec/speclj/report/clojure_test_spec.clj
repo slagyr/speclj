@@ -1,5 +1,5 @@
 (ns speclj.report.clojure-test-spec
-  (:require                                                 ;cljs-macros
+  (:require ;cljs-macros
     [clojure.string :as str]
     [clojure.test]
     ;cljs-include [goog.string] ;cljs bug?
@@ -8,7 +8,7 @@
     [speclj.report.clojure-test :refer [new-clojure-test-reporter]]
     [speclj.reporting :refer [report-error report-fail report-pass report-pending report-runs]]
     [speclj.results :refer [error-result fail-result]]
-    [speclj.run.standard :refer [run-specs]]))
+    [speclj.run.standard :as standard]))
 
 (defmacro with-test-out-str [& body]
   `(let [s# (new java.io.StringWriter)]
@@ -65,4 +65,4 @@
       (should= "1 failures, 1 errors." (nth lines 2))))
   )
 
-(run-specs)
+(standard/run-specs)

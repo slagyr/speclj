@@ -88,9 +88,10 @@
     (reporting/report-message* (config/active-reporters) filter-msg))
   (running/run-and-report (config/active-runner) (config/active-reporters)))
 
-(defn- config-with-defaults [configurations]
-  (merge (dissoc config/default-config :runner)
-         (apply hash-map configurations)))
+(defn config-with-defaults [configurations]
+  (as-> (apply hash-map configurations) $
+        (update-keys $ keyword)
+        (merge (dissoc config/default-config :runner) $)))
 
 #?(:clj
    (defn run-specs [& configurations]

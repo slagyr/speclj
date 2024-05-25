@@ -1,8 +1,6 @@
 (ns basics-spec.calulator_spec
   (:require [speclj.core :refer :all]
-            [speclj.run.standard :refer [run-specs]]))
-
-
+            [speclj.run.standard :as standard]))
 
 (describe "Calculator"
 
@@ -28,5 +26,4 @@
     (should= 42 *the-answer*))
   )
 
-
-(run-specs)
+(standard/run-specs)

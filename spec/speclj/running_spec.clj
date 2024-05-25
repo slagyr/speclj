@@ -1,19 +1,19 @@
 (ns speclj.running-spec
   (:require [speclj.config :refer [*reporters* *runner* *tag-filter*]]
             [speclj.core :refer [after around before-all context describe
-                                 it focus-it should should-fail should-not
+                                 it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.platform :as platform]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [fail?]]
-            [speclj.run.standard :refer [new-standard-runner run-specs]]
+            [speclj.run.standard :as standard]
             [speclj.running :refer [run-and-report]]))
 
 (def bauble (atom nil))
 
 (describe "Running"
-  (with runner (new-standard-runner))
+  (with runner (standard/new-standard-runner))
   (around [_]
     (binding [*runner*    @runner
               *reporters* [(new-silent-reporter)]
@@ -83,7 +83,7 @@
       `(describe "Dummy" (tags :one)
                          (it "one tag" :filler)
                          (context "Fool" (tags :two)
-                                         (it "one, two tag" :filler))))
+                           (it "one, two tag" :filler))))
     (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
       (run-and-report *runner* *reporters*))
     (let [results @(.-results *runner*)]
