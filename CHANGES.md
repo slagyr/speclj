@@ -1,3 +1,7 @@
+# 3.4.8
+
+* `run-specs` now accepts string keys in addition to keyword keys
+
 # 3.4.7
 
 * fixes bug where `should-throw` would expand string predicates improperly under cljs whitespace optimizations.
