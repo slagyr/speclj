@@ -3,7 +3,8 @@
             [speclj.core :refer :all]
             [speclj.report.silent :as silent]
             [speclj.run.standard :as sut]
-            [speclj.running :as running])
+            [speclj.running :as running]
+            [speclj.spec-helper :as spec-helper])
   (:import (java.io File)))
 
 (defn find-dir
@@ -41,6 +42,8 @@
       (should= defaults (sut/config-with-defaults []))
       (should= (assoc defaults :foo :bar) (sut/config-with-defaults [:foo :bar]))
       (should= (assoc defaults :foo :bar :baz "buzz") (sut/config-with-defaults [:foo :bar "baz" "buzz"]))))
+
+  (spec-helper/test-description-filtering sut/new-standard-runner)
   )
 
 (sut/run-specs)

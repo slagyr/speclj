@@ -1,7 +1,7 @@
 (ns speclj.run.standard_spec
-  (:require [speclj.spec-helper :refer-macros [test-exported-meta]]
-            [speclj.core :refer-macros [after context describe it should= should-fail]]
-            [speclj.run.standard :as sut]))
+  (:require [speclj.core :refer-macros [after context describe it should= should-fail with]]
+            [speclj.run.standard :as sut]
+            [speclj.spec-helper :as spec-helper]))
 
 (def initial-armed sut/armed)
 
@@ -23,5 +23,7 @@
     (should= true sut/armed)
     (sut/disarm)
     (should= false sut/armed))
+
+  (spec-helper/test-description-filtering sut/new-standard-runner)
 
   )

@@ -59,19 +59,24 @@
       (focus-characteristics! component))))
 
 (defn track-focused-characteristics! [characteristics]
-  (doseq [characteristic characteristics
-          :when (focused? characteristic)]
-    (enable-focus-mode! characteristic)))
+  (->> (filter focused? characteristics)
+       (run! enable-focus-mode!)))
 
 (defn scan-for-focus! [description]
-  (let [all (->> (tree-seq some? all-children description))]
+  (let [all (tree-seq some? all-children description)]
     (track-focused-descriptions! (filter components/is-description? all))
     (track-focused-characteristics! (filter components/is-characteristic? all))
     description))
 
 (defn filter-focused [descriptions]
-  (doseq [description descriptions] (scan-for-focus! description))
+  (run! scan-for-focus! descriptions)
   (or (seq (filter focus-mode? descriptions)) descriptions))
+
+(defn descriptions-with-namespaces [descriptions namespaces]
+  (if namespaces
+    (let [ns-set (set namespaces)]
+      (filter #(contains? ns-set (.-ns %)) descriptions))
+    descriptions))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
@@ -89,7 +94,7 @@
       (eval-components afters))))
 
 (defn- reset-withs [withs]
-  (doseq [with withs] (components/reset-with with)))
+  (run! components/reset-with withs))
 
 (defn- collect-components [getter description]
   (loop [description description components []]
@@ -122,7 +127,7 @@
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
       (finally
-        (reset-withs withs)))))                             ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
+        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
@@ -202,6 +207,6 @@
 (defprotocol Runner
   (run-directories [this directories reporters])
   (submit-description [this description])
+  (filter-descriptions [this namespaces])
   (run-description [this description reporters])
   (run-and-report [this reporters]))
-
