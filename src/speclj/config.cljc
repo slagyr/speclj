@@ -18,7 +18,7 @@
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
 
-(defn active-runner []
+(defn ^:export active-runner []
   (if #?(:clj (bound? #'*runner*) :cljs *runner*)
     *runner*
     (if-let [runner @default-runner]

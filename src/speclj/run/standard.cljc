@@ -11,8 +11,13 @@
   #?(:clj (:import (clojure.lang Compiler LineNumberingPushbackReader)
                    (java.io StringReader))))
 
-#?(:cljs (def armed false))
-#?(:cljs (def counter (atom 0)))
+#?(:cljs
+   (do
+     (def ^:export armed false)
+     (def counter (atom 0))
+     (defn ^:export arm [] (set! armed true))
+     (defn ^:export disarm [] (set! armed false))
+     ))
 
 #?(:clj
    (do
@@ -77,7 +82,7 @@
      (-pr-writer [x writer _opts]
        (-write writer (str "#<speclj.component.Description(name: " (.-name x) ")>")))))
 
-(defn new-standard-runner []
+(defn ^:export new-standard-runner []
   (StandardRunner. #?(:cljs (swap! counter inc)) (atom []) (atom [])))
 
 (reset! config/default-runner-fn new-standard-runner)
@@ -102,7 +107,7 @@
            (reset! config/default-runner (@config/default-runner-fn))))))
 
    :cljs
-   (defn run-specs [& configurations]
+   (defn ^:export run-specs [& configurations]
      "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
       runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
       are evaluated by evaluation the file as a script.  Optional configuration parameters may be passed in:

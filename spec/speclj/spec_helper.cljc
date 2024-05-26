@@ -1,6 +1,6 @@
 (ns speclj.spec-helper
   (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [-fail]]
+   [speclj.core :refer [-fail it]]
    [speclj.platform :refer [try-catch-anything]]))
 
 (defmacro run-result [& body]
@@ -24,6 +24,12 @@
      (cond
        (= :pass result#) (-fail (str "Unexpected pass: " '~body))
        (speclj.platform/failure? result#) (-fail (str "Unexpected failure: " (speclj.platform/error-message result#))))))
+
+(defmacro test-exported-meta [sym]
+  `(it '~sym
+     (let [var# #'~sym]
+       (when (not= true (:export (meta var#)))
+         (-fail (str "expected " var# " to ^:export"))))))
 
 (defmacro failure-message [& body]
   `(let [result# (run-result ~@body)]

@@ -12,7 +12,7 @@
         };
 
         // Load all the specs
-        for(var k in goog.debugLoader_.dependencies_) {
+        for (var k in goog.debugLoader_.dependencies_) {
             var dep = goog.debugLoader_.dependencies_[k];
             for (var i = 0; i < dep.provides.length; i++) {
                 var ns = dep.provides[i];
@@ -24,10 +24,9 @@
         }
 
         runSpecsConfigured = function (color, reporter) {
-            speclj.run.standard.armed = true;
+            speclj.run.standard.arm();
             return speclj.run.standard.run_specs(
-                    cljs.core.keyword("color"), color
-                    , cljs.core.keyword("reporters"), [reporter]
+                "color", color, "reporters", [reporter]
             );
         };
 
@@ -36,7 +35,7 @@
         }
 
         runSpecsFiltered = function (affectedSpecs) {
-            if(affectedSpecs != null) {
+            if (affectedSpecs != null) {
                 console.log("Only running affected specs:");
                 var descriptionAtom = speclj.config.active_runner().descriptions;
                 cljs.core.swap_BANG_(descriptionAtom, function (descriptions) {

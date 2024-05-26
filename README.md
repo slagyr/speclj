@@ -245,7 +245,7 @@ p.onConsoleMessage = function (x) {
 p.injectJs(phantom.args[0]);
 
 var result = p.evaluate(function () {
-  speclj.run.standard.armed = true;
+  speclj.run.standard.arm();
   return speclj.run.standard.run_specs(
      cljs.core.keyword("color"), true
   );
