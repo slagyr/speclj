@@ -62,7 +62,7 @@
   (submit-description [_this description]
     (swap! descriptions conj description))
 
-  (filter-descriptions [_this namespaces]
+  (-filter-descriptions [_this namespaces]
     (swap! descriptions running/descriptions-with-namespaces namespaces))
 
   (run-description [_this description reporters]

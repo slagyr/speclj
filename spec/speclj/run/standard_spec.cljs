@@ -9,11 +9,11 @@
   (after (set! sut/armed initial-armed))
 
   (context "exporting"
-    (test-exported-meta sut/run-specs)
-    (test-exported-meta sut/armed)
-    (test-exported-meta sut/arm)
-    (test-exported-meta sut/disarm)
-    (test-exported-meta sut/new-standard-runner)
+    (spec-helper/test-exported-meta sut/run-specs)
+    (spec-helper/test-exported-meta sut/armed)
+    (spec-helper/test-exported-meta sut/arm)
+    (spec-helper/test-exported-meta sut/disarm)
+    (spec-helper/test-exported-meta sut/new-standard-runner)
     )
 
   (it "arms and disarms the runner"

@@ -8,7 +8,8 @@
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [fail?]]
             [speclj.run.standard :as standard]
-            [speclj.running :refer [run-and-report]]))
+            [speclj.running :as sut]
+            [speclj.spec-helper :as spec-helper]))
 
 (def bauble (atom nil))
 
@@ -25,7 +26,7 @@
       '(describe "Dummy"
          (it "has a pass"
            (should (= 1 1)))))
-    (run-and-report *runner* *reporters*)
+    (sut/run-and-report *runner* *reporters*)
     (let [results @(.-results *runner*)
           result  (first results)]
       (should= 1 (count results))
@@ -37,7 +38,7 @@
       '(describe "Dummy"
          (it "has a fail"
            (should= 1 2))))
-    (run-and-report *runner* *reporters*)
+    (sut/run-and-report *runner* *reporters*)
     (let [results @(.-results *runner*)
           result  (first results)]
       (should= 1 (count results))
@@ -52,7 +53,7 @@
          (it "changes the bauble"
            (reset! bauble :something)
            (should-fail))))
-    (run-and-report *runner* *reporters*)
+    (sut/run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
   (it "runs afters with error"
@@ -62,7 +63,7 @@
          (it "changes the bauble"
            (reset! bauble :something)
            (throw (Exception. "blah")))))
-    (run-and-report *runner* *reporters*)
+    (sut/run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
   (it "doesn't crash when declaring a with named the same as a pre-existing var"
@@ -72,7 +73,7 @@
              (it "uses the new value of bauble"
                (should= "foo" @bauble)))]
       (should-not-throw (eval spec))
-      (run-and-report *runner* *reporters*)
+      (sut/run-and-report *runner* *reporters*)
       (let [results @(.-results *runner*)
             result  (first results)]
         (should= 1 (count results))
@@ -85,7 +86,7 @@
                          (context "Fool" (tags :two)
                            (it "one, two tag" :filler))))
     (binding [*tag-filter* {:includes #{:one :two} :excludes #{}}]
-      (run-and-report *runner* *reporters*))
+      (sut/run-and-report *runner* *reporters*))
     (let [results @(.-results *runner*)]
       (should= 1 (count results))
       (should= "one, two tag" (.-name (.-characteristic (first results))))))
@@ -97,10 +98,14 @@
          (before-all (swap! @foo inc))
          (it "check foo"
            (should= 43 @@foo))))
-    (run-and-report *runner* *reporters*)
+    (sut/run-and-report *runner* *reporters*)
     (let [results @(.-results *runner*)]
       (should= 1 (count results))
       (should-not (fail? (first results)))))
+
+  (context "exporting"
+    (spec-helper/test-exported-meta sut/filter-descriptions)
+    )
 
   )
 

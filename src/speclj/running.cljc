@@ -73,10 +73,7 @@
   (or (seq (filter focus-mode? descriptions)) descriptions))
 
 (defn descriptions-with-namespaces [descriptions namespaces]
-  (if namespaces
-    (let [ns-set (set namespaces)]
-      (filter #(contains? ns-set (.-ns %)) descriptions))
-    descriptions))
+  (cond->> descriptions namespaces (filter #(namespaces (.-ns %)))))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
@@ -207,6 +204,13 @@
 (defprotocol Runner
   (run-directories [this directories reporters])
   (submit-description [this description])
-  (filter-descriptions [this namespaces])
+  (-filter-descriptions [this namespaces])
   (run-description [this description reporters])
   (run-and-report [this reporters]))
+
+(defn ^:export filter-descriptions
+  "Protocol method defined as function for JavaScript interoperability"
+  [runner namespaces]
+  (->> namespaces
+       #?(:cljs js->clj)
+       (-filter-descriptions runner)))
