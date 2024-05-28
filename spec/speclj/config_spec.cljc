@@ -63,6 +63,7 @@
 
   (context "exporting"
     (test-exported-meta sut/active-runner)
+    (test-exported-meta speclj.report.silent/new-silent-reporter)
     )
   )
 

@@ -148,9 +148,9 @@
 
       [
        (around-all [context]
-                   (swap! call-count inc)
-                   (binding [*gewgaw* (swap! widget inc)]
-                     (context)))
+         (swap! call-count inc)
+         (binding [*gewgaw* (swap! widget inc)]
+           (context)))
 
        (it "executes before the specs"
          (should= 6 @widget))
@@ -163,14 +163,14 @@
 
        (context "nested"
          (around-all [context]
-                     (swap! call-count inc)
-                     (swap! widget #(/ % 2))
-                     (context))
+           (swap! call-count inc)
+           (swap! widget #(/ % 2))
+           (context))
 
          (around-all [context]
-                     (swap! call-count inc)
-                     (swap! widget #(- % 2))
-                     (context))
+           (swap! call-count inc)
+           (swap! widget #(- % 2))
+           (context))
 
          (it "executes in the order in which they are defined"
            (should= 1 @widget))
@@ -182,8 +182,8 @@
     (let [widget (atom 6)]
       [
        (around-all [context]
-                   (swap! widget #(- % 2))
-                   (context))
+         (swap! widget #(- % 2))
+         (context))
 
        (before-all
          (swap! widget #(/ % 2)))
@@ -199,8 +199,8 @@
            (swap! widget #(/ % 2)))
 
          (around-all [context]
-                     (swap! widget #(- % 2))
-                     (context))
+           (swap! widget #(- % 2))
+           (context))
          )
 
        (describe "previous after-all and around-all forms"
@@ -211,9 +211,9 @@
       (with-all with-all-val 1)
 
       (around-all [context]
-                  (should= 1 @with-all-val)
-                  (context)
-                  (should= 1 @with-all-val))
+        (should= 1 @with-all-val)
+        (context)
+        (should= 1 @with-all-val))
 
       (it "enters after binding with-alls and exits before unbinding"
         :filler))))
@@ -347,7 +347,7 @@
 (describe "with-all"
   (def lazy-with-all-calls (atom 0))
   (with-all with-all-example
-            (swap! lazy-with-all-calls inc))
+    (swap! lazy-with-all-calls inc))
 
   (it "never deref'ed with-all-example"
     (should= 0 @lazy-with-all-calls))

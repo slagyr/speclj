@@ -1,18 +1,19 @@
 (ns speclj.report.progress-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [around describe it should should= with -new-exception -new-failure -new-pending]]
+  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [around context describe it should should= with -new-exception -new-failure -new-pending]]
             [clojure.string :as str]
             #?(:cljs [goog.string]) ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.config :refer [*color?* *full-stack-trace?* *omit-pending?*]]
             [speclj.platform :as platform]
-            [speclj.report.progress :refer [new-progress-reporter full-name print-summary print-pendings print-errors]]
+            [speclj.spec-helper :as spec-helper]
+            [speclj.report.progress :as sut]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow grey report-runs]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
             [speclj.run.standard :as standard]))
 
 (describe "Progress Reporter"
-  (with reporter (new-progress-reporter))
+  (with reporter (sut/new-progress-reporter))
   (around [spec] (binding [*color?*        false
                            *omit-pending?* false]
                    (spec)))
@@ -104,14 +105,14 @@
             result2     (pass-result char1 0.02)
             result3     (pending-result char1 0.003 (-new-pending "Blah"))
             results     [result1 result2 result3]
-            lines       (str/split-lines (with-out-str (print-summary results)))]
+            lines       (str/split-lines (with-out-str (sut/print-summary results)))]
         (should= (yellow "3 examples, 0 failures, 1 pending") (last lines)))))
 
   (it "reports pending summary"
     (let [description (new-description "Crazy" false "some.ns")
           char1       (new-characteristic "flips" description "flip" false)
           result1     (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
-          lines       (str/split-lines (with-out-str (print-pendings [result1])))]
+          lines       (str/split-lines (with-out-str (sut/print-pendings [result1])))]
       (should= 6 (count lines))
       (should= "" (nth lines 0))
       (should= "Pending:" (nth lines 1))
@@ -126,7 +127,7 @@
       (let [description     (new-description "Crazy" false "some.ns")
             char1           (new-characteristic "flips" description "flip" false)
             result1         (pending-result char1 0.3 (-new-pending "Not Yet Implemented"))
-            printed-results (with-out-str (print-pendings [result1]))]
+            printed-results (with-out-str (sut/print-pendings [result1]))]
         (should= "" printed-results))))
 
   (it "reports error run results"
@@ -137,15 +138,15 @@
             result2     (pass-result char1 0.02)
             result3     (error-result (-new-exception "blah"))
             results     [result1 result2 result3]
-            lines       (str/split-lines (with-out-str (print-summary results)))]
+            lines       (str/split-lines (with-out-str (sut/print-summary results)))]
         (should= (red "3 examples, 0 failures, 1 errors") (last lines)))))
 
   (it "reports error summary"
     (binding [*full-stack-trace?* false]
       (let [description (new-description "Crazy" false "some.ns")
-            char1       (new-characteristic "flips" description "flip" false)
+            _char1      (new-characteristic "flips" description "flip" false)
             result1     (error-result (-new-exception "blah"))
-            lines       (str/split-lines (with-out-str (print-errors [result1])))]
+            lines       (str/split-lines (with-out-str (sut/print-errors [result1])))]
         (should (> (count lines) 3))
         (should= "" (nth lines 0))
         (should= "Errors:" (nth lines 1))
@@ -157,7 +158,11 @@
           inner (new-description "Inner" false "some.ns")
           char  (new-characteristic "char" inner "char" false)]
       (install inner outer)
-      (should= "Outer Inner char" (full-name char))))
+      (should= "Outer Inner char" (sut/full-name char))))
+
+  (context "exporting"
+    (spec-helper/test-exported-meta sut/new-progress-reporter)
+    )
   )
 
 (standard/run-specs :stacktrace true)

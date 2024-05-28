@@ -92,22 +92,22 @@
 
 (deftype ProgressReporter []
   speclj.reporting/Reporter
-  (report-message [this message]
+  (report-message [_this message]
     (println message) (flush))
-  (report-description [this description])
-  (report-pass [this result]
+  (report-description [_this _description])
+  (report-pass [_this _result]
     (print (green ".")) (flush))
-  (report-pending [this result]
+  (report-pending [_this _result]
     (print (yellow "*")) (flush))
-  (report-fail [this result]
+  (report-fail [_this _result]
     (print (red "F")) (flush))
-  (report-error [this result]
+  (report-error [_this _result]
     (print (red "E")) (flush))
-  (report-runs [this results]
+  (report-runs [_this results]
     (println)
     (print-summary results)))
 
-(defn new-progress-reporter []
+(defn ^:export new-progress-reporter []
   (ProgressReporter.))
 
 (reset! default-reporters [(new-progress-reporter)])
