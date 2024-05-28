@@ -1,3 +1,15 @@
+# 3.4.8
+
+* can now be built and executed under `:advanced` ClojureScript optimizations
+  * exports functions needed by JavaScript
+  * refactors functions that would otherwise fail with `:advanced` optimizations
+  * extends `run-specs` to accepts string keys in addition to keyword keys
+  * exports `speclj.run.standard.arm()` function to JavaScript (synonym for `speclj.run.standard.armed = true`)
+  * exports `speclj.run.standard.disarm()` function to JavaScript (synonym for `speclj.run.standard.armed = false`)
+  * `Runner` can now `get-descriptions`
+  * `Runner` can now `filter-descriptions` based on a hash-map of string/boolean namespace pairs
+    * `{"speclj.core" true "speclj.reporting" false"}`
+
 # 3.4.7
 
 * fixes bug where `should-throw` would expand string predicates improperly under cljs whitespace optimizations.

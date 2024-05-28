@@ -1,13 +1,12 @@
 (ns speclj.run.vigilant
-  (:require [clojure.java.io :refer [file]]
+  (:require [clojure.java.io :as io]
             [fresh.core :refer [clj-files-in make-fresh ns-to-file]]
-            [speclj.config :refer [active-reporters active-runner config-bindings]]
+            [speclj.config :as config]
             [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
-            [speclj.reporting :refer [report-message* report-runs*]]
-            [speclj.results :refer [categorize]]
-            [speclj.running :refer [do-description filter-focused process-compile-error run-and-report run-description]])
-  (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)
-           (speclj.running Runner)))
+            [speclj.reporting :as reporting]
+            [speclj.results :as results]
+            [speclj.running :as running])
+  (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (def start-time (atom 0))
 
@@ -15,13 +14,13 @@
   (set (map #(str (.ns @(.. % characteristic parent))) results)))
 
 (defn- report-update [report]
-  (let [reporters (active-reporters)
+  (let [reporters (config/active-reporters)
         reloads   (:reloaded report)]
     (when (seq reloads)
-      (report-message* reporters (str endl "----- " (str (java.util.Date.) " -----")))
-      (report-message* reporters (str "took " (format-seconds (secs-since @start-time)) " to determine file statuses."))
-      (report-message* reporters "reloading files:")
-      (doseq [file reloads] (report-message* reporters (str "  " (.getCanonicalPath file))))))
+      (reporting/report-message* reporters (str endl "----- " (str (java.util.Date.) " -----")))
+      (reporting/report-message* reporters (str "took " (format-seconds (secs-since @start-time)) " to determine file statuses."))
+      (reporting/report-message* reporters "reloading files:")
+      (doseq [file reloads] (reporting/report-message* reporters (str "  " (.getCanonicalPath file))))))
   true)
 
 (defn- reload-files [runner current-results]
@@ -38,17 +37,17 @@
 
 (defn- tick [configuration]
   (with-bindings configuration
-    (let [runner    (active-runner)
-          reporters (active-reporters)]
+    (let [runner    (config/active-runner)
+          reporters (config/active-reporters)]
       (try
         (reset! start-time (current-time))
         (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories runner))) (partial reload-report runner))
         (when (seq @(.descriptions runner))
-          (reset! (.previous-failed runner) (:fail (categorize (seq @(.results runner)))))
-          (run-and-report runner reporters))
+          (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
+          (running/run-and-report runner reporters))
         (catch java.lang.Throwable e
-          (process-compile-error runner e)
-          (report-runs* reporters @(.results runner))))
+          (running/process-compile-error runner e)
+          (reporting/report-runs* reporters @(.results runner))))
       (reset! (.descriptions runner) [])
       (reset! (.results runner) []))))
 
@@ -60,32 +59,37 @@
 (defn- listen-for-rerun [configuration]
   (with-bindings configuration
     (when (enter-pressed?)
-      (reset-runner (active-runner)))))
+      (reset-runner (config/active-runner)))))
 
 (deftype VigilantRunner [file-listing results previous-failed directories descriptions]
-  Runner
-  (run-directories [this directories reporters]
+  running/Runner
+  (run-directories [this directories _reporters]
     (let [scheduler     (ScheduledThreadPoolExecutor. 1)
-          configuration (config-bindings)
+          configuration (config/config-bindings)
           runnable      (fn [] (tick configuration))
-          dir-files     (map file directories)]
+          dir-files     (map io/file directories)]
       (reset! (.directories this) dir-files)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.scheduleWithFixedDelay scheduler (fn [] (listen-for-rerun configuration)) 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
       0))
 
-  (submit-description [this description]
+  (submit-description [_this description]
     (swap! descriptions conj description))
 
-  (run-description [this description reporters]
-    (let [run-results (do-description description reporters)]
-      (swap! results into run-results)))
+  (-get-descriptions [_this] @descriptions)
+
+  (-filter-descriptions [_this namespaces]
+    (swap! descriptions running/descriptions-with-namespaces namespaces))
+
+  (run-description [_this description reporters]
+    (->> (running/do-description description reporters)
+         (swap! results into)))
 
   (run-and-report [this reporters]
-    (doseq [description (filter-focused @descriptions)]
-      (run-description this description reporters))
-    (report-runs* reporters @results)))
+    (doseq [description (running/filter-focused @descriptions)]
+      (running/run-description this description reporters))
+    (reporting/report-runs* reporters @results)))
 
 (defn new-vigilant-runner []
   (VigilantRunner. (atom {}) (atom []) (atom []) (atom nil) (atom [])))

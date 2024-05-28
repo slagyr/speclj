@@ -1,6 +1,6 @@
 (ns basics-spec
   (:require [speclj.core :refer :all]
-            [speclj.run.standard :refer [run-specs]]))
+            [speclj.run.standard :as standard]))
 
 ;(describe "Truth"
 ;
@@ -9,7 +9,6 @@
 ;
 ;  (it "is not false"
 ;    (should-not false)))
-
 
 (declare *the-answer*)
 (describe "Calculator"
@@ -34,7 +33,4 @@
     (should= 42 *the-answer*))
   )
 
-
-(run-specs)
-
-
+(standard/run-specs)

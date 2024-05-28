@@ -1,5 +1,6 @@
 (ns speclj.config
-  (:require [speclj.platform :refer [dynamically-invoke]]))
+  (:require [clojure.string :as str]
+            [speclj.platform :as platform]))
 
 (declare ^:dynamic *parent-description*)
 
@@ -17,7 +18,7 @@
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
 
-(defn active-runner []
+(defn ^:export active-runner []
   (if #?(:clj (bound? #'*runner*) :cljs *runner*)
     *runner*
     (if-let [runner @default-runner]
@@ -49,7 +50,7 @@
      []
      (let [ns              (the-ns 'speclj.config)
            all-vars        (dissoc (ns-interns ns) '*parent-description*)
-           non-config-keys (filter #(not (.startsWith (name %) "*")) (keys all-vars))
+           non-config-keys (remove #(str/starts-with? (name %) "*") (keys all-vars))
            config-vars     (apply dissoc all-vars non-config-keys)]
        (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
 
@@ -58,36 +59,39 @@
 
 (defn load-runner [name]
   (try
-    (dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
+    (platform/dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
     (catch #?(:clj java.lang.Exception :cljs :default) e
       (throw (new #?(:clj java.lang.Exception :cljs js/Error) (str "Failed to load runner: " name) e)))))
 
 (defn- load-reporter-by-name [name]
   (try
-    (dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
+    (platform/dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
     (catch #?(:clj java.lang.Exception :cljs :default) e
       (throw (new #?(:clj java.lang.Exception :cljs js/Error) (str "Failed to load reporter: " name) e)))))
 
-#?(:clj
-   (defn load-reporter [name-or-object]
-     (if (instance? (Class/forName "speclj.reporting.Reporter") name-or-object)
-       name-or-object
-       (load-reporter-by-name name-or-object)))
+(defn- load-reporter-by-name? [name-or-object]
+  #?(:clj  (->> name-or-object
+                (instance? (Class/forName "speclj.reporting.Reporter"))
+                not)
+     :cljs (string? name-or-object)))
 
-   :cljs
-   (defn load-reporter [name-or-object]
-     (if (string? name-or-object)
-       (load-reporter-by-name name-or-object)
-       name-or-object)))
+(defn load-reporter [name-or-object]
+  (cond-> name-or-object
+          (load-reporter-by-name? name-or-object)
+          load-reporter-by-name))
 
-(defn parse-tags [values]
-  (loop [result {:includes #{} :excludes #{}} values values]
-    (if (seq values)
-      (let [value (name (first values))]
-        (if (= \~ (first value))
-          (recur (update-in result [:excludes] conj (keyword (apply str (rest value)))) (rest values))
-          (recur (update-in result [:includes] conj (keyword value)) (rest values))))
-      result)))
+(defn- parse-tag [tag]
+  (let [tag (name tag)]
+    (if (str/starts-with? tag "~")
+      [:excludes (str/replace tag #"^~" "")]
+      [:includes tag])))
+
+(defn- with-tag [tag-filter tag]
+  (let [[flag value] (parse-tag tag)]
+    (update tag-filter flag conj (keyword value))))
+
+(defn parse-tags [tags]
+  (reduce with-tag {:includes #{} :excludes #{}} tags))
 
 #?(:clj
    (defn config-mappings [config]
@@ -96,9 +100,8 @@
       #'*specs*             (:specs config)
       #'*color?*            (:color config)
       #'*omit-pending?*     (:omit-pending config)
-      #'*full-stack-trace?* (not (nil? (:stacktrace config)))
+      #'*full-stack-trace?* (some? (:stacktrace config))
       #'*tag-filter*        (parse-tags (:tags config))})
-
 
    :cljs
    (defn config-mappings [_] (throw "Not Supported in ClojureScript")))
@@ -111,6 +114,6 @@
             *specs*             (:specs config)
             *color?*            (:color config)
             *omit-pending?*     (:omit-pending config)
-            *full-stack-trace?* (not (nil? (:stacktrace config)))
+            *full-stack-trace?* (some? (:stacktrace config))
             *tag-filter*        (parse-tags (:tags config))]
     (action)))

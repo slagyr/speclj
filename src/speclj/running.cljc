@@ -1,6 +1,5 @@
 (ns speclj.running
-  (:require [clojure.string :as str]
-            [speclj.components :as components]
+  (:require [speclj.components :as components]
             [speclj.config :refer [active-reporters]]
             [speclj.platform :refer [current-time pending? secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
@@ -59,19 +58,21 @@
       (focus-characteristics! component))))
 
 (defn track-focused-characteristics! [characteristics]
-  (doseq [characteristic characteristics
-          :when (focused? characteristic)]
-    (enable-focus-mode! characteristic)))
+  (->> (filter focused? characteristics)
+       (run! enable-focus-mode!)))
 
 (defn scan-for-focus! [description]
-  (let [all (->> (tree-seq some? all-children description))]
+  (let [all (tree-seq some? all-children description)]
     (track-focused-descriptions! (filter components/is-description? all))
     (track-focused-characteristics! (filter components/is-characteristic? all))
     description))
 
 (defn filter-focused [descriptions]
-  (doseq [description descriptions] (scan-for-focus! description))
+  (run! scan-for-focus! descriptions)
   (or (seq (filter focus-mode? descriptions)) descriptions))
+
+(defn descriptions-with-namespaces [descriptions namespaces]
+  (cond->> descriptions namespaces (filter #(namespaces (.-ns %)))))
 
 (defn- eval-components [components]
   (doseq [component components] ((.-body component))))
@@ -89,7 +90,7 @@
       (eval-components afters))))
 
 (defn- reset-withs [withs]
-  (doseq [with withs] (components/reset-with with)))
+  (run! components/reset-with withs))
 
 (defn- collect-components [getter description]
   (loop [description description components []]
@@ -122,7 +123,7 @@
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
       (finally
-        (reset-withs withs)))))                             ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
+        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
@@ -155,19 +156,12 @@
 
    :cljs
    (defn- with-withs-bound [description body]
-     (let [withs        (concat @(.-withs description) @(.-with-alls description))
-           ns           (str/replace (.-ns description) "-" "_")
-           var-names    (map #(str ns "." (name (.-name %))) withs)
-           unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
-       (doseq [[n un] (partition 2 (interleave var-names unique-names))]
-         (let [code (str n " = " un ";")]
-           (js* "eval(~{})" code)))
+     (let [withs (concat @(.-withs description) @(.-with-alls description))]
+       (run! #((.-set-var! %) %) withs)
        (try
          (body)
          (finally
-           (doseq [[n] var-names]
-             (let [code (str n " = null;")]
-               (js* "eval(~{})" code))))))))
+           (run! #((.-set-var! %) nil) withs))))))
 
 (defn- nested-results-for-context [description reporters]
   (let [results (results-for-context description reporters)]
@@ -202,6 +196,17 @@
 (defprotocol Runner
   (run-directories [this directories reporters])
   (submit-description [this description])
+  (-filter-descriptions [this namespaces])
+  (-get-descriptions [this])
   (run-description [this description reporters])
   (run-and-report [this reporters]))
 
+(defn ^:export filter-descriptions
+  "Protocol method defined as function for JavaScript interoperability"
+  [runner namespaces]
+  (->> namespaces
+       #?(:cljs js->clj)
+       (-filter-descriptions runner)))
+
+(defn ^:export get-descriptions [runner]
+  (-> runner -get-descriptions into-array))

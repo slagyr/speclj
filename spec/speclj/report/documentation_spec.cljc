@@ -1,18 +1,17 @@
 (ns speclj.report.documentation-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [before context describe it should= with -new-exception -new-failure -new-pending]])
-  (:require #?(:cljs [goog.string])                         ;cljs bug?
+  (:require #?(:cljs [goog.string]) ;cljs bug?
+            [speclj.core #?(:clj :refer :cljs :refer-macros) [before context describe it should= with -new-exception -new-failure -new-pending]]
+            [speclj.spec-helper #?(:clj :refer :cljs :refer-macros) [test-exported-meta]]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.platform :refer [endl]]
-            [speclj.report.documentation :refer [new-documentation-reporter]]
+            [speclj.report.documentation :as sut]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow]]
             [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :refer [run-specs]])
-  )
+            [speclj.run.standard :as standard]))
 
 (describe "Speccdoc Reporter"
-  (with reporter (new-documentation-reporter))
+  (with reporter (sut/new-documentation-reporter))
   (with description (new-description "Verbosity" false "some-ns"))
 
   (it "reports descriptions"
@@ -58,6 +57,10 @@
       (should= (str (red "- says fail (FAILED)") " " (yellow "[FOCUS]") endl)
                (with-out-str (report-fail @reporter result)))))
 
+  (context "exporting"
+    (test-exported-meta sut/new-documentation-reporter)
+    )
+
   (context "with nested description"
     (with nested-description (new-description "Nesting" false "some.ns"))
     (before (install @nested-description @description))
@@ -80,5 +83,4 @@
     )
   )
 
-
-(run-specs)
+(standard/run-specs)
