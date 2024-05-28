@@ -59,6 +59,8 @@
      (run-directories [_this _directories _reporters]
                       (js/alert "StandardRunner.run-directories:  I don't know how to do this.")))
 
+  (-get-descriptions [_this] @descriptions)
+
   (submit-description [_this description]
     (swap! descriptions conj description))
 

@@ -197,6 +197,7 @@
   (run-directories [this directories reporters])
   (submit-description [this description])
   (-filter-descriptions [this namespaces])
+  (-get-descriptions [this])
   (run-description [this description reporters])
   (run-and-report [this reporters]))
 
@@ -206,3 +207,6 @@
   (->> namespaces
        #?(:cljs js->clj)
        (-filter-descriptions runner)))
+
+(defn ^:export get-descriptions [runner]
+  (-> runner -get-descriptions into-array))

@@ -43,6 +43,7 @@
       (should= (assoc defaults :foo :bar) (sut/config-with-defaults [:foo :bar]))
       (should= (assoc defaults :foo :bar :baz "buzz") (sut/config-with-defaults [:foo :bar "baz" "buzz"]))))
 
+  (spec-helper/test-get-descriptions sut/new-standard-runner)
   (spec-helper/test-description-filtering sut/new-standard-runner)
   )
 

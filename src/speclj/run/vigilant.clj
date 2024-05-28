@@ -77,12 +77,14 @@
   (submit-description [_this description]
     (swap! descriptions conj description))
 
+  (-get-descriptions [_this] @descriptions)
+
   (-filter-descriptions [_this namespaces]
     (swap! descriptions running/descriptions-with-namespaces namespaces))
 
   (run-description [_this description reporters]
-    (let [run-results (running/do-description description reporters)]
-      (swap! results into run-results)))
+    (->> (running/do-description description reporters)
+         (swap! results into)))
 
   (run-and-report [this reporters]
     (doseq [description (running/filter-focused @descriptions)]

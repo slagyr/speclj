@@ -1,5 +1,5 @@
 (ns speclj.spec-helper
-  #?(:cljs (:require-macros [speclj.spec-helper :refer [test-exported-meta]]))
+  #?(:cljs (:require-macros [speclj.spec-helper :refer [test-exported-meta test-get-descriptions]]))
   (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [context -fail it should= with]]
             [speclj.platform #?(:clj :refer :cljs :refer-macros) [try-catch-anything]]
             [speclj.components :as components]
@@ -110,3 +110,17 @@
        )
     )
   )
+
+(defmacro test-get-descriptions [new-runner-fn]
+  `(it (str '~new-runner-fn " fetches descriptions")
+     (let [runner# (~new-runner-fn)
+           one#    (components/new-description "One" false "some.ns")
+           two#    (components/new-description "Two" false "some.other.ns")
+           three#  (components/new-description "Three" false "three.ns")]
+       (should= [] (running/get-descriptions runner#))
+       (running/submit-description runner# one#)
+       (should= [one#] (running/get-descriptions runner#))
+       (running/submit-description runner# three#)
+       (should= [one# three#] (running/get-descriptions runner#))
+       (running/submit-description runner# two#)
+       (should= [one# three# two#] (running/get-descriptions runner#)))))

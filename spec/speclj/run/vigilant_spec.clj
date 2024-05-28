@@ -4,12 +4,11 @@
             [speclj.spec-helper :as spec-helper]))
 
 (describe "Vigilant Runner"
-  (with runner (new-vigilant-runner))
+  (spec-helper/test-get-descriptions new-vigilant-runner)
+  (spec-helper/test-description-filtering new-vigilant-runner)
 
   (it "can be created"
-    (should= [] @(.results @runner)))
-
-  (spec-helper/test-description-filtering new-vigilant-runner)
+    (should= [] @(.results (new-vigilant-runner))))
   )
 
 (run-specs)

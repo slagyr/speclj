@@ -105,6 +105,7 @@
 
   (context "exporting"
     (spec-helper/test-exported-meta sut/filter-descriptions)
+    (spec-helper/test-exported-meta sut/get-descriptions)
     )
 
   )
