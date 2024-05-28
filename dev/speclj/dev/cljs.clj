@@ -4,15 +4,30 @@
 
 
 (def build-options
-  {:optimizations  :none
-   :output-to      "target/specs.js"
-   :output-dir     "target/cljs"
-   :cache-analysis true
-   :source-map     true
-   :pretty-print   true
-   :verbose        true
-   :watch-fn       (fn [] (println "Success!"))
-   })
+  {:development {:optimizations  :none
+                 :output-to      "target/specs.js"
+                 :output-dir     "target/cljs"
+                 :cache-analysis true
+                 :source-map     true
+                 :pretty-print   true
+                 :verbose        true
+                 :watch-fn       (fn [] (println "Success!"))
+                 }
+   :ci          {
+                 :cache-analysis false
+                 :infer-externs  true
+                 :optimizations  :advanced
+                 :output-to      "target/specs.js"
+                 :output-dir     "target/cljs"
+                 :pretty-print   false
+                 :verbose        false
+                 :watch-fn       (fn [] (println "Success!"))
+                 }})
+
+(defn ->build-key [build-key]
+  (case build-key
+    "ci" :ci
+    :development))
 
 (defn run-specs []
   (let [process (.exec (Runtime/getRuntime) "node bin/speclj.js")
@@ -23,5 +38,7 @@
     (System/exit (.waitFor process))))
 
 (defn -main [& args]
-  (api/build "spec" build-options)
-  (run-specs))
+  (let [build-key (->build-key (first args))
+        build     (get build-options build-key)]
+    (api/build "spec" build)
+    (run-specs)))
