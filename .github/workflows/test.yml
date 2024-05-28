@@ -40,4 +40,4 @@ jobs:
         run: clojure -M:test:spec
 
       - name: Run ClojureScript Tests
-        run: clojure -M:test:cljs once
+        run: clojure -M:test:cljs ci

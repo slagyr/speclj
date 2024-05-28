@@ -15,7 +15,6 @@
                  }
    :ci          {
                  :cache-analysis false
-                 :infer-externs  true
                  :optimizations  :advanced
                  :output-to      "target/specs.js"
                  :output-dir     "target/cljs"
