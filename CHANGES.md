@@ -2,8 +2,8 @@
 
 * `run-specs` now accepts string keys in addition to keyword keys
 * js runner executable may use `speclj.run.standard.arm()` instead of `speclj.run.standard.armed = true`
-* exports functions used by JavaScript for executing ClojureScript specs
 * `Runner` can now `filter-descriptions` based on a collection of namespace strings
+* exports and refactors functions used by JavaScript for executing ClojureScript specs under advanced optimizations
 
 # 3.4.7
 

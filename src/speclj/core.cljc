@@ -152,25 +152,11 @@
   [context & body]
   `(speclj.components/new-around-all (fn ~context ~@body)))
 
-(def cljs-munge
-  #?(:clj
-     (when (find-ns 'cljs.compiler)
-       (ns-resolve 'cljs.compiler (symbol "munge")))
-     :cljs nil))
-
 (defn ^:no-doc -make-with [name body ctor bang?]
-  (let [var-name    (with-meta (symbol name) {:dynamic true})
-        munged-name (if cljs-munge
-                      (with-meta
-                        (symbol
-                          (cljs-munge (str name)))
-                        {:dynamic true})
-                      var-name)
-        unique-name (gensym "with")]
+  (let [var-name (with-meta (symbol name) {:dynamic true})]
     `(do
        (declare ~var-name)
-       (def ~unique-name (~ctor '~munged-name '~unique-name (fn [] ~@body) ~bang?))
-       ~unique-name)))
+       (~ctor '~var-name (fn [] ~@body) (fn [v#] (set! ~var-name v#)) ~bang?))))
 
 (defmacro with
   "Declares a reference-able symbol that will be lazily evaluated once per characteristic of the containing
@@ -295,7 +281,7 @@
   `(should= nil ~form))
 
 (defmacro should-contain
-  "Multi-purpose assertion of containment.  Works on strings, regular expressions, sequences, and maps.
+  "Multipurpose assertion of containment.  Works on strings, regular expressions, sequences, and maps.
 
   (should-contain \"foo\" \"foobar\")            ; looks for sub-string
   (should-contain #\"hello.*\" \"hello, world\") ; looks for regular expression
@@ -321,7 +307,7 @@
        :else (throw (-new-exception (wrong-types "should-contain" expected# actual#))))))
 
 (defmacro should-not-contain
-  "Multi-purpose assertion of non-containment.  See should-contain as an example of opposite behavior."
+  "Multipurpose assertion of non-containment.  See should-contain as an example of opposite behavior."
   [expected actual]
   `(let [expected# ~expected
          actual#   ~actual]
@@ -342,10 +328,10 @@
        :else (throw (-new-exception (wrong-types "should-not-contain" expected# actual#))))))
 
 (defmacro should-have-count
-  "Multi-purpose assertion on (count %). Works on strings, sequences, and maps.
+  "Multipurpose assertion on (count %). Works on strings, sequences, and maps.
 
   (should-have-count 6 \"foobar\")
-  (should-have-count 2 [1 2]})
+  (should-have-count 2 [1 2])
   (should-have-count 1 {:foo :bar})
   (should-have-count 0 [])
   (should-have-count 0 nil)"
@@ -361,10 +347,10 @@
                        "Actual coll:    " (-to-s coll#))))))))
 
 (defmacro should-not-have-count
-  "Multi-purpose assertion on (not= (count %)). Works on strings, sequences, and maps.
+  "Multipurpose assertion on (not= (count %)). Works on strings, sequences, and maps.
 
   (should-not-have-count 1 \"foobar\")
-  (should-not-have-count 1 [1 2]})
+  (should-not-have-count 1 [1 2])
   (should-not-have-count 42 {:foo :bar})
   (should-not-have-count 1 [])
   (should-not-have-count 1 nil)"
@@ -564,7 +550,7 @@
 
 (defmacro should-throw
   "Asserts that a Throwable is throws by the evaluation of a form.
-When an class is passed, it asserts that the thrown Exception is an instance of the class.
+When a class is passed, it asserts that the thrown Exception is an instance of the class.
 There are three options for passing different kinds of predicates:
   - If a string, assert that the message of the Exception is equal to the string.
   - If a regex, asserts that the message of the Exception matches the regex.
@@ -614,7 +600,7 @@ There are three options for passing different kinds of predicates:
        (-fail (str "Expected " (-to-s actual#) " to be an instance of: " (-to-s expected-type#) speclj.platform/endl "           but was an instance of: " (-to-s actual-type#) " (using isa?)")))))
 
 (defmacro should-not-be-a
-  "Asserts that the type of the given form does not derived from or equals the expected type"
+  "Asserts that the type of the given form does not derive from or equal the expected type"
   [expected-type actual-form]
   `(let [actual#        ~actual-form
          actual-type#   (type actual#)
@@ -639,7 +625,7 @@ There are three options for passing different kinds of predicates:
     `(mapv speclj.components/new-tag ~tag-kws)))
 
 (defmacro with-stubs
-  "Add this to describe/context blocks that use stubs.  It will setup a clean recording environment."
+  "Add this to describe/context blocks that use stubs.  It will set up a clean recording environment."
   []
   `(around [it#]
      (with-redefs [speclj.stub/*stubbed-invocations* (atom [])]
@@ -797,7 +783,7 @@ There are three options for passing different kinds of predicates:
          (should-have-invoked ~var-name options#)))))
 
 (defmacro should-not-invoke
-  "Creates a stub, and binds it to the specified var, evaluates the body, and checks that is was NOT invoked.
+  "Creates a stub, and binds it to the specified var, evaluates the body, and checks that it was NOT invoked.
 
   (should-not-invoke reverse {:with [1 2 3] :return [] :times 2} (reverse [1 2 3])) ; pass
   (should-not-invoke reverse {:with [1 2 3] :return []} (reverse [1 2 3])) ; fail

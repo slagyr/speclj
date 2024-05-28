@@ -1,6 +1,5 @@
 (ns speclj.running
-  (:require [clojure.string :as str]
-            [speclj.components :as components]
+  (:require [speclj.components :as components]
             [speclj.config :refer [active-reporters]]
             [speclj.platform :refer [current-time pending? secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
@@ -157,19 +156,12 @@
 
    :cljs
    (defn- with-withs-bound [description body]
-     (let [withs        (concat @(.-withs description) @(.-with-alls description))
-           ns           (str/replace (.-ns description) "-" "_")
-           var-names    (map #(str ns "." (name (.-name %))) withs)
-           unique-names (map #(str ns "." (name (.-unique-name %))) withs)]
-       (doseq [[n un] (partition 2 (interleave var-names unique-names))]
-         (let [code (str n " = " un ";")]
-           (js* "eval(~{})" code)))
+     (let [withs (concat @(.-withs description) @(.-with-alls description))]
+       (run! #((.-set-var! %) %) withs)
        (try
          (body)
          (finally
-           (doseq [[n] var-names]
-             (let [code (str n " = null;")]
-               (js* "eval(~{})" code))))))))
+           (run! #((.-set-var! %) nil) withs))))))
 
 (defn- nested-results-for-context [description reporters]
   (let [results (results-for-context description reporters)]
