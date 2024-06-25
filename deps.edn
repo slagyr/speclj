@@ -1,7 +1,6 @@
 {
  :paths   ["src"]
  :deps    {
-           fresh/fresh          {:mvn/version "1.1.2"}
            mmargs/mmargs        {:mvn/version "1.2.0"}
            org.clojure/clojure  {:mvn/version "1.11.3"}
            trptcolin/versioneer {:mvn/version "0.1.1"}

@@ -1,6 +1,6 @@
 (ns speclj.run.standard
   (:require #?(:clj [clojure.java.io :as io])
-            #?(:clj [fresh.core :as fresh])
+            #?(:clj [speclj.freshener :as fresh])
             #?(:cljs [speclj.report.progress])
             #?(:cljs [speclj.components :as components])
             [speclj.config :as config]

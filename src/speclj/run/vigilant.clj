@@ -1,7 +1,7 @@
 (ns speclj.run.vigilant
   (:require [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as repl]
-            [speclj.freshener :refer [make-fresh ns-to-file freshen]]
+            [speclj.freshener :refer [freshen]]
             [speclj.config :as config]
             [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
             [speclj.reporting :as reporting]
@@ -24,7 +24,7 @@
           reporters (config/active-reporters)]
       (try
         (reset! start-time (current-time))
-        (freshen (.file-listing runner) @(.directories runner))
+        (freshen)
         (cond
           (::reload/error repl/refresh-tracker)
           (throw (::reload/error repl/refresh-tracker))
@@ -44,6 +44,9 @@
       (reset! (.results runner) []))))
 
 (defn- reset-runner [runner]
+  (reset! current-error-data nil)
+  (repl/clear)
+  (apply repl/set-refresh-dirs @(.directories runner))
   (reset! (.previous-failed runner) [])
   (reset! (.results runner) [])
   (reset! (.file-listing runner) {}))
