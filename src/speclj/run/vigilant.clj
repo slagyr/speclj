@@ -1,6 +1,6 @@
 (ns speclj.run.vigilant
   (:require [clojure.java.io :as io]
-            [fresh.core :refer [clj-files-in make-fresh ns-to-file]]
+            [speclj.freshener :refer [clj-files-in make-fresh ns-to-file]]
             [speclj.config :as config]
             [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
             [speclj.reporting :as reporting]
