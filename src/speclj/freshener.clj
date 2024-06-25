@@ -2,7 +2,14 @@
   (:use
     [clojure.java.io :only (file)])
   (:require
-    [clojure.set :as set])
+    [clojure.set :as set]
+    [clojure.string :as str]
+    [clojure.tools.namespace.repl :as repl]
+    [clojure.tools.namespace.reload :as reload]
+    [clojure.tools.namespace.dir :as dir]
+    [clojure.tools.namespace.track :as track]
+    [clojure.tools.namespace.find :as find]
+    [clojure.tools.namespace.parse :as parse])
   (:import
     [java.io PushbackReader FileReader File]))
 
@@ -179,6 +186,20 @@
     (when (seq nses)
       (doseq [action actions]
         (action nses)))))
+
+(defn get-dependencies [deps-map]
+  (let [nses (apply set/union (for [ns deps-map]
+                                (set (conj (val ns) (key ns)))))]
+    (for [ns nses] (ns-to-file ns))))
+
+(defn return-n [n]
+  n)
+
+(defn freshen [listing-atom file-dirs]
+  (repl/scan)
+  (alter-var-root #'repl/refresh-tracker reload/track-reload)
+  (apply repl/set-refresh-dirs [])
+  )
 
 (defn make-fresh
   "Does the work of freshener functions."
