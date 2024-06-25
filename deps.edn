@@ -5,6 +5,9 @@
            mmargs/mmargs        {:mvn/version "1.2.0"}
            org.clojure/clojure  {:mvn/version "1.11.3"}
            trptcolin/versioneer {:mvn/version "0.1.1"}
+           org.clojure/tools.namespace {:mvn/version "1.5.0"}
+           clj-commons/pomegranate {:mvn/version "1.2.24"}
+           leiningen-core/leiningen-core {:mvn/version "2.9.6"}
            }
  :aliases {
            :test  {:extra-deps  {
