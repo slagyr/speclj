@@ -2,6 +2,7 @@
   (:use
     [clojure.java.io :only (file)])
   (:require
+    [clojure.tools.namespace.dir :as dir]
     [clojure.tools.namespace.repl :as repl]
     [clojure.tools.namespace.reload :as reload]))
 
@@ -19,10 +20,7 @@
   "Returns a seq of all clojure source files contained in the given directories."
   [& dirs] (apply find-files-in clj-file-regex dirs))
 
-(defn return-n [n]
-  n)
-
 (defn freshen []
   (repl/scan)
   (alter-var-root #'repl/refresh-tracker reload/track-reload)
-  (apply repl/set-refresh-dirs []))
+  (repl/set-refresh-dirs))
