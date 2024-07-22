@@ -1,15 +1,16 @@
 (ns speclj.run.vigilant
   (:require [clojure.java.io :as io]
+            [clojure.tools.namespace.reload :as reload]
             [clojure.tools.namespace.repl :as repl]
-            [speclj.freshener :refer [freshen]]
+            [clojure.tools.namespace.dir :as dir]
+            [clojure.tools.namespace.file :as file]
+            [clojure.tools.namespace.track :as track]
             [speclj.config :as config]
-            [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
+            [speclj.freshener :refer [freshen]]
+            [speclj.platform :refer [current-time enter-pressed? endl format-seconds secs-since]]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
-            [speclj.running :as running]
-            [clojure.tools.namespace.repl :as repl]
-            [clojure.tools.namespace.track :as track]
-            [clojure.tools.namespace.reload :as reload])
+            [speclj.running :as running])
   (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (def start-time (atom 0))
@@ -18,19 +19,31 @@
 (defn get-error-data [e]
   (:data (first (:via (Throwable->map e)))))
 
+(defn- report-update [files start-time]
+  (let [reporters (config/active-reporters)]
+    (when (seq files)
+      (reporting/report-message* reporters (str endl "----- " (str (java.util.Date.) " -----")))
+      (reporting/report-message* reporters (str "took " (format-seconds (secs-since start-time)) " to determine file statuses."))
+      (reporting/report-message* reporters "reloading files:")
+      (doseq [file files]
+        (do
+          (reporting/report-message* reporters (str "  " (.getCanonicalPath file))))
+        )))
+  true)
+
 (defn- tick [configuration]
   (with-bindings configuration
     (let [runner (config/active-runner)
-          reporters (config/active-reporters)]
+          reporters (config/active-reporters)
+          reloaded-files (freshen)]
       (try
         (reset! start-time (current-time))
-        (freshen)
-        ;(prn repl/refresh-tracker)
         (cond
           (::reload/error repl/refresh-tracker)
           (throw (::reload/error repl/refresh-tracker))
           (seq @(.descriptions runner))
           (do
+            (report-update reloaded-files @start-time)
             (reset! current-error-data nil)
             (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
             (running/run-and-report runner reporters)))
@@ -40,8 +53,7 @@
                             (constantly (assoc repl/refresh-tracker ::track/load [])))
             (running/process-compile-error runner e)
             (reporting/report-runs* reporters @(.results runner))
-            (reset! current-error-data error-data))
-          ))
+            (reset! current-error-data error-data))))
       (reset! (.descriptions runner) [])
       (reset! (.results runner) []))))
 
