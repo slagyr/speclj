@@ -8,11 +8,11 @@
             [speclj.results :as results]
             [speclj.running :as running]
             [clojure.tools.namespace.repl :as repl]
+            [clojure.tools.namespace.track :as track]
             [clojure.tools.namespace.reload :as reload])
   (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (def start-time (atom 0))
-
 (def current-error-data (atom nil))
 
 (defn get-error-data [e]
@@ -25,6 +25,7 @@
       (try
         (reset! start-time (current-time))
         (freshen)
+        ;(prn repl/refresh-tracker)
         (cond
           (::reload/error repl/refresh-tracker)
           (throw (::reload/error repl/refresh-tracker))
@@ -36,12 +37,9 @@
         (catch java.lang.Throwable e
           (let [error-data (get-error-data e)]
             (alter-var-root #'repl/refresh-tracker
-                            (constantly (assoc repl/refresh-tracker :clojure.tools.namespace.track/load [])))
+                            (constantly (assoc repl/refresh-tracker ::track/load [])))
             (running/process-compile-error runner e)
             (reporting/report-runs* reporters @(.results runner))
-            #_(when (not= error-data @current-error-data)
-              (running/process-compile-error runner e)
-              (reporting/report-runs* reporters @(.results runner)))
             (reset! current-error-data error-data))
           ))
       (reset! (.descriptions runner) [])
