@@ -35,7 +35,11 @@
             (running/run-and-report runner reporters)))
         (catch java.lang.Throwable e
           (let [error-data (get-error-data e)]
-            (when (not= error-data @current-error-data)
+            (alter-var-root #'repl/refresh-tracker
+                            (constantly (assoc repl/refresh-tracker :clojure.tools.namespace.track/load [])))
+            (running/process-compile-error runner e)
+            (reporting/report-runs* reporters @(.results runner))
+            #_(when (not= error-data @current-error-data)
               (running/process-compile-error runner e)
               (reporting/report-runs* reporters @(.results runner)))
             (reset! current-error-data error-data))
