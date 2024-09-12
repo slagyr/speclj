@@ -1,4 +1,4 @@
-# 3.4.9
+# 3.5.0
 
 * migrates from deprecated make-fresh library to clojure.tools.namespace
 * fixes bug where changes to src files in a directory that includes a space char does not register updates to the vigilant runner
