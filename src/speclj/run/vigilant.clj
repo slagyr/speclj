@@ -1,57 +1,66 @@
 (ns speclj.run.vigilant
   (:require [clojure.java.io :as io]
-            [fresh.core :refer [clj-files-in make-fresh ns-to-file]]
+            [clojure.tools.namespace.reload :as reload]
+            [clojure.tools.namespace.repl :as repl]
+            [clojure.tools.namespace.dir :as dir]
+            [clojure.tools.namespace.file :as file]
+            [clojure.tools.namespace.track :as track]
             [speclj.config :as config]
-            [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
+            [speclj.freshener :refer [freshen]]
+            [speclj.platform :refer [current-time enter-pressed? endl format-seconds secs-since]]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
             [speclj.running :as running])
   (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (def start-time (atom 0))
+(def current-error-data (atom nil))
 
-(defn- ns-for-results [results]
-  (set (map #(str (.ns @(.. % characteristic parent))) results)))
+(defn get-error-data [e]
+  (:data (first (:via (Throwable->map e)))))
 
-(defn- report-update [report]
-  (let [reporters (config/active-reporters)
-        reloads   (:reloaded report)]
-    (when (seq reloads)
+(defn- report-update [files start-time]
+  (let [reporters (config/active-reporters)]
+    (when (seq files)
       (reporting/report-message* reporters (str endl "----- " (str (java.util.Date.) " -----")))
-      (reporting/report-message* reporters (str "took " (format-seconds (secs-since @start-time)) " to determine file statuses."))
+      (reporting/report-message* reporters (str "took " (format-seconds (secs-since start-time)) " to determine file statuses."))
       (reporting/report-message* reporters "reloading files:")
-      (doseq [file reloads] (reporting/report-message* reporters (str "  " (.getCanonicalPath file))))))
+      (doseq [file files]
+        (do
+          (reporting/report-message* reporters (str "  " (.getCanonicalPath file))))
+        )))
   true)
-
-(defn- reload-files [runner current-results]
-  (let [previous-failed-files (map ns-to-file (ns-for-results @(.previous-failed runner)))
-        files-to-reload       (set (concat previous-failed-files current-results))]
-    (swap! (.file-listing runner) #(apply dissoc % previous-failed-files))
-    (make-fresh (.file-listing runner) files-to-reload report-update)))
-
-(defn- reload-report [runner report]
-  (let [reloads (:reloaded report)]
-    (when (seq reloads)
-      (reload-files runner reloads)))
-  false)
 
 (defn- tick [configuration]
   (with-bindings configuration
-    (let [runner    (config/active-runner)
-          reporters (config/active-reporters)]
+    (let [runner (config/active-runner)
+          reporters (config/active-reporters)
+          reloaded-files (freshen)]
       (try
         (reset! start-time (current-time))
-        (make-fresh (.file-listing runner) (set (apply clj-files-in @(.directories runner))) (partial reload-report runner))
-        (when (seq @(.descriptions runner))
-          (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
-          (running/run-and-report runner reporters))
+        (cond
+          (::reload/error repl/refresh-tracker)
+          (throw (::reload/error repl/refresh-tracker))
+          (seq @(.descriptions runner))
+          (do
+            (report-update reloaded-files @start-time)
+            (reset! current-error-data nil)
+            (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
+            (running/run-and-report runner reporters)))
         (catch java.lang.Throwable e
-          (running/process-compile-error runner e)
-          (reporting/report-runs* reporters @(.results runner))))
+          (let [error-data (get-error-data e)]
+            (alter-var-root #'repl/refresh-tracker
+                            (constantly (assoc repl/refresh-tracker ::track/load [])))
+            (running/process-compile-error runner e)
+            (reporting/report-runs* reporters @(.results runner))
+            (reset! current-error-data error-data))))
       (reset! (.descriptions runner) [])
       (reset! (.results runner) []))))
 
 (defn- reset-runner [runner]
+  (reset! current-error-data nil)
+  (repl/clear)
+  (apply repl/set-refresh-dirs @(.directories runner))
   (reset! (.previous-failed runner) [])
   (reset! (.results runner) [])
   (reset! (.file-listing runner) {}))
@@ -64,11 +73,12 @@
 (deftype VigilantRunner [file-listing results previous-failed directories descriptions]
   running/Runner
   (run-directories [this directories _reporters]
-    (let [scheduler     (ScheduledThreadPoolExecutor. 1)
+    (let [scheduler (ScheduledThreadPoolExecutor. 1)
           configuration (config/config-bindings)
-          runnable      (fn [] (tick configuration))
-          dir-files     (map io/file directories)]
+          runnable (fn [] (tick configuration))
+          dir-files (map io/file directories)]
       (reset! (.directories this) dir-files)
+      (apply repl/set-refresh-dirs dir-files)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)
       (.scheduleWithFixedDelay scheduler (fn [] (listen-for-rerun configuration)) 0 500 TimeUnit/MILLISECONDS)
       (.awaitTermination scheduler Long/MAX_VALUE TimeUnit/SECONDS)
