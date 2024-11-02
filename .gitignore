@@ -2,7 +2,8 @@
 .cpcache
 .DS_Store
 .idea
-.lein*
+.clj-kondo
+.lsp
 .specljs-timestamp
 doc
 node_modules
