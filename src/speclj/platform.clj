@@ -29,7 +29,7 @@
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
 
-(defn re? [obj] (isa? (type obj) java.util.regex.Pattern))
+(defn re? [obj] (instance? java.util.regex.Pattern obj))
 
 (def throwable Throwable)
 (def exception java.lang.Exception)
@@ -48,7 +48,7 @@
        *bound-by-should-invoke*))
 
 (defn difference-greater-than-delta? [expected actual delta]
-  (> (.abs (- (bigdec expected) (bigdec actual))) (.abs (bigdec delta))))
+  (> (abs (- (bigdec expected) (bigdec actual))) (abs (bigdec delta))))
 
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
@@ -59,10 +59,11 @@
 (defn failure-source [exception]
   (let [source    (nth (.getStackTrace exception) 0)
         classname (.getClassName source)
-        filename  (classname->filename classname)]
+        filename  (classname->filename classname)
+        line-no   (.getLineNumber source)]
     (if-let [url (io/resource filename)]
-      (str (.getFile url) ":" (.getLineNumber source))
-      (str filename ":" (.getLineNumber source)))))
+      (str (.getFile url) ":" line-no)
+      (str filename ":" line-no))))
 
 (defn elide-level? [stack-element]
   (let [classname (.getClassName stack-element)]

@@ -4,9 +4,7 @@
 (def endl "\n")
 (def file-separator "/")
 
-(def re-type (type #"."))
-
-(defn re? [obj] (= re-type (type obj)))
+(defn re? [obj] (instance? js/RegExp obj))
 
 (declare ^:dynamic *bound-by-should-invoke*)
 
@@ -17,18 +15,19 @@
 (def exception js/Error)
 
 (defn difference-greater-than-delta? [expected actual delta]
-  (> (js/Math.abs (- expected actual)) (js/Math.abs delta)))
+  (> (abs (- expected actual)) (abs delta)))
 
-(defn error-message [e] (.-message e))
 (defn failure-source [e]
   (cond
     (.-fileName e) (str (.-fileName e) ":" (or (.-lineNumber e) "?"))
     (.-stack e) (str/trim (nth (str/split-lines (.-stack e)) (count (str/split-lines (.-message e)))))
     :else "unkown-file:?"))
+
+(defn error-message [e] (.-message e))
 (defn stack-trace [e] (rest (str/split-lines (or (.-stack e) (.toString e)))))
-(defn cause [e] nil)
+(defn cause [e] (.-cause e))
 (defn print-stack-trace [e] (println (or (.-stack e) "missing stack trace")))
-(defn elide-level? [stack-element] false)
+(defn elide-level? [_stack-element] false)
 
 (defn type-name [t] (if t (.-name t) "nil"))
 

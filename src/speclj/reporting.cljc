@@ -43,40 +43,24 @@
 (def grey (stylizer "90"))
 
 (defn- print-elides [n]
-  (if (pos? n)
+  (when (pos? n)
     (println "\t..." n "stack levels elided ...")))
 
 (declare print-exception)
 
-#?(:clj
-   (defn- print-stack-levels [exception]
-     (loop [levels (stack-trace exception) elides 0]
-       (if (seq levels)
-         (let [level (first levels)]
-           (if (elide-level? level)
-             (recur (rest levels) (inc elides))
-             (do
-               (print-elides elides)
-               (println "\tat" (str level))
-               (recur (rest levels) 0))))
-         (print-elides elides)))
-     (if-let [cause (cause exception)]
-       (print-exception "Caused by:" cause)))
-
-   :cljs
-   (defn- print-stack-levels [exception]
-     (loop [levels (stack-trace exception) elides 0]
-       (if (seq levels)
-         (let [level (first levels)]
-           (if (elide-level? level)
-             (recur (rest levels) (inc elides))
-             (do
-               (print-elides elides)
-               (println (str level))
-               (recur (rest levels) 0))))
-         (print-elides elides)))
-     (if-let [cause (cause exception)]
-       (print-exception "Caused by:" cause))))
+(defn- print-stack-levels [exception]
+  (loop [levels (stack-trace exception) elides 0]
+    (if (seq levels)
+      (let [level (first levels)]
+        (if (elide-level? level)
+          (recur (rest levels) (inc elides))
+          (do
+            (print-elides elides)
+            (println "\tat" (str level))
+            (recur (rest levels) 0))))
+      (print-elides elides)))
+  (when-let [cause (cause exception)]
+    (print-exception "Caused by:" cause)))
 
 (defn- print-exception [prefix exception]
   (if prefix
