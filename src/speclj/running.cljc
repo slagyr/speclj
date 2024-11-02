@@ -1,7 +1,8 @@
 (ns speclj.running
   (:require [speclj.components :as components]
             [speclj.config :refer [active-reporters]]
-            [speclj.platform :refer [current-time pending? secs-since]]
+            [speclj.error :refer [pending?]]
+            [speclj.platform :refer [current-time secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
             [speclj.results :refer [error-result fail-result pass-result pending-result]]
             [speclj.tags :refer [pass-tag-filter? tag-sets-for tags-for]]))

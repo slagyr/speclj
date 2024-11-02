@@ -8,11 +8,6 @@
 
 (defn re? [obj] (= re-type (type obj)))
 
-(deftype SpecFailure [message])
-;(set! specljs.platform.SpecFailure/prototype (js/Error.))
-;(set! (.-constructor specljs.platform.SpecFailure/prototype) SpecFailure)
-(deftype SpecPending [message])
-
 (declare ^:dynamic *bound-by-should-invoke*)
 
 (defn bound-by-should-invoke? []
@@ -20,14 +15,9 @@
 
 (def throwable js/Object)
 (def exception js/Error)
-(def failure SpecFailure)
-(def pending SpecPending)
 
 (defn difference-greater-than-delta? [expected actual delta]
   (> (js/Math.abs (- expected actual)) (js/Math.abs delta)))
-
-(defn pending? [e] (isa? (type e) pending))
-(defn failure? [e] (isa? (type e) failure))
 
 (defn error-message [e] (.-message e))
 (defn failure-source [e]

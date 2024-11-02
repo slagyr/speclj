@@ -5,6 +5,7 @@
             [clojure.string]
             [speclj.components]
             [speclj.config]
+            [speclj.error]
             #?(:clj  [speclj.platform :refer [if-cljs try-catch-anything]]
                :cljs [speclj.platform])
             [speclj.reporting]
@@ -30,10 +31,10 @@
   ([message] `(if-cljs (js/Object. ~message) (java.lang.Throwable. ~message))))
 
 (defmacro ^:no-doc -new-failure [message]
-  `(speclj.platform.SpecFailure. ~message))
+  `(ex-info ~message {:type speclj.error/failure}))
 
 (defmacro ^:no-doc -new-pending [message]
-  `(speclj.platform.SpecPending. ~message))
+  `(ex-info ~message {:type speclj.error/pending}))
 
 (defmacro ^:no-doc help-it [name focused? & body]
   (if (seq body)
@@ -562,7 +563,7 @@ There are three options for passing different kinds of predicates:
       (throw (-create-should-throw-failure ~throwable-type nil '~form))
       (catch e#
              (cond
-               (speclj.platform/failure? e#) (throw e#)
+               (speclj.error/failure? e#) (throw e#)
                (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
                :else e#))))
   ([throwable-type predicate form]

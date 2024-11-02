@@ -33,11 +33,6 @@
 
 (def throwable Throwable)
 (def exception java.lang.Exception)
-(def failure speclj.platform.SpecFailure)
-(def pending speclj.platform.SpecPending)
-
-(defn pending? [e] (isa? (type e) pending))
-(defn failure? [e] (isa? (type e) failure))
 
 (defn- classname->filename [classname]
   (let [root-name (first (split classname #"\$"))]

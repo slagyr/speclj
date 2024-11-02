@@ -4,7 +4,7 @@
                                  it should should-fail should-not
                                  should-not-throw should-not= should= tags
                                  with with-all]]
-            [speclj.platform :as platform]
+            [speclj.error :as error]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [fail?]]
             [speclj.run.standard :as standard]
@@ -44,7 +44,7 @@
       (should= 1 (count results))
       (should= "has a fail" (.-name (.-characteristic result)))
       (should-not= nil (.-failure result))
-      (should (platform/failure? (.-failure result)))))
+      (should (error/failure? (.-failure result)))))
 
   (it "runs afters with failures"
     (eval

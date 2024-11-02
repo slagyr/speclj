@@ -1,6 +1,7 @@
 (ns speclj.report.progress
   (:require [clojure.string :as str]
             [speclj.config :refer [*omit-pending?* default-reporters]]
+            [speclj.error :as error]
             [speclj.platform :as platform]
             [speclj.reporting :refer [green grey indent red stack-trace-str tally-time yellow]]
             [speclj.results :refer [categorize]]))
@@ -17,7 +18,7 @@
     (println)
     (println (indent 1 id ") " (full-name characteristic)))
     (println (red (indent 2.5 (platform/error-message failure))))
-    (if (platform/failure? failure)
+    (if (error/failure? failure)
       (println (grey (indent 2.5 (platform/failure-source failure))))
       (println (grey (indent 2.5 (stack-trace-str failure)))))))
 
