@@ -15,11 +15,13 @@
      (if (not (= :pass result#))
        (-fail (str "Unexpected failure: " (speclj.platform/error-message result#))))))
 
+(defn to-string [v] (#?(:cljr .ToString :default .toString) v))
+
 (defmacro should-fail! [& body]
   `(let [result# (run-result ~@body)]
      (cond
        (= :pass result#) (-fail (str "Unexpected pass: " '~body))
-       (not (speclj.error/failure? result#)) (-fail (str "Unexpected error: " (.toString result#))))))
+       (not (speclj.error/failure? result#)) (-fail (str "Unexpected error: " (to-string result#))))))
 
 (defmacro should-error! [& body]
   `(let [result# (run-result ~@body)]

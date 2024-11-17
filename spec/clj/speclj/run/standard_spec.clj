@@ -8,12 +8,14 @@
             [speclj.spec-helper :as spec-helper]))
 
 (defn find-dir
-  ([name] (find-dir (io/as-file (io/canonical-path (io/as-file ""))) name))
+  ([name] (find-dir (io/as-file (io/canonical-path (io/as-file "."))) name))
   ([file name]
    (let [examples (io/as-file file name)]
      (if (io/exists? examples)
        examples
-       (find-dir (io/parent-file file) name)))))
+       (do
+         (prn "find-dir:" file name)
+         (find-dir (io/parent-file file) name))))))
 
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (io/canonical-path (io/as-file examples-dir "prime_factors")))

@@ -44,7 +44,7 @@
       (flush)))
 
   (report-error [_this result]
-    (println (red (.toString (.-exception result)))))
+    (println (red (#?(:cljr .ToString :default .toString) (.-exception result)))))
 
   (report-runs [_this results]
     (progress/print-summary results)))

@@ -21,7 +21,7 @@
 
 (defn file-name [file] (.-Name file))
 (defn full-name [file] (.-FullName file))
-(defn exists? [file] (.-Exists file))
+(defn exists? [file] (or (.-Exists file) (Directory/Exists (full-name file))))
 (defn parent-file [file] (.-Directory file))
 
 (defn ->LineNumberingReader [reader]
