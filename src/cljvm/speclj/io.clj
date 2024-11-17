@@ -12,6 +12,8 @@
 (defn hidden? [file] (.isHidden file))
 (defn file-name [file] (.getName file))
 (defn full-name [file] (.getAbsolutePath file))
+(defn exists? [file] (.exists file))
+(defn parent-file [file] (.getParentFile file))
 
 (defn ->LineNumberingReader [reader]
   (LineNumberingPushbackReader. reader))

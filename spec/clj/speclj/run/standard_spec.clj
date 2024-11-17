@@ -1,24 +1,24 @@
 (ns speclj.run.standard-spec
   (:require [speclj.config :as config]
             [speclj.core :refer :all]
+            [speclj.io :as io]
             [speclj.report.silent :as silent]
             [speclj.run.standard :as sut]
             [speclj.running :as running]
-            [speclj.spec-helper :as spec-helper])
-  (:import (java.io File)))
+            [speclj.spec-helper :as spec-helper]))
 
 (defn find-dir
-  ([name] (find-dir (File. (.getCanonicalPath (File. ""))) name))
+  ([name] (find-dir (io/as-file (io/canonical-path (io/as-file ""))) name))
   ([file name]
-   (let [examples (File. file name)]
-     (if (.exists examples)
+   (let [examples (io/as-file file name)]
+     (if (io/exists? examples)
        examples
-       (find-dir (.getParentFile file) name)))))
+       (find-dir (io/parent-file file) name)))))
 
 (def examples-dir (find-dir "examples"))
-(def prime-factors-dir (.getCanonicalPath (File. examples-dir "prime_factors")))
-(def failures-dir (.getCanonicalPath (File. examples-dir "failures")))
-(def focus-dir (.getCanonicalPath (File. examples-dir "focus")))
+(def prime-factors-dir (io/canonical-path (io/as-file examples-dir "prime_factors")))
+(def failures-dir (io/canonical-path (io/as-file examples-dir "failures")))
+(def focus-dir (io/canonical-path (io/as-file examples-dir "focus")))
 
 (describe "StandardRunner"
   (with runner (sut/new-standard-runner))

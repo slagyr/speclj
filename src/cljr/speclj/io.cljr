@@ -21,6 +21,8 @@
 
 (defn file-name [file] (.-Name file))
 (defn full-name [file] (.-FullName file))
+(defn exists? [file] (.-Exists file))
+(defn parent-file [file] (.-Directory file))
 
 (defn ->LineNumberingReader [reader]
   (LineNumberingTextReader. reader))
@@ -30,4 +32,4 @@
 
 (defn copy [input output] (io/copy input output))
 (defn make-input-stream [x opts] (io/make-input-stream x opts))
-(defn make-parents [file] (Directory/CreateDirectory (full-name file)))
+(defn make-parents [file] (Directory/CreateDirectory (.-DirectoryName file)))

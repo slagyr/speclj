@@ -51,15 +51,19 @@
      (abs (bigdec delta))))
 
 (defn error-message [e] (.-Message e))
+
+;; TODO [BAC]: FIXME
 (defn stack-trace [e]
   ;(.-StackTrace e)
   )
 (defn cause [e] (.-InnerException e))
 
+;; TODO [BAC]: FIXME
 (defn print-stack-trace [e]
   ;(Console/WriteLine "\n{0}" (.-StackTrace e))
   )
 
+;; TODO [BAC]: FIXME
 (defn failure-source [exception]
   ;(let [source    (nth (.-StackTrace exception) 0)
   ;      classname (.getClassName source)
@@ -70,6 +74,7 @@
   ;    (str filename ":" (.getLineNumber source))))
   )
 
+;; TODO [BAC]: FIXME
 (defn elide-level? [stack-element]
   ;(let [classname (.getClassName stack-element)]
   ;  (or
@@ -100,7 +105,12 @@
 
 ;(defn- read-in [] (when (.ready *in*) (.read *in*)))
 
-;(defn enter-pressed? []
-;  (= (read-in) new-line))
+;; TODO [BAC]: FIXME
+(defn enter-pressed? []
+  false
+  ;(= (read-in) new-line)
+  )
 
 (defn get-name [ns] (.-Name ns))
+(defn get-bytes [s]
+  (.GetBytes System.Text.Encoding/UTF8 s))

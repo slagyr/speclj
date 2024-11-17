@@ -30,7 +30,6 @@
            io/->LineNumberingReader))
 
      (defn- load-spec [spec-file]
-       (prn "spec-file:" spec-file)
        (let [rdr  (file->pushback-reader spec-file)
              path (io/full-name spec-file)]
          (platform/compiler-load rdr path)))

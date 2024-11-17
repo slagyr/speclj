@@ -5,6 +5,7 @@
                                  should-not-throw should-not= should= tags
                                  with with-all]]
             [speclj.error :as error]
+            [speclj.platform :as platform]
             [speclj.report.silent :refer [new-silent-reporter]]
             [speclj.results :refer [fail?]]
             [speclj.run.standard :as standard]
@@ -112,4 +113,4 @@
 
 (describe "namespace"
   (it "runs in the current namespace"
-    (should= 'speclj.running-spec (.name *ns*))))
+    (should= 'speclj.running-spec (platform/get-name *ns*))))

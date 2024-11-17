@@ -101,3 +101,4 @@
   (Compiler/load reader path path))
 
 (defn get-name [ns] (.name ns))
+(defn get-bytes [s] (.getBytes s))
