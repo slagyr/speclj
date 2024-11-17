@@ -113,5 +113,3 @@
 (describe "namespace"
   (it "runs in the current namespace"
     (should= 'speclj.running-spec (.name *ns*))))
-
-;(run-specs :color true)

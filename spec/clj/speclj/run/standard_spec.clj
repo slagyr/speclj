@@ -46,5 +46,3 @@
   (spec-helper/test-get-descriptions sut/new-standard-runner)
   (spec-helper/test-description-filtering sut/new-standard-runner)
   )
-
-(sut/run-specs)

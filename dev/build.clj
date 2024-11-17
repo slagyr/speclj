@@ -33,9 +33,9 @@
 
 (defn javac [_]
   (println "compiling java")
-  (b/javac {:src-dirs ["src"]
-            :class-dir class-dir
-            :basis basis
+  (b/javac {:src-dirs   ["src/clj" "src/cljc" "src/cljvm"]
+            :class-dir  class-dir
+            :basis      basis
             :javac-opts ["--release" "11"]}))
 
 (defn jar [_]
@@ -68,4 +68,3 @@
   (jar nil)
   (println "deploying " (:coordinates deploy-config))
   (aether/deploy deploy-config))
-
