@@ -1,6 +1,8 @@
 {:paths   ["src/clj" "src/cljc" "src/cljr"]
  :deps    {
-           io.github.clojure/clr.tools.namespace {:git/tag "v1.5.2" :git/sha "d540923"}
+           ;io.github.clojure/clr.tools.namespace       {:git/tag "v1.5.2" :git/sha "d540923"}
+           ;; TODO [BAC]: Use clojure tools once fork has been merged
+           io.github.brandoncorrea/clr.tools.namespace {:git/sha "6aaae5337f510365c5712a71a0274c8cf81d931f"}
            }
  :aliases {:spec {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]
                   :main-opts   ["-m" "speclj.main" "-c" "spec/clj" "spec/cljc" "spec/cljr"]}}}

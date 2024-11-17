@@ -1,27 +1,27 @@
 (ns speclj.should-spec
-  (#?(:clj :require :cljs :require-macros)
-   [speclj.core :refer [it
-                        context
-                        describe
-                        should should-not
-                        should= should-not=
-                        should== should-not==
-                        should-be should-not-be
-                        should-be-a should-not-be-a
-                        should-be-nil should-not-be-nil
-                        should-be-same should-not-be-same
-                        should-contain should-not-contain
-                        should-have-count should-not-have-count
-                        should-start-with should-not-start-with
-                        should-end-with should-not-end-with
-                        should-throw should-not-throw
-                        should< should<=
-                        should> should>=
-                        should-fail
-                        -to-s -new-throwable -new-exception]]
-   [speclj.spec-helper :refer [should-fail! should-pass! failure-message]])
-  (:require [speclj.platform :refer [endl exception type-name throwable]]
-            [speclj.run.standard :as standard]))
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [it
+                                                                  context
+                                                                  describe
+                                                                  should should-not
+                                                                  should= should-not=
+                                                                  should== should-not==
+                                                                  should-be should-not-be
+                                                                  should-be-a should-not-be-a
+                                                                  should-be-nil should-not-be-nil
+                                                                  should-be-same should-not-be-same
+                                                                  should-contain should-not-contain
+                                                                  should-have-count should-not-have-count
+                                                                  should-start-with should-not-start-with
+                                                                  should-end-with should-not-end-with
+                                                                  should-throw should-not-throw
+                                                                  should< should<=
+                                                                  should> should>=
+                                                                  should-fail
+                                                                  -to-s -new-throwable -new-exception]]
+            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message]]
+            [speclj.platform :refer [endl exception type-name throwable]]
+            [speclj.run.standard :as standard]
+            [clojure.string :as str]))
 
 (describe "Should Assertions: "
   (context "should"
@@ -100,8 +100,8 @@
       (should-pass! (should-be-same "foo" "foo"))
       (should-pass! (should-be-same 1 1))
       (should-fail! (should-be-same [] ()))
-      #?(:clj
-         (should-fail! (should-be-same 1 1.0)))
+      #?(:cljs    (do)
+         :default (should-fail! (should-be-same 1 1.0)))
       )
 
     (it "failure message is nice"
@@ -114,8 +114,8 @@
       (should-fail! (should-not-be-same 1 1))
       (should-pass! (should-not-be-same [] ()))
 
-      #?(:clj
-         (should-pass! (should-not-be-same 1 1.0)))
+      #?(:cljs    (do)
+         :default (should-pass! (should-not-be-same 1 1.0)))
       )
 
     (it "failure message is nice"
@@ -142,10 +142,10 @@
         (let [error (str "Expected: 1" endl "     got: 2 (using ==)")]
           (should= error (failure-message (should== 1 2)))))
 
-      #?(:clj
-         (it "reports the error with floats"
-           (let [error (str "Expected: 1.0" endl "     got: 2 (using ==)")]
-             (should= error (failure-message (should== 1.0 2))))))
+      (it "reports the error with floats"
+        (let [error (str "Expected: 1.0" endl "     got: 2 (using ==)")]
+          #?(:cljs    (do)
+             :default (should= error (failure-message (should== 1.0 2))))))
 
       )
 
@@ -206,12 +206,12 @@
       (it "checks equality of maps"
         (should-pass! (should== {:a 1} {:a 1}))
         (should-fail! (should== {:a 1} {:a 1 :b 2}))
-        (let [lines (.split (failure-message (should== {:a 1} {:a 1 :b 2})) endl)]
-          (should= "Expected contents: {:a 1}" (aget lines 0))
-          (should-contain ":b 2" (aget lines 1))
-          (should-contain ":a 1" (aget lines 1))
-          (should= "          missing: nil" (aget lines 2))
-          (should= "            extra: {:b 2}" (aget lines 3))
+        (let [lines (str/split-lines (failure-message (should== {:a 1} {:a 1 :b 2})))]
+          (should= "Expected contents: {:a 1}" (nth lines 0))
+          (should-contain ":b 2" (nth lines 1))
+          (should-contain ":a 1" (nth lines 1))
+          (should= "          missing: nil" (nth lines 2))
+          (should= "            extra: {:b 2}" (nth lines 3))
           )
         ;        (should= (str "Expected contents: {:a 1}" endl "              got: {:b 2, :a 1}" endl "          missing: nil" endl "            extra: {:b 2}")
         ;          (failure-message (should== {:a 1} {:a 1 :b 2})))
@@ -233,10 +233,10 @@
         (let [error (str " Expected: 1" endl "not to ==: 1 (using ==)")]
           (should= error (failure-message (should-not== 1 1)))))
 
-      #?(:clj
-         (it "reports the error with floats"
-           (let [error (str " Expected: 1.0" endl "not to ==: 1 (using ==)")]
-             (should= error (failure-message (should-not== 1.0 1))))))
+      (it "reports the error with floats"
+        (let [error (str " Expected: 1.0" endl "not to ==: 1 (using ==)")]
+          #?(:cljs    (do)
+             :default (should= error (failure-message (should-not== 1.0 1))))))
 
       )
 
@@ -490,35 +490,52 @@
         (should-not-end-with 1 2))))
 
   (context "should-throw"
+
     #?(:clj
        (it "tests that any Throwable is thrown"
          (should-pass! (should-throw (throw (java.lang.Throwable. "error"))))
          (should-fail! (should-throw (+ 1 1)))
          (should= (str "Expected " (type-name java.lang.Throwable) " thrown from: (+ 1 1)" endl
                        (apply str (take (count (type-name java.lang.Throwable)) (repeat " "))) "              but got: <nothing thrown>")
+                  (failure-message (should-throw (+ 1 1)))))
+       :cljr
+       (it "tests that any Throwable is thrown"
+         (should-pass! (should-throw (throw (Exception. "error"))))
+         (should-fail! (should-throw (+ 1 1)))
+         (should= (str "Expected " (type-name Exception) " thrown from: (+ 1 1)" endl
+                       (apply str (take (count (type-name Exception)) (repeat " "))) "              but got: <nothing thrown>")
                   (failure-message (should-throw (+ 1 1))))))
 
     (it "can test an expected throwable type"
       (should-pass! (should-throw exception (throw (-new-exception))))
 
-      #?(:clj
-         (should-pass! (should-throw java.lang.Object (throw (java.lang.Exception.)))))
+      #?(:cljs    (do)
+         :default (should-pass! (should-throw Object (throw (Exception.)))))
 
-      (should-fail! (should-throw exception (throw (-new-throwable))))
+      #?(:cljr    (should-fail! (should-throw SystemException (throw (-new-throwable))))
+         :default (should-fail! (should-throw exception (throw (-new-throwable)))))
       (should-fail! (should-throw exception (+ 1 1)))
       (should= (str "Expected " (type-name exception) " thrown from: (+ 1 1)" endl
                     (apply str (take (count (type-name exception)) (repeat " "))) "              but got: <nothing thrown>")
                (failure-message (should-throw exception (+ 1 1))))
       #?(:cljs
          (should=
-           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl "                     but got: #object[String some message]")
+           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "some message"))) endl
+                "                     but got: #object[String some message]")
            (failure-message (should-not-throw (throw (-new-throwable "some message")))))
          :clj
          (should-contain
            (str "Expected " (type-name exception) " thrown from: (throw (-new-throwable \"some message\"))" endl
-                (apply str (take (count (type-name exception)) (repeat " ")))
+                (apply str (repeat (count (type-name exception)) " "))
                 "              but got: #error {\n :cause \"some message\"\n :via\n [{:type java.lang.Throwable\n")
-           (failure-message (should-throw exception (throw (-new-throwable "some message"))))))
+           (failure-message (should-throw exception (throw (-new-throwable "some message")))))
+         :cljr
+         (should-contain
+           (str "Expected System.SystemException thrown from: (throw (-new-throwable \"some message\"))" endl
+                (apply str (repeat (count "System.SystemException") " "))
+                "              but got: #error {\n :cause \"some message\"\n :via\n [{:type System.Exception\n")
+           (failure-message (should-throw SystemException (throw (-new-throwable "some message"))))))
+
       )
 
     (it "can test the message of the exception with regex"
@@ -545,12 +562,14 @@
       (should-fail! (should-not-throw (throw (-new-throwable "error"))))
       #?(:cljs
          (should=
-           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl "                     but got: #object[String error]")
+           (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
+                "                     but got: #object[String error]")
            (failure-message (should-not-throw (throw (-new-throwable "error")))))
-         :clj
+         :default
          (should-contain
            (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
-                "                     but got: #error {\n :cause \"error\"\n :via\n [{:type java.lang.Throwable\n   :message \"error\"\n")
+                (str "                     but got: #error {\n :cause \"error\"\n :via\n [{:type " (type-name throwable)
+                     "\n   :message \"error\"\n"))
            (failure-message (should-not-throw (throw (-new-throwable "error"))))))))
 
 
@@ -558,9 +577,10 @@
     (it "passes if the actual form is an instance of the expected type"
       (should-pass! (should-be-a (type 1) 1)))
 
-    #?(:clj
-       (it "passes if the actual derives from the expected type"
-         (should-pass! (should-be-a Number (int 1)))))
+    (it "passes if the actual derives from the expected type"
+      #?(:cljs (do)
+         :clj  (should-pass! (should-be-a Number (int 1)))
+         :cljr (should-pass! (should-be-a System.ValueType (int 1)))))
 
     (it "fails if the actual form is not an instance of the expected type"
       (should-fail! (should-be-a (type 1) "one")))
@@ -575,9 +595,10 @@
     (it "fails if the actual form is an instance of the expected type"
       (should-fail! (should-not-be-a (type 1) 1)))
 
-    #?(:clj
-       (it "fails if the actual derives from the expected type"
-         (should-fail! (should-not-be-a Number (int 1)))))
+    (it "fails if the actual derives from the expected type"
+      #?(:cljs (do)
+         :clj  (should-fail! (should-not-be-a Number (int 1)))
+         :cljr (should-fail! (should-not-be-a System.ValueType (int 1)))))
 
     (it "passes if the actual form is not an instance of the expected type"
       (should-pass! (should-not-be-a (type 1) "one")))

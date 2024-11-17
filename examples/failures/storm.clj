@@ -22,7 +22,7 @@
     (should-throw (+ 1 1)))
 
   (it "fails to throw the right error"
-    (should-throw Exception (throw (Error. "oops"))))
+    (should-throw clojure.lang.ExceptionInfo (throw (Exception. "oops"))))
 
   (it "fails to throw error with the right message"
     (should-throw Exception "Howdy" (throw (Exception. "Hiya")))))

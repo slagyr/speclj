@@ -301,16 +301,16 @@
      (cond
        (nil? actual#) (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: nil"))
        (and (string? expected#) (string? actual#))
-       (when (= -1 (.indexOf actual# expected#))
+       (when (nil? (clojure.string/index-of actual# expected#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using .contains)")))
        (and (speclj.platform/re? expected#) (string? actual#))
        (when (empty? (re-seq expected# actual#))
          (-fail (str "Expected: " (-to-s actual#) speclj.platform/endl "to match: " (-to-s expected#) " (using re-seq)")))
        (map? actual#)
-       (when (not (contains? actual# expected#))
+       (when-not (contains? actual# expected#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be a key in: " (-to-s actual#) " (using contains?)")))
        (coll? actual#)
-       (when (not (some #(= expected# %) actual#))
+       (when-not (some #(= expected# %) actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "to be in: " (-to-s actual#) " (using =)")))
        :else (throw (-new-exception (wrong-types "should-contain" expected# actual#))))))
 
@@ -322,10 +322,10 @@
      (cond
        (nil? actual#) nil ; automatic pass!
        (and (string? expected#) (string? actual#))
-       (when (not (= -1 (.indexOf actual# expected#)))
+       (when (some? (clojure.string/index-of actual# expected#))
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to be in: " (-to-s actual#) " (using .contains)")))
        (and (speclj.platform/re? expected#) (string? actual#))
-       (when (not (empty? (re-seq expected# actual#)))
+       (when (seq (re-seq expected# actual#))
          (-fail (str "Expected: " (-to-s actual#) speclj.platform/endl "not to match: " (-to-s expected#) " (using re-seq)")))
        (map? actual#)
        (when (contains? actual# expected#)

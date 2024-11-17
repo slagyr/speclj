@@ -9,6 +9,8 @@
         (recur (conj factors divisor) divisor (/ n divisor))
         (recur factors (inc divisor) n)))))
 
+(defn pow [x n] (apply * (repeat n (bigdec x))))
+
 (describe "prime factors"
   (it "factors 1"
     (should= [] (factors-of 1)))
@@ -38,7 +40,7 @@
     (should= [3 3] (factors-of 9)))
 
   (it "factors 2^100"
-    (should= (repeat 100 2) (factors-of (Math/pow 2 100))))
+    (should= (repeat 100 2) (factors-of (pow 2 100))))
 
   ; MDM - This one takes a bit too long to participate in the spec suite
   ;  (it "factors 2^19-1"

@@ -13,11 +13,12 @@
 
   (describe "if-cljs"
     (it "conditionally compiles a macro"
-      (should= #?(:clj :clj :cljs :cljs) (which-env))))
+      (should= #?(:cljs :cljs :default :clj) (which-env))))
 
   (describe "try-catch-anything"
-    (let #?(:clj  [throwable (Throwable. "welp")]
-            :cljs [throwable "welp"])
+    (let [throwable #?(:clj (Throwable. "welp")
+                       :cljs "welp"
+                       :cljr (Exception. "welp"))]
       (it "catches anything"
         (try-catch-anything
           (throw throwable)
