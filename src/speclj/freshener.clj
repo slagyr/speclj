@@ -6,23 +6,22 @@
     [clojure.tools.namespace.repl :as repl]
     [clojure.tools.namespace.track :as track]
     [speclj.config]
-    [speclj.reporting])
-  (:use
-    [clojure.java.io :only [file]]))
+    [speclj.io :as io]
+    [speclj.reporting]))
 
 (defn find-files-in
   "Returns a seq of all files (matching the regex) contained in the given directories."
   [pattern & dirs]
-  (let [dirs (map #(.getCanonicalFile %) dirs)
-        files (reduce #(into %1 (file-seq (file %2))) [] dirs)
-        files (remove #(.isHidden %) files)
-        clj-files (filter #(re-matches pattern (.getName %)) files)]
-    clj-files))
+  (->> (map io/canonical-file dirs)
+       (reduce #(into %1 (file-seq (io/as-file %2))) [])
+       (remove io/hidden?)
+       (filter #(re-matches pattern (io/file-name %)))))
 
 (def clj-file-regex #".*\.clj(c)?")
 (defn clj-files-in
   "Returns a seq of all clojure source files contained in the given directories."
-  [& dirs] (apply find-files-in clj-file-regex dirs))
+  [& dirs]
+  (apply find-files-in clj-file-regex dirs))
 
 (defn remove-value [val coll]
   (remove #(= % val) coll))

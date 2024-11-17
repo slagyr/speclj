@@ -1,8 +1,8 @@
 (ns speclj.reporting
-  (:require [clojure.string :as string :refer [split join]]
-            #?(:cljs [goog.string])                         ;cljs bug?
-            [speclj.config :refer [*reporters* *color?* *full-stack-trace?*]]
-            [speclj.platform :refer [endl file-separator failure-source stack-trace cause print-stack-trace elide-level?]]
+  (:require [clojure.string :as str]
+            #?(:cljs [goog.string]) ;cljs bug?
+            [speclj.config :refer [*color?* *full-stack-trace?*]]
+            [speclj.platform :refer [endl stack-trace cause print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))
 
 (defn tally-time [results]
@@ -76,9 +76,9 @@
 
 (defn prefix [pre & args]
   (let [value          (apply str args)
-        lines          (split value #"[\r\n]+")
+        lines          (str/split value #"[\r\n]+")
         prefixed-lines (map #(str pre %) lines)]
-    (join endl prefixed-lines)))
+    (str/join endl prefixed-lines)))
 
 (defn indent [n & args]
   (let [spaces    (int (* n 2.0))

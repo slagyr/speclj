@@ -6,8 +6,8 @@
             [speclj.components]
             [speclj.config]
             [speclj.error]
-            #?(:clj  [speclj.platform :refer [if-cljs try-catch-anything]]
-               :cljs [speclj.platform])
+            #?(:cljs    [speclj.platform]
+               :default [speclj.platform :refer [if-cljs try-catch-anything]])
             [speclj.reporting]
             [speclj.results]
             [speclj.running]
@@ -18,17 +18,24 @@
             [speclj.report.silent]
             [speclj.run.standard]))
 
-#?(:clj (try (require 'speclj.run.standard)
-             (catch Exception _)))
+#?(:cljs    (do)
+   :default (try (require 'speclj.run.standard)
+                 (catch Exception _)))
 
 (defmacro ^:no-doc -new-exception
-  ([] `(if-cljs (js/Error.) (java.lang.Exception.)))
-  ([message] `(if-cljs (js/Error. ~message) (java.lang.Exception. ~message)))
-  ([message cause] `(if-cljs (js/Error. ~message) (java.lang.Exception. ~message ~cause))))
+  ([] `(if-cljs (js/Error.) (Exception.)))
+  ([message] `(if-cljs (js/Error. ~message) (Exception. ~message)))
+  ([message cause] `(if-cljs (js/Error. ~message) (Exception. ~message ~cause))))
 
-(defmacro ^:no-doc -new-throwable
-  ([] `(if-cljs (js/Object.) (java.lang.Throwable.)))
-  ([message] `(if-cljs (js/Object. ~message) (java.lang.Throwable. ~message))))
+#?(:cljr
+   (defmacro ^:no-doc -new-throwable
+     ([] `(if-cljs (js/Object.) (Exception.)))
+     ([message] `(if-cljs (js/Object. ~message) (Exception. ~message))))
+
+   :default
+   (defmacro ^:no-doc -new-throwable
+     ([] `(if-cljs (js/Object.) (java.lang.Throwable.)))
+     ([message] `(if-cljs (js/Object. ~message) (java.lang.Throwable. ~message)))))
 
 (defmacro ^:no-doc -new-failure [message]
   `(ex-info ~message {:type speclj.error/failure}))
@@ -42,7 +49,7 @@
     `(speclj.components/new-characteristic ~name (fn [] (pending)) ~focused?)))
 
 (defmacro ^:no-doc help-describe [name focused? & components]
-  `(let [description# (speclj.components/new-description ~name ~focused? ~(clojure.core/name (.name *ns*)))]
+  `(let [description# (speclj.components/new-description ~name ~focused? ~(clojure.core/name (speclj.platform/get-name *ns*)))]
      (binding [speclj.config/*parent-description* description#]
        ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
        (doseq [component# (vector ~@components)]
@@ -567,11 +574,10 @@ There are three options for passing different kinds of predicates:
                (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
                :else e#))))
   ([throwable-type predicate form]
-   `(let [e#     (should-throw ~throwable-type ~form)
-          regex# (if-cljs js/RegExp java.util.regex.Pattern)]
+   `(let [e# (should-throw ~throwable-type ~form)]
       (try-catch-anything
         (let [predicate# ~predicate]
-          (cond (instance? regex# predicate#)
+          (cond (speclj.platform/re? predicate#)
                 (should-not-be-nil (re-find predicate# (speclj.platform/error-message e#)))
 
                 (ifn? predicate#)

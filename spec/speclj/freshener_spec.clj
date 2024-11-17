@@ -1,24 +1,18 @@
 (ns speclj.freshener-spec
-  (:require [speclj.core :refer :all]
-            [speclj.freshener :refer :all]
-            [clojure.tools.namespace.repl :as repl]
-            [clojure.tools.namespace.dir :as dir])
-  (:use [clojure.java.io :only (file copy make-input-stream delete-file make-parents)]))
+  (:require
+    [clojure.tools.namespace.dir :as dir]
+    [clojure.tools.namespace.repl :as repl]
+    [speclj.core :refer :all]
+    [speclj.freshener :refer :all]
+    [speclj.io :as io]))
 
-(def sample-dir (.getCanonicalFile (file "examples/sample")))
-
-(defn sample-file [dir name]
-  (file dir name))
+(def sample-dir (io/canonical-file (io/as-file "examples/sample")))
 
 (defn write-file [dir name content]
-  (let [file (sample-file dir name)]
-    (make-parents file)
-    (copy (make-input-stream (.getBytes content) {}) file)
+  (let [file (io/as-file dir name)]
+    (io/make-parents file)
+    (io/copy (io/make-input-stream (.getBytes content) {}) file)
     file))
-
-(defn tweak-mod-time [file tweak]
-  (let [mod-time (+ (.lastModified file) (* 1000 tweak))]
-    (.setLastModified file mod-time)))
 
 (describe "Freshener"
 

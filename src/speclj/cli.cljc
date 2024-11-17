@@ -99,7 +99,7 @@
         (when-let [filter-msg (describe-filter)]
           (report-message* config/*reporters* filter-msg))
         (run-directories config/*runner* config/*specs* config/*reporters*)
-        (catch Exception e
+        (catch #?(:cljs :default :default Exception) e
           (print-stack-trace e)
           (println (stack-trace-str e))
           -1)))))

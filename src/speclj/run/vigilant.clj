@@ -1,13 +1,11 @@
 (ns speclj.run.vigilant
-  (:require [clojure.java.io :as io]
-            [clojure.tools.namespace.reload :as reload]
+  (:require [clojure.tools.namespace.reload :as reload]
             [clojure.tools.namespace.repl :as repl]
-            [clojure.tools.namespace.dir :as dir]
-            [clojure.tools.namespace.file :as file]
             [clojure.tools.namespace.track :as track]
             [speclj.config :as config]
             [speclj.freshener :refer [freshen]]
-            [speclj.platform :refer [current-time enter-pressed? endl format-seconds secs-since]]
+            [speclj.io :as io]
+            [speclj.platform :refer [current-time endl enter-pressed? format-seconds secs-since]]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
             [speclj.running :as running])
@@ -33,8 +31,8 @@
 
 (defn- tick [configuration]
   (with-bindings configuration
-    (let [runner (config/active-runner)
-          reporters (config/active-reporters)
+    (let [runner         (config/active-runner)
+          reporters      (config/active-reporters)
           reloaded-files (freshen)]
       (try
         (reset! start-time (current-time))
@@ -73,10 +71,10 @@
 (deftype VigilantRunner [file-listing results previous-failed directories descriptions]
   running/Runner
   (run-directories [this directories _reporters]
-    (let [scheduler (ScheduledThreadPoolExecutor. 1)
+    (let [scheduler     (ScheduledThreadPoolExecutor. 1)
           configuration (config/config-bindings)
-          runnable (fn [] (tick configuration))
-          dir-files (map io/file directories)]
+          runnable      (fn [] (tick configuration))
+          dir-files     (map io/as-file directories)]
       (reset! (.directories this) dir-files)
       (apply repl/set-refresh-dirs dir-files)
       (.scheduleWithFixedDelay scheduler runnable 0 500 TimeUnit/MILLISECONDS)

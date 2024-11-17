@@ -1,7 +1,7 @@
 (ns speclj.spec-helper
   #?(:cljs (:require-macros [speclj.spec-helper :refer [test-exported-meta test-get-descriptions]]))
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [context -fail it should= with]]
-            [speclj.platform #?(:clj :refer :cljs :refer-macros) [try-catch-anything]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [context -fail it should= with]]
+            [speclj.platform #?(:cljs :refer-macros :default :refer) [try-catch-anything]]
             [speclj.components :as components]
             [speclj.running :as running]))
 

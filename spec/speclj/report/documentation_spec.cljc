@@ -1,7 +1,7 @@
 (ns speclj.report.documentation-spec
   (:require #?(:cljs [goog.string]) ;cljs bug?
-            [speclj.core #?(:clj :refer :cljs :refer-macros) [before context describe it should= with -new-exception -new-failure -new-pending]]
-            [speclj.spec-helper #?(:clj :refer :cljs :refer-macros) [test-exported-meta]]
+            [speclj.core #?(:cljs :refer-macros :default :refer) [before context describe it should= with -new-exception -new-failure -new-pending]]
+            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [test-exported-meta]]
             [speclj.components :refer [new-description new-characteristic install]]
             [speclj.platform :refer [endl]]
             [speclj.report.documentation :as sut]

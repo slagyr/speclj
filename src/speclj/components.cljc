@@ -3,18 +3,7 @@
 (defprotocol SpecComponent
   (install [this description]))
 
-#?(:clj
-   (extend-protocol SpecComponent
-     java.lang.Object
-     (install [_this _description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
-     nil
-     (install [_this _description] (throw (java.lang.Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probably not what you wanted."))))
-     clojure.lang.Var
-     (install [_this _description] (comment "Vars are cool.  Let them pass."))
-     clojure.lang.Seqable
-     (install [this description] (doseq [component (seq this)] (install component description))))
-
-   :cljs
+#?(:cljs
    (extend-protocol SpecComponent
      LazySeq
      (install [this description] (doseq [component (seq this)] (install component description)))
@@ -27,7 +16,18 @@
      nil
      (install [_this _description] (throw (ex-info (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probably not what you wanted.") {})))
      object
-     (install [_this _description] (comment "Whatever...  Let them pass."))))
+     (install [_this _description] (comment "Whatever...  Let them pass.")))
+
+   :default
+   (extend-protocol SpecComponent
+     Object
+     (install [_this _description] (comment "This prohibits multimethod defs, and other stuff.  Don't be so stingy! Let it pass."))
+     nil
+     (install [_this _description] (throw (Exception. (str "Oops!  It looks like you tried to add 'nil' to a spec.  That's probably not what you wanted."))))
+     clojure.lang.Var
+     (install [_this _description] (comment "Vars are cool.  Let them pass."))
+     clojure.lang.Seqable
+     (install [this description] (doseq [component (seq this)] (install component description)))))
 
 (deftype Description [name is-focused? has-focus? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
   SpecComponent
@@ -35,7 +35,7 @@
     (reset! (.-parent this) description)
     (swap! (.-children description) conj this))
   Object
-  (toString [_this] (str "Description: " \" name \")))
+  (#?(:cljr ToString :default toString) [_this] (str "Description: " \" name \")))
 
 (defn new-description [name is-focused? ns]
   (Description. name (atom is-focused?) (atom false) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
@@ -49,7 +49,7 @@
     (reset! (.-parent this) description)
     (swap! (.-characteristics description) conj this))
   Object
-  (toString [_this] (str \" name \")))
+  (#?(:cljr ToString :default toString) [_this] (str \" name \")))
 
 (defn new-characteristic
   ([name body is-focused?] (Characteristic. name (atom nil) body (atom is-focused?)))
@@ -110,8 +110,8 @@
   SpecComponent
   (install [this description]
     (swap! (.-withs description) conj this))
-  #?(:clj clojure.lang.IDeref :cljs cljs.core/IDeref)
-  (#?(:clj deref :cljs -deref) [_this]
+  #?(:cljs cljs.core/IDeref :default clojure.lang.IDeref)
+  (#?(:cljs -deref :default deref) [_this]
     (when (= ::none @value)
       (reset! value (body)))
     @value))
@@ -129,8 +129,8 @@
   SpecComponent
   (install [this description]
     (swap! (.-with-alls description) conj this))
-  #?(:clj clojure.lang.IDeref :cljs cljs.core/IDeref)
-  (#?(:clj deref :cljs -deref) [_this]
+  #?(:cljs cljs.core/IDeref :default clojure.lang.IDeref)
+  (#?(:cljs -deref :default deref) [_this]
     (when (= ::none @value)
       (reset! value (body)))
     @value))

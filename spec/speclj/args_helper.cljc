@@ -1,27 +1,31 @@
 (ns speclj.args-helper
   #?(:cljs (:require-macros [speclj.args-helper :refer [should-have-parse-error should-have-leftover created-string-should= option-string-should= parameter-string-should=]]))
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [context should-throw should-not-throw should-not-contain should-contain it should= should-be should-not-be-nil]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [context should-throw should-not-throw should-not-contain should-contain it should= should-be should-not-be-nil]]
             [speclj.args :as sut]
             [clojure.string :as str]))
 
-#?(:clj (defmacro should-have-parse-error [spec message & args]
-          `(let [result# (sut/parse ~spec [~@args])
-                 errors# (:*errors result#)]
-             (should-not-be-nil errors#)
-             (should-contain ~message errors#))))
+#?(:cljs    (do)
+   :default (defmacro should-have-parse-error [spec message & args]
+              `(let [result# (sut/parse ~spec [~@args])
+                     errors# (:*errors result#)]
+                 (should-not-be-nil errors#)
+                 (should-contain ~message errors#))))
 
-#?(:clj
-   (defmacro should-have-leftover [spec leftovers args]
-     `(should= ~leftovers (:*leftover (sut/parse ~spec ~args)))))
+#?(:cljs    (do)
+   :default (defmacro should-have-leftover [spec leftovers args]
+              `(should= ~leftovers (:*leftover (sut/parse ~spec ~args)))))
 
-#?(:clj (defmacro created-string-should= [f spec & lines]
-          `(should= (str (str/join "\n" [~@lines]) "\n") (~f ~spec))))
+#?(:cljs    (do)
+   :default (defmacro created-string-should= [f spec & lines]
+              `(should= (str (str/join "\n" [~@lines]) "\n") (~f ~spec))))
 
-#?(:clj (defmacro option-string-should= [spec & lines]
-          `(created-string-should= sut/options-string ~spec ~@lines)))
+#?(:cljs    (do)
+   :default (defmacro option-string-should= [spec & lines]
+              `(created-string-should= sut/options-string ~spec ~@lines)))
 
-#?(:clj (defmacro parameter-string-should= [spec & lines]
-          `(created-string-should= sut/parameters-string ~spec ~@lines)))
+#?(:cljs    (do)
+   :default (defmacro parameter-string-should= [spec & lines]
+              `(created-string-should= sut/parameters-string ~spec ~@lines)))
 
 (defn test-arguments [constructor]
   (context "Argument Parsing"
@@ -90,9 +94,9 @@
 
     (it "option names are required"
       (let [spec (constructor)]
-        (should-throw #?(:clj RuntimeException :cljs js/Error) "Options require a shortName and fullName"
+        (should-throw #?(:clj RuntimeException :cljs js/Error :cljr SystemException) "Options require a shortName and fullName"
           (sut/add-switch-option spec "a" nil nil))
-        (should-throw #?(:clj RuntimeException :cljs js/Error) "Options require a shortName and fullName"
+        (should-throw #?(:clj RuntimeException :cljs js/Error :cljr SystemException) "Options require a shortName and fullName"
           (sut/add-switch-option spec nil "a-option" nil))
         (should-not-throw (sut/add-switch-option spec "a" "a-option" nil))))
 

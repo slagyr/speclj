@@ -1,6 +1,6 @@
 (ns speclj.platform-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe it should= should-throw]]
-            [speclj.platform #?(:clj :refer :cljs :refer-macros) [if-cljs try-catch-anything]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [describe it should= should-throw]]
+            [speclj.platform #?(:cljs :refer-macros :default :refer) [if-cljs try-catch-anything]]
             [speclj.run.standard :as standard]))
 
 (defmacro which-env []

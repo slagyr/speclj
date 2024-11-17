@@ -1,5 +1,5 @@
 (ns speclj.tags-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [around context describe it should= tags]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [around context describe it should= tags]]
             [clojure.string :as str]
             [speclj.config :as config]
             [speclj.report.silent :as silent]

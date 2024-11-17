@@ -1,63 +1,66 @@
 (ns speclj.run.standard
-  (:require #?(:clj [clojure.java.io :as io])
-            #?(:clj [speclj.freshener :as fresh])
-            #?(:cljs [speclj.report.progress])
-            #?(:cljs [speclj.components :as components])
+  (:require #?@(:cljs    [[speclj.report.progress]
+                          [speclj.components :as components]]
+                :default [[speclj.freshener :as fresh]
+                          [speclj.io :as io]])
             [speclj.config :as config]
+            [speclj.platform :as platform]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
             [speclj.running :as running]
-            [speclj.tags :as tags])
-  #?(:clj (:import (clojure.lang Compiler LineNumberingPushbackReader)
-                   (java.io StringReader))))
+            [speclj.tags :as tags]))
 
 #?(:cljs
    (do
      (def ^:export armed false)
      (def counter (atom 0))
      (defn ^:export arm [] (set! armed true))
-     (defn ^:export disarm [] (set! armed false))
-     ))
+     (defn ^:export disarm [] (set! armed false))))
 
-#?(:clj
+#?(:cljs
+   (defn- load-spec [_spec-file]
+     (js/alert "speclj.run.standard.load-spec:  I don't know how to do this."))
+
+   :default
    (do
      (defn- file->pushback-reader [file]
-       (-> file
-           (.getCanonicalPath)
+       (-> (io/canonical-path file)
            slurp
-           (StringReader.)
-           (LineNumberingPushbackReader.)))
+           io/->StringReader
+           io/->LineNumberingReader))
 
      (defn- load-spec [spec-file]
+       (prn "spec-file:" spec-file)
        (let [rdr  (file->pushback-reader spec-file)
-             path (.getAbsolutePath spec-file)]
-         (Compiler/load rdr path path)))
-
-     (defn- try-load-spec [runner file]
-       (try
-         (load-spec file)
-         (catch Throwable e
-           (running/process-compile-error runner e))))
+             path (io/full-name spec-file)]
+         (platform/compiler-load rdr path)))
      ))
+
+(defn- try-load-spec [runner file]
+  (try
+    (load-spec file)
+    (catch #?(:clj Throwable :cljr Exception :cljs :default) e
+      (running/process-compile-error runner e))))
 
 ;; TODO [BAC]: cljs breaks StandardRunner interface.
 ;;   Is num necessary for cljs?
 ;;   Should clj have num as well?
 (deftype StandardRunner [#?(:cljs num) descriptions results]
   running/Runner
-  #?(:clj
+  #?(:cljs
+     (run-directories [_this _directories _reporters]
+                      (js/alert "StandardRunner.run-directories:  I don't know how to do this."))
+     :default
      (run-directories [this directories reporters]
-       (let [files (->> (map io/file directories)
+       (let [files (->> (map io/as-file directories)
                         (apply fresh/clj-files-in)
-                        sort)]
+                        (sort-by io/full-name))]
          (binding [config/*runner*    this
                    config/*reporters* reporters]
            (run! #(try-load-spec this %) files)))
        (running/run-and-report this reporters)
        (results/fail-count @results))
-     :cljs
-     (run-directories [_this _directories _reporters]
-                      (js/alert "StandardRunner.run-directories:  I don't know how to do this.")))
+     )
 
   (-get-descriptions [_this] @descriptions)
 
@@ -103,15 +106,7 @@
         (update-keys $ keyword)
         (merge (dissoc config/default-config :runner) $)))
 
-#?(:clj
-   (defn run-specs [& configurations]
-     (when (identical? (config/active-runner) @config/default-runner) ; Solo file run?
-       (let [config (config-with-defaults configurations)]
-         (with-bindings (config/config-mappings config)
-           (execute-active-runner)
-           (reset! config/default-runner (@config/default-runner-fn))))))
-
-   :cljs
+#?(:cljs
    (defn ^:export run-specs [& configurations]
      "If evaluated outside the context of a spec run, it will run all the specs that have been evaluated using the default
       runner and reporter.  A call to this function is typically placed at the end of a spec file so that all the specs
@@ -123,4 +118,13 @@
          (config-with-defaults configurations)
          (fn []
            (execute-active-runner)
-           (results/fail-count @(.-results (config/active-runner))))))))
+           (results/fail-count @(.-results (config/active-runner)))))))
+
+   :default
+   (defn run-specs [& configurations]
+     (when (identical? (config/active-runner) @config/default-runner) ; Solo file run?
+       (let [config (config-with-defaults configurations)]
+         (with-bindings (config/config-mappings config)
+           (execute-active-runner)
+           (reset! config/default-runner (@config/default-runner-fn))))))
+   )

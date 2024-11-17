@@ -23,7 +23,7 @@
    (-add-value-option spec short-name full-name value-description description false))
   ([spec short-name full-name value-description description multi?]
    (when-not (and short-name full-name)
-     (throw (#?(:clj RuntimeException. :cljs js/Error) "Options require a shortName and fullName")))
+     (throw (#?(:clj RuntimeException. :cljs js/Error. :cljr SystemException.) "Options require a shortName and fullName")))
    (let [option {:short-name        short-name
                  :full-name         full-name
                  :value-description value-description

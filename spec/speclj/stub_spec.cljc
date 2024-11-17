@@ -1,6 +1,6 @@
 (ns speclj.stub-spec
-  (:require [speclj.spec-helper #?(:clj :refer :cljs :refer-macros) [should-fail! should-pass! failure-message]]
-            [speclj.core #?(:clj :refer :cljs :refer-macros) [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
+  (:require [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message]]
+            [speclj.core #?(:cljs :refer-macros :default :refer) [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
             [speclj.stub :as stub]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :as standard]

@@ -101,30 +101,30 @@
 
 (defn- report-result [result-constructor characteristic start-time reporters failure]
   (let [present-args (filter identity [characteristic (secs-since start-time) failure])
-        result (apply result-constructor present-args)]
+        result       (apply result-constructor present-args)]
     (report-run result reporters)
     result))
 
 (defn- do-characteristic [characteristic reporters]
-  (let [description @(.-parent characteristic)
-        befores (collect-components #(deref (.-befores %)) description)
-        afters (collect-components #(deref (.-afters %)) description)
-        core-body (.-body characteristic)
+  (let [description           @(.-parent characteristic)
+        befores               (collect-components #(deref (.-befores %)) description)
+        afters                (collect-components #(deref (.-afters %)) description)
+        core-body             (.-body characteristic)
         before-and-after-body (fn [] (eval-characteristic befores core-body afters))
-        arounds (collect-components #(deref (.-arounds %)) description)
-        full-body (nested-fns before-and-after-body (map #(.-body %) arounds))
-        withs (collect-components #(deref (.-withs %)) description)
-        start-time (current-time)]
+        arounds               (collect-components #(deref (.-arounds %)) description)
+        full-body             (nested-fns before-and-after-body (map #(.-body %) arounds))
+        withs                 (collect-components #(deref (.-withs %)) description)
+        start-time            (current-time)]
     (try
       (do
         (full-body)
         (report-result pass-result characteristic start-time reporters nil))
-      (catch #?(:clj java.lang.Throwable :cljs :default) e
+      (catch #?(:clj java.lang.Throwable :cljr Exception :cljs :default) e
         (if (pending? e)
           (report-result pending-result characteristic start-time reporters e)
           (report-result fail-result characteristic start-time reporters e)))
       (finally
-        (reset-withs withs)))))                             ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
+        (reset-withs withs))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
@@ -134,7 +134,7 @@
 (declare do-description)
 
 (defn- do-child-contexts [context results reporters]
-  (loop [results results
+  (loop [results  results
          children @(.-children context)]
     (if (seq children)
       (recur (concat results (do-description (first children) reporters)) (rest children))
@@ -147,22 +147,23 @@
     (do-characteristics @(.-characteristics context) reporters)
     []))
 
-#?(:clj
-   (defn- with-withs-bound [description body]
-     (let [withs (concat @(.-withs description) @(.-with-alls description))
-           ns (the-ns (symbol (.-ns description)))
-           with-mappings (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)
-           with-and-ns-mappings (assoc with-mappings #'*ns* ns)]
-       (with-bindings* with-and-ns-mappings body)))
-
-   :cljs
+#?(:cljs
    (defn- with-withs-bound [description body]
      (let [withs (concat @(.-withs description) @(.-with-alls description))]
        (run! #((.-set-var! %) %) withs)
        (try
          (body)
          (finally
-           (run! #((.-set-var! %) nil) withs))))))
+           (run! #((.-set-var! %) nil) withs)))))
+
+   :default
+   (defn- with-withs-bound [description body]
+     (let [withs                (concat @(.-withs description) @(.-with-alls description))
+           ns                   (the-ns (symbol (.-ns description)))
+           with-mappings        (reduce #(assoc %1 (ns-resolve ns (.-name %2)) %2) {} withs)
+           with-and-ns-mappings (assoc with-mappings #'*ns* ns)]
+       (with-bindings* with-and-ns-mappings body)))
+   )
 
 (defn- nested-results-for-context [description reporters]
   (let [results (results-for-context description reporters)]

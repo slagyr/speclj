@@ -1,5 +1,5 @@
 (ns speclj.reporting-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe context around it should=]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [describe context around it should=]]
             [speclj.config :as config]
             [speclj.run.standard :as standard]
             [speclj.reporting :as sut]))

@@ -1,18 +1,18 @@
 (ns speclj.platform
   (:require [clojure.java.io :as io]
-            [clojure.string :as string :refer [split]]))
+            [clojure.string :as str]))
 
 (defmacro if-cljs
-          "Return then if we are generating cljs code and else for Clojure code.
-           http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
-           https://github.com/nberger/more-macro-musings"
+  "Return then if we are generating cljs code and else for Clojure code.
+   http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
+   https://github.com/nberger/more-macro-musings"
   [then else]
   (if (:ns &env) then else))
 
 (defmacro try-catch-anything
-          "Tries forms up until the last form, which is expected to be a `catch` form,
-          except its type is missing; instead, `:default` is used in ClojureScript and
-          `java.lang.Throwable` is used in Clojure JVM."
+  "Tries forms up until the last form, which is expected to be a `catch` form,
+  except its type is missing; instead, `:default` is used in ClojureScript and
+  `java.lang.Throwable` is used in Clojure JVM."
   [& forms]
   (let [body         (butlast forms)
         catch-form   (last forms)
@@ -35,9 +35,9 @@
 (def exception java.lang.Exception)
 
 (defn- classname->filename [classname]
-  (let [root-name (first (split classname #"\$"))]
+  (let [root-name (first (str/split classname #"\$"))]
     (str
-      (string/replace root-name "." file-separator)
+      (str/replace root-name "." file-separator)
       ".clj")))
 
 
@@ -48,7 +48,8 @@
        *bound-by-should-invoke*))
 
 (defn difference-greater-than-delta? [expected actual delta]
-  (> (abs (- (bigdec expected) (bigdec actual))) (abs (bigdec delta))))
+  (> (abs (- (bigdec expected) (bigdec actual)))
+     (abs (bigdec delta))))
 
 (defn error-message [e] (.getMessage e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
@@ -93,3 +94,10 @@
 
 (defn enter-pressed? []
   (= (read-in) new-line))
+
+(defn exit [code] (System/exit code))
+
+(defn compiler-load [reader path]
+  (Compiler/load reader path path))
+
+(defn get-name [ns] (.name ns))

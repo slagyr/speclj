@@ -1,5 +1,5 @@
 (ns speclj.report.progress-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [around context describe it should should= with -new-exception -new-failure -new-pending]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [around context describe it should should= with -new-exception -new-failure -new-pending]]
             [clojure.string :as str]
             #?(:cljs [goog.string]) ;cljs bug?
             [speclj.components :refer [new-description new-characteristic install]]

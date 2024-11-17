@@ -1,0 +1,33 @@
+(ns speclj.io
+  (:require [clojure.clr.io :as io])
+  (:import (System.IO Directory DirectoryInfo FileAttributes StringReader)
+           (clojure.lang LineNumberingTextReader)))
+
+(defn as-file
+  ([parent child] (io/file-info parent child))
+  ([file]
+   (let [file (io/as-file file)]
+     (if (Directory/Exists (.-FullName file))
+       (DirectoryInfo. (.-FullName file))
+       file))))
+
+(defn canonical-path [file] (.-FullName file))
+(defn canonical-file [file] (io/as-file (canonical-path file)))
+
+(defn hidden? [file]
+  (let [attributes (int (.-Attributes file))
+        hidden     (int FileAttributes/Hidden)]
+    (not= 0 (bit-and attributes hidden))))
+
+(defn file-name [file] (.-Name file))
+(defn full-name [file] (.-FullName file))
+
+(defn ->LineNumberingReader [reader]
+  (LineNumberingTextReader. reader))
+
+(defn ->StringReader [s]
+  (StringReader. s))
+
+(defn copy [input output] (io/copy input output))
+(defn make-input-stream [x opts] (io/make-input-stream x opts))
+(defn make-parents [file] (Directory/CreateDirectory (full-name file)))

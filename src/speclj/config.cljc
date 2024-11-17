@@ -8,22 +8,22 @@
 (def default-reporters (atom nil))
 
 (defn active-reporters []
-  (if #?(:clj (bound? #'*reporters*) :cljs *reporters*)
+  (if #?(:cljs *reporters* :default (bound? #'*reporters*))
     *reporters*
     (if-let [reporters @default-reporters]
       reporters
-      (throw (new #?(:clj java.lang.Exception :cljs js/Error) "*reporters* is unbound and no default value has been provided")))))
+      (throw (new #?(:cljs js/Error :default Exception) "*reporters* is unbound and no default value has been provided")))))
 
 (declare #^{:dynamic true} *runner*)
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
 
 (defn ^:export active-runner []
-  (if #?(:clj (bound? #'*runner*) :cljs *runner*)
+  (if #?(:cljs *runner* :default (bound? #'*runner*))
     *runner*
     (if-let [runner @default-runner]
       runner
-      (throw (new #?(:clj java.lang.Exception :cljs js/Error)
+      (throw (new #?(:cljs js/Error :default Exception)
                   "*runner* is unbound and no default value has been provided")))))
 
 (declare #^{:dynamic true} *specs*)
@@ -43,7 +43,10 @@
    :tags         []
    :omit-pending false})
 
-#?(:clj
+#?(:cljs
+   (defn config-bindings [] (throw "Not Supported in ClojureScript"))
+
+   :default
    (defn config-bindings
      "Returns a map of vars to values for all the ear-muffed vars in the speclj.config namespace.
      Can be used in (with-bindings ...) call to load a configuration state"
@@ -52,28 +55,26 @@
            all-vars        (dissoc (ns-interns ns) '*parent-description*)
            non-config-keys (remove #(str/starts-with? (name %) "*") (keys all-vars))
            config-vars     (apply dissoc all-vars non-config-keys)]
-       (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars))))
-
-   :cljs
-   (defn config-bindings [] (throw "Not Supported in ClojureScript")))
+       (reduce #(assoc %1 %2 (deref %2)) {} (vals config-vars)))))
 
 (defn load-runner [name]
   (try
     (platform/dynamically-invoke (str "speclj.run." name) (str "new-" name "-runner"))
-    (catch #?(:clj java.lang.Exception :cljs :default) e
-      (throw (new #?(:clj java.lang.Exception :cljs js/Error) (str "Failed to load runner: " name) e)))))
+    (catch #?(:cljs :default :default Exception) e
+      (throw (new #?(:cljs js/Error :default Exception) (str "Failed to load runner: " name) e)))))
 
 (defn- load-reporter-by-name [name]
   (try
     (platform/dynamically-invoke (str "speclj.report." name) (str "new-" name "-reporter"))
-    (catch #?(:clj java.lang.Exception :cljs :default) e
-      (throw (new #?(:clj java.lang.Exception :cljs js/Error) (str "Failed to load reporter: " name) e)))))
+    (catch #?(:cljs :default :default Exception) e
+      (throw (new #?(:cljs js/Error :default Exception) (str "Failed to load reporter: " name) e)))))
 
 (defn- load-reporter-by-name? [name-or-object]
   #?(:clj  (->> name-or-object
                 (instance? (Class/forName "speclj.reporting.Reporter"))
                 not)
-     :cljs (string? name-or-object)))
+     :cljs (string? name-or-object)
+     :cljr (string? name-or-object)))
 
 (defn load-reporter [name-or-object]
   (cond-> name-or-object
@@ -93,7 +94,10 @@
 (defn parse-tags [tags]
   (reduce with-tag {:includes #{} :excludes #{}} tags))
 
-#?(:clj
+#?(:cljs
+   (defn config-mappings [_] (throw "Not Supported in ClojureScript"))
+
+   :default
    (defn config-mappings [config]
      {#'*runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
       #'*reporters*         (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
@@ -103,8 +107,7 @@
       #'*full-stack-trace?* (some? (:stacktrace config))
       #'*tag-filter*        (parse-tags (:tags config))})
 
-   :cljs
-   (defn config-mappings [_] (throw "Not Supported in ClojureScript")))
+   )
 
 (defn with-config
   "Runs the given function with all the configurations set.  Useful in cljs because config-mappings can't be used."

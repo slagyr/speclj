@@ -1,5 +1,5 @@
 (ns speclj.core-spec
-  (#?(:clj :require :cljs :require-macros)
+  (#?(:cljs :require-macros :default :require)
    [speclj.core :refer [describe it context tags focus-describe focus-context focus-it
                         should should-be-same should-not-be-same should=
                         before after before-all after-all
@@ -361,7 +361,7 @@
 (describe "with-all!"
   (def non-lazy-with-all-calls (atom 0))
   (with-all! with-bang-example
-             (swap! non-lazy-with-all-calls inc))
+    (swap! non-lazy-with-all-calls inc))
 
   (it "has been deref'ed upon instantiation"
     (should= 1 @non-lazy-with-all-calls))

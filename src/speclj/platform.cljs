@@ -41,3 +41,4 @@
   (let [code (str (str/replace ns-name "-" "_") "." (str/replace fn-name "-" "_") "();")]
     (js* "eval(~{code})")))
 
+(defn get-name [ns] (.name ns))

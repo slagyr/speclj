@@ -1,7 +1,7 @@
 (ns speclj.cli-spec
   (:require [speclj.cli :as sut]
             [speclj.config :as config]
-            [speclj.core #?(:clj :refer :cljs :refer-macros) [describe it should= should-not-be-nil]]
+            [speclj.core #?(:cljs :refer-macros :default :refer) [describe it should= should-not-be-nil]]
             [speclj.platform :refer [endl]]
             [clojure.string :as str]
             #?(:clj [trptcolin.versioneer.core :as version])))

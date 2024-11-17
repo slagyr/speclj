@@ -1,5 +1,6 @@
 (ns speclj.main
-  (:require [speclj.cli :refer [run]]))
+  (:require [speclj.cli :refer [run]]
+            [speclj.platform :refer [exit]]))
 
 (defn -main [& args]
-  (System/exit (apply run args)))
+  (exit (apply run args)))

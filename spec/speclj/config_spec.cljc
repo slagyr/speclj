@@ -1,6 +1,6 @@
 (ns speclj.config-spec
-  (:require [speclj.core #?(:clj :refer :cljs :refer-macros) [describe context it should-not= should= should-throw should-not-contain should-not-be-nil should-be-same]]
-            [speclj.spec-helper #?(:clj :refer :cljs :refer-macros) [test-exported-meta]]
+  (:require [speclj.core #?(:cljs :refer-macros :default :refer) [describe context it should-not= should= should-throw should-not-contain should-not-be-nil should-be-same]]
+            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [test-exported-meta]]
             [speclj.config :as sut]
             [speclj.platform :as platform]
             [speclj.report.progress]
