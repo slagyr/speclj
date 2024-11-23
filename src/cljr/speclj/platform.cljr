@@ -101,16 +101,9 @@
 (defn compiler-load [reader path]
   (clojure.lang.Compiler/load reader path path nil))
 
-;(def new-line 10)
-
-;(defn- read-in [] (when (.ready *in*) (.read *in*)))
-
-;; TODO [BAC]: FIXME
-(defn enter-pressed? []
-  false
-  ;(= (read-in) new-line)
-  )
-
+(def new-line 10)
+(defn- read-in [] (.Read *in*))
+(defn enter-pressed? [] (= (read-in) new-line))
 (defn get-name [ns] (.-Name ns))
 (defn get-bytes [s]
   (.GetBytes System.Text.Encoding/UTF8 s))
