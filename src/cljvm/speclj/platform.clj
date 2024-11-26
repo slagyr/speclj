@@ -1,6 +1,7 @@
 (ns speclj.platform
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
@@ -75,6 +76,7 @@
 
 (defn type-name [t] (.getName t))
 
+(defn current-date [] (java.util.Date.))
 (def seconds-format (java.text.DecimalFormat. "0.00000"))
 (defn format-seconds [secs] (.format seconds-format secs))
 (defn current-time [] (System/nanoTime))
@@ -102,3 +104,9 @@
 
 (defn get-name [ns] (.name ns))
 (defn get-bytes [s] (.getBytes s))
+
+(defn schedule-tasks [commands]
+  (let [pool (ScheduledThreadPoolExecutor. 1)]
+    (doseq [{:keys [command delay-ms]} commands]
+      (.scheduleWithFixedDelay pool command 0 delay-ms TimeUnit/MILLISECONDS))
+    (.awaitTermination pool Long/MAX_VALUE TimeUnit/SECONDS)))
