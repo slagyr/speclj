@@ -1,5 +1,6 @@
 (ns speclj.platform
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.tools.namespace.find :as find]))
 
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
@@ -26,19 +27,15 @@
       `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
 
 (def endl Environment/NewLine)
-(def file-separator System.IO.Path/DirectorySeparatorChar)
+(def file-separator (str System.IO.Path/DirectorySeparatorChar))
+(def source-file-regex #".*\.clj(c|r)?")
+(def find-platform find/cljr)
 
 (defn re? [obj]
   (instance? System.Text.RegularExpressions.Regex obj))
 
 (def throwable System.Exception)
 (def exception System.Exception)
-
-(defn- classname->filename [classname]
-  (let [root-name (first (str/split classname #"\$"))]
-    (str
-      (str/replace root-name "." file-separator)
-      ".clj")))
 
 (declare ^:dynamic *bound-by-should-invoke*)
 
@@ -51,45 +48,36 @@
      (abs (bigdec delta))))
 
 (defn error-message [e] (.-Message e))
+(defn error-str [e] (str (type e) ": " (.-Message e)))
 
-;; TODO [BAC]: FIXME
 (defn stack-trace [e]
-  ;(.-StackTrace e)
-  )
+  (when-let [stack (.-StackTrace e)]
+    (map #(str/replace % #"^\s+at\s" "") (str/split-lines stack))))
+
 (defn cause [e] (.-InnerException e))
 
-;; TODO [BAC]: FIXME
 (defn print-stack-trace [e]
-  ;(Console/WriteLine "\n{0}" (.-StackTrace e))
-  )
+  (println (error-str e))
+  (println (.-StackTrace e)))
 
-;; TODO [BAC]: FIXME
+;; TODO [BAC]: How can we convert an exception to a source file?
+;;  Maybe add to :data when creating failure
 (defn failure-source [exception]
-  ;(let [source    (nth (.-StackTrace exception) 0)
-  ;      classname (.getClassName source)
-  ;      filename  (classname->filename classname)]
-  ;  (if-let [url nil ;(io/resource filename)
-  ;           ]
-  ;    (str (.getFile url) ":" (.getLineNumber source))
-  ;    (str filename ":" (.getLineNumber source))))
-  )
+  (when-let [frame (first (stack-trace exception))]
+    (-> (first (str/split frame #"\$"))
+        (str/replace "." file-separator))))
 
-;; TODO [BAC]: FIXME
 (defn elide-level? [stack-element]
-  ;(let [classname (.getClassName stack-element)]
-  ;  (or
-  ;    (str/starts-with? classname "clojure.")
-  ;    (str/starts-with? classname "speclj.")
-  ;    (str/starts-with? classname "java.")))
-  )
+  (or (str/starts-with? stack-element "clojure.")
+      (str/starts-with? stack-element "speclj.")))
 
 (defn type-name [t] (.-FullName t))
 (defn format-seconds [secs] (.ToString secs "0.00000"))
 
 (defn current-date [] DateTime/Now)
-(defn current-time [] (/ (.-Ticks DateTime/Now) TimeSpan/NanosecondsPerTick))
+(defn current-time [] (.-Ticks DateTime/Now))
 (defn current-millis [] (double (/ (.-Ticks DateTime/Now) TimeSpan/TicksPerMillisecond)))
-(defn secs-since [start] (/ (double (- (current-time) start)) 1000000000.0))
+(defn secs-since [start] (/ (double (- (current-time) start)) TimeSpan/TicksPerSecond))
 
 (defn dynamically-invoke [ns-name fn-name]
   (let [ns-sym (symbol ns-name)
@@ -103,11 +91,16 @@
   (clojure.lang.Compiler/load reader path path nil))
 
 (def new-line 10)
-(defn- read-in [] (.Read *in*))
+
+(defn key-available? []
+  ;; TODO [BAC]: This is not ideal.
+  ;;  What if *in* is using something other than Console?
+  Console/KeyAvailable)
+
+(defn- read-in [] (when (key-available?) (.Read *in*)))
 (defn enter-pressed? [] (= (read-in) new-line))
 (defn get-name [ns] (.-Name ns))
-(defn get-bytes [s]
-  (.GetBytes System.Text.Encoding/UTF8 s))
+(defn get-bytes [s] (.GetBytes System.Text.Encoding/UTF8 s))
 
 ;; TODO [BAC]: Experimental–find a better solution
 
@@ -125,11 +118,11 @@
   (let [schedule (atom {})]
     (System.Threading.Tasks.Task.
       (gen-delegate Action []
-        (while true
-          (doseq [task tasks]
-            (wait-for-task task @schedule)
-            (try ((:command task)) (catch Exception _))
-            (swap! schedule assoc task (current-millis))))))))
+                    (while true
+                      (doseq [task tasks]
+                        (wait-for-task task @schedule)
+                        (try ((:command task)) (catch Exception _))
+                        (swap! schedule assoc task (current-millis))))))))
 
 (defn schedule-tasks [tasks]
   (let [t (-schedule-tasks tasks)]

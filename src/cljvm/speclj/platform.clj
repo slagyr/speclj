@@ -1,6 +1,7 @@
 (ns speclj.platform
   (:require [clojure.java.io :as io]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.tools.namespace.find :as find])
   (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
 
 (defmacro if-cljs
@@ -29,6 +30,8 @@
 
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
+(def source-file-regex #".*\.clj(c)?")
+(def find-platform find/clj)
 
 (defn re? [obj] (instance? java.util.regex.Pattern obj))
 
@@ -53,6 +56,7 @@
      (abs (bigdec delta))))
 
 (defn error-message [e] (.getMessage e))
+(defn error-str [e] (str e))
 (defn stack-trace [e] (seq (.getStackTrace e)))
 (defn cause [e] (.getCause e))
 (defn print-stack-trace [e]
@@ -103,7 +107,7 @@
   (Compiler/load reader path path))
 
 (defn get-name [ns] (.name ns))
-(defn get-bytes [s] (.getBytes s))
+(defn get-bytes [s] (seq (.getBytes s)))
 
 (defn schedule-tasks [commands]
   (let [pool (ScheduledThreadPoolExecutor. 1)]

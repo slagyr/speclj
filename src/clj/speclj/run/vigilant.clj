@@ -48,7 +48,6 @@
   (with-bindings configuration
     (let [runner         (config/active-runner)
           reporters      (config/active-reporters)
-          ;; TODO [BAC]: freshen takes 11.735 seconds on CLR
           reloaded-files (freshener/freshen)]
       (platform/try-catch-anything
         (run-reloaded-files runner reporters reloaded-files)

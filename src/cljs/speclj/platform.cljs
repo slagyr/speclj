@@ -3,6 +3,7 @@
 
 (def endl "\n")
 (def file-separator "/")
+(def source-file-regex #".*\.clj(c|s)?")
 
 (defn re? [obj] (instance? js/RegExp obj))
 
@@ -24,6 +25,7 @@
     :else "unkown-file:?"))
 
 (defn error-message [e] (.-message e))
+(defn error-str [e] (str e))
 (defn stack-trace [e] (rest (str/split-lines (or (.-stack e) (.toString e)))))
 (defn cause [e] (.-cause e))
 (defn print-stack-trace [e] (println (or (.-stack e) "missing stack trace")))

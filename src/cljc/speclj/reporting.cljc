@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             #?(:cljs [goog.string]) ;cljs bug?
             [speclj.config :refer [*color?* *full-stack-trace?*]]
-            [speclj.platform :refer [endl stack-trace cause print-stack-trace elide-level?]]
+            [speclj.platform :refer [endl stack-trace cause error-str print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))
 
 (defn tally-time [results]
@@ -17,7 +17,7 @@
   (report-runs [this results])
   (report-error [this exception]))
 
-(defmulti report-run (fn [result reporters] (type result)))
+(defmulti report-run (fn [result _reporters] (type result)))
 (defmethod report-run speclj.results.PassResult [result reporters]
   (doseq [reporter reporters]
     (report-pass reporter result)))
@@ -64,8 +64,8 @@
 
 (defn- print-exception [prefix exception]
   (if prefix
-    (println prefix (str exception))
-    (println (str exception)))
+    (println prefix (error-str exception))
+    (println (error-str exception)))
   (print-stack-levels exception))
 
 (defn stack-trace-str [exception]
