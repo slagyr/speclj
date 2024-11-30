@@ -1,16 +1,11 @@
 (ns speclj.platform-spec
   (:require #?@(:cljs [] :default [[clojure.tools.namespace.find :as find]])
-            [speclj.core #?(:cljs :refer-macros :default :refer) [describe should-be context it should should-contain should-not should= should-throw]]
+            [speclj.core #?(:cljs :refer-macros :default :refer) [describe should-be it should should-contain should-not should= should-throw]]
             [speclj.platform :as sut #?(:cljs :refer-macros :default :refer) [if-cljs try-catch-anything]]
             [speclj.run.standard :as standard]))
 
 (defmacro which-env []
   (if-cljs :cljs :clj))
-
-(defmacro test-enter-pressed [in result]
-  `(it (pr-str ~in)
-     (with-redefs [#?@(:cljr [sut/key-available? (constantly true)])]
-       (with-in-str ~in (should= ~result (sut/enter-pressed?))))))
 
 (defn ->stack-element [class-name]
   #?(:clj     (StackTraceElement. class-name "foo_method" (str class-name ".clj") 123)
@@ -67,16 +62,8 @@
 
   #?(:cljs (list)
      :default
-     (context "non-cljs"
-
-       (it "get-bytes"
-         (should= [102 111 111] (sut/get-bytes "foo")))
-
-       (context "enter-pressed?"
-         (test-enter-pressed "\n" true)
-         (test-enter-pressed "a" false)
-         (test-enter-pressed "\t" false))
-       ))
+     (it "get-bytes"
+       (should= [102 111 111] (sut/get-bytes "foo"))))
 
   #?(:clj
      (it "find-platform"

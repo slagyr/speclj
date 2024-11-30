@@ -90,43 +90,6 @@
 (defn compiler-load [reader path]
   (clojure.lang.Compiler/load reader path path nil))
 
-(def new-line 10)
-
-(defn key-available? []
-  ;; TODO [BAC]: This is not ideal.
-  ;;  What if *in* is using something other than Console?
-  Console/KeyAvailable)
-
-(defn- read-in [] (when (key-available?) (.Read *in*)))
-(defn enter-pressed? [] (= (read-in) new-line))
+(defn read-in [] (.Read *in*))
 (defn get-name [ns] (.-Name ns))
 (defn get-bytes [s] (.GetBytes System.Text.Encoding/UTF8 s))
-
-;; TODO [BAC]: Experimental–find a better solution
-
-;region
-
-(defn wait-for-task [task schedule]
-  (when-let [last-ran-at (get schedule task)]
-    (let [sleep-ms (+ last-ran-at
-                      (:delay-ms task)
-                      (- (current-millis)))]
-      (when (pos? sleep-ms)
-        (System.Threading.Thread/Sleep sleep-ms)))))
-
-(defn- -schedule-tasks [tasks]
-  (let [schedule (atom {})]
-    (System.Threading.Tasks.Task.
-      (gen-delegate Action []
-                    (while true
-                      (doseq [task tasks]
-                        (wait-for-task task @schedule)
-                        (try ((:command task)) (catch Exception _))
-                        (swap! schedule assoc task (current-millis))))))))
-
-(defn schedule-tasks [tasks]
-  (let [t (-schedule-tasks tasks)]
-    (.Start t)
-    (.Wait t)))
-
-;endregion

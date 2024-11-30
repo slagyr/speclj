@@ -1,8 +1,7 @@
 (ns speclj.platform
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.tools.namespace.find :as find])
-  (:import (java.util.concurrent ScheduledThreadPoolExecutor TimeUnit)))
+            [clojure.tools.namespace.find :as find]))
 
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
@@ -84,6 +83,7 @@
 (def seconds-format (java.text.DecimalFormat. "0.00000"))
 (defn format-seconds [secs] (.format seconds-format secs))
 (defn current-time [] (System/nanoTime))
+(defn current-millis [] (System/currentTimeMillis))
 (defn secs-since [start] (/ (double (- (System/nanoTime) start)) 1000000000.0))
 
 (defn dynamically-invoke [ns-name fn-name]
@@ -92,15 +92,7 @@
         expr   `(do (require '~ns-sym) (~fn-sym))]
     (eval expr)))
 
-(def new-line 10)
-
-(defn- read-in []
-  (when (.ready *in*)
-    (.read *in*)))
-
-(defn enter-pressed? []
-  (= (read-in) new-line))
-
+(defn read-in [] (.read *in*))
 (defn exit [code] (System/exit code))
 
 (defn compiler-load [reader path]
@@ -108,9 +100,3 @@
 
 (defn get-name [ns] (.name ns))
 (defn get-bytes [s] (seq (.getBytes s)))
-
-(defn schedule-tasks [commands]
-  (let [pool (ScheduledThreadPoolExecutor. 1)]
-    (doseq [{:keys [command delay-ms]} commands]
-      (.scheduleWithFixedDelay pool command 0 delay-ms TimeUnit/MILLISECONDS))
-    (.awaitTermination pool Long/MAX_VALUE TimeUnit/SECONDS)))

@@ -3,12 +3,15 @@
             [clojure.tools.namespace.repl :as repl]
             [clojure.tools.namespace.track :as track]
             [speclj.config :as config]
+            [speclj.event :as event]
             [speclj.freshener :as freshener]
+            [speclj.interval :as interval]
             [speclj.io :as io]
             [speclj.platform :as platform]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
-            [speclj.running :as running]))
+            [speclj.running :as running]
+            [speclj.thread :as thread]))
 
 (def start-time (atom 0))
 (def current-error-data (atom nil))
@@ -16,11 +19,12 @@
 (defn get-error-data [e]
   (-> e Throwable->map :via first :data))
 
-(defn- report-update [files start-time]
+(defn- report-update [files start-time refresh-time]
   (when (seq files)
     (let [reporters (config/active-reporters)]
       (reporting/report-message* reporters (str platform/endl "----- " (str (platform/current-date) " -----")))
-      (reporting/report-message* reporters (str "took " (platform/format-seconds (platform/secs-since start-time)) " to determine file statuses."))
+      (reporting/report-message* reporters (str "took " (platform/format-seconds refresh-time) " seconds to refresh files."))
+      (reporting/report-message* reporters (str "took " (platform/format-seconds (platform/secs-since start-time)) " seconds to determine file statuses."))
       (reporting/report-message* reporters "reloading files:")
       (doseq [file files]
         (reporting/report-message* reporters (str "  " (io/canonical-path file))))))
@@ -34,55 +38,51 @@
     (reporting/report-runs* reporters @(.results runner))
     (reset! current-error-data error-data)))
 
-(defn- run-reloaded-files [runner reporters reloaded-files]
+(defn- run-reloaded-files [runner reporters reloaded-files refresh-time]
   (reset! start-time (platform/current-time))
   (when-let [error (::reload/error repl/refresh-tracker)]
     (throw error))
   (when (seq @(.descriptions runner))
-    (report-update reloaded-files @start-time)
+    (report-update reloaded-files @start-time refresh-time)
     (reset! current-error-data nil)
     (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
     (running/run-and-report runner reporters)))
 
+(defn- reload-files []
+  (let [start          (platform/current-time)
+        reloaded-files (freshener/freshen)
+        elapsed        (platform/secs-since start)]
+    [reloaded-files elapsed]))
+
 (defn- tick [configuration]
   (with-bindings configuration
-    (let [runner         (config/active-runner)
-          reporters      (config/active-reporters)
-          reloaded-files (freshener/freshen)]
+    (let [runner    (config/active-runner)
+          reporters (config/active-reporters)
+          [reloaded-files refresh-time] (reload-files)]
       (platform/try-catch-anything
-        (run-reloaded-files runner reporters reloaded-files)
+        (run-reloaded-files runner reporters reloaded-files refresh-time)
         (catch e (report-error e runner reporters)))
       (reset! (.descriptions runner) [])
       (reset! (.results runner) []))))
 
-(defn- reset-runner [runner]
-  (reset! current-error-data nil)
-  (repl/clear)
-  (apply repl/set-refresh-dirs @(.directories runner))
-  (reset! (.previous-failed runner) [])
-  (reset! (.results runner) [])
-  (reset! (.file-listing runner) {}))
-
-(defn- listen-for-rerun [configuration]
+(defn- reset-runner [configuration]
   (with-bindings configuration
-    (when (platform/enter-pressed?)
-      (reset-runner (config/active-runner)))))
+    (let [runner (config/active-runner)]
+      (reset! current-error-data nil)
+      (repl/clear)
+      (apply repl/set-refresh-dirs @(.directories runner))
+      (reset! (.previous-failed runner) [])
+      (reset! (.results runner) [])
+      (reset! (.file-listing runner) {}))))
 
 (defn- -run-directories [this directories]
   (let [configuration (config/config-bindings)
         dir-files     (map io/as-file directories)]
     (reset! (.directories this) dir-files)
     (apply repl/set-refresh-dirs dir-files)
-    ;; TODO [BAC]: Instead of schedule-tasks, do this.
-    ;;  JavaScript does not know about threads/tasks,
-    ;;  but it does know about intervals and events
-    (comment
-      (platform/set-interval 500 #(tick configuration))
-      (platform/on-enter-pressed #(rerun configuration))
-      (platform/wait-indefinitely))
-    (platform/schedule-tasks
-      [{:command #(tick configuration) :delay-ms 500}
-       {:command #(listen-for-rerun configuration) :delay-ms 500}])
+    (interval/set-interval 500 #(tick configuration))
+    (event/add-enter-listener #(reset-runner configuration))
+    (thread/join-all)
     0))
 
 (deftype VigilantRunner [file-listing results previous-failed directories descriptions]
