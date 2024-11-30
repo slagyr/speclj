@@ -4,5 +4,5 @@
            ;; TODO [BAC]: Use clojure tools once fork has been merged
            io.github.brandoncorrea/clr.tools.namespace {:git/sha "6aaae5337f510365c5712a71a0274c8cf81d931f"}
            }
- :aliases {:spec {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]
-                  :main-opts   ["-m" "speclj.main" "-c" "spec/clj" "spec/cljc" "spec/cljr"]}}}
+ :aliases {:test {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]}
+           :spec {:main-opts ["-m" "speclj.main" "-c" "spec/clj" "spec/cljc" "spec/cljr"]}}}
