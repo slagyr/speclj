@@ -59,12 +59,20 @@
   (let [name-padding (max-by-count :name (:parameters spec))]
     (str/join (map (partial parameter->string name-padding) (:parameters spec)))))
 
-(def max-row-length 72)
+(def ^:private max-row-length 72)
+
+(defn- find-cutoff [line]
+  (let [last-space (str/last-index-of line " ")]
+    (or last-space max-row-length)))
+
+(defn- cut-line [line]
+  (subs line 0 (find-cutoff line)))
 
 (defn- split-by-line-length [description]
-  ;; TODO [BAC]: Lookbehind for space characters
   (if (< max-row-length (count description))
-    (map #(str/trim (apply str %)) (partition-all max-row-length description))
+    (let [next-line (cut-line (subs description 0 (inc max-row-length)))
+          remainder (str/trim (subs description (count next-line)))]
+      (cons next-line (split-by-line-length remainder)))
     [description]))
 
 (defn- tabularize-description [padding description]
