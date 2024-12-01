@@ -24,30 +24,35 @@
   [& dirs]
   (apply find-files-in platform/source-file-regex dirs))
 
-(defn remove-ignore [tracker namespace]
-  (when-let [file (first (some #(when (= (val %) namespace) %) (::file/filemap tracker)))]
-    (alter-var-root #'repl/refresh-tracker
-                    (constantly
-                      (assoc tracker
-                        ::track/load (remove #{namespace} (::track/load tracker))
-                        ::track/unload (remove #{namespace} (::track/unload tracker))
-                        ::file/filemap (dissoc (::file/filemap tracker) file)
-                        ::dir/files (set (remove #{file} (::dir/files tracker))))))))
-
 (defn find-key-by-value [m val]
   (some (fn [[k v]] (when (= v val) k)) m))
+
+(defn- without-namespace [tracker namespace file]
+  (assoc tracker
+    ::track/load (remove #{namespace} (::track/load tracker))
+    ::track/unload (remove #{namespace} (::track/unload tracker))
+    ::file/filemap (dissoc (::file/filemap tracker) file)
+    ::dir/files (set (remove #{file} (::dir/files tracker)))))
+
+(defn remove-ignore [tracker namespace]
+  (when-let [file (find-key-by-value (::file/filemap tracker) namespace)]
+    (alter-var-root
+      #'repl/refresh-tracker
+      (constantly (without-namespace tracker namespace file)))))
 
 (def ignored-namespaces ['speclj.config 'speclj.run.vigilant
                          'speclj.results 'speclj.core
                          'speclj.reporting 'speclj.running])
 
+(defn- find-reloaded-files [tracker]
+  (for [ns (::track/load tracker)]
+    (find-key-by-value (::file/filemap tracker) ns)))
+
 (defn freshen []
   (repl/scan {:platform platform/find-platform})
   (doseq [namespace ignored-namespaces]
     (remove-ignore repl/refresh-tracker namespace))
-  (let [reloaded-files
-        (for [ns (::track/load repl/refresh-tracker)]
-          (find-key-by-value (::file/filemap repl/refresh-tracker) ns))]
+  (let [reloaded-files (find-reloaded-files repl/refresh-tracker)]
     (alter-var-root #'repl/refresh-tracker reload/track-reload)
     (repl/set-refresh-dirs)
     reloaded-files))
