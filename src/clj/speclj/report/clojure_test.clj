@@ -1,9 +1,7 @@
 (ns speclj.report.clojure-test
   (:require [clojure.string]
-            [clojure.string :as string :refer [split]]
             [clojure.test]
             [speclj.platform :as platform]
-            [speclj.io :as io]
             [speclj.reporting]))
 
 (defn full-name [characteristic]
@@ -11,20 +9,6 @@
     (if context
       (recur @(.-parent context) (str (.-name context) " " name))
       name)))
-
-(defn- classname->filename [classname]
-  (let [root-name (first (split classname #"\$"))]
-    (str
-      (string/replace root-name "." platform/file-separator)
-      ".clj")))
-
-(defn failure-source [failure]
-  (let [source    (nth (.getStackTrace failure) 0)
-        classname (.getClassName source)
-        filename  (classname->filename classname)]
-    (if-let [url (.getResource (clojure.lang.RT/baseLoader) filename)]
-      {:file (io/as-file url) :line (.getLineNumber source)}
-      {:file filename :line (.getLineNumber source)})))
 
 (deftype ClojureTestReporter [report-counters]
   speclj.reporting/Reporter
@@ -53,7 +37,7 @@
           (clojure.test/report
             (merge
               {:type :fail}
-              (failure-source failure)
+              (platform/failure-source failure)
               {:message  (platform/error-message failure)
                :expected "see above"
                :actual   "see above"}))))))
@@ -65,8 +49,8 @@
           (clojure.test/report
             (merge
               {:type :error}
-              (failure-source ex)
-              {:message  (.getMessage ex)
+              (platform/failure-source ex)
+              {:message  (platform/error-message ex)
                :expected "not recorded"
                :actual   ex}))))))
 

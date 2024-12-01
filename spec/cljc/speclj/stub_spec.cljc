@@ -48,7 +48,8 @@
     (should= 9 ((stub :foo {:invoke *}) 3 3))
     (should= 42 ((stub :foo {:invoke * :return 42}) 3 3)))
 
-  #?(:clj
+  #?(:cljs (list)
+     :default
      (it "invoke with wrong number of params"
        (should-throw exception "Stub :foo was invoked with 0 arguments, but the :invoke fn has a different arity"
          ((stub :foo {:invoke (fn [a] a)})))))
@@ -56,7 +57,8 @@
   (it "throw error when :invoke argument is not a fn"
     (should-throw exception "stub's :invoke argument must be an ifn" ((stub :foo {:invoke 42}))))
 
-  #?(:clj
+  #?(:cljs (list)
+     :default
      (context "multiple threads"
 
        (around [it]
@@ -64,13 +66,13 @@
            (it)))
 
        (it "stubs the functions in the other thread"
-         (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join))
+         (doto (speclj.thread/spawn (foo-bar-fn)) (speclj.thread/join))
          (should-have-invoked :foo-bar-fn {:times 1}))
 
        (it "allows should-invoke to work as expected"
          (should-invoke
            foo-bar-fn {:times 1}
-           (doto (Thread. (fn [] (foo-bar-fn))) (.start) (.join))))))
+           (doto (speclj.thread/spawn (foo-bar-fn)) (speclj.thread/join))))))
 
   (context "invocations"
     (with foo (stub :foo))

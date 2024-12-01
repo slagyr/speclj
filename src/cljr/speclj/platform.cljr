@@ -64,8 +64,11 @@
 ;;  Maybe add to :data when creating failure
 (defn failure-source [exception]
   (when-let [frame (first (stack-trace exception))]
-    (-> (first (str/split frame #"\$"))
-        (str/replace "." file-separator))))
+    {:file (-> (first (str/split frame #"\$"))
+               (str/replace "." file-separator))}))
+
+(defn failure-source-str [exception]
+  (-> exception failure-source :file))
 
 (defn elide-level? [stack-element]
   (or (str/starts-with? stack-element "clojure.")

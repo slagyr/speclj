@@ -1,6 +1,6 @@
 (ns speclj.io
   (:require [clojure.clr.io :as io])
-  (:import (System.IO Directory DirectoryInfo FileAttributes StringReader)
+  (:import (System.IO Directory DirectoryInfo FileAttributes StringReader StringWriter)
            (clojure.lang LineNumberingTextReader)))
 
 (defn as-file
@@ -24,11 +24,9 @@
 (defn exists? [file] (or (.-Exists file) (Directory/Exists (full-name file))))
 (defn parent-file [file] (.-Directory file))
 
-(defn ->LineNumberingReader [reader]
-  (LineNumberingTextReader. reader))
-
-(defn ->StringReader [s]
-  (StringReader. s))
+(defn ->LineNumberingReader [reader] (LineNumberingTextReader. reader))
+(defn ->StringReader [s] (StringReader. s))
+(defn ->StringWriter [] (StringWriter.))
 
 (defn copy [input output] (io/copy input output))
 (defn make-input-stream [x opts] (io/make-input-stream x opts))

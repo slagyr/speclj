@@ -5,16 +5,21 @@
     ;cljs-include [goog.string] ;cljs bug?
     [speclj.components :refer [new-characteristic new-description]]
     [speclj.core :refer [-new-exception -new-failure describe it should-contain should= with]]
+    [speclj.io :as io]
+    [speclj.platform :as platform]
     [speclj.report.clojure-test :refer [new-clojure-test-reporter]]
     [speclj.reporting :refer [report-error report-fail report-pass report-pending report-runs]]
     [speclj.results :refer [error-result fail-result]]
     [speclj.run.standard :as standard]))
 
 (defmacro with-test-out-str [& body]
-  `(let [s# (new java.io.StringWriter)]
+  `(let [s# (io/->StringWriter)]
      (binding [clojure.test/*test-out* s#]
        ~@body
        (str s#))))
+
+(defn error-type-name [error]
+  (platform/type-name (type (.exception error))))
 
 (describe "Clojure Test Reporter"
   (with reporter (new-clojure-test-reporter))
@@ -50,7 +55,7 @@
     (let [lines (str/split-lines (with-test-out-str (report-error @reporter @an-error)))]
       (should-contain "ERROR in (unknown)" (nth lines 1))
       (should-contain "Compilation failed" (nth lines 2))
-      (should-contain "actual: java.lang.Exception: Compilation failed" (nth lines 4))))
+      (should-contain (str "actual: " (error-type-name @an-error) ": Compilation failed") (nth lines 4))))
 
   (it "reports run results"
     (with-test-out-str

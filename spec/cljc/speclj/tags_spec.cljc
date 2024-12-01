@@ -41,7 +41,8 @@
     (should= "Filtering tags. Including: one, two." (str/trim (sut/describe-filter {:includes #{:one :two} :excludes #{}})))
     (should= "Filtering tags. Including: one. Excluding: two." (str/trim (sut/describe-filter {:includes #{:one} :excludes #{:two}}))))
 
-  #?(:clj
+  #?(:cljs (list)
+     :default
      (context "with fake runner/reporter"
        (around [_]
          (binding [config/*runner*    (standard/new-standard-runner)

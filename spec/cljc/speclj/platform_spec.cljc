@@ -49,10 +49,10 @@
 
   (it "failure-source"
     (let [ex (ex-info "the failure" {})]
-      #?(:clj  (should-contain #"^speclj/platform_spec.clj:\d+$" (sut/failure-source ex))
+      #?(:clj  (should-contain #"^speclj/platform_spec.clj:\d+$" (sut/failure-source-str ex))
          :cljr (do
                  (try (throw ex) (catch Exception _))
-                 (should= "speclj/platform_spec" (sut/failure-source ex))))))
+                 (should= "speclj/platform_spec" (sut/failure-source-str ex))))))
 
   (it "elide-level?"
     (#?(:cljs should-not :default should) (sut/elide-level? (->stack-element "clojure.core.blah")))

@@ -19,18 +19,14 @@
   (let [args (if (= nil args) [] (vec args))]
     (swap! *stubbed-invocations* conj [name args])))
 
-#?(:cljs
-   (defn- invoke-delegate [name delegate args]
-     (try
-       (apply delegate args)))
-
-   :default
-   (defn- invoke-delegate [name delegate args]
-     (try
-       (apply delegate args)
-       (catch clojure.lang.ArityException e
-         (throw (Exception. (str "Stub " name " was invoked with " (.-actual e) " arguments, but the :invoke fn has a different arity"))))))
-   )
+(def ^:private arity-mismatch-message "Stub %s was invoked with %s arguments, but the :invoke fn has a different arity")
+(defn- invoke-delegate [name delegate args]
+  (try
+    (apply delegate args)
+    #?(:clj  (catch clojure.lang.ArityException e
+               (throw (Exception. (format arity-mismatch-message name (.-actual e)))))
+       :cljr (catch clojure.lang.ArityException e
+               (throw (Exception. (format arity-mismatch-message name (.-Actual e))))))))
 
 (defn stub
   ([name] (stub name {}))

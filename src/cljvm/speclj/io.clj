@@ -1,7 +1,7 @@
 (ns speclj.io
   (:require [clojure.java.io :as io])
   (:import (clojure.lang LineNumberingPushbackReader)
-           (java.io StringReader)))
+           (java.io StringReader StringWriter)))
 
 (defn as-file
   ([parent child] (io/file parent child))
@@ -15,11 +15,9 @@
 (defn exists? [file] (.exists file))
 (defn parent-file [file] (.getParentFile file))
 
-(defn ->LineNumberingReader [reader]
-  (LineNumberingPushbackReader. reader))
-
-(defn ->StringReader [s]
-  (StringReader. s))
+(defn ->LineNumberingReader [reader] (LineNumberingPushbackReader. reader))
+(defn ->StringReader [s] (StringReader. s))
+(defn ->StringWriter [] (StringWriter.))
 
 (defn copy [input output] (io/copy input output))
 (defn make-input-stream [x opts] (io/make-input-stream (byte-array x) opts))

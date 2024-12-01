@@ -19,7 +19,7 @@
     (println (indent 1 id ") " (full-name characteristic)))
     (println (red (indent 2.5 (platform/error-message failure))))
     (if (error/failure? failure)
-      (println (grey (indent 2.5 (platform/failure-source failure))))
+      (println (grey (indent 2.5 (platform/failure-source-str failure))))
       (println (grey (indent 2.5 (stack-trace-str failure)))))))
 
 (defn print-failures [failures]
@@ -38,7 +38,7 @@
       (println)
       (println (yellow (str "  " (full-name (.-characteristic result)))))
       (println (grey (str "    ; " (platform/error-message (.-exception result)))))
-      (println (grey (str "    ; " (platform/failure-source (.-exception result))))))))
+      (println (grey (str "    ; " (platform/failure-source-str (.-exception result))))))))
 
 (defn print-errors [error-results]
   (when (seq error-results)

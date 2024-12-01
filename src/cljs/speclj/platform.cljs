@@ -18,7 +18,7 @@
 (defn difference-greater-than-delta? [expected actual delta]
   (> (abs (- expected actual)) (abs delta)))
 
-(defn failure-source [e]
+(defn failure-source-str [e]
   (cond
     (.-fileName e) (str (.-fileName e) ":" (or (.-lineNumber e) "?"))
     (.-stack e) (str/trim (nth (str/split-lines (.-stack e)) (count (str/split-lines (.-message e)))))

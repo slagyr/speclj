@@ -43,7 +43,6 @@
       (str/replace root-name "." file-separator)
       ".clj")))
 
-
 (declare ^:dynamic *bound-by-should-invoke*)
 
 (defn bound-by-should-invoke? []
@@ -61,14 +60,18 @@
 (defn print-stack-trace [e]
   (.printStackTrace e (java.io.PrintWriter. *out* true)))
 
-(defn failure-source [exception]
-  (let [source    (nth (.getStackTrace exception) 0)
+(defn failure-source [failure]
+  (let [source    (nth (.getStackTrace failure) 0)
         classname (.getClassName source)
         filename  (classname->filename classname)
         line-no   (.getLineNumber source)]
     (if-let [url (io/resource filename)]
-      (str (.getFile url) ":" line-no)
-      (str filename ":" line-no))))
+      {:file (io/as-file url) :line line-no}
+      {:file filename :line line-no})))
+
+(defn failure-source-str [exception]
+  (let [{:keys [file line]} (failure-source exception)]
+    (str file ":" line)))
 
 (defn elide-level? [stack-element]
   (let [classname (.getClassName stack-element)]

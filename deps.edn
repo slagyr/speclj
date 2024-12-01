@@ -1,5 +1,5 @@
 {
- :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/cljr"]
+ :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs"]
  :deps    {
            mmargs/mmargs               {:mvn/version "1.2.0"}
            org.clojure/clojure         {:mvn/version "1.11.3"}
@@ -13,7 +13,7 @@
                                  org.clojure/clojurescript     {:mvn/version "1.11.132"}
                                  cloverage/cloverage           {:mvn/version "1.2.4"}
                                  }
-                   :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljr" "spec/cljvm" "target/classes"]}
+                   :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"]}
            :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
            :build {:extra-deps  {io.github.clojure/tools.build {:mvn/version "0.9.5"}
