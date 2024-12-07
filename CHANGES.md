@@ -1,3 +1,8 @@
+# Next
+* Replaces `SpecFailure` and `SpecPending` classes with `ex-info`
+* Replaces `mmargs` library with a Clojure implementation
+* Adds support for Clojure CLR
+
 # 3.5.0
 
 * migrates from deprecated make-fresh library to clojure.tools.namespace
