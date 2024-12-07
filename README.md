@@ -4,7 +4,7 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 
 [![Speclj Build](https://github.com/slagyr/speclj/actions/workflows/test.yml/badge.svg)](https://github.com/slagyr/speclj/actions/workflows/test.yml)
 
-[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript)
+[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript) | [Clojure CLR](#clojureclr)
 
 # Installation
 
@@ -33,9 +33,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 ```clojure
 ; - snip
 :dependencies [[org.clojure/clojure "1.11.3"]]
-:profiles {:dev {:dependencies [[speclj "3.4.9"]]}}
-:plugins [[speclj "3.4.9"]]
-:test-paths ["spec"]
+:profiles     {:dev {:dependencies [[speclj "3.4.9"]]}}
+:plugins      [[speclj "3.4.9"]]
+:test-paths   ["spec"]
 ```
 
 ## Manual installation
@@ -139,9 +139,9 @@ Add a `spec` alias to your `deps.edn`.
 
 ```clojure
 {
- :aliases {:spec  {:main-opts ["-m" "speclj.main" "-c"]
-                   :extra-deps  {speclj/speclj {:mvn/version "3.4.9"}}
-                   :extra-paths ["spec"]}}
+ :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
+                  :extra-deps  {speclj/speclj {:mvn/version "3.4.9"}}
+                  :extra-paths ["spec"]}}
  }
 ```
 
@@ -150,6 +150,27 @@ Run specs.
 clj -M:spec     # printing dots
 clj -M:spec -a  # auto running with doc output
 clj -M:spec <OPTIONS>
+```
+
+### With `deps-clr.edn`
+
+Install [Clojure CLR](https://github.com/clojure/clojure-clr) and [Clojure CLR CLI](https://github.com/clojure/clr.core.cli).
+
+Add a `spec` alias to your `deps-clr.edn`.
+
+```clojure
+{
+ :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.5.0" :git/sha "5c79fdd"}}
+                  :extra-paths ["spec"]}}
+ }
+```
+
+Run specs.
+```bash
+cljr -M:spec     # printing dots
+cljr -M:spec -a  # auto running with doc output
+cljr -M:spec <OPTIONS>
 ```
 
 ### With Leiningen
@@ -215,14 +236,14 @@ All your `speclj` code should go into a a directory named `spec` at the root of 
 [`lein-cljsbuild`](https://github.com/emezeske/lein-cljsbuild) is a Leiningen plugin that'll get you up and running with ClojureScript.  You'll need to add a `:cljsbuild` configuration map to your `project.clj`.
 
 ```clojure
-:plugins [[lein-cljsbuild "1.0.3"]]
-:cljsbuild {:builds        {:dev  {:source-paths ["src/cljs" "spec/cljs"]
-                                   :compiler     {:output-to "path/to/compiled.js"}
+:plugins   [[lein-cljsbuild "1.0.3"]]
+:cljsbuild {:builds        {:dev  {:source-paths   ["src/cljs" "spec/cljs"]
+                                   :compiler       {:output-to "path/to/compiled.js"}
                                    :notify-command ["phantomjs" "bin/speclj" "path/to/compiled.js"]}
                             :prod {:source-paths  ["src/cljs"]
-                                   :compiler      {:output-to "path/to/prod.js"
+                                   :compiler      {:output-to     "path/to/prod.js"
                                                    :optimizations :simple}}}
-            :test-commands {"test" ["phantomjs"  "bin/speclj" "path/to/compiled.js"]}}
+            :test-commands {"test" ["phantomjs" "bin/speclj" "path/to/compiled.js"]}}
 ```
 Speclj works by operating on your compiled ClojureScript.  The `:notify-command` will execute the `bin/speclj` command after your cljs is compiled.  The `bin/speclj` command will use speclj to evaluate your compiled ClojureScript.
 
@@ -239,7 +260,7 @@ var p = require('webpage').create();
 var sys = require('system');
 
 p.onConsoleMessage = function (x) {
-    fs.write("/dev/stdout", x, "w");
+  fs.write("/dev/stdout", x, "w");
 };
 
 p.injectJs(phantom.args[0]);
@@ -310,9 +331,9 @@ speclj 3.4.6 or above is included in the classpath and use Cloverage's `--runner
 Here's an example alias for your `deps.edn`.
 
 ```clojure
-{:aliases {:cov {:main-opts ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec" ]
+{:aliases {:cov {:main-opts  ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec"]
                  :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}
-                              speclj/speclj {:mvn/version "3.4.9"}}}}}
+                              speclj/speclj       {:mvn/version "3.4.9"}}}}}
 ```
 
 Sadly, Cloverage doesn't offer a way to pass arguments to the runner (Speclj in this case).  Speclj will use the
