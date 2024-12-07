@@ -5,4 +5,4 @@
            io.github.brandoncorrea/clr.tools.namespace {:git/sha "2c99d2d7ed2a1d86613961e65a00adf5575ca744"}
            }
  :aliases {:test {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]}
-           :spec {:main-opts ["-m" "speclj.main" "-c" "spec/clj" "spec/cljc" "spec/cljr"]}}}
+           :spec {:main-opts ["-m" "speclj.main" "-c"]}}}
