@@ -1,6 +1,5 @@
 (ns speclj.cli
-  (:require [speclj.clj-args :as clj-args]
-            #?(:clj [trptcolin.versioneer.core :as version])
+  (:require #?(:clj [trptcolin.versioneer.core :as version])
             [speclj.args :as args]
             [clojure.set :as set]
             [speclj.config :as config]
@@ -17,7 +16,7 @@
      :default ""))
 
 (def arg-spec
-  (-> (clj-args/->Arguments)
+  (-> (args/create-args)
       (args/add-multi-parameter "specs" "directories/files specifying which specs to run.")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")

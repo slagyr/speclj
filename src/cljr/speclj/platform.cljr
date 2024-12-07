@@ -60,8 +60,6 @@
   (println (error-str e))
   (println (.-StackTrace e)))
 
-;; TODO [BAC]: How can we convert an exception to a source file?
-;;  Maybe add to :data when creating failure
 (defn failure-source [exception]
   (when-let [frame (first (stack-trace exception))]
     {:file (-> (first (str/split frame #"\$"))
