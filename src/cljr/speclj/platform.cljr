@@ -23,7 +23,7 @@
          (try ~@body
               (catch :default ~binding ~@catch-forms))
          (try ~@body
-              (catch System.Exception ~binding ~@catch-forms)))
+              (catch Exception ~binding ~@catch-forms)))
       `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
 
 (def endl Environment/NewLine)
@@ -34,8 +34,8 @@
 (defn re? [obj]
   (instance? System.Text.RegularExpressions.Regex obj))
 
-(def throwable System.Exception)
-(def exception System.Exception)
+(def throwable Exception)
+(def exception Exception)
 
 (declare ^:dynamic *bound-by-should-invoke*)
 

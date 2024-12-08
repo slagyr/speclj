@@ -580,7 +580,7 @@
     (it "passes if the actual derives from the expected type"
       #?(:cljs (do)
          :clj  (should-pass! (should-be-a Number (int 1)))
-         :cljr (should-pass! (should-be-a System.ValueType (int 1)))))
+         :cljr (should-pass! (should-be-a ValueType (int 1)))))
 
     (it "fails if the actual form is not an instance of the expected type"
       (should-fail! (should-be-a (type 1) "one")))
@@ -598,7 +598,7 @@
     (it "fails if the actual derives from the expected type"
       #?(:cljs (do)
          :clj  (should-fail! (should-not-be-a Number (int 1)))
-         :cljr (should-fail! (should-not-be-a System.ValueType (int 1)))))
+         :cljr (should-fail! (should-not-be-a ValueType (int 1)))))
 
     (it "passes if the actual form is not an instance of the expected type"
       (should-pass! (should-not-be-a (type 1) "one")))
