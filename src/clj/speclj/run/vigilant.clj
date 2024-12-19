@@ -22,7 +22,7 @@
 (defn- report-update [files start-time refresh-time]
   (when (seq files)
     (let [reporters (config/active-reporters)]
-      (reporting/report-message* reporters (str platform/endl "----- " (str (platform/current-date) " -----")))
+      (reporting/report-message* reporters (str platform/endl "----- " (platform/current-date) " -----"))
       (reporting/report-message* reporters (str "took " (platform/format-seconds refresh-time) " seconds to refresh files."))
       (reporting/report-message* reporters (str "took " (platform/format-seconds (platform/secs-since start-time)) " seconds to determine file statuses."))
       (reporting/report-message* reporters "reloading files:")
