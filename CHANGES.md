@@ -1,4 +1,4 @@
-# Next
+# 3.6.0
 * Replaces `SpecFailure` and `SpecPending` classes with `ex-info`
 * Replaces `mmargs` library with a Clojure implementation
 * Adds support for Clojure CLR

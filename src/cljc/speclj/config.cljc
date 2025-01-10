@@ -112,7 +112,7 @@
 (defn with-config
   "Runs the given function with all the configurations set.  Useful in cljs because config-mappings can't be used."
   [config action]
-  (binding [*runner*            (if (:runner config) (do (println "loading runner in config") (load-runner (:runner config))) (active-runner))
+  (binding [*runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
             *reporters*         (if (:reporters config) (mapv load-reporter (:reporters config)) (active-reporters))
             *specs*             (:specs config)
             *color?*            (:color config)
