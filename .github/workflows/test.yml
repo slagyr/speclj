@@ -19,6 +19,14 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
+      - name: Prepare dotnet
+        uses: xt0rted/setup-dotnet@v1.5.0
+
+      - name: Prepare Clojure CLR
+        run: |
+          dotnet tool install --global Clojure.Main --version 1.12.0-alpha10
+          dotnet tool install --global Clojure.Cljr --version 0.1.0-alpha5
+
       - name: Cache Clojure Dependencies
         uses: actions/cache@v4
         with:
@@ -36,8 +44,11 @@ jobs:
       - name: Install NPM Dependencies
         run: npm install
 
-      - name: Run Clojure Tests
+      - name: Run Clojure JVM Tests
         run: clojure -M:test:spec
+
+      - name: Run Clojure CLR Tests
+        run: cljr -M:test:spec
 
       - name: Run ClojureScript Tests
         run: clojure -M:test:cljs ci

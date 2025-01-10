@@ -1,0 +1,96 @@
+(ns speclj.platform
+  (:require [clojure.string :as str]
+            [clojure.tools.namespace.find :as find]))
+
+(defmacro if-cljs
+  "Return then if we are generating cljs code and else for Clojure code.
+   http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
+   https://github.com/nberger/more-macro-musings"
+  [then else]
+  (if (:ns &env) then else))
+
+(defmacro try-catch-anything
+  "Tries forms up until the last form, which is expected to be a `catch` form,
+   except its type is missing; instead, `:default` is used in ClojureScript and
+   `System.Exception` is used in Clojure CLR."
+  [& forms]
+  (let [body         (butlast forms)
+        catch-form   (last forms)
+        [catch-sym binding & catch-forms] (if (sequential? catch-form) catch-form [nil nil nil])
+        catch-valid? (and (= 'catch catch-sym) (symbol? binding))]
+    (if catch-valid?
+      `(if-cljs
+         (try ~@body
+              (catch :default ~binding ~@catch-forms))
+         (try ~@body
+              (catch Exception ~binding ~@catch-forms)))
+      `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
+
+(def endl Environment/NewLine)
+(def file-separator (str System.IO.Path/DirectorySeparatorChar))
+(def source-file-regex #".*\.clj(c|r)?")
+(def find-platform find/cljr)
+
+(defn re? [obj]
+  (instance? System.Text.RegularExpressions.Regex obj))
+
+(def throwable Exception)
+(def exception Exception)
+
+(declare ^:dynamic *bound-by-should-invoke*)
+
+(defn bound-by-should-invoke? []
+  (and (bound? #'*bound-by-should-invoke*)
+       *bound-by-should-invoke*))
+
+(defn difference-greater-than-delta? [expected actual delta]
+  (> (abs (- (bigdec expected) (bigdec actual)))
+     (abs (bigdec delta))))
+
+(defn error-message [e] (.-Message e))
+(defn error-str [e] (str (type e) ": " (.-Message e)))
+
+(defn stack-trace [e]
+  (when-let [stack (.-StackTrace e)]
+    (map #(str/replace % #"^\s+at\s" "") (str/split-lines stack))))
+
+(defn cause [e] (.-InnerException e))
+
+(defn print-stack-trace [e]
+  (println (error-str e))
+  (println (.-StackTrace e)))
+
+(defn failure-source [exception]
+  (when-let [frame (first (stack-trace exception))]
+    {:file (-> (first (str/split frame #"\$"))
+               (str/replace "." file-separator))}))
+
+(defn failure-source-str [exception]
+  (-> exception failure-source :file))
+
+(defn elide-level? [stack-element]
+  (or (str/starts-with? stack-element "clojure.")
+      (str/starts-with? stack-element "speclj.")))
+
+(defn type-name [t] (.-FullName t))
+(defn format-seconds [secs] (.ToString secs "0.00000"))
+
+(defn current-date [] DateTime/Now)
+(defn current-time [] (.-Ticks DateTime/Now))
+(defn current-millis [] (double (/ (.-Ticks DateTime/Now) TimeSpan/TicksPerMillisecond)))
+(defn secs-since [start] (/ (double (- (current-time) start)) TimeSpan/TicksPerSecond))
+
+(defn dynamically-invoke [ns-name fn-name]
+  (let [ns-sym (symbol ns-name)
+        fn-sym (symbol (str ns-name "/" fn-name))
+        expr   `(do (require '~ns-sym) (~fn-sym))]
+    (eval expr)))
+
+(defn exit [code] (Environment/Exit code))
+
+(defn compiler-load [reader path]
+  (clojure.lang.Compiler/load reader path path nil))
+
+(defn read-in [] (.Read *in*))
+(defn get-name [ns] (.-Name ns))
+(defn get-bytes [s] (.GetBytes System.Text.Encoding/UTF8 s))
