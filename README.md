@@ -7,8 +7,7 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 [Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript) | [Clojure CLR](#clojureclr)
 
 # Installation
-
-[![Clojars Project](http://clojars.org/speclj/latest-version.svg)](http://clojars.org/speclj)
+[![Clojars Project](https://img.shields.io/clojars/v/speclj.svg)](https://clojars.org/speclj)
 
 NOTE: Speclj 3.3+ requires Clojure 1.7+.
 
@@ -32,9 +31,9 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 
 ```clojure
 ; - snip
-:dependencies [[org.clojure/clojure "1.11.3"]]
-:profiles     {:dev {:dependencies [[speclj "3.4.9"]]}}
-:plugins      [[speclj "3.4.9"]]
+:dependencies [[org.clojure/clojure "1.12.0"]]
+:profiles     {:dev {:dependencies [[speclj "3.6.0"]]}}
+:plugins      [[speclj "3.6.0"]]
 :test-paths   ["spec"]
 ```
 
@@ -140,7 +139,7 @@ Add a `spec` alias to your `deps.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {speclj/speclj {:mvn/version "3.4.9"}}
+                  :extra-deps  {speclj/speclj {:mvn/version "3.6.0"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -161,7 +160,7 @@ Add a `spec` alias to your `deps-clr.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.5.0" :git/sha "5c79fdd"}}
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.6.0" :git/sha "b9add23"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -333,7 +332,7 @@ Here's an example alias for your `deps.edn`.
 ```clojure
 {:aliases {:cov {:main-opts  ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec"]
                  :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}
-                              speclj/speclj       {:mvn/version "3.4.9"}}}}}
+                              speclj/speclj       {:mvn/version "3.6.0"}}}}}
 ```
 
 Sadly, Cloverage doesn't offer a way to pass arguments to the runner (Speclj in this case).  Speclj will use the
