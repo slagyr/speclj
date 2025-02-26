@@ -18,12 +18,14 @@
                                                                   should> should>=
                                                                   should-fail
                                                                   -to-s -new-throwable -new-exception]]
-            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message]]
+            [speclj.components :as components]
+            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message should-have-assertions]]
             [speclj.platform :refer [endl exception type-name throwable]]
             [speclj.run.standard :as standard]
             [clojure.string :as str]))
 
 (describe "Should Assertions: "
+
   (context "should"
     (it "tests truthy"
       (should-pass! (should true))
@@ -31,7 +33,12 @@
 
     (it "failure message is nice"
       (should= "Expected truthy but was: false" (failure-message (should false)))
-      (should= "Expected truthy but was: nil" (failure-message (should nil)))))
+      (should= "Expected truthy but was: nil" (failure-message (should nil))))
+
+    (it "bumps assertion count"
+      (should true)
+      (should-have-assertions 1))
+    )
 
   (context "should-not"
     (it "tests falsy"
@@ -40,7 +47,12 @@
 
     (it "failure message is nice"
       (should= "Expected falsy but was: true" (failure-message (should-not true)))
-      (should= "Expected falsy but was: 1" (failure-message (should-not 1)))))
+      (should= "Expected falsy but was: 1" (failure-message (should-not 1))))
+
+    (it "bumps assertion count"
+      (should-not false)
+      (should-have-assertions 1))
+    )
 
   (context "should="
     (it "tests equality"
@@ -69,21 +81,38 @@
 
     (it "prints lazy seqs nicely"
       (should= (str "Expected: (1 2 3)" endl "     got: (3 2 1) (using =)")
-               (failure-message (should= '(1 2 3) (concat '(3) '(2 1)))))))
+               (failure-message (should= '(1 2 3) (concat '(3) '(2 1))))))
+
+    (it "bumps assertion count"
+      (should= 1 1.01 0.1)
+      (should= 1 1)
+      (should-have-assertions 2))
+    )
 
   (context "should-be"
     (it "tests functionality"
       (should-pass! (should-be empty? []))
       (should-fail! (should-be empty? [1 2 3]))
       (should= "Expected [1 2 3] to satisfy: empty?" (failure-message (should-be empty? [1 2 (+ 1 2)])))
-      (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-be (comp zero? first) [1 2 (+ 1 2)])))))
+      (should= "Expected [1 2 3] to satisfy: (comp zero? first)" (failure-message (should-be (comp zero? first) [1 2 (+ 1 2)]))))
+
+    (it "bumps assertion count"
+      (should-be empty? [])
+      (should-be empty? [])
+      (should-have-assertions 2))
+    )
 
   (context "should-not-be"
     (it "tests complementary functionality"
       (should-pass! (should-not-be empty? [1 2 3]))
       (should-fail! (should-not-be empty? []))
       (should= "Expected 1 not to satisfy: pos?" (failure-message (should-not-be pos? 1)))
-      (should= "Expected 1 not to satisfy: (comp pos? inc)" (failure-message (should-not-be (comp pos? inc) 1)))))
+      (should= "Expected 1 not to satisfy: (comp pos? inc)" (failure-message (should-not-be (comp pos? inc) 1))))
+
+    (it "bumps assertion count"
+      (should-not-be empty? [1 2 3])
+      (should-have-assertions 1))
+    )
 
   (context "should-not="
     (it "tests inequality"
@@ -93,7 +122,13 @@
     (it "failure message is nice"
       (should=
         (str "Expected: 1" endl "not to =: 1")
-        (failure-message (should-not= 1 1)))))
+        (failure-message (should-not= 1 1))))
+
+    (it "bumps assertion count"
+      (should-not= 1 2)
+      (should-not= 1 2)
+      (should-have-assertions 2))
+    )
 
   (context "should-be-same"
     (it "tests identity"
@@ -106,7 +141,13 @@
 
     (it "failure message is nice"
       (should= (str "         Expected: 1" endl "to be the same as: 2 (using identical?)")
-               (failure-message (should-be-same 1 2)))))
+               (failure-message (should-be-same 1 2))))
+
+    (it "bumps assertion count"
+      (should-be-same 1 1)
+      (should-be-same 1 1)
+      (should-have-assertions 2))
+    )
 
   (context "should-not-be-same"
     (it "tests identity"
@@ -120,15 +161,32 @@
 
     (it "failure message is nice"
       (should= (str "             Expected: 1" endl "not to be the same as: 1 (using identical?)")
-               (failure-message (should-not-be-same 1 1)))))
+               (failure-message (should-not-be-same 1 1))))
+
+    (it "bumps assertion count"
+      (should-not-be-same [] ())
+      (should-not-be-same [] ())
+      (should-have-assertions 2))
+    )
 
   (context "should-be-nil"
     (it "checks for equality with nil"
       (should-pass! (should-be-nil nil))
       (should-fail! (should-be-nil true))
-      (should-fail! (should-be-nil false))))
+      (should-fail! (should-be-nil false)))
+
+    (it "bumps assertion count"
+      (should-be-nil nil)
+      (should-be-nil nil)
+      (should-have-assertions 2))
+    )
 
   (context "should=="
+
+    (it "bumps assertion count"
+      (should== 1 1)
+      (should== 1 1)
+      (should-have-assertions 2))
 
     (context "numbers"
       (it "tests loose equality"
@@ -217,9 +275,15 @@
         ;          (failure-message (should== {:a 1} {:a 1 :b 2})))
         )
 
-      ))
+      )
+    )
 
   (context "should-not=="
+
+    (it "bumps assertion count"
+      (should-not== 1 2)
+      (should-not== 1 2)
+      (should-have-assertions 2))
 
     (context "numbers"
       (it "tests loose equality"
@@ -309,7 +373,13 @@
 
     (it "handles nil containers gracefully"
       (should-fail! (should-contain "foo" nil))
-      (should-fail! (should-contain nil nil))))
+      (should-fail! (should-contain nil nil)))
+
+    (it "bumps assertion count"
+      (should-contain "foo" "foobar")
+      (should-contain "foo" "foobar")
+      (should-have-assertions 2))
+    )
 
   (context "should-not-contain"
     (it "checks for non-membership of precise strings"
@@ -344,7 +414,13 @@
 
     (it "handles nil containers gracefully"
       (should-pass! (should-not-contain "foo" nil))
-      (should-pass! (should-not-contain nil nil))))
+      (should-pass! (should-not-contain nil nil)))
+
+    (it "bumps assertion count"
+      (should-not-contain "foo" "bar")
+      (should-not-contain "foo" "bar")
+      (should-have-assertions 2))
+    )
 
   (context "should-have-count"
     (it "checks for an exact count"
@@ -370,7 +446,12 @@
       (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
         (should-have-count 1 :not-countable))
       (should-throw exception (str "should-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
-        (should-have-count :nan []))))
+        (should-have-count :nan [])))
+
+    (it "bumps assertion count"
+      (should-have-count 0 nil)
+      (should-have-count 0 [])
+      (should-have-assertions 2)))
 
   (context "should-not-have-count"
     (it "checks for anything but an exact count"
@@ -394,13 +475,25 @@
       (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type :not-countable)) "]")
         (should-not-have-count 1 :not-countable))
       (should-throw exception (str "should-not-have-count doesn't know how to handle these types: [" (type-name (type :nan)) " " (type-name (type [])) "]")
-        (should-not-have-count :nan []))))
+        (should-not-have-count :nan [])))
+
+    (it "bumps assertion count"
+      (should-not-have-count 1 nil)
+      (should-not-have-count 1 [])
+      (should-have-assertions 2))
+    )
 
   (context "should-not-be-nil"
     (it "checks for inequality with nil"
       (should-fail! (should-not-be-nil nil))
       (should-pass! (should-not-be-nil true))
-      (should-pass! (should-not-be-nil false))))
+      (should-pass! (should-not-be-nil false)))
+
+    (it "bumps assertion count"
+      (should-not-be-nil false)
+      (should-not-be-nil true)
+      (should-have-assertions 2))
+    )
 
   (context "should-fail"
     (it "is an automatic failure"
@@ -409,7 +502,14 @@
 
     (it "can take a string as the error message"
       (should-fail! (should-fail "some message"))
-      (should= "some message" (failure-message (should-fail "some message")))))
+      (should= "some message" (failure-message (should-fail "some message"))))
+
+    (it "bumps assertion count"
+      (should-fail! (should-fail))
+      (should-fail! (should-fail))
+      (should-fail! (should-fail))
+      (should-have-assertions 3))
+    )
 
   (context "should-start-with"
     (it "checks for prefix in strings"
@@ -429,7 +529,13 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-        (should-start-with 1 2))))
+        (should-start-with 1 2)))
+
+    (it "bumps assertion count"
+      (should-start-with "abc" "abcdefg")
+      (should-start-with "abc" "abcdefg")
+      (should-have-assertions 2))
+    )
 
   (context "should-not-start-with"
     (it "checks for prefix in strings"
@@ -448,7 +554,13 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-not-start-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-        (should-not-start-with 1 2))))
+        (should-not-start-with 1 2)))
+
+    (it "bumps assertion count"
+      (should-not-start-with "bcd" "abcdefg")
+      (should-not-start-with "bcd" "abcdefg")
+      (should-have-assertions 2))
+    )
 
   (context "should-end-with"
     (it "checks for prefix in strings"
@@ -468,7 +580,13 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-        (should-end-with 1 2))))
+        (should-end-with 1 2)))
+
+    (it "bumps assertion count"
+      (should-pass! (should-end-with "xyz" "tuvwxyz"))
+      (should-pass! (should-end-with "xyz" "tuvwxyz"))
+      (should-have-assertions 2))
+    )
 
   (context "should-not-end-with"
     (it "checks for prefix in strings"
@@ -487,7 +605,13 @@
 
     (it "errors on unexpected types"
       (should-throw exception (str "should-not-end-with doesn't know how to handle these types: [" (type-name (type 1)) " " (type-name (type 1)) "]")
-        (should-not-end-with 1 2))))
+        (should-not-end-with 1 2)))
+
+    (it "bumps assertion count"
+      (should-not-end-with "wxy" "tuvwxyz")
+      (should-not-end-with "wxy" "tuvwxyz")
+      (should-have-assertions 2))
+    )
 
   (context "should-throw"
 
@@ -554,9 +678,27 @@
       (should-pass! (should-throw exception #(empty? (speclj.platform/error-message %)) (throw (-new-exception ""))))
       (should-fail! (should-throw exception #((not (empty? (speclj.platform/error-message %))) (throw (-new-exception "")))))
       (should= (str "Expected exception predicate didn't match" endl "Expected: true" endl "     got: \"Not my message\" (using =)")
-               (failure-message (should-throw exception #(speclj.platform/error-message %) (throw (-new-exception "Not my message")))))))
+               (failure-message (should-throw exception #(speclj.platform/error-message %) (throw (-new-exception "Not my message"))))))
+
+    (it "bumps assertions once for form"
+      (should-throw (throw (ex-info "" {})))
+      (should-have-assertions 1))
+
+    (it "bumps assertions once for form and type"
+      (should-throw #?(:cljs js/Error :default clojure.lang.ExceptionInfo) (throw (ex-info "" {})))
+      (should-have-assertions 1))
+
+    (it "bumps assertions twice for form and passing predicate"
+      (should-throw #?(:cljs js/Error :default clojure.lang.ExceptionInfo) "" (throw (ex-info "" {})))
+      (should-have-assertions 2))
+
+    (it "bumps assertions twice for form and failing predicate"
+      (should-fail! (should-throw #?(:cljs js/Error :default clojure.lang.ExceptionInfo) "blah" (throw (ex-info "" {}))))
+      (should-have-assertions 2))
+    )
 
   (context "should-not-throw"
+
     (it "tests that nothing was thrown"
       (should-pass! (should-not-throw (+ 1 1)))
       (should-fail! (should-not-throw (throw (-new-throwable "error"))))
@@ -570,8 +712,13 @@
            (str "Expected nothing thrown from: " (pr-str '(throw (-new-throwable "error"))) endl
                 (str "                     but got: #error {\n :cause \"error\"\n :via\n [{:type " (type-name throwable)
                      "\n   :message \"error\"\n"))
-           (failure-message (should-not-throw (throw (-new-throwable "error"))))))))
+           (failure-message (should-not-throw (throw (-new-throwable "error")))))))
 
+    (it "bumps assertion count"
+      (should-not-throw (+ 1 1))
+      (should-not-throw (+ 2 2))
+      (should-have-assertions 2))
+    )
 
   (context "should-be-a"
     (it "passes if the actual form is an instance of the expected type"
@@ -588,7 +735,13 @@
     (it "fails with an error message"
       (should=
         (str "Expected 1 to be an instance of: " (-to-s (type :foo)) endl "           but was an instance of: " (-to-s (type 1)) " (using isa?)")
-        (failure-message (should-be-a (type :foo) 1)))))
+        (failure-message (should-be-a (type :foo) 1))))
+
+    (it "bumps assertion count"
+      (should-be-a (type 1) 1)
+      (should-be-a (type 2) 2)
+      (should-have-assertions 2))
+    )
 
   (context "should-not-be-a"
 
@@ -606,7 +759,14 @@
     (it "fails with an error message"
       (should=
         (str "Expected :bar not to be an instance of " (-to-s (type :bar)) " but was (using isa?)")
-        (failure-message (should-not-be-a (type :foo) :bar)))))
+        (failure-message (should-not-be-a (type :foo) :bar))))
+
+    (it "bumps assertion count"
+      (should-not-be-a (type "") 1)
+      (should-not-be-a (type "") 1)
+      (should-not-be-a (type "") 1)
+      (should-have-assertions 3))
+    )
 
   (context "should<"
     (it "degenerate cases"
@@ -622,7 +782,13 @@
 
     (it "passing cases"
       (should-pass! (should< 1 2))
-      (should-pass! (should< 1.0 1.000001))))
+      (should-pass! (should< 1.0 1.000001)))
+
+    (it "bumps assertion count"
+      (should< 1 2)
+      (should< 1 2)
+      (should-have-assertions 2))
+    )
 
   (context "should>"
     (it "degenerate cases"
@@ -638,7 +804,13 @@
 
     (it "passing cases"
       (should-pass! (should> 2 1))
-      (should-pass! (should> 1.000001 1.0))))
+      (should-pass! (should> 1.000001 1.0)))
+
+    (it "bumps assertion count"
+      (should> 2 1)
+      (should> 2 1)
+      (should-have-assertions 2))
+    )
 
   (context "should<="
     (it "degenerate cases"
@@ -655,7 +827,13 @@
       (should-pass! (should<= 1 1))
       (should-pass! (should<= 1 1.0))
       (should-pass! (should<= 1 2))
-      (should-pass! (should<= 1.0 1.000001))))
+      (should-pass! (should<= 1.0 1.000001)))
+
+    (it "bumps assertion count"
+      (should<= 1 2)
+      (should<= 1 2)
+      (should-have-assertions 2))
+    )
 
   (context "should>="
     (it "degenerate cases"
@@ -672,7 +850,12 @@
       (should-pass! (should>= 1 1))
       (should-pass! (should>= 1 1.0))
       (should-pass! (should>= 2 1))
-      (should-pass! (should>= 1.000001 1.0))))
+      (should-pass! (should>= 1.000001 1.0)))
+
+    (it "bumps assertion count"
+      (should>= 2 1)
+      (should>= 2 1)
+      (should-have-assertions 2)))
 
   )
 

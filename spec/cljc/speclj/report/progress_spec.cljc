@@ -55,9 +55,9 @@
 
   (it "reports passing run results"
     (binding [*color?* true]
-      (let [result1 (pass-result nil 0.1)
-            result2 (pass-result nil 0.02)
-            result3 (pass-result nil 0.003)
+      (let [result1 (pass-result nil 0.1 1)
+            result2 (pass-result nil 0.02 2)
+            result3 (pass-result nil 0.003 3)
             results [result1 result2 result3]
             output  (with-out-str (report-runs @reporter results))
             lines   (str/split-lines output)]
@@ -65,7 +65,7 @@
         (should= "" (nth lines 0))
         (should= "" (nth lines 1))
         (should= (str "Finished in " (platform/format-seconds 0.123) " seconds") (nth lines 2))
-        (should= (green "3 examples, 0 failures") (nth lines 3)))))
+        (should= (green "3 examples, 0 failures, 6 assertions") (nth lines 3)))))
 
   (it "reports failing run results"
     (binding [*color?* true]
@@ -73,9 +73,9 @@
             char1       (new-characteristic "flips" description "flip" false)
             char2       (new-characteristic "spins" description "spin" false)
             char3       (new-characteristic "dives" description "dive" false)
-            result1     (fail-result char1 0.3 (-new-failure "Expected flips"))
-            result2     (fail-result char2 0.02 (-new-failure "Expected spins"))
-            result3     (fail-result char3 0.001 (-new-failure "Expected dives"))
+            result1     (fail-result char1 0.3 (-new-failure "Expected flips") 1)
+            result2     (fail-result char2 0.02 (-new-failure "Expected spins") 2)
+            result3     (fail-result char3 0.001 (-new-failure "Expected dives") 3)
             results     [result1 result2 result3]
             lines       (str/split-lines (with-out-str (report-runs @reporter results)))]
         (should= 18 (count lines))
@@ -95,18 +95,18 @@
         ;      (should= "/Users/micahmartin/Projects/clojure/speclj/spec/speclj/report/progress_spec.clj:56" (nth lines 14))
         (should= "" (nth lines 15))
         (should= (str "Finished in " (platform/format-seconds 0.321) " seconds") (nth lines 16))
-        (should= (red "3 examples, 3 failures") (nth lines 17)))))
+        (should= (red "3 examples, 3 failures, 6 assertions") (nth lines 17)))))
 
   (it "reports pending run results"
     (binding [*color?* true]
       (let [description (new-description "Crazy" false "some.ns")
             char1       (new-characteristic "flips" description "flip" false)
-            result1     (pass-result char1 0.1)
-            result2     (pass-result char1 0.02)
+            result1     (pass-result char1 0.1 1)
+            result2     (pass-result char1 0.02 2)
             result3     (pending-result char1 0.003 (-new-pending "Blah"))
             results     [result1 result2 result3]
             lines       (str/split-lines (with-out-str (sut/print-summary results)))]
-        (should= (yellow "3 examples, 0 failures, 1 pending") (last lines)))))
+        (should= (yellow "3 examples, 0 failures, 3 assertions, 1 pending") (last lines)))))
 
   (it "reports pending summary"
     (let [description (new-description "Crazy" false "some.ns")
@@ -134,12 +134,12 @@
     (binding [*color?* true]
       (let [description (new-description "Crazy" false "some.ns")
             char1       (new-characteristic "flips" description "flip" false)
-            result1     (pass-result char1 0.1)
-            result2     (pass-result char1 0.02)
+            result1     (pass-result char1 0.1 3)
+            result2     (pass-result char1 0.02 2)
             result3     (error-result (-new-exception "blah"))
             results     [result1 result2 result3]
             lines       (str/split-lines (with-out-str (sut/print-summary results)))]
-        (should= (red "3 examples, 0 failures, 1 errors") (last lines)))))
+        (should= (red "3 examples, 0 failures, 5 assertions, 1 errors") (last lines)))))
 
   (it "reports error summary"
     (binding [*full-stack-trace?* false]

@@ -43,6 +43,9 @@
 (defn is-description? [component]
   (instance? Description component))
 
+(declare ^:dynamic *assertions*)
+(defn inc-assertions! [] (swap! *assertions* inc))
+
 (deftype Characteristic [name parent body is-focused?]
   SpecComponent
   (install [this description]

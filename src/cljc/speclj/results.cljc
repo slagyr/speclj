@@ -1,15 +1,15 @@
 (ns speclj.results)
 
-(deftype PassResult [characteristic seconds])
-(deftype FailResult [characteristic seconds failure])
+(deftype PassResult [characteristic seconds assertions])
+(deftype FailResult [characteristic seconds failure assertions])
 (deftype PendingResult [characteristic seconds exception])
 (deftype ErrorResult [characteristic seconds exception])
 
-(defn pass-result [characteristic seconds]
-  (PassResult. characteristic seconds))
+(defn pass-result [characteristic seconds assertions]
+  (PassResult. characteristic seconds assertions))
 
-(defn fail-result [characteristic seconds failure]
-  (FailResult. characteristic seconds failure))
+(defn fail-result [characteristic seconds failure assertions]
+  (FailResult. characteristic seconds failure assertions))
 
 (defn pending-result [characteristic seconds exception]
   (PendingResult. characteristic seconds exception))
@@ -27,9 +27,9 @@
 (defn categorize [results]
   (reduce (fn [tally result]
             (cond
-              (pending? result) (update-in tally [:pending] conj result)
-              (error? result) (update-in tally [:error] conj result)
-              (fail? result) (update-in tally [:fail] conj result)
-              :else (update-in tally [:pass] conj result)))
+              (pending? result) (update tally :pending conj result)
+              (error? result) (update tally :error conj result)
+              (fail? result) (update tally :fail conj result)
+              :else (update tally :pass conj result)))
           {:pending [] :fail [] :pass [] :error []}
           results))
