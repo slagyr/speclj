@@ -1,4 +1,4 @@
-# Next
+# 3.7.0
 * Displays the total number of assertions made in the test results
 
 # 3.6.0
