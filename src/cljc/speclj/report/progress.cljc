@@ -3,7 +3,7 @@
             [speclj.config :refer [*omit-pending?* default-reporters]]
             [speclj.error :as error]
             [speclj.platform :as platform]
-            [speclj.reporting :refer [green grey indent red stack-trace-str tally-time yellow]]
+            [speclj.reporting :refer [green grey indent red stack-trace-str tally-assertions tally-time yellow]]
             [speclj.results :refer [categorize]]))
 
 (defn full-name [characteristic]
@@ -73,7 +73,8 @@
 (defn describe-counts-for [result-map]
   (let [tally            (zipmap (keys result-map) (map count (vals result-map)))
         always-on-counts [(str (apply + (vals tally)) " examples")
-                          (str (:fail tally) " failures")]]
+                          (str (:fail tally) " failures")
+                          (str (tally-assertions (concat (:pass result-map) (:fail result-map))) " assertions")]]
     (str/join ", "
               (-> always-on-counts
                   (apply-pending-tally tally)

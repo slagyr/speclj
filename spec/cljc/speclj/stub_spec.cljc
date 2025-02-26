@@ -1,5 +1,5 @@
 (ns speclj.stub-spec
-  (:require [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message]]
+  (:require [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [should-fail! should-pass! failure-message should-have-assertions]]
             [speclj.core #?(:cljs :refer-macros :default :refer) [around before context describe it should= should-throw should-invoke should-have-invoked should-not-invoke should-not-have-invoked with with-stubs stub -new-exception]]
             [speclj.stub :as stub]
             [speclj.platform :refer [endl exception]]
@@ -206,6 +206,12 @@
                    (failure-message (should-have-invoked :the-stub {:with [:one :two] :times 2})))
           (should= (str "Expected: 1 invocation of :the-stub with [:three :four]" endl "     got: 2 invocations")
                    (failure-message (should-have-invoked :the-stub {:with [:three :four] :times 1})))))
+
+      (it "bumps assertion count"
+        (let [f (stub :the-stub)]
+          (f)
+          (should-have-invoked :the-stub)
+          (should-have-assertions 1)))
       )
 
     (context "should-not-have-invoked"
@@ -269,6 +275,9 @@
           (should= (str "Expected: :the-stub not to have been invoked with [:three :four]" endl "     got: ([:one :two] [:three :four] [:three :four])")
                    (failure-message (should-not-have-invoked :the-stub {:with [:three :four]})))))
 
+      (it "bumps assertion count"
+        (should-not-have-invoked :the-stub)
+        (should-have-assertions 1))
       )
 
     (context "should-invoke"
@@ -296,6 +305,20 @@
                    (should-invoke reverse {:return 42 :times 2}
                                   (should= 42 (reverse [1 2]))))))
 
+      (it "allows for nested should-invoke's"
+        (should-pass!
+          (should-invoke reverse {:times 1}
+                         (should-invoke println {:times 1}
+                                        (println "hello!")
+                                        (reverse [1 2])))))
+
+      (it "bumps assertion count"
+        (should-invoke println {} (println "Hello!"))
+        (should-have-assertions 1))
+      )
+
+    (context "should-not-invoke"
+
       (it "stubs and checks it was not called - failing"
         (should-fail! (should-not-invoke println {} (println "Hello!")))
         (should= "Expected: 0 invocations of println\n     got: 1"
@@ -309,13 +332,6 @@
                                          (println "hello!")
                                          (println "hello again!"))))
 
-      (it "allows for nested should-invoke's"
-        (should-pass!
-          (should-invoke reverse {:times 1}
-                         (should-invoke println {:times 1}
-                                        (println "hello!")
-                                        (reverse [1 2])))))
-
       (it "allows for nested should-not-invoke's"
         (should-pass!
           (should-invoke reverse {:times 2}
@@ -324,6 +340,9 @@
                                             (println "hello!")
                                             (reverse [1 2])))))
 
+      (it "bumps assertion count"
+        (should-not-invoke println {} "No calls to println :(")
+        (should-have-assertions 1))
       )
     )
   )

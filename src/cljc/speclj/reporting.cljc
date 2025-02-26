@@ -5,8 +5,9 @@
             [speclj.platform :refer [endl stack-trace cause error-str print-stack-trace elide-level?]]
             [speclj.results :refer [pass? fail?]]))
 
-(defn tally-time [results]
-  (apply + (map #(.-seconds %) results)))
+(defn- sum-by [f coll] (apply + (map f coll)))
+(defn tally-time [results] (sum-by #(.-seconds %) results))
+(defn tally-assertions [results] (sum-by #(.-assertions %) results))
 
 (defprotocol Reporter
   (report-message [reporter message])

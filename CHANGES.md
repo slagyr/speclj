@@ -1,3 +1,6 @@
+# Next
+* Displays the total number of assertions made in the test results
+
 # 3.6.0
 * Replaces `SpecFailure` and `SpecPending` classes with `ex-info`
 * Replaces `mmargs` library with a Clojure implementation

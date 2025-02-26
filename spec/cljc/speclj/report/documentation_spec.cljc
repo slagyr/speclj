@@ -29,13 +29,13 @@
 
   (it "reports pass"
     (let [characteristic (new-characteristic "says pass" @description "pass" false)
-          result         (pass-result characteristic 1)]
+          result         (pass-result characteristic 1 0)]
       (should= (str (green "- says pass") endl)
                (with-out-str (report-pass @reporter result)))))
 
   (it "reports focused pass"
     (let [characteristic (new-characteristic "says pass" @description #() true)
-          result         (pass-result characteristic 1)]
+          result         (pass-result characteristic 1 0)]
       (should= (str (green "- says pass") " " (yellow "[FOCUS]") endl)
                (with-out-str (report-pass @reporter result)))))
 
@@ -47,13 +47,13 @@
 
   (it "reports fail"
     (let [characteristic (new-characteristic "says fail" @description "fail" false)
-          result         (fail-result characteristic 2 (-new-failure "blah"))]
+          result         (fail-result characteristic 2 (-new-failure "blah") 0)]
       (should= (str (red "- says fail (FAILED)") endl)
                (with-out-str (report-fail @reporter result)))))
 
   (it "reports focused fail"
     (let [characteristic (new-characteristic "says fail" @description #() true)
-          result         (fail-result characteristic 2 (-new-failure "blah"))]
+          result         (fail-result characteristic 2 (-new-failure "blah") 0)]
       (should= (str (red "- says fail (FAILED)") " " (yellow "[FOCUS]") endl)
                (with-out-str (report-fail @reporter result)))))
 
@@ -71,13 +71,13 @@
 
     (it "reports nested pass"
       (let [characteristic (new-characteristic "nested pass" @nested-description "pass" false)
-            result         (pass-result characteristic 1)]
+            result         (pass-result characteristic 1 0)]
         (should= (str (green "  - nested pass") endl)
                  (with-out-str (report-pass @reporter result)))))
 
     (it "reports nested failure"
       (let [characteristic (new-characteristic "nested fail" @nested-description "fail" false)
-            result         (fail-result characteristic 2 (-new-failure "blah"))]
+            result         (fail-result characteristic 2 (-new-failure "blah") 0)]
         (should= (str (red "  - nested fail (FAILED)") endl)
                  (with-out-str (report-fail @reporter result)))))
     )

@@ -12,8 +12,12 @@
 
 (defmacro should-pass! [& body]
   `(let [result# (run-result ~@body)]
-     (if (not (= :pass result#))
+     (when-not (= :pass result#)
        (-fail (str "Unexpected failure: " (speclj.platform/error-message result#))))))
+
+(defmacro should-have-assertions [n]
+  `(let [assertions# @components/*assertions*]
+     (should= ~n assertions#)))
 
 (defn to-string [v] (#?(:cljr .ToString :default .toString) v))
 
