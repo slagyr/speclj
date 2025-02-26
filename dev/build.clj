@@ -77,4 +77,4 @@
      :source-uri   "https://github.com/slagyr/speclj/blob/master/{filepath}#L{line}"
      :name         "Speclj"
      :version      version
-     :description  "TDD/BDD framework for Clojure"}))
+     :description  "(pronounced \"speckle\" [spek-uhl]) A TDD/BDD framework for Clojure"}))
