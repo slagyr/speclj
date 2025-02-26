@@ -1,6 +1,6 @@
 #! /bin/sh
 
-clj -X:test:codox
+clj -T:build docs
 pushd doc
 git checkout gh-pages # To be sure you're on the right branch
 git add .

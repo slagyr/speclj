@@ -10,7 +10,7 @@
 ;; Assumes that cloverage is already in the classpath.
 
 (defmethod coverage/runner-fn :speclj [_opts]
-  (prn "_opts: " _opts)
+  ;(prn "_opts: " _opts)
   (fn [nses]
     (let [results (atom [])
           runner (standard/->StandardRunner (atom []) results)

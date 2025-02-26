@@ -2,7 +2,8 @@
   (:require [cemerick.pomegranate.aether :as aether]
             [clojure.java.shell :as shell]
             [clojure.string :as str]
-            [clojure.tools.build.api :as b]))
+            [clojure.tools.build.api :as b]
+            [codox.main :as codox]))
 
 (def lib-name "speclj")
 (def group-name "speclj")
@@ -68,3 +69,12 @@
   (jar nil)
   (println "deploying " (:coordinates deploy-config))
   (aether/deploy deploy-config))
+
+(defn docs [_]
+  (codox/generate-docs
+    {:source-paths ["src/clj" "src/cljc" "src/cljvm"]
+     :output-path  "doc"
+     :source-uri   "https://github.com/slagyr/speclj/blob/master/{filepath}#L{line}"
+     :name         "Speclj"
+     :version      version
+     :description  "TDD/BDD framework for Clojure"}))
