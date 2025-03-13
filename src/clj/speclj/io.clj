@@ -20,5 +20,4 @@
 (defn ->StringWriter [] (StringWriter.))
 
 (defn copy [input output] (io/copy input output))
-(defn make-input-stream [x opts] (io/make-input-stream (byte-array x) opts))
 (defn make-parents [f] (io/make-parents f))

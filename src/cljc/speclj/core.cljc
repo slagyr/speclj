@@ -287,7 +287,7 @@
   [expected-form actual-form]
   `(help-should
      (let [expected# ~expected-form actual# ~actual-form]
-       (if (not (identical? expected# actual#))
+       (when-not (identical? expected# actual#)
          (-fail (str "         Expected: " (-to-s expected#) speclj.platform/endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
 
 (defmacro should-not-be-same
@@ -798,11 +798,11 @@ There are three options for passing different kinds of predicates:
           *bound-by-should-invoke*)))
 
 (defmacro ^:no-doc with-stubbed-invocations [& body]
-  `(if (not (speclj.platform/bound-by-should-invoke?))
+  `(if (speclj.platform/bound-by-should-invoke?)
+     (do ~@body)
      (with-redefs [speclj.stub/*stubbed-invocations*        (atom [])
                    speclj.platform/*bound-by-should-invoke* true]
-       ~@body)
-     (do ~@body)))
+       ~@body)))
 
 (defmacro should-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks the invocations.

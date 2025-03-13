@@ -4,7 +4,7 @@
 
 (declare ^:dynamic *parent-description*)
 
-(declare #^{:dynamic true} *reporters*)
+(declare ^:dynamic *reporters*)
 (def default-reporters (atom nil))
 
 (defn active-reporters []
@@ -14,7 +14,7 @@
       reporters
       (throw (new #?(:cljs js/Error :default Exception) "*reporters* is unbound and no default value has been provided")))))
 
-(declare #^{:dynamic true} *runner*)
+(declare ^:dynamic *runner*)
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
 
@@ -26,15 +26,11 @@
       (throw (new #?(:cljs js/Error :default Exception)
                   "*runner* is unbound and no default value has been provided")))))
 
-(declare #^{:dynamic true} *specs*)
-
-(def #^{:dynamic true} *omit-pending?* false)
-
-(def #^{:dynamic true} *color?* false)
-
-(def #^{:dynamic true} *full-stack-trace?* false)
-
-(def #^{:dynamic true} *tag-filter* {:include #{} :exclude #{}})
+(declare ^:dynamic *specs*)
+(def ^:dynamic *omit-pending?* false)
+(def ^:dynamic *color?* false)
+(def ^:dynamic *full-stack-trace?* false)
+(def ^:dynamic *tag-filter* {:include #{} :exclude #{}})
 
 (def default-config
   {:specs        ["spec"]
@@ -70,11 +66,10 @@
       (throw (new #?(:cljs js/Error :default Exception) (str "Failed to load reporter: " name) e)))))
 
 (defn- load-reporter-by-name? [name-or-object]
-  #?(:clj  (->> name-or-object
-                (instance? (Class/forName "speclj.reporting.Reporter"))
-                not)
-     :cljs (string? name-or-object)
-     :cljr (string? name-or-object)))
+  #?(:default (string? name-or-object)
+     :clj     (->> name-or-object
+                   (instance? (Class/forName "speclj.reporting.Reporter"))
+                   not)))
 
 (defn load-reporter [name-or-object]
   (cond-> name-or-object

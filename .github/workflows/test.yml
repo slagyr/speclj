@@ -19,6 +19,15 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
+      - name: Install Babashka
+        run: |
+          curl -sLO https://raw.githubusercontent.com/babashka/babashka/master/install
+          chmod +x install
+          ./install
+
+      - name: Install Clojure CLI
+        run: curl -O https://download.clojure.org/install/linux-install-1.11.1.1119.sh && chmod +x linux-install-1.11.1.1119.sh && sudo ./linux-install-1.11.1.1119.sh
+
       - name: Prepare dotnet
         uses: xt0rted/setup-dotnet@v1.5.0
 
@@ -35,9 +44,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deps-
 
-      - name: Install Clojure CLI
-        run: curl -O https://download.clojure.org/install/linux-install-1.11.1.1119.sh && chmod +x linux-install-1.11.1.1119.sh && sudo ./linux-install-1.11.1.1119.sh
-
       - name: Build JAR
         run: clojure -T:build javac
 
@@ -46,6 +52,9 @@ jobs:
 
       - name: Run Clojure JVM Tests
         run: clojure -M:test:spec
+
+      - name: Run Babashka Tests
+        run: bb test
 
       - name: Run Clojure CLR Tests
         run: cljr -M:test:spec
