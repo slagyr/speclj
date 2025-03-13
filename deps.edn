@@ -1,5 +1,5 @@
 {
- :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs"]
+ :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/bb"]
  :deps    {
            org.clojure/clojure         {:mvn/version "1.12.0"}
            trptcolin/versioneer        {:mvn/version "0.1.1"}
