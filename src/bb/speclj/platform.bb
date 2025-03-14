@@ -104,9 +104,7 @@
     (str file ":" line)))
 
 (defn format-seconds [secs]
-  (if (zero? secs)
-    "0.00000"
-    (format "%.5f" secs)))
+  (format "%.5f" (double secs)))
 
 (defn get-name [ns] (symbol (str ns)))
 (defn get-bytes [s] (seq (.getBytes s)))

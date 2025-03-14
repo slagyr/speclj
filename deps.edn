@@ -20,7 +20,6 @@
                                  leiningen-core/leiningen-core {:mvn/version "2.11.2"}
                                  cloverage/cloverage           {:mvn/version "1.2.4"}
                                  trptcolin/versioneer          {:mvn/version "0.1.1"}
-                                ;;  org.clojure/tools.namespace   {:mvn/version "1.5.0"}
                                  }
                    :ns-default  build
                    :extra-paths ["dev" "target/classes"]}

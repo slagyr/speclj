@@ -1,6 +1,6 @@
 {:paths ["src/bb" "src/clj" "src/cljc"]
  :deps  {speclj/speclj {:local/root "."}}
- :tasks {test {:doc         "Runs Babashka specs"
+ :tasks {spec {:doc         "Runs Babashka specs"
                :extra-paths ["spec/clj" "spec/cljc"]
                :requires    ([speclj.main :as main])
                :task        (apply main/-main "-c" "spec/cljc" "spec/clj" *command-line-args*)}
