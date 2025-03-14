@@ -4,12 +4,15 @@
             [speclj.script.core :as script])
   (:import (java.nio.file.attribute PosixFilePermission)))
 
+(def execute-permissions
+  #{PosixFilePermission/OWNER_EXECUTE
+    PosixFilePermission/GROUP_EXECUTE
+    PosixFilePermission/OTHERS_EXECUTE})
+
 (defn as-executable [path]
-  (let [permissions (-> (file/get-permissions path)
-                        (conj PosixFilePermission/OWNER_EXECUTE
-                              PosixFilePermission/GROUP_EXECUTE
-                              PosixFilePermission/OTHERS_EXECUTE))]
-    (file/set-permissions path permissions)))
+  (->> (file/get-permissions path)
+       (into execute-permissions)
+       (file/set-permissions path)))
 
 (defn install!
   "Downloads and executes a script with sudo permissions,
