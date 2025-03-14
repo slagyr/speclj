@@ -52,7 +52,7 @@ jobs:
         run: clojure -M:test:spec
 
       - name: Run Babashka Tests
-        run: bb test
+        run: bb spec
 
       - name: Run Clojure CLR Tests
         run: cljr -M:test:spec
