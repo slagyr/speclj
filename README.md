@@ -4,7 +4,7 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 
 [![Speclj Build](https://github.com/slagyr/speclj/actions/workflows/test.yml/badge.svg)](https://github.com/slagyr/speclj/actions/workflows/test.yml)
 
-[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript) | [Clojure CLR](#clojureclr)
+[Installation](#installation) | [Clojure](#clojure) | [ClojureScript](#clojurescript) | [Clojure CLR](#clojure-clr) | [Babashka](#babashka)
 
 # Installation
 [![Clojars Project](https://img.shields.io/clojars/v/speclj.svg)](https://clojars.org/speclj)
@@ -149,48 +149,6 @@ Run specs.
 clj -M:spec     # printing dots
 clj -M:spec -a  # auto running with doc output
 clj -M:spec <OPTIONS>
-```
-
-### With `bb.edn`
-
-Install [Babashka](https://github.com/babashka/babashka).
-
-Add a `spec` task to your `bb.edn`.
-
-```clojure
-{:paths ["src/bb" "spec/bb"]
- :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.8.0"}}
-               :requires   ([speclj.main :as main])
-               :task       (apply main/-main "-c" "spec/bb" *command-line-args*)}}
-}
-```
-
-Run specs.
-```bash
-bb spec      # printing dots
-bb spec -a   # auto running with doc output
-bb spec <OPTIONS>
-```
-
-### With `deps-clr.edn`
-
-Install [Clojure CLR](https://github.com/clojure/clojure-clr) and [Clojure CLR CLI](https://github.com/clojure/clr.core.cli).
-
-Add a `spec` alias to your `deps-clr.edn`.
-
-```clojure
-{
- :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.8.0" :git/sha "FIXME"}}
-                  :extra-paths ["spec"]}}
- }
-```
-
-Run specs.
-```bash
-cljr -M:spec     # printing dots
-cljr -M:spec -a  # auto running with doc output
-cljr -M:spec <OPTIONS>
 ```
 
 ### With Leiningen
@@ -341,6 +299,48 @@ The command below will start a process that will watch the source files and run 
 
 ```bash
 $ bin/speclj path/to/compiled.js
+```
+
+## Clojure CLR
+
+Install [Clojure CLR](https://github.com/clojure/clojure-clr) and [Clojure CLR CLI](https://github.com/clojure/clr.core.cli).
+
+Add a `spec` alias to your `deps-clr.edn`.
+
+```clojure
+{
+ :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.8.0" :git/sha "FIXME"}}
+                  :extra-paths ["spec"]}}
+ }
+```
+
+Run specs.
+```bash
+cljr -M:spec     # printing dots
+cljr -M:spec -a  # auto running with doc output
+cljr -M:spec <OPTIONS>
+```
+
+## Babashka
+
+Install [Babashka](https://github.com/babashka/babashka).
+
+Add a `spec` task to your `bb.edn`.
+
+```clojure
+{:paths ["src/bb" "spec/bb"]
+ :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.8.0"}}
+               :requires   ([speclj.main :as main])
+               :task       (apply main/-main "-c" "spec/bb" *command-line-args*)}}
+}
+```
+
+Run specs.
+```bash
+bb spec      # printing dots
+bb spec -a   # auto running with doc output
+bb spec <OPTIONS>
 ```
 
 # Code Coverage
