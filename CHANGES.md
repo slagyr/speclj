@@ -1,3 +1,6 @@
+# 3.8.0
+* Adds support for Babashka
+
 # 3.7.0
 * Displays the total number of assertions made in the test results
 

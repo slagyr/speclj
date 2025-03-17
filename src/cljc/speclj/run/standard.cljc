@@ -21,6 +21,10 @@
    (defn- load-spec [_spec-file]
      (js/alert "speclj.run.standard.load-spec:  I don't know how to do this."))
 
+   :bb
+   (defn- load-spec [spec-file]
+     (load-file spec-file))
+
    :default
    (do
      (defn- file->pushback-reader [file]

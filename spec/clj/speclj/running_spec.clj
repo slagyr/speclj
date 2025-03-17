@@ -67,19 +67,6 @@
     (sut/run-and-report *runner* *reporters*)
     (should= nil @bauble))
 
-  (it "doesn't crash when declaring a with named the same as a pre-existing var"
-    (let [spec
-          `(describe "Dummy"
-             (with bauble "foo")
-             (it "uses the new value of bauble"
-               (should= "foo" @bauble)))]
-      (should-not-throw (eval spec))
-      (sut/run-and-report *runner* *reporters*)
-      (let [results @(.-results *runner*)
-            result  (first results)]
-        (should= 1 (count results))
-        (should-not (fail? result)))))
-
   (it "only executes contexts that pass the tag filter"
     (eval
       `(describe "Dummy" (tags :one)
@@ -92,17 +79,18 @@
       (should= 1 (count results))
       (should= "one, two tag" (.-name (.-characteristic (first results))))))
 
-  (it "before-all's can use with-all's"
-    (eval
-      `(describe "Dummy"
-         (with-all foo (atom 42))
-         (before-all (swap! @foo inc))
-         (it "check foo"
-           (should= 43 @@foo))))
-    (sut/run-and-report *runner* *reporters*)
-    (let [results @(.-results *runner*)]
-      (should= 1 (count results))
-      (should-not (fail? (first results)))))
+  (context "with named the same as a pre-existing var"
+    (with bauble "foo")
+    
+    (it "doesn't crash"
+      (should= "foo" @bauble))
+    )
+
+  (context "before-alls using with-alls"
+    (with-all foo (atom 42))
+    (before-all (swap! @foo inc))
+    (it "performs before-all using a with-all"
+        (should= 43 @@foo)))
 
   (context "exporting"
     (spec-helper/test-exported-meta sut/filter-descriptions)

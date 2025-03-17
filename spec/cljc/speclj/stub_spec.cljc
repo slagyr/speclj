@@ -4,6 +4,7 @@
             [speclj.stub :as stub]
             [speclj.platform :refer [endl exception]]
             [speclj.run.standard :as standard]
+            #?@(:cljs [] :default [[speclj.thread :as thread]])
             #?(:cljs [clojure.data])))
 
 (defn foo-bar-fn [] nil)
@@ -66,13 +67,13 @@
            (it)))
 
        (it "stubs the functions in the other thread"
-         (doto (speclj.thread/spawn (foo-bar-fn)) (speclj.thread/join))
+         (doto (thread/spawn (foo-bar-fn)) (thread/join))
          (should-have-invoked :foo-bar-fn {:times 1}))
 
        (it "allows should-invoke to work as expected"
          (should-invoke
            foo-bar-fn {:times 1}
-           (doto (speclj.thread/spawn (foo-bar-fn)) (speclj.thread/join))))))
+           (doto (thread/spawn (foo-bar-fn)) (thread/join))))))
 
   (context "invocations"
     (with foo (stub :foo))

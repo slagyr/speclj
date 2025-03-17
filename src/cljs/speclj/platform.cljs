@@ -3,7 +3,7 @@
 
 (def endl "\n")
 (def file-separator "/")
-(def source-file-regex #".*\.clj(c|s)?")
+(def source-file-regex #".*\.clj(c|s)")
 
 (defn re? [obj] (instance? js/RegExp obj))
 

@@ -40,7 +40,9 @@
 
 (describe "some assertions"
   (it "checks identity"
-    (should-be-same "foo" "foo")
+    #?(:bb      (should-not-be-same "foo" "foo")
+       :default (should-be-same "foo" "foo"))
+    (should-be-same 1 1)
     (should-not-be-same 1 2)))
 
 (def bauble (atom 2))
@@ -115,7 +117,7 @@
     (should= 0 @widget)
     (should= 2 @bauble)))
 
-(def #^{:dynamic true} *gewgaw* 0)
+(def ^:dynamic *gewgaw* 0)
 (describe "around forms"
   (it "allows characteristics to be wrapped by other forms" :filler)
   (around [it]

@@ -132,7 +132,7 @@
 
   (context "should-be-same"
     (it "tests identity"
-      (should-pass! (should-be-same "foo" "foo"))
+      (#?(:bb should-fail! :default should-pass!) (should-be-same "foo" "foo"))
       (should-pass! (should-be-same 1 1))
       (should-fail! (should-be-same [] ()))
       #?(:cljs    (do)
@@ -151,13 +151,12 @@
 
   (context "should-not-be-same"
     (it "tests identity"
-      (should-fail! (should-not-be-same "foo" "foo"))
       (should-fail! (should-not-be-same 1 1))
       (should-pass! (should-not-be-same [] ()))
-
+      #?(:bb      (should-pass! (should-not-be-same "foo" "foo"))
+         :default (should-fail! (should-not-be-same "foo" "foo")))
       #?(:cljs    (do)
-         :default (should-pass! (should-not-be-same 1 1.0)))
-      )
+         :default (should-pass! (should-not-be-same 1 1.0))))
 
     (it "failure message is nice"
       (should= (str "             Expected: 1" endl "not to be the same as: 1 (using identical?)")

@@ -13,13 +13,6 @@
       (should-not= nil runner)
       (should= speclj.run.standard.StandardRunner (type runner))))
 
-  #?(:cljs (list)
-     :default
-     (it "dynamically loads VigilantRunner"
-       (let [runner (sut/load-runner "vigilant")]
-         (should-not= nil runner)
-         (should= "speclj.run.vigilant.VigilantRunner" (platform/type-name (type runner))))))
-
   (it "throws exception with unrecognized runner"
     (should-throw platform/exception "Failed to load runner: blah" (sut/load-runner "blah")))
 
@@ -53,16 +46,22 @@
 
   #?(:cljs (list)
      :default
-     (it "should translate tags in config-bindings"
-       (let [mappings (sut/config-mappings (assoc sut/default-config :tags ["one" "~two"]))]
-         (should=
-           {:includes #{:one} :excludes #{:two}}
-           (get mappings #'sut/*tag-filter*)))))
-  #?(:cljs (list)
-     :default
-     (it "doesn't include *parent-description* in config-bindings"
-       (let [cb (sut/config-bindings)]
-         (should-not-contain #'speclj.config/*parent-description* cb))))
+     (list
+       (it "dynamically loads VigilantRunner"
+         (let [runner (sut/load-runner "vigilant")]
+           (should-not= nil runner)
+           (should= "speclj.run.vigilant.VigilantRunner" (platform/type-name (type runner)))))
+
+       (it "should translate tags in config-bindings"
+         (let [mappings (sut/config-mappings (assoc sut/default-config :tags ["one" "~two"]))]
+           (should= {:includes #{:one} :excludes #{:two}}
+                    (get mappings #'sut/*tag-filter*))))
+
+       (it "doesn't include *parent-description* in config-bindings"
+         (let [cb (sut/config-bindings)]
+           (should-not-contain #'speclj.config/*parent-description* cb)))
+      )
+     )
 
   (context "exporting"
     (test-exported-meta sut/active-runner)

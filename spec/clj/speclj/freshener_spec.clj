@@ -12,7 +12,7 @@
 (defn write-file [dir name content]
   (let [file (io/as-file dir name)]
     (io/make-parents file)
-    (io/copy (io/make-input-stream (platform/get-bytes content) {}) file)
+    (spit file content)
     file))
 
 (describe "Freshener"
