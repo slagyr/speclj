@@ -310,7 +310,7 @@ Add a `spec` alias to your `deps-clr.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.9.0" :git/sha "a24d002"}}
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.9.0" :git/sha "02196ee"}}
                   :extra-paths ["spec"]}}
  }
 ```
