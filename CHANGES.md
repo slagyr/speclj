@@ -1,3 +1,6 @@
+# Next
+* Allow Speclj arguments to be passed in through Cloverage
+
 # 3.8.0
 * Adds support for Babashka
 

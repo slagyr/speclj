@@ -346,19 +346,21 @@ bb spec <OPTIONS>
 # Code Coverage
 
 Speclj integrated with [Cloverage](https://github.com/cloverage/cloverage) for all your code coverage needs.  Make sure
-speclj 3.4.6 or above is included in the classpath and use Cloverage's `--runner :speclj` command line option.
+speclj 3.4.6 or above is included in the classpath.
 
 Here's an example alias for your `deps.edn`.
 
 ```clojure
-{:aliases {:cov {:main-opts  ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src" "-s" "spec"]
+{:aliases {:cov {:main-opts  ["-m" "speclj.cloverage" "--" "-p" "src" "-s" "spec"]
                  :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}
                               speclj/speclj       {:mvn/version "3.8.0"}}}}}
 ```
 
-Sadly, Cloverage doesn't offer a way to pass arguments to the runner (Speclj in this case).  Speclj will use the
-standard runner and progress reporter by default.  If you'd like different options, you can use the `speclj.cloverage` 
-namespace as a model to create your own cloverage/speclj runner in your project.
+To pass arguments to speclj, include them as you would with `speclj.main` before the double-hyphen `"--"`:
+
+```clojure
+{:aliases {:cov {:main-opts ["-m" "speclj.cloverage" "-c" "-t" "~slow" "--" "-p" "src" "-p" "spec"]}}}
+```
 
 # Community
 
