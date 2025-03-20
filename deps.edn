@@ -1,5 +1,5 @@
 {
- :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/bb"]
+ :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/cljr" "src/bb"]
  :deps    {
            org.clojure/clojure         {:mvn/version "1.12.0"}
            trptcolin/versioneer        {:mvn/version "0.1.1"}
@@ -10,8 +10,9 @@
                                  io.github.clojure/tools.build {:mvn/version "0.10.7"}
                                  org.clojure/clojurescript     {:mvn/version "1.11.132"}
                                  cloverage/cloverage           {:mvn/version "1.2.4"}
+                                 leiningen-core/leiningen-core {:mvn/version "2.9.8"}
                                  }
-                   :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "target/classes"]}
+                   :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "spec/bb" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"]}
            :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
            :build {:deps        {io.github.clojure/tools.build {:mvn/version "0.10.7"}
@@ -23,6 +24,13 @@
                                  }
                    :ns-default  build
                    :extra-paths ["dev" "target/classes"]}
-           :cov   {:main-opts ["-m" "cloverage.coverage" "--runner" ":speclj" "-p" "src/clj" "-p" "src/cljc" "-p" "src/cljvm" "-s" "spec/clj" "-s" "spec/cljc" "-s" "spec/cljs" "-s" "spec/cljvm" "-e" "leiningen.spec" "--foo" "bar"]}
+           :cov   {:main-opts ["-m" "speclj.cloverage" "-c"
+                               "--"
+                               "-p" "src/clj"
+                               "-p" "src/cljc"
+                               "-p" "src/cljvm"
+                               "-s" "spec/clj"
+                               "-s" "spec/cljc"
+                               "-s" "spec/cljvm"]}
            }
  }
