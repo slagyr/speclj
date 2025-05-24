@@ -9,8 +9,7 @@
             [speclj.report.documentation :as sut]
             [speclj.reporting :refer [report-description report-pass report-pending
                                       report-fail report-error red green yellow]]
-            [speclj.results :refer [pass-result fail-result pending-result error-result]]
-            [speclj.run.standard :as standard]))
+            [speclj.results :refer [pass-result fail-result pending-result error-result]]))
 
 (defmacro with-profiler-off [& body]
   `(binding [config/*profile?* false] ~@body))
@@ -181,5 +180,3 @@
                    (with-out-str (report-fail @reporter result))))))
     )
   )
-
-(standard/run-specs)
