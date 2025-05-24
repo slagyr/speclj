@@ -1,7 +1,7 @@
 (ns speclj.cli-spec
   (:require [speclj.cli :as sut]
             [speclj.config :as config]
-            [speclj.core #?(:cljs :refer-macros :default :refer) [describe it should= should-not-be-nil]]
+            [speclj.core #?(:cljs :refer-macros :default :refer) [describe it should= should-contain should-not-be-nil]]
             [speclj.platform :refer [endl]]
             [clojure.string :as str]
             #?(:clj [trptcolin.versioneer.core :as version])))
@@ -64,6 +64,11 @@
           out    (with-out-str (reset! result (sut/run "--help")))]
       (should= 0 @result)
       (should-not-be-nil (str/index-of out "Usage"))))
+
+  (it "includes the profile switch"
+    (let [out (with-out-str (sut/run "--help"))]
+      (should-contain "-P, --profile" out)
+      (should-contain "Shows execution time for each test." out)))
 
   (it "parses the --speclj switch"
     (should= nil (:speclj (sut/parse-args "")))

@@ -32,16 +32,15 @@
   (doseq [reporter reporters]
     (report-error reporter result)))
 
-(defn- stylizer [code]
-  (fn [text]
-    (if *color?*
-      (str "\u001b[" code "m" text "\u001b[0m")
-      text)))
+(defn- stylizer [code text]
+  (if *color?*
+    (str "\u001b[" code "m" text "\u001b[0m")
+    text))
 
-(def red (stylizer "31"))
-(def green (stylizer "32"))
-(def yellow (stylizer "33"))
-(def grey (stylizer "90"))
+(defn red [text] (stylizer "31" text))
+(defn green [text] (stylizer "32" text))
+(defn yellow [text] (stylizer "33" text))
+(defn grey [text] (stylizer "90" text))
 
 (defn- print-elides [n]
   (when (pos? n)
