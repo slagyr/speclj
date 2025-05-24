@@ -9,8 +9,8 @@
   (with-stubs)
 
   (it "set-interval loops over handler"
-    (let [key (sut/set-interval 50 (stub :interval))]
-      (thread/sleep 100)
+    (let [key (sut/set-interval 12 (stub :interval))]
+      (thread/sleep 25)
       (sut/clear-interval key)
       (let [invocations (count (stub/invocations-of :interval))]
         (should<= 2 invocations)
@@ -20,10 +20,12 @@
     (should-not-throw (sut/clear-interval "blah")))
 
   (it "does not sleep for the interval when cleared"
-    (let [key   (sut/set-interval 1000 #(thread/sleep 100))
+    (let [key   (sut/set-interval 100 #(thread/sleep 25))
           start (platform/current-time)]
-      (thread/sleep 50)
+      (thread/sleep 12)
       (sut/clear-interval key)
-      (should= 0.1 (platform/secs-since start) 0.01)))
+      (let [secs-since-start (platform/secs-since start)]
+        (should<= secs-since-start 0.04)
+        (should>= secs-since-start 0.025))))
 
   )

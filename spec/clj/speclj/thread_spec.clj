@@ -21,7 +21,7 @@
   (context "spawn"
 
     (with thread (sut/spawn
-                   (sut/sleep 100)
+                   (sut/sleep 25)
                    (swap! counter inc)))
 
     (after (sut/interrupt @thread)

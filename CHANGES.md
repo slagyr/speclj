@@ -1,3 +1,7 @@
+# 3.10.0
+* Add `-P` and `--profile` option to show execution time for each test
+  * Displays execution time next to each test in the documentation reporter
+
 # 3.9.0
 * Allow Speclj arguments to be passed in through Cloverage
 
