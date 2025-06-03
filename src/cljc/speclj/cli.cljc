@@ -22,7 +22,7 @@
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
       (args/add-switch-option "C" "no-color" "Disable colored output (helpful for writing to file).")
-      (args/add-switch-option "P" "profile" "Shows execution time for each test.")
+      (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
       (args/add-multi-option "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
       (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl

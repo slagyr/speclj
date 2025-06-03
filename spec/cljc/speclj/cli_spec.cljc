@@ -68,7 +68,7 @@
   (it "includes the profile switch"
     (let [out (with-out-str (sut/run "--help"))]
       (should-contain "-P, --profile" out)
-      (should-contain "Shows execution time for each test." out)))
+      (should-contain "Shows execution time for each test (documentation reporter)." out)))
 
   (it "parses the --speclj switch"
     (should= nil (:speclj (sut/parse-args "")))
