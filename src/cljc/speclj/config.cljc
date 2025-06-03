@@ -3,6 +3,7 @@
             [speclj.platform :as platform]))
 
 (declare ^:dynamic *parent-description*)
+(declare ^:dynamic *profile?*)
 
 (declare ^:dynamic *reporters*)
 (def default-reporters (atom nil))
@@ -98,6 +99,7 @@
       #'*reporters*         (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
       #'*specs*             (:specs config)
       #'*color?*            (:color config)
+      #'*profile?*          (:profile config)
       #'*omit-pending?*     (:omit-pending config)
       #'*full-stack-trace?* (some? (:stacktrace config))
       #'*tag-filter*        (parse-tags (:tags config))})
@@ -111,6 +113,7 @@
             *reporters*         (if (:reporters config) (mapv load-reporter (:reporters config)) (active-reporters))
             *specs*             (:specs config)
             *color?*            (:color config)
+            *profile?*          (:profile config)
             *omit-pending?*     (:omit-pending config)
             *full-stack-trace?* (some? (:stacktrace config))
             *tag-filter*        (parse-tags (:tags config))]
