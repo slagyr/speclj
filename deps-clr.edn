@@ -3,5 +3,4 @@
  :aliases {:test {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]}
            :spec {:main-opts ["-m" "speclj.main" "-c"
                               "spec/clj" "spec/cljc" "spec/cljr"
-                              "-s" "src/clj"
                               "-s" "src/cljr"]}}}
