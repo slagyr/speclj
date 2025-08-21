@@ -1,29 +1,30 @@
 {
  :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/cljr" "src/bb"]
  :deps    {
-           org.clojure/clojure         {:mvn/version "1.12.0"}
-           trptcolin/versioneer        {:mvn/version "0.1.1"}
+           org.clojure/clojure         {:mvn/version "1.12.1"}
+           trptcolin/versioneer        {:mvn/version "0.2.0"}
            org.clojure/tools.namespace {:mvn/version "1.5.0"}
            }
  :aliases {
            :test  {:extra-deps  {
-                                 io.github.clojure/tools.build {:mvn/version "0.10.7"}
-                                 org.clojure/clojurescript     {:mvn/version "1.11.132"}
+                                 io.github.clojure/tools.build {:mvn/version "0.10.10"}
+                                 org.clojure/clojurescript     {:mvn/version "1.12.42"}
                                  cloverage/cloverage           {:mvn/version "1.2.4"}
-                                 leiningen-core/leiningen-core {:mvn/version "2.9.8"}
+                                 leiningen-core/leiningen-core {:mvn/version "2.11.2"}
                                  }
                    :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "spec/bb" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"
                                "-s" "src/clj"
-                               ;"-s" "src/cljc"
                                "-s" "src/cljvm"]}
            :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
-           :build {:deps        {io.github.clojure/tools.build {:mvn/version "0.10.7"}
-                                 clj-commons/pomegranate       {:mvn/version "1.2.24"}
+           :antq  {:deps      {com.github.liquidz/antq {:mvn/version "2.11.1276"}}
+                   :main-opts ["-m" "antq.core"]}
+           :build {:deps        {io.github.clojure/tools.build {:mvn/version "0.10.10"}
+                                 clj-commons/pomegranate       {:mvn/version "1.2.25"}
                                  codox/codox                   {:mvn/version "0.10.8"}
                                  leiningen-core/leiningen-core {:mvn/version "2.11.2"}
                                  cloverage/cloverage           {:mvn/version "1.2.4"}
-                                 trptcolin/versioneer          {:mvn/version "0.1.1"}
+                                 trptcolin/versioneer          {:mvn/version "0.2.0"}
                                  }
                    :ns-default  build
                    :extra-paths ["dev" "target/classes"]}

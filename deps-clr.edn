@@ -4,5 +4,4 @@
            :spec {:main-opts ["-m" "speclj.main" "-c"
                               "spec/clj" "spec/cljc" "spec/cljr"
                               "-s" "src/clj"
-                              "-s" "src/cljc"
                               "-s" "src/cljr"]}}}
