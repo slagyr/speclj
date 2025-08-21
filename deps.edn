@@ -13,7 +13,10 @@
                                  leiningen-core/leiningen-core {:mvn/version "2.9.8"}
                                  }
                    :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "spec/bb" "target/classes"]}
-           :spec  {:main-opts ["-m" "speclj.main" "-c"]}
+           :spec  {:main-opts ["-m" "speclj.main" "-c"
+                               "-s" "src/clj"
+                               ;"-s" "src/cljc"
+                               "-s" "src/cljvm"]}
            :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
            :build {:deps        {io.github.clojure/tools.build {:mvn/version "0.10.7"}
                                  clj-commons/pomegranate       {:mvn/version "1.2.24"}

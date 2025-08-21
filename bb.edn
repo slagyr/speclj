@@ -3,7 +3,11 @@
  :tasks {spec         {:doc         "Runs Babashka specs"
                        :extra-paths ["spec/clj" "spec/cljc" "spec/bb"]
                        :requires    ([speclj.main :as main])
-                       :task        (apply main/-main "-c" "spec/cljc" "spec/clj" "spec/bb" *command-line-args*)}
+                       :task        (apply main/-main "-c"
+                                      "spec/cljc" "spec/clj" "spec/bb"
+                                      "-s" "src/bb"
+                                      "-s" "src/clj"
+                                      *command-line-args*)}
          install-clj  {:doc  "Installs Clojure"
                        :task (shell "dev/speclj/script/install_clj.bb")}
          install-cljr {:doc  "Installs Clojure CLR"

@@ -5,6 +5,7 @@
 (declare ^:dynamic *parent-description*)
 (declare ^:dynamic *profile?*)
 
+(declare ^:dynamic *reporter-names*)
 (declare ^:dynamic *reporters*)
 (def default-reporters (atom nil))
 
@@ -16,6 +17,7 @@
       (throw (new #?(:cljs js/Error :default Exception) "*reporters* is unbound and no default value has been provided")))))
 
 (declare ^:dynamic *runner*)
+(declare ^:dynamic *runner-name*)
 (def default-runner (atom nil))
 (def default-runner-fn (atom nil))
 
@@ -28,6 +30,7 @@
                   "*runner* is unbound and no default value has been provided")))))
 
 (declare ^:dynamic *specs*)
+(declare ^:dynamic *sources*)
 (def ^:dynamic *omit-pending?* false)
 (def ^:dynamic *color?* false)
 (def ^:dynamic *full-stack-trace?* false)
@@ -35,6 +38,7 @@
 
 (def default-config
   {:specs        ["spec"]
+   :sources      ["src"]
    :runner       "standard"
    :reporters    ["progress"]
    :tags         []
@@ -95,9 +99,11 @@
 
    :default
    (defn config-mappings [config]
-     {#'*runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
+     {#'*runner-name*       (:runner config)
+      #'*runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
       #'*reporters*         (if (:reporters config) (map load-reporter (:reporters config)) (active-reporters))
       #'*specs*             (:specs config)
+      #'*sources*           (:sources config)
       #'*color?*            (:color config)
       #'*profile?*          (:profile config)
       #'*omit-pending?*     (:omit-pending config)
@@ -109,9 +115,12 @@
 (defn with-config
   "Runs the given function with all the configurations set.  Useful in cljs because config-mappings can't be used."
   [config action]
-  (binding [*runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
+  (binding [*runner-name*       (:runner config)
+            *runner*            (if (:runner config) (load-runner (:runner config)) (active-runner))
+            *reporter-names*    (:reporters config)
             *reporters*         (if (:reporters config) (mapv load-reporter (:reporters config)) (active-reporters))
             *specs*             (:specs config)
+            *sources*           (:sources config)
             *color?*            (:color config)
             *profile?*          (:profile config)
             *omit-pending?*     (:omit-pending config)

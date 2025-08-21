@@ -1,4 +1,8 @@
 {:paths   ["src/clj" "src/cljc" "src/cljr"]
  :deps    {io.github.clojure/clr.tools.namespace {:git/tag "v1.5.4" :git/sha "46d81cb"}}
  :aliases {:test {:extra-paths ["spec/clj" "spec/cljc" "spec/cljr"]}
-           :spec {:main-opts ["-m" "speclj.main" "-c" "spec/clj" "spec/cljc" "spec/cljr"]}}}
+           :spec {:main-opts ["-m" "speclj.main" "-c"
+                              "spec/clj" "spec/cljc" "spec/cljr"
+                              "-s" "src/clj"
+                              "-s" "src/cljc"
+                              "-s" "src/cljr"]}}}

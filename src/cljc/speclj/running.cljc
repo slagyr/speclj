@@ -124,7 +124,7 @@
             (report-result pending-result characteristic start-time reporters e nil)
             (report-result fail-result characteristic start-time reporters e @components/*assertions*)))
         (finally
-          (reset-withs withs)))))) ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
+          (reset-withs withs))))))                          ;MDM - Possible clojure bug.  Inlining reset-withs results in compile error
 
 (defn- do-characteristics [characteristics reporters]
   (doall
@@ -191,6 +191,7 @@
 
                 (finally
                   (reset-withs @(.-with-alls description)))))))))))
+
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]
     (swap! (.-results runner) conj error-result)

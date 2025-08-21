@@ -17,7 +17,8 @@
 
 (def arg-spec
   (-> (args/create-args)
-      (args/add-multi-parameter "specs" "directories/files specifying which specs to run.")
+      (args/add-multi-parameter "specs" "directories/files specifying which specs to run (default: [spec]).")
+      (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
@@ -25,25 +26,18 @@
       (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
       (args/add-multi-option "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
-      (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Ouput will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
-                                                            "  [c]lojure-test:   (reporting via clojure.test/report)" endl
-                                                            "  [d]ocumentation:  (description/context and characteristic names)" endl
-                                                            "  [p]rogress:       (default - dots)" endl
-                                                            "  [s]ilent:         (no output)" endl))
+      (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Output will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
+                                                            "  [c]lojure-test:   Reporting via clojure.test/report" endl
+                                                            "  [d]ocumentation:  Includes description/context and characteristic\n                    names" endl
+                                                            "  [p]rogress:       (default) Dots" endl
+                                                            "  [s]ilent:         No output" endl))
       (args/add-multi-option "f" "format" "FORMAT" "An alias for reporter.")
       (args/add-value-option "r" "runner" "RUNNER" (str "Specifies the spec runner.  Builtin runners:" endl
                                                         "  [s]tandard:  (default) Runs all the specs once" endl
-                                                        "  [v]igilant:  Watches for file changes and re-runs affected specs (used by autotest)" endl))
+                                                        "  [v]igilant:  Watches for file changes and re-runs affected specs (used\n               by autotest)" endl))
       (args/add-multi-option "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
       (args/add-switch-option "v" "version" "Shows the current speclj version.")
-      (args/add-switch-option "h" "help" "You're looking at it.")
-      (args/add-switch-option "S" "speclj" "You're looking at it.")))
-
-(defn- resolve-runner-alias [name]
-  (case name
-    "s" "standard"
-    "v" "vigilant"
-    name))
+      (args/add-switch-option "h" "help" "You're looking at it.")))
 
 (defn- resolve-reporter-alias [name]
   (case name
@@ -70,7 +64,7 @@
     (run! println errors))
   (println)
   (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
-  (println "Copyright (c) 2010-2015 Micah Martin under The MIT Licenses.")
+  (println "Copyright (c) 2010-2025 Micah Martin under The MIT Licenses.")
   (println)
   (println "Usage: " speclj-invocation (args/arg-string arg-spec))
   (println)
@@ -98,7 +92,8 @@
       (try
         (when-let [filter-msg (describe-filter)]
           (report-message* config/*reporters* filter-msg))
-        (run-directories config/*runner* config/*specs* config/*reporters*)
+        (let [directories (concat config/*sources* config/*specs*)]
+          (run-directories config/*runner* directories config/*reporters*))
         (catch #?(:cljs :default :default Exception) e
           (print-stack-trace e)
           (println (stack-trace-str e))
