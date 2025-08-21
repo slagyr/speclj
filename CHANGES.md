@@ -2,6 +2,7 @@
 * Add `-s` / `--sources` option
   * Specifies which directories to refresh when using the Vigilant runner (defaults to `src`).
   * Potentially breaking, as this will reload all files in the `src` directory unless the option is specified.
+* Upgrades dependencies
 
 # 3.10.0
 * Add `-P` and `--profile` option to show execution time for each test
