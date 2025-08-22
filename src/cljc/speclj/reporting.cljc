@@ -96,7 +96,3 @@
 (defn report-message* [reporters message]
   (doseq [reporter reporters]
     (report-message reporter message)))
-
-(defn report-error* [reporters exception]
-  (doseq [reporter reporters]
-    (report-error reporter exception)))

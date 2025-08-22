@@ -48,10 +48,9 @@
       (reset! (.-descriptions runner) [])
       (reset! (.-results runner) []))))
 
-(defn- reset-runner [runner configuration dir-files]
+(defn- reset-runner [runner configuration]
   (with-bindings configuration
     (repl/clear)
-    (apply repl/set-refresh-dirs dir-files)
     (reset! (.-results runner) [])))
 
 (defn- -run-directories [this directories reporters]
@@ -59,7 +58,7 @@
         dir-files     (map io/as-file directories)]
     (apply repl/set-refresh-dirs dir-files)
     (interval/set-interval 500 #(tick this reporters configuration))
-    (event/add-enter-listener #(reset-runner this configuration dir-files))
+    (event/add-enter-listener #(reset-runner this configuration))
     (thread/join-all)
     0))
 

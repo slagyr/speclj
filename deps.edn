@@ -15,6 +15,7 @@
                    :extra-paths ["dev" "spec/clj" "spec/cljc" "spec/cljs" "spec/cljvm" "spec/bb" "target/classes"]}
            :spec  {:main-opts ["-m" "speclj.main" "-c"
                                "-s" "src/clj"
+                               "-s" "src/cljc"
                                "-s" "src/cljvm"]}
            :cljs  {:main-opts ["-m" "speclj.dev.cljs"]}
            :antq  {:deps      {com.github.liquidz/antq {:mvn/version "2.11.1276"}}

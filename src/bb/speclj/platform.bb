@@ -1,4 +1,5 @@
 (ns speclj.platform
+  (:refer-clojure :rename {load-file core-load-file})
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.tools.namespace.find :as find]))
@@ -6,7 +7,7 @@
 (def source-file-regex #".*\.(cljc|clj|bb)")
 (def endl (System/getProperty "line.separator"))
 (def file-separator (System/getProperty "file.separator"))
-(def find-platform 
+(def find-platform
   (-> find/clj
       (update-in [:read-opts :features] conj :bb)
       (update :extensions conj ".bb")))
@@ -42,10 +43,10 @@
         catch-valid? (and (= 'catch catch-sym) (symbol? binding))]
     (if catch-valid?
       `(if-cljs
-        (try ~@body
-             (catch :default ~binding ~@catch-forms))
-        (try ~@body
-             (catch java.lang.Throwable ~binding ~@catch-forms)))
+         (try ~@body
+              (catch :default ~binding ~@catch-forms))
+         (try ~@body
+              (catch java.lang.Throwable ~binding ~@catch-forms)))
       `(throw (ex-info "Invalid catch form" {:catch '~catch-form})))))
 
 (defn dynamically-invoke [ns-name fn-name]
@@ -87,8 +88,8 @@
 (defn- classname->filename [classname]
   (let [root-name (first (str/split classname #"\$"))]
     (str
-     (str/replace root-name "." file-separator)
-     ".clj")))
+      (str/replace root-name "." file-separator)
+      ".clj")))
 
 (defn failure-source [failure]
   (let [source    (nth (.getStackTrace failure) 0)
@@ -109,3 +110,5 @@
 (defn get-name [ns] (symbol (str ns)))
 (defn get-bytes [s] (seq (.getBytes s)))
 (defn read-in [] (.read *in*))
+
+(defn load-file [file] (core-load-file file))

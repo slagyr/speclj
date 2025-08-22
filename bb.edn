@@ -6,6 +6,7 @@
                        :task        (apply main/-main "-c"
                                       "spec/cljc" "spec/clj" "spec/bb"
                                       "-s" "src/bb"
+                                      "-s" "src/cljc"
                                       "-s" "src/clj"
                                       *command-line-args*)}
          install-clj  {:doc  "Installs Clojure"
