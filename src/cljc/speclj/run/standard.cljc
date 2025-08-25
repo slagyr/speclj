@@ -1,10 +1,8 @@
 (ns speclj.run.standard
   (:require #?@(:cljs    [[speclj.report.progress]
                           [speclj.components :as components]]
-                :default [[speclj.freshener :as fresh]
-                          [speclj.io :as io]])
+                :default [[speclj.freshener :as fresh]])
             [speclj.config :as config]
-            [speclj.platform :as platform]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
             [speclj.running :as running]
@@ -13,54 +11,19 @@
 #?(:cljs
    (do
      (def ^:export armed false)
-     (def counter (atom 0))
      (defn ^:export arm [] (set! armed true))
      (defn ^:export disarm [] (set! armed false))))
 
-#?(:cljs
-   (defn- load-spec [_spec-file]
-     (js/alert "speclj.run.standard.load-spec:  I don't know how to do this."))
-
-   :bb
-   (defn- load-spec [spec-file]
-     (load-file spec-file))
-
-   :default
-   (do
-     (defn- file->pushback-reader [file]
-       (-> (io/canonical-path file)
-           slurp
-           io/->StringReader
-           io/->LineNumberingReader))
-
-     (defn- load-spec [spec-file]
-       (let [rdr  (file->pushback-reader spec-file)
-             path (io/full-name spec-file)]
-         (platform/compiler-load rdr path)))
-     ))
-
-(defn- try-load-spec [runner file]
-  (try
-    (load-spec file)
-    (catch #?(:clj Throwable :cljr Exception :cljs :default) e
-      (running/process-compile-error runner e))))
-
-;; TODO [BAC]: cljs breaks StandardRunner interface.
-;;   Is num necessary for cljs?
-;;   Should clj have num as well?
-(deftype StandardRunner [#?(:cljs num) descriptions results]
+(deftype StandardRunner [descriptions results]
   running/Runner
   #?(:cljs
      (run-directories [_this _directories _reporters]
                       (js/alert "StandardRunner.run-directories:  I don't know how to do this."))
      :default
      (run-directories [this directories reporters]
-       (let [files (->> (map io/as-file directories)
-                        (apply fresh/clj-files-in)
-                        (sort-by io/full-name))]
-         (binding [config/*runner*    this
-                   config/*reporters* reporters]
-           (run! #(try-load-spec this %) files)))
+       (binding [config/*runner*    this
+                 config/*reporters* reporters]
+         (fresh/load-clj-files-in directories))
        (running/run-and-report this reporters)
        (results/fail-count @results))
      )
@@ -86,7 +49,7 @@
    (extend-protocol IPrintWithWriter
      StandardRunner
      (-pr-writer [x writer opts]
-       (-write writer (str "#<speclj.run.standard.StandardRunner(num: " (.-num x) ", descriptions: "))
+       (-write writer (str "#<speclj.run.standard.StandardRunner(descriptions: "))
        (-pr-writer @(.-descriptions x) writer opts)
        (-write writer ")>"))
      components/Description
@@ -94,7 +57,7 @@
        (-write writer (str "#<speclj.component.Description(name: " (.-name x) ")>")))))
 
 (defn ^:export new-standard-runner []
-  (StandardRunner. #?(:cljs (swap! counter inc)) (atom []) (atom [])))
+  (StandardRunner. (atom []) (atom [])))
 
 (reset! config/default-runner-fn new-standard-runner)
 (reset! config/default-runner (new-standard-runner))

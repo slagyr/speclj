@@ -9,43 +9,28 @@
             [speclj.io :as io]
             [speclj.platform :as platform]
             [speclj.reporting :as reporting]
-            [speclj.results :as results]
             [speclj.running :as running]
             [speclj.thread :as thread]))
 
-(def start-time (atom 0))
-(def current-error-data (atom nil))
-
-(defn get-error-data [e]
-  (-> e Throwable->map :via first :data))
-
-(defn- report-update [files start-time refresh-time]
+(defn- report-update [reporters files refresh-time]
   (when (seq files)
-    (let [reporters (config/active-reporters)]
-      (reporting/report-message* reporters (str platform/endl "----- " (platform/current-date) " -----"))
-      (reporting/report-message* reporters (str "took " (platform/format-seconds refresh-time) " seconds to refresh files."))
-      (reporting/report-message* reporters (str "took " (platform/format-seconds (platform/secs-since start-time)) " seconds to determine file statuses."))
-      (reporting/report-message* reporters "reloading files:")
-      (doseq [file files]
-        (reporting/report-message* reporters (str "  " (io/canonical-path file))))))
-  true)
+    (reporting/report-message* reporters (str platform/endl "----- " (platform/current-date) " -----"))
+    (reporting/report-message* reporters (str "took " (platform/format-seconds refresh-time) " seconds to refresh files."))
+    (reporting/report-message* reporters "reloading files:")
+    (doseq [file files]
+      (reporting/report-message* reporters (str "  " (io/canonical-path file))))))
 
 (defn- report-error [e runner reporters]
-  (let [error-data (get-error-data e)]
-    (alter-var-root #'repl/refresh-tracker
-                    (constantly (assoc repl/refresh-tracker ::track/load [])))
-    (running/process-compile-error runner e)
-    (reporting/report-runs* reporters @(.results runner))
-    (reset! current-error-data error-data)))
+  (alter-var-root #'repl/refresh-tracker
+                  (constantly (assoc repl/refresh-tracker ::track/load [])))
+  (running/process-compile-error runner e)
+  (reporting/report-runs* reporters @(.-results runner)))
 
 (defn- run-reloaded-files [runner reporters reloaded-files refresh-time]
-  (reset! start-time (platform/current-time))
   (when-let [error (::reload/error repl/refresh-tracker)]
     (throw error))
-  (when (seq @(.descriptions runner))
-    (report-update reloaded-files @start-time refresh-time)
-    (reset! current-error-data nil)
-    (reset! (.previous-failed runner) (:fail (results/categorize (seq @(.results runner)))))
+  (when (seq @(.-descriptions runner))
+    (report-update reporters reloaded-files refresh-time)
     (running/run-and-report runner reporters)))
 
 (defn- reload-files []
@@ -54,41 +39,33 @@
         elapsed        (platform/secs-since start)]
     [reloaded-files elapsed]))
 
-(defn- tick [configuration]
+(defn- tick [runner reporters configuration]
   (with-bindings configuration
-    (let [runner    (config/active-runner)
-          reporters (config/active-reporters)
-          [reloaded-files refresh-time] (reload-files)]
+    (let [[reloaded-files refresh-time] (reload-files)]
       (platform/try-catch-anything
         (run-reloaded-files runner reporters reloaded-files refresh-time)
         (catch e (report-error e runner reporters)))
-      (reset! (.descriptions runner) [])
-      (reset! (.results runner) []))))
+      (reset! (.-descriptions runner) [])
+      (reset! (.-results runner) []))))
 
-(defn- reset-runner [configuration]
+(defn- reset-runner [runner configuration]
   (with-bindings configuration
-    (let [runner (config/active-runner)]
-      (reset! current-error-data nil)
-      (repl/clear)
-      (apply repl/set-refresh-dirs @(.directories runner))
-      (reset! (.previous-failed runner) [])
-      (reset! (.results runner) [])
-      (reset! (.file-listing runner) {}))))
+    (repl/clear)
+    (reset! (.-results runner) [])))
 
-(defn- -run-directories [this directories]
+(defn- -run-directories [this directories reporters]
   (let [configuration (config/config-bindings)
         dir-files     (map io/as-file directories)]
-    (reset! (.directories this) dir-files)
     (apply repl/set-refresh-dirs dir-files)
-    (interval/set-interval 500 #(tick configuration))
-    (event/add-enter-listener #(reset-runner configuration))
+    (interval/set-interval 500 #(tick this reporters configuration))
+    (event/add-enter-listener #(reset-runner this configuration))
     (thread/join-all)
     0))
 
-(deftype VigilantRunner [file-listing results previous-failed directories descriptions]
+(deftype VigilantRunner [results descriptions]
   running/Runner
-  (run-directories [this dirs _reporters]
-    (-run-directories this dirs))
+  (run-directories [this dirs reporters]
+    (-run-directories this dirs reporters))
 
   (submit-description [_this description]
     (swap! descriptions conj description))
@@ -108,4 +85,4 @@
     (reporting/report-runs* reporters @results)))
 
 (defn new-vigilant-runner []
-  (VigilantRunner. (atom {}) (atom []) (atom []) (atom nil) (atom [])))
+  (VigilantRunner. (atom []) (atom [])))

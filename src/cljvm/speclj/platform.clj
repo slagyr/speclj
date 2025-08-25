@@ -1,4 +1,5 @@
 (ns speclj.platform
+  (:refer-clojure :rename {load-file core-load-file})
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.tools.namespace.find :as find]))
@@ -98,8 +99,7 @@
 (defn read-in [] (.read *in*))
 (defn exit [code] (System/exit code))
 
-(defn compiler-load [reader path]
-  (Compiler/load reader path path))
+(defn load-file [file] (core-load-file file))
 
 (defn get-name [ns] (.name ns))
 (defn get-bytes [s] (seq (.getBytes s)))

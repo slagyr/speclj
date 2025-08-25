@@ -13,14 +13,14 @@
    (let [examples (io/as-file file name)]
      (if (io/exists? examples)
        examples
-       (do
-         (prn "find-dir:" file name)
-         (find-dir (io/parent-file file) name))))))
+       (find-dir (io/parent-file file) name)))))
 
 (def examples-dir (find-dir "examples"))
 (def prime-factors-dir (io/canonical-path (io/as-file examples-dir "prime_factors")))
 (def failures-dir (io/canonical-path (io/as-file examples-dir "failures")))
 (def focus-dir (io/canonical-path (io/as-file examples-dir "focus")))
+
+(declare runner reporters)
 
 (describe "StandardRunner"
   (with runner (sut/new-standard-runner))

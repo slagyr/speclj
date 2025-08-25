@@ -1,6 +1,8 @@
 (ns speclj.platform
+  (:refer-clojure :exclude [load-file])
   (:require [clojure.string :as str]
-            [clojure.tools.namespace.find :as find]))
+            [clojure.tools.namespace.find :as find]
+            [speclj.io :as io]))
 
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
@@ -88,9 +90,20 @@
 
 (defn exit [code] (Environment/Exit code))
 
-(defn compiler-load [reader path]
-  (clojure.lang.Compiler/load reader path path nil))
-
 (defn read-in [] (.Read *in*))
 (defn get-name [ns] (.-Name ns))
 (defn get-bytes [s] (.GetBytes System.Text.Encoding/UTF8 s))
+
+(defn- file->pushback-reader [file]
+  (-> (io/canonical-path file)
+      slurp
+      io/->StringReader
+      io/->LineNumberingReader))
+
+(defn load-file [file]
+  (try
+    (let [file   (io/as-file file)
+          reader (file->pushback-reader file)
+          path   (io/full-name file)]
+      (clojure.lang.Compiler/load reader path path nil))
+    (catch Exception _)))
