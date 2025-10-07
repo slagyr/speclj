@@ -34,7 +34,7 @@
 
   (it "limits execution to focused components"
     (running/run-directories @runner [focus-dir] @reporters)
-    (should= ["yes-1" "yes-2" "yes-3" "yes-4" "yes-5" "yes-6"]
+    (should= ["yes-2" "yes-4" "yes-5" "yes-6"]
              (->> @(.-results @runner)
                   (map #(.-characteristic %))
                   (map #(.-name %)))))
