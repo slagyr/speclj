@@ -130,9 +130,9 @@
 
 (defn- do-characteristics [characteristics reporters]
   (doall
-   (for [characteristic characteristics
-         :when (can-run? characteristic)]
-     (do-characteristic characteristic reporters))))
+    (for [characteristic characteristics
+          :when (can-run? characteristic)]
+      (do-characteristic characteristic reporters))))
 
 (declare do-description)
 
@@ -157,7 +157,7 @@
        (try
          (body)
          (finally
-          (run! #((.-set-var! %) nil) withs)))))
+           (run! #((.-set-var! %) nil) withs)))))
 
    :default
    (defn- with-withs-bound [description body]
@@ -183,16 +183,16 @@
         (binding [components/*assertions* (atom 0)]
           (report-description* reporters description)
           (with-withs-bound description
-                            (fn []
-                              (eval-components @(.-before-alls description))
+            (fn []
+              (eval-components @(.-before-alls description))
 
-                              (try
-                                (with-around-alls
-                                 description
-                                 (partial nested-results-for-context description reporters))
+              (try
+                (with-around-alls
+                  description
+                  (partial nested-results-for-context description reporters))
 
-                                (finally
-                                  (reset-withs @(.-with-alls description)))))))))))
+                (finally
+                  (reset-withs @(.-with-alls description)))))))))))
 
 (defn process-compile-error [runner e]
   (let [error-result (error-result e)]
