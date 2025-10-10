@@ -1,3 +1,6 @@
+# 3.12.0
+* Focus priority is given to children.  For example, when you use focus-it, a parent focus-context or focus-describe will be ignored. 
+
 # 3.11.0
 * Add `-s` / `--sources` option
   * Specifies which directories to refresh when using the Vigilant runner (defaults to `src`).
