@@ -32,8 +32,8 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 ```clojure
 ; - snip
 :dependencies [[org.clojure/clojure "1.12.0"]]
-:profiles     {:dev {:dependencies [[speclj "3.12.0"]]}}
-:plugins      [[speclj "3.12.0"]]
+:profiles     {:dev {:dependencies [[speclj "3.12.1"]]}}
+:plugins      [[speclj "3.12.1"]]
 :test-paths   ["spec"]
 ```
 
@@ -139,7 +139,7 @@ Add a `spec` alias to your `deps.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {speclj/speclj {:mvn/version "3.12.0"}}
+                  :extra-deps  {speclj/speclj {:mvn/version "3.12.1"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -310,7 +310,7 @@ Add a `spec` alias to your `deps-clr.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.12.0" :git/sha "176d026q"}}
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.12.1" :git/sha "153d0cb"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -330,7 +330,7 @@ Add a `spec` task to your `bb.edn`.
 
 ```clojure
 {:paths ["src/bb" "spec/bb"]
- :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.12.0"}}
+ :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.12.1"}}
                :requires   ([speclj.main :as main])
                :task       (apply main/-main "-c" "spec/bb" *command-line-args*)}}
 }
@@ -353,7 +353,7 @@ Here's an example alias for your `deps.edn`.
 ```clojure
 {:aliases {:cov {:main-opts  ["-m" "speclj.cloverage" "--" "-p" "src" "-s" "spec"]
                  :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}
-                              speclj/speclj       {:mvn/version "3.12.0"}}}}}
+                              speclj/speclj       {:mvn/version "3.12.1"}}}}}
 ```
 
 To pass arguments to speclj, include them as you would with `speclj.main` before the double-hyphen `"--"`:
@@ -414,6 +414,6 @@ Post issues on the speclj github project:
 * Clojure 1.3 is not supported by any version of Speclj due to a bug in Clojure 1.3.
 
 # License
-Copyright (C) 2010-2023 Micah Martin All Rights Reserved.
+Copyright (C) 2010-2026 Micah Martin All Rights Reserved.
 
 Distributed under the The MIT License.
