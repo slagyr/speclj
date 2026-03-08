@@ -1,3 +1,6 @@
+# 3.12.1
+* Fixes bug where the standard runner reloads source files.  This breaks cloverage runs.
+
 # 3.12.0
 * Focus priority is given to children.  For example, when you use focus-it, a parent focus-context or focus-describe will be ignored. 
 

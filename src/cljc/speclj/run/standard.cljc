@@ -21,9 +21,13 @@
                       (js/alert "StandardRunner.run-directories:  I don't know how to do this."))
      :default
      (run-directories [this directories reporters]
-       (binding [config/*runner*    this
-                 config/*reporters* reporters]
-         (fresh/load-clj-files-in directories))
+       (let [source-dirs  (when (bound? #'config/*sources*) (set config/*sources*))
+             freshen-dirs (if source-dirs
+                            (remove source-dirs directories)
+                            directories)]
+         (binding [config/*runner*    this
+                   config/*reporters* reporters]
+           (fresh/load-clj-files-in freshen-dirs)))
        (running/run-and-report this reporters)
        (results/fail-count @results))
      )

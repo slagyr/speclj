@@ -1,11 +1,13 @@
 (ns speclj.run.standard-spec
   (:require [speclj.config :as config]
             [speclj.core :refer :all]
+            [speclj.freshener :as fresh]
             [speclj.io :as io]
             [speclj.report.silent :as silent]
             [speclj.run.standard :as sut]
             [speclj.running :as running]
-            [speclj.spec-helper :as spec-helper]))
+            [speclj.spec-helper :as spec-helper]
+            [speclj.stub :as stub]))
 
 (defn find-dir
   ([name] (find-dir (io/as-file (io/canonical-path (io/as-file "."))) name))
@@ -44,6 +46,17 @@
       (should= defaults (sut/config-with-defaults []))
       (should= (assoc defaults :foo :bar) (sut/config-with-defaults [:foo :bar]))
       (should= (assoc defaults :foo :bar :baz "buzz") (sut/config-with-defaults [:foo :bar "baz" "buzz"]))))
+
+  (context "freshening"
+    (with-stubs)
+    (redefs-around [fresh/load-clj-files-in (stub :load-clj-files-in)])
+
+    (it "only freshens spec dirs, not source dirs"
+      (binding [config/*specs* ["spec-dir"]
+                config/*sources* ["src-dir"]]
+        (running/run-directories @runner ["src-dir" "spec-dir"] @reporters)
+        (should-have-invoked :load-clj-files-in {:with [["spec-dir"]]})))
+    )
 
   (spec-helper/test-get-descriptions sut/new-standard-runner)
   (spec-helper/test-description-filtering sut/new-standard-runner)
