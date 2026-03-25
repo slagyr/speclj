@@ -71,7 +71,8 @@
   (let [classname (.getClassName stack-element)]
     (some #(str/starts-with? classname %) elide-prefixes)))
 
-(defn exit [code] (throw (ex-info (str code " test failures") {:babashka/exit code})))
+(defn exit [code]
+  (throw (ex-info (if (pos? code) (str code " failures") "success") {:babashka/exit code})))
 (defn current-date [] (java.util.Date.))
 (defn current-time [] (System/nanoTime))
 (defn current-millis [] (System/currentTimeMillis))
