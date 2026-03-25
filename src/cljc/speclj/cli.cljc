@@ -64,7 +64,7 @@
     (run! println errors))
   (println)
   (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
-  (println "Copyright (c) 2010-2025 Micah Martin under The MIT Licenses.")
+  (println "Copyright (c) 2010-2026 Micah Martin under The MIT Licenses.")
   (println)
   (println "Usage: " speclj-invocation (args/arg-string arg-spec))
   (println)
@@ -99,7 +99,9 @@
           (println (stack-trace-str e))
           -1)))))
 
-(defn run [& args]
+(defn run
+  "Runs specs with the given command-line args. Returns the number of test failures"
+  [& args]
   (let [config (apply parse-args args)]
     (cond
       (:*errors config) (usage (:*errors config))

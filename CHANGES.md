@@ -1,3 +1,6 @@
+# 3.12.2
+* Idiomatic exit for Babashka platform.
+
 # 3.12.1
 * Fixes bug where the standard runner reloads source files.  This breaks cloverage runs.
 
