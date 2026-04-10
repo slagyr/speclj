@@ -19,10 +19,13 @@
   (> (abs (- expected actual)) (abs delta)))
 
 (defn failure-source-str [e]
-  (cond
-    (.-fileName e) (str (.-fileName e) ":" (or (.-lineNumber e) "?"))
-    (.-stack e) (str/trim (nth (str/split-lines (.-stack e)) (count (str/split-lines (.-message e)))))
-    :else "unkown-file:?"))
+  (let [{ed-file :file ed-line :line} (ex-data e)]
+    (cond
+      ;; Loc captured at macroexpand time by speclj.core/-capture-loc.
+      (and ed-file ed-line) (str ed-file ":" ed-line)
+      (.-fileName e) (str (.-fileName e) ":" (or (.-lineNumber e) "?"))
+      (.-stack e) (str/trim (nth (str/split-lines (.-stack e)) (count (str/split-lines (.-message e)))))
+      :else "unkown-file:?")))
 
 (defn error-message [e] (.-message e))
 (defn error-str [e] (str e))

@@ -63,12 +63,17 @@
   (println (.-StackTrace e)))
 
 (defn failure-source [exception]
-  (when-let [frame (first (stack-trace exception))]
-    {:file (-> (first (str/split frame #"\$"))
-               (str/replace "." file-separator))}))
+  (let [{ed-file :file ed-line :line} (ex-data exception)]
+    (if (and ed-file ed-line)
+      ;; Loc captured at macroexpand time by speclj.core/-capture-loc.
+      {:file ed-file :line ed-line}
+      (when-let [frame (first (stack-trace exception))]
+        {:file (-> (first (str/split frame #"\$"))
+                   (str/replace "." file-separator))}))))
 
 (defn failure-source-str [exception]
-  (-> exception failure-source :file))
+  (let [{:keys [file line]} (failure-source exception)]
+    (if line (str file ":" line) (str file))))
 
 (defn elide-level? [stack-element]
   (or (str/starts-with? stack-element "clojure.")

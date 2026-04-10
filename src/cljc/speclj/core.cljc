@@ -37,16 +37,43 @@
      ([] `(if-cljs (js/Object.) (java.lang.Throwable.)))
      ([message] `(if-cljs (js/Object. ~message) (java.lang.Throwable. ~message)))))
 
+(defn ^:no-doc -capture-loc
+  "Returns a {:file :line :column} loc map from a form's reader metadata.
+   Called at macroexpand time with the user-facing macro's &form and *file*.
+   Returns nil when no line metadata is available.
+
+   File resolution order:
+   1. :file in the form's reader metadata (the cljs reader sets this)
+   2. cljs.analyzer/*cljs-file* if bound (cljs compiler context)
+   3. the supplied `file` argument (clojure.core/*file* at macroexpand time)
+
+   On Clojure JVM and babashka, *file* is the user's source file. Under cljs,
+   clojure.core/*file* is \"NO_SOURCE_PATH\" so we rely on (1) or (2)."
+  [form file]
+  (let [{:keys [line column] m-file :file} (meta form)]
+    (when line
+      (let [file (or m-file
+                     (when-let [v (resolve 'cljs.analyzer/*cljs-file*)]
+                       @v)
+                     file)]
+        {:file file :line line :column column}))))
+
 (defmacro ^:no-doc -new-failure [message]
-  `(ex-info ~message {:type speclj.error/failure}))
+  `(ex-info ~message (merge {:type speclj.error/failure}
+                            speclj.components/*source-loc*)))
 
 (defmacro ^:no-doc -new-pending [message]
-  `(ex-info ~message {:type speclj.error/pending}))
+  `(ex-info ~message (merge {:type speclj.error/pending}
+                            speclj.components/*source-loc*)))
 
 (defmacro ^:no-doc help-it [name focused? & body]
   (if (seq body)
     `(speclj.components/new-characteristic ~name (fn [] ~@body) ~focused?)
-    `(speclj.components/new-characteristic ~name (fn [] (pending)) ~focused?)))
+    ;; Body-less it/focus-it: synthesize a (pending) call carrying the user's
+    ;; call-site metadata so the pending location reports the it/focus-it line
+    ;; instead of sci internals.
+    (let [pending-form (with-meta `(pending) (meta &form))]
+      `(speclj.components/new-characteristic ~name (fn [] ~pending-form) ~focused?))))
 
 (defmacro ^:no-doc help-describe [name focused? & components]
   `(let [description# (speclj.components/new-description ~name ~focused? ~(clojure.core/name (speclj.platform/get-name *ns*)))]
@@ -60,21 +87,40 @@
        (speclj.running/submit-description (speclj.config/active-runner) description#))
      description#))
 
-(defmacro ^:no-doc help-should [& body]
+(defmacro ^:no-doc with-source-loc
+  "Binds speclj.components/*source-loc* to `loc` for the duration of `body` so
+   any failure thrown inside can embed the location in its ex-data. Unlike
+   help-should this does not increment the assertion counter; it is intended for
+   wrapping macros (e.g. the 3-arg should-throw) that delegate to other should-*
+   macros which already count their own assertions."
+  [loc & body]
+  `(binding [speclj.components/*source-loc* ~loc]
+     ~@body))
+
+(defmacro ^:no-doc help-should
+  "Wraps a should-* expansion. The first argument is a {:file :line :column}
+   loc map captured at the user-facing macro's call site (or nil). It is bound
+   to speclj.components/*source-loc* so any failure thrown inside `body` can
+   embed it in its ex-data."
+  [loc & body]
   `(do (speclj.components/inc-assertions!)
-       ~@body))
+       (with-source-loc ~loc ~@body)))
 
 (defmacro it
   "body => any forms, but should contain at least one assertion (should)
 
   Declares a new characteristic (example in rspec)."
   [name & body]
-  `(help-it ~name false ~@body))
+  ;; Propagate the user's &form meta to help-it so its body-less branch can
+  ;; attach it to the synthesized (pending) call.
+  (with-meta `(help-it ~name false ~@body) (meta &form)))
 
 (defmacro xit
   "Syntactic shortcut to make the characteristic pending."
   [name & body]
-  `(it ~name (pending) ~@body))
+  ;; Inject an explicit (pending) carrying xit's user-site meta so the pending
+  ;; location reports the xit line instead of sci internals.
+  `(it ~name ~(with-meta `(pending) (meta &form)) ~@body))
 
 (defmacro focus-it
   "Same as 'it', but it is meant to facilitate temporary debugging.
@@ -82,7 +128,7 @@
   other characteristics thus defined, but all other characteristic defined
   with 'it' will be ignored."
   [name & body]
-  `(help-it ~name true ~@body))
+  (with-meta `(help-it ~name true ~@body) (meta &form)))
 
 (defmacro ^:no-doc when-not-bound [name & body]
   `(if-cljs
@@ -219,7 +265,10 @@
 (defmacro -fail
   "Useful for making custom assertions."
   [message]
-  `(throw (-new-failure ~message)))
+  (let [loc (-capture-loc &form *file*)]
+    `(throw (ex-info ~message (merge {:type speclj.error/failure}
+                                     ~loc
+                                     speclj.components/*source-loc*)))))
 
 (defmacro ^:no-doc wrong-types [assertion a b]
   `(let [a#      ~a
@@ -231,7 +280,7 @@
 (defmacro should
   "Asserts the truthy-ness of a form"
   [form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [value# ~form]
        (when-not value#
          (-fail (str "Expected truthy but was: " (-to-s value#) ""))))))
@@ -239,19 +288,19 @@
 (defmacro should-not
   "Asserts the falsy-ness of a form"
   [form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (when-let [value# ~form]
        (-fail (str "Expected falsy but was: " (-to-s value#))))))
 
 (defmacro should=
   "Asserts that two forms evaluate to equal values, with the expected value as the first parameter."
   ([expected-form actual-form]
-   `(help-should
+   `(help-should ~(-capture-loc &form *file*)
       (let [expected# ~expected-form actual# ~actual-form]
         (when-not (= expected# actual#)
           (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "     got: " (-to-s actual#) " (using =)"))))))
   ([expected-form actual-form delta-form]
-   `(help-should
+   `(help-should ~(-capture-loc &form *file*)
       (let [expected# ~expected-form
             actual#   ~actual-form
             delta#    ~delta-form]
@@ -261,7 +310,7 @@
 (defmacro should-be
   "Asserts that a form satisfies a function."
   [f-form actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [f# ~f-form actual# ~actual-form]
        (when-not (f# actual#)
          (-fail (str "Expected " (-to-s actual#) " to satisfy: " ~(str f-form)))))))
@@ -269,7 +318,7 @@
 (defmacro should-not-be
   "Asserts that a form does not satisfy a function."
   [f-form actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [f# ~f-form actual# ~actual-form]
        (when (f# actual#)
          (-fail (str "Expected " (-to-s actual#) " not to satisfy: " ~(str f-form)))))))
@@ -277,7 +326,7 @@
 (defmacro should-not=
   "Asserts that two forms evaluate to unequal values, with the unexpected value as the first parameter."
   [expected-form actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected-form actual# ~actual-form]
        (when (= expected# actual#)
          (-fail (str "Expected: " (-to-s expected#) speclj.platform/endl "not to =: " (-to-s actual#)))))))
@@ -285,7 +334,7 @@
 (defmacro should-be-same
   "Asserts that two forms evaluate to the same object, with the expected value as the first parameter."
   [expected-form actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected-form actual# ~actual-form]
        (when-not (identical? expected# actual#)
          (-fail (str "         Expected: " (-to-s expected#) speclj.platform/endl "to be the same as: " (-to-s actual#) " (using identical?)"))))))
@@ -293,7 +342,7 @@
 (defmacro should-not-be-same
   "Asserts that two forms evaluate to different objects, with the unexpected value as the first parameter."
   [expected-form actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected-form actual# ~actual-form]
        (when (identical? expected# actual#)
          (-fail (str "             Expected: " (-to-s expected#) speclj.platform/endl "not to be the same as: " (-to-s actual#) " (using identical?)"))))))
@@ -301,7 +350,8 @@
 (defmacro should-be-nil
   "Asserts that the form evaluates to nil"
   [form]
-  `(should= nil ~form))
+  ;; Delegate to should=, propagating user's &form meta so should= captures the right loc.
+  (with-meta `(should= nil ~form) (meta &form)))
 
 (defmacro should-contain
   "Multipurpose assertion of containment.  Works on strings, regular expressions, sequences, and maps.
@@ -311,7 +361,7 @@
   (should-contain :foo {:foo :bar})          ; looks for a key in a map
   (should-contain 3 [1 2 3 4])               ; looks for an object in a collection"
   [expected actual]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            actual#   ~actual]
        (cond
@@ -333,7 +383,7 @@
 (defmacro should-not-contain
   "Multipurpose assertion of non-containment.  See should-contain as an example of opposite behavior."
   [expected actual]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            actual#   ~actual]
        (cond
@@ -361,7 +411,7 @@
   (should-have-count 0 [])
   (should-have-count 0 nil)"
   [expected coll]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            coll#     ~coll]
        (if-not (and (number? expected#) (or (nil? coll#) (string? coll#) (counted? coll#)))
@@ -381,7 +431,7 @@
   (should-not-have-count 1 [])
   (should-not-have-count 1 nil)"
   [expected coll]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            coll#     ~coll]
        (if-not (and (number? expected#) (or (nil? coll#) (string? coll#) (counted? coll#)))
@@ -421,7 +471,7 @@
   (should-start-with \"foo\" \"foobar\")            ; looks for string prefix
   (should-start-with [1 2] [1 2 3 4])               ; looks for a subset at start of collection"
   [prefix whole]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [prefix# ~prefix
            whole#  ~whole]
        (cond
@@ -444,7 +494,7 @@
 (defmacro should-not-start-with
   "The inverse of should-start-with."
   [prefix whole]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [prefix# ~prefix
            whole#  ~whole]
        (cond
@@ -469,7 +519,7 @@
   (should-end-with \"foo\" \"foobar\")            ; looks for string suffix
   (should-end-with [1 2] [1 2 3 4])               ; looks for a subset at end of collection"
   [suffix whole]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [suffix# ~suffix
            whole#  ~whole]
        (cond
@@ -496,7 +546,7 @@
 (defmacro should-not-end-with
   "The inverse of should-end-with."
   [prefix whole]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [prefix# ~prefix
            whole#  ~whole]
        (cond
@@ -531,7 +581,7 @@
   When passed collections it will check that they have the same contents.
   For anything else it will assert that clojure.core/== returns true."
   [expected actual]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            actual#   ~actual]
        (cond
@@ -550,7 +600,7 @@
   When passed collections it will check that they do NOT have the same contents.
   For anything else it will assert that clojure.core/== returns false."
   [expected actual]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [expected# ~expected
            actual#   ~actual]
        (cond
@@ -567,12 +617,13 @@
 (defmacro should-not-be-nil
   "Asserts that the form evaluates to a non-nil value"
   [form]
-  `(should-not= nil ~form))
+  ;; Delegate to should-not=, propagating user's &form meta.
+  (with-meta `(should-not= nil ~form) (meta &form)))
 
 (defmacro should-fail
   "Forces a failure. An optional message may be passed in."
-  ([] `(should-fail "Forced failure"))
-  ([message] `(help-should (-fail ~message))))
+  ([] (with-meta `(should-fail "Forced failure") (meta &form)))
+  ([message] `(help-should ~(-capture-loc &form *file*) (-fail ~message))))
 
 (defmacro ^:no-doc -create-should-throw-failure [expected actual expr]
   `(let [expected-name# (speclj.platform/type-name ~expected)
@@ -588,9 +639,11 @@ There are three options for passing different kinds of predicates:
   - If a string, assert that the message of the Exception is equal to the string.
   - If a regex, asserts that the message of the Exception matches the regex.
   - If a function, assert that calling the function on the Exception returns a truthy value."
-  ([form] `(should-throw speclj.platform/throwable ~form))
+  ([form]
+   ;; Delegate to 2-arg should-throw, propagating user's &form meta.
+   (with-meta `(should-throw speclj.platform/throwable ~form) (meta &form)))
   ([throwable-type form]
-   `(help-should
+   `(help-should ~(-capture-loc &form *file*)
       (try-catch-anything
         ~form
         (throw (-create-should-throw-failure ~throwable-type nil '~form))
@@ -600,24 +653,29 @@ There are three options for passing different kinds of predicates:
                  (not (instance? ~throwable-type e#)) (throw (-create-should-throw-failure ~throwable-type e# '~form))
                  :else e#)))))
   ([throwable-type predicate form]
-   `(let [e# (should-throw ~throwable-type ~form)]
-      (try-catch-anything
-        (let [predicate# ~predicate]
-          (cond (speclj.platform/re? predicate#)
-                (should-not-be-nil (re-find predicate# (speclj.platform/error-message e#)))
+   ;; Bind *source-loc* (without bumping the assertion counter — the inner
+   ;; should-throw and should=/should-not-be-nil delegations below already count
+   ;; their own assertions) so the user's (should-throw ...) site is reported
+   ;; for any failure thrown by those nested calls or by -fail in the catch.
+   `(with-source-loc ~(-capture-loc &form *file*)
+      (let [e# (should-throw ~throwable-type ~form)]
+        (try-catch-anything
+          (let [predicate# ~predicate]
+            (cond (speclj.platform/re? predicate#)
+                  (should-not-be-nil (re-find predicate# (speclj.platform/error-message e#)))
 
-                (ifn? predicate#)
-                (should= true (predicate# e#))
+                  (ifn? predicate#)
+                  (should= true (predicate# e#))
 
-                :else
-                (should= predicate# (speclj.platform/error-message e#))))
+                  :else
+                  (should= predicate# (speclj.platform/error-message e#))))
 
-        (catch f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#))))))))
+          (catch f# (-fail (str "Expected exception predicate didn't match" speclj.platform/endl (speclj.platform/error-message f#)))))))))
 
 (defmacro should-not-throw
   "Asserts that nothing is thrown by the evaluation of a form."
   [form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (try-catch-anything
        ~form
        (catch e#
@@ -627,7 +685,7 @@ There are three options for passing different kinds of predicates:
 (defmacro should-be-a
   "Asserts that the type of the given form derives from or equals the expected type"
   [expected-type actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [actual#        ~actual-form
            actual-type#   (type actual#)
            expected-type# ~expected-type]
@@ -637,7 +695,7 @@ There are three options for passing different kinds of predicates:
 (defmacro should-not-be-a
   "Asserts that the type of the given form does not derive from or equal the expected type"
   [expected-type actual-form]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [actual#        ~actual-form
            actual-type#   (type actual#)
            expected-type# ~expected-type]
@@ -647,9 +705,10 @@ There are three options for passing different kinds of predicates:
 (defmacro pending
   "When added to a characteristic, it is marked as pending.  If a message is provided it will be printed
   in the run report"
-  ([] `(pending "Not Yet Implemented"))
+  ([] (with-meta `(pending "Not Yet Implemented") (meta &form)))
   ([message]
-   `(throw (-new-pending ~message))))
+   `(throw (ex-info ~message (merge {:type speclj.error/pending}
+                                    ~(-capture-loc &form *file*))))))
 
 (defmacro tags
   "Add tags to the containing context.  All values passed will be converted into keywords.  Contexts can be filtered
@@ -702,9 +761,9 @@ There are three options for passing different kinds of predicates:
     (should-have-invoked :foo {:with [1]}) ; pass
     (should-have-invoked :foo {:with [2]}) ; pass
     )"
-  ([name] `(should-have-invoked ~name {}))
+  ([name] (with-meta `(should-have-invoked ~name {}) (meta &form)))
   ([name options]
-   `(help-should
+   `(help-should ~(-capture-loc &form *file*)
       (let [name#            ~name
             options#         ~options
             invocations#     (speclj.stub/invocations-of name#)
@@ -756,9 +815,9 @@ There are three options for passing different kinds of predicates:
     (should-not-have-invoked :foo {:times 1}) ; fail
     (should-not-have-invoked :foo {:with [1]}) ; fail
     )"
-  ([name] `(should-not-have-invoked ~name {}))
+  ([name] (with-meta `(should-not-have-invoked ~name {}) (meta &form)))
   ([name options]
-   `(help-should
+   `(help-should ~(-capture-loc &form *file*)
       (let [name#          ~name
             options#       ~options
             invocations#   (speclj.stub/invocations-of name#)
@@ -813,12 +872,14 @@ There are three options for passing different kinds of predicates:
   [var options & body]
   (when-not (map? options)
     `(throw (-new-exception "The second argument to should-invoke must be a map of options")))
-  (let [var-name (str var)]
-    `(let [options# ~options]
-       (with-stubbed-invocations
-         (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-           ~@body)
-         (should-have-invoked ~var-name options#)))))
+  (let [var-name (str var)
+        loc      (-capture-loc &form *file*)]
+    `(with-source-loc ~loc
+       (let [options# ~options]
+         (with-stubbed-invocations
+           (with-redefs [~var (speclj.stub/stub ~var-name options#)]
+             ~@body)
+           (should-have-invoked ~var-name options#))))))
 
 (defmacro should-not-invoke
   "Creates a stub, and binds it to the specified var, evaluates the body, and checks that it was NOT invoked.
@@ -830,17 +891,19 @@ There are three options for passing different kinds of predicates:
   [var options & body]
   (when-not (map? options)
     `(throw (-new-exception "The second argument to should-not-invoke must be a map of options")))
-  (let [var-name (str var)]
-    `(let [options# ~options]
-       (with-stubbed-invocations
-         (with-redefs [~var (speclj.stub/stub ~var-name options#)]
-           ~@body)
-         (should-not-have-invoked ~var-name options#)))))
+  (let [var-name (str var)
+        loc      (-capture-loc &form *file*)]
+    `(with-source-loc ~loc
+       (let [options# ~options]
+         (with-stubbed-invocations
+           (with-redefs [~var (speclj.stub/stub ~var-name options#)]
+             ~@body)
+           (should-not-have-invoked ~var-name options#))))))
 
 (defmacro should<
   "Asserts that the first numeric form is less than the second numeric form, using the built-in < function."
   [a b]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [a# ~a b# ~b]
        (if (and (number? a#) (number? b#))
          (when-not (< a# b#) (-fail (str "expected " a# " to be less than " b# " but got: (< " a# " " b# ")")))
@@ -849,7 +912,7 @@ There are three options for passing different kinds of predicates:
 (defmacro should>
   "Asserts that the first numeric form is greater than the second numeric form, using the built-in > function."
   [a b]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [a# ~a b# ~b]
        (if (and (number? a#) (number? b#))
          (when-not (> a# b#) (-fail (str "expected " a# " to be greater than " b# " but got: (> " a# " " b# ")")))
@@ -858,7 +921,7 @@ There are three options for passing different kinds of predicates:
 (defmacro should<=
   "Asserts that the first numeric form is less than or equal to the second numeric form, using the built-in <= function."
   [a b]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [a# ~a b# ~b]
        (if (and (number? a#) (number? b#))
          (when-not (<= a# b#) (-fail (str "expected " a# " to be less than or equal to " b# " but got: (<= " a# " " b# ")")))
@@ -867,7 +930,7 @@ There are three options for passing different kinds of predicates:
 (defmacro should>=
   "Asserts that the first numeric form is greater than or equal to the second numeric form, using the built-in >= function."
   [a b]
-  `(help-should
+  `(help-should ~(-capture-loc &form *file*)
      (let [a# ~a b# ~b]
        (if (and (number? a#) (number? b#))
          (when-not (>= a# b#) (-fail (str "expected " a# " to be greater than or equal to " b# " but got: (>= " a# " " b# ")")))

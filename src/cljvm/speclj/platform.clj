@@ -62,13 +62,22 @@
   (.printStackTrace e (java.io.PrintWriter. *out* true)))
 
 (defn failure-source [failure]
-  (let [source    (nth (.getStackTrace failure) 0)
-        classname (.getClassName source)
-        filename  (classname->filename classname)
-        line-no   (.getLineNumber source)]
-    (if-let [url (io/resource filename)]
-      {:file (io/as-file url) :line line-no}
-      {:file filename :line line-no})))
+  (let [{ed-file :file ed-line :line} (ex-data failure)]
+    (if (and ed-file ed-line)
+      ;; Loc captured at macroexpand time by speclj.core/-capture-loc.
+      ;; Try to resolve the file via the classpath; otherwise return as-is.
+      (if-let [url (io/resource ed-file)]
+        {:file (io/as-file url) :line ed-line}
+        {:file ed-file :line ed-line})
+      ;; Fallback for failures lacking embedded loc (e.g. exceptions thrown
+      ;; from non-speclj code, or older custom assertions).
+      (let [source    (nth (.getStackTrace failure) 0)
+            classname (.getClassName source)
+            filename  (classname->filename classname)
+            line-no   (.getLineNumber source)]
+        (if-let [url (io/resource filename)]
+          {:file (io/as-file url) :line line-no}
+          {:file filename :line line-no})))))
 
 (defn failure-source-str [exception]
   (let [{:keys [file line]} (failure-source exception)]

@@ -9,6 +9,18 @@
                                       "-s" "src/cljc"
                                       "-s" "src/clj"
                                       *command-line-args*)}
+         spec-all     {:doc  "Runs the full spec suite on Babashka, Clojure JVM, and ClojureScript"
+                       :task (let [run-suite (fn [label cmd]
+                                               (println (str "=== " label " ==="))
+                                               (let [{:keys [exit]} (shell {:continue true} cmd)]
+                                                 (when-not (zero? exit)
+                                                   (println (str "!!! " label " FAILED (exit " exit ") !!!")))
+                                                 (zero? exit)))
+                                   results   [(run-suite "Babashka"     "bb spec")
+                                              (run-suite "Clojure JVM"  "clojure -M:test:spec")
+                                              (run-suite "ClojureScript" "clojure -M:test:cljs")]]
+                               (when (some false? results)
+                                 (System/exit 1)))}
          install-clj  {:doc  "Installs Clojure"
                        :task (shell "dev/speclj/script/install_clj.bb")}
          install-cljr {:doc  "Installs Clojure CLR"

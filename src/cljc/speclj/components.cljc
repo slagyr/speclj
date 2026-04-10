@@ -46,6 +46,8 @@
 (declare ^:dynamic *assertions*)
 (defn inc-assertions! [] (swap! *assertions* inc))
 
+(def ^:dynamic *source-loc* nil)
+
 (deftype Characteristic [name parent body is-focused?]
   SpecComponent
   (install [this description]

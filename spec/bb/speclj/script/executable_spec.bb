@@ -26,8 +26,9 @@
 
   (it "has bb.edn tasks configured"
     (let [{:keys [tasks]} (edn/read-string (slurp "bb.edn"))]
-      (should= 3 (count tasks))
+      (should= 4 (count tasks))
       (should-contain 'spec tasks)
+      (should-contain 'spec-all tasks)
       (should-contain-shell-task tasks 'install-clj "dev/speclj/script/install_clj.bb")
       (should-contain-shell-task tasks 'install-cljr "dev/speclj/script/install_cljr.bb")))
 
