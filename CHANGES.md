@@ -1,3 +1,7 @@
+# 3.12.3
+* Spec failures and pending markers now report the user's source line under Babashka and ClojureScript.  Previously they showed `sci/lang/Var.clj:NNN` (bb) or a `cljs.core.js` frame (cljs).
+* Adds a `bb spec-all` task that runs the spec suite on Babashka, Clojure JVM, and ClojureScript and aggregates failures.
+
 # 3.12.2
 * Idiomatic exit for Babashka platform.
 
