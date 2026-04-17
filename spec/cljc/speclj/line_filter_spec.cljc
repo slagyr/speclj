@@ -1,5 +1,6 @@
 (ns speclj.line-filter-spec
   (:require [speclj.components :as components]
+            [speclj.config :as config]
             [speclj.core #?(:cljs :refer-macros :default :refer) [context describe it should= should-not]]
             [speclj.line-filter :as sut]))
 
@@ -102,18 +103,26 @@
             {:keys [chosen]} (sut/resolve-targets [sib-desc] {"bar.clj" 5})]
         (should= #{sib-char} chosen))))
 
+  (context "filtered-file?"
+
+    (it "false when no line-targets are set"
+      (let [char-a (mk-char "a" "foo.clj" 10)]
+        (binding [config/*line-targets* {}]
+          (should-not (sut/filtered-file? char-a)))))
+
+    (it "true when component file matches a line-target key"
+      (let [char-a (mk-char "a" "foo.clj" 10)]
+        (binding [config/*line-targets* {"foo.clj" 42}]
+          (should= true (sut/filtered-file? char-a)))))
+
+    (it "false when component file does not match any line-target"
+      (let [char-a (mk-char "a" "bar.clj" 10)]
+        (binding [config/*line-targets* {"foo.clj" 42}]
+          (should-not (sut/filtered-file? char-a))))))
+
   (context "pass-line-filter?"
 
-    (it "passes everything when filter is inactive"
-      (let [char-a (mk-char "a" "foo.clj" 10)
-            desc   (mk-desc "top" "foo.clj" 3)
-            _      (install-all desc char-a)]
-        (binding [sut/*chosen-characteristics* nil
-                  sut/*chosen-descriptions*    nil]
-          (should= true (sut/pass-line-filter? char-a))
-          (should= true (sut/pass-line-filter? desc)))))
-
-    (it "passes only chosen characteristics when filter is active"
+    (it "passes chosen characteristics when the filter is active"
       (let [char-a (mk-char "a" "foo.clj" 10)
             char-b (mk-char "b" "foo.clj" 20)
             desc   (mk-desc "top" "foo.clj" 3)
@@ -131,7 +140,7 @@
                   sut/*chosen-descriptions*    #{desc}]
           (should= true (sut/pass-line-filter? desc)))))
 
-    (it "skips descriptions with no chosen descendants"
+    (it "rejects descriptions with no chosen descendants"
       (let [char-a     (mk-char "a" "foo.clj" 10)
             chosen-ctx (mk-desc "chosen" "foo.clj" 3)
             _          (install-all chosen-ctx char-a)

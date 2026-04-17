@@ -94,7 +94,7 @@
           (running/run-and-report r [(silent/new-silent-reporter)]))
         (should= ["target"] (char-names r))))
 
-    (it "warns via *run-unmatched* when a file:line target doesn't match"
+    (it "warns via *run-unmatched* when a file:line target doesn't match but still runs untargeted files"
       (let [r         (sut/new-standard-runner)
             d         (components/new-description "top" false "speclj.run.standard-spec" {:file "foo.clj" :line 3})
             c         (components/new-characteristic "only" nil (fn [] :ok) false {:file "foo.clj" :line 10})
@@ -105,6 +105,22 @@
                   line-filter/*run-unmatched* unmatched]
           (running/run-and-report r [(silent/new-silent-reporter)]))
         (should= ["bogus.clj:10"] @unmatched)
-        (should= [] (char-names r))))
+        (should= ["only"] (char-names r))))
+
+    (it "runs untargeted files fully alongside a narrowed targeted file"
+      (let [r          (sut/new-standard-runner)
+            d-narrowed (components/new-description "narrowed" false "speclj.run.standard-spec" {:file "foo.clj" :line 3})
+            c1         (components/new-characteristic "target"    nil (fn [] :ok) false {:file "foo.clj" :line 10})
+            c2         (components/new-characteristic "skip-me"   nil (fn [] :ok) false {:file "foo.clj" :line 20})
+            d-other    (components/new-description "untargeted" false "speclj.run.standard-spec" {:file "bar.clj" :line 3})
+            c3         (components/new-characteristic "runs-too" nil (fn [] :ok) false {:file "bar.clj" :line 15})]
+        (components/install c1 d-narrowed)
+        (components/install c2 d-narrowed)
+        (components/install c3 d-other)
+        (running/submit-description r d-narrowed)
+        (running/submit-description r d-other)
+        (binding [config/*line-targets* {"foo.clj" 10}]
+          (running/run-and-report r [(silent/new-silent-reporter)]))
+        (should= ["runs-too" "target"] (char-names r))))
     )
   )

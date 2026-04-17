@@ -20,12 +20,13 @@
 
 (def arg-spec
   (-> (args/create-args)
-      (args/add-multi-parameter "specs" "directories/files specifying which specs to run (default: [spec]). Append ':N' to a file path (e.g. foo_spec.clj:42) to run only the enclosing it/context/describe at line N.")
+      (args/add-multi-parameter "specs" "directory|file|file:line targets to run (default: [spec]). Arguments are unioned: a bare directory runs every spec under it, and a file:line target only narrows when its file is not already covered by a directory arg. Use --focus to bypass other args.")
       (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
       (args/add-switch-option "C" "no-color" "Disable colored output (helpful for writing to file).")
+      (args/add-value-option "F" "focus" "FOCUS" "Run only this dir|file|file:line and ignore other spec args. Use when a wrapper (lein spec / bb spec) injects default spec dirs you want to skip.")
       (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
       (args/add-multi-option "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
@@ -83,30 +84,78 @@
   (println (str "speclj " (get-version))))
 
 (defn- split-line-targets
-  "Partitions a seq of :specs entries into [paths, line-targets-map].
-   Each entry is probed with `split-line-spec`: entries of the form
-   path:N become both a path (added to `paths`) and a {path N} entry in
-   line-targets; others pass through unchanged as paths."
+  "Partitions a seq of :specs entries into [all-paths bare-paths targets].
+   Each `path:N` entry lands in both `all-paths` (as the path portion) and
+   `targets` (path → line). Bare entries (no :N suffix) also join `bare-paths`,
+   since those represent user directives that run everything in scope and
+   therefore cover any file:line target underneath them."
   [specs]
   (reduce
-    (fn [[paths targets] entry]
+    (fn [[all bare targets] entry]
       (let [[path line] (line-filter/split-line-spec entry)]
         (if line
-          [(conj paths path) (assoc targets path line)]
-          [(conj paths entry) targets])))
-    [[] {}]
+          [(conj all path) bare (assoc targets path line)]
+          [(conj all entry) (conj bare entry) targets])))
+    [[] [] {}]
     specs))
+
+(defn- dir-path? [p]
+  #?(:cljs false
+     :default (try (.isDirectory (jio/as-file p))
+                   (catch #?(:cljr Exception :default Exception) _ false))))
+
+(defn- covers-file?
+  "True when `bare` (a dir or file) contains or equals `target`. A dir covers
+   every file beneath it; a plain file covers only itself. Path comparisons
+   are canonical so `./spec` and `spec` match."
+  [target bare]
+  #?(:cljs false
+     :default
+     (try
+       (let [t (.getCanonicalPath (jio/as-file target))
+             b (.getCanonicalPath (jio/as-file bare))]
+         (if (dir-path? bare)
+           (or (= t b)
+               (clojure.string/starts-with? t (str b (java.io.File/separator))))
+           (= t b)))
+       (catch #?(:cljr Exception :default Exception) _ false))))
+
+(defn- prune-covered-targets
+  "A file:line target is ignored when a bare dir/file arg already promises to
+   run it. This keeps CLI wrappers (lein spec / bb spec) that inject default
+   spec dirs from accidentally narrowing the suite."
+  [targets bares]
+  (if (and (seq bares) (seq targets))
+    (into {} (remove (fn [[t _]] (some (partial covers-file? t) bares)) targets))
+    targets))
+
+(defn- apply-focus
+  "`--focus <dir|file|file:line>` overrides :specs and :line-targets so only
+   the focused target is considered. Bypasses default-spec-dirs and any
+   positional specs."
+  [options]
+  (let [focus-val   (:focus options)
+        [path line] (line-filter/split-line-spec focus-val)
+        options     (-> options
+                        (dissoc :focus :default-spec-dirs)
+                        (assoc :specs [path]))]
+    (if line
+      (assoc options :line-targets {path line})
+      (dissoc options :line-targets))))
 
 (defn parse-args [& args]
   (let [options (resolve-aliases (args/parse arg-spec args))
-        options (if (:specs options)
-                  options
-                  (set/rename-keys options {:default-spec-dirs :specs}))
-        options (if-let [specs (:specs options)]
-                  (let [[paths targets] (split-line-targets specs)]
-                    (cond-> (assoc options :specs paths)
-                      (seq targets) (assoc :line-targets targets)))
-                  options)]
+        options (if (:focus options)
+                  (apply-focus options)
+                  (let [options (if (:specs options)
+                                  options
+                                  (set/rename-keys options {:default-spec-dirs :specs}))]
+                    (if-let [specs (:specs options)]
+                      (let [[paths bares targets] (split-line-targets specs)
+                            targets               (prune-covered-targets targets bares)]
+                        (cond-> (assoc options :specs paths)
+                          (seq targets) (assoc :line-targets targets)))
+                      options)))]
     (merge config/default-config options)))
 
 (defn- path-exists? [path]

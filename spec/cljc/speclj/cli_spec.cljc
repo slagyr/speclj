@@ -166,15 +166,49 @@
           (should= ["foo.clj:bar"] (:specs options))
           (should= nil (:line-targets options))))
 
-      (it "combines multiple targets with bare dirs"
-        (let [options (sut/parse-args "a.clj:10" "b.clj:20" "spec/")]
-          (should= ["a.clj" "b.clj" "spec/"] (:specs options))
+      (it "keeps multiple targets when no bare dir covers them"
+        (let [options (sut/parse-args "a.clj:10" "b.clj:20")]
+          (should= ["a.clj" "b.clj"] (:specs options))
           (should= {"a.clj" 10 "b.clj" 20} (:line-targets options))))
+
+      #?(:clj
+         (it "drops file:line targets covered by a bare directory arg"
+           (let [options (sut/parse-args "spec" "spec/cljc/speclj/cli_spec.cljc:42")]
+             (should= ["spec" "spec/cljc/speclj/cli_spec.cljc"] (:specs options))
+             (should= nil (:line-targets options)))))
+
+      #?(:clj
+         (it "keeps file:line targets outside any bare directory arg"
+           (let [options (sut/parse-args "examples" "spec/cljc/speclj/cli_spec.cljc:42")]
+             (should= ["examples" "spec/cljc/speclj/cli_spec.cljc"] (:specs options))
+             (should= {"spec/cljc/speclj/cli_spec.cljc" 42} (:line-targets options)))))
 
       (it "binds *line-targets* through with-config"
         (config/with-config {:runner "standard" :reporter "progress"
                              :line-targets {"foo.clj" 42}}
           #(should= {"foo.clj" 42} config/*line-targets*)))
       )
+
+    (context "--focus"
+
+      (it "overrides other specs args"
+        (let [options (sut/parse-args "spec" "other/dir" "--focus" "spec/foo.clj:42")]
+          (should= ["spec/foo.clj"] (:specs options))
+          (should= {"spec/foo.clj" 42} (:line-targets options))))
+
+      (it "accepts a bare directory"
+        (let [options (sut/parse-args "--focus" "some/dir")]
+          (should= ["some/dir"] (:specs options))
+          (should= nil (:line-targets options))))
+
+      (it "ignores default-spec-dirs from wrappers"
+        (let [options (sut/parse-args "-D" "spec/cljc" "-D" "spec/clj" "--focus" "only.clj:5")]
+          (should= ["only.clj"] (:specs options))
+          (should= {"only.clj" 5} (:line-targets options))))
+
+      (it "accepts the -F short form"
+        (let [options (sut/parse-args "-F" "only.clj:5")]
+          (should= ["only.clj"] (:specs options))
+          (should= {"only.clj" 5} (:line-targets options)))))
     )
   )

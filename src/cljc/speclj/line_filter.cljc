@@ -115,6 +115,18 @@
   []
   (some? *chosen-characteristics*))
 
+(defn filtered-file?
+  "True when this component's :file is named by some entry in *line-targets*.
+   Untargeted files run through normal focus/tag logic; only files with an
+   active line-target get narrowed."
+  [component]
+  (let [f (file-of component)]
+    (boolean
+      (and f
+           (seq *line-targets*)
+           (some (fn [user-path] (path-matches? user-path f))
+                 (keys *line-targets*))))))
+
 (defn- ancestors-of
   "Walks up each chosen characteristic's parent chain and returns the set of
    Description instances we pass through."
@@ -130,12 +142,12 @@
     chosen))
 
 (defn pass-line-filter?
-  "True when the filter is inactive, or when `component` participates in the
-   chosen run — either as a chosen Characteristic or as a Description on the
-   ancestor chain of one."
+  "Only call this for components in `filtered-file?` files; untargeted files
+   should be gated by the normal focus/tag logic instead. Characteristics
+   pass iff they're in *chosen-characteristics*; Descriptions pass iff they
+   sit on the ancestor chain of a chosen characteristic."
   [component]
   (cond
-    (not (active?)) true
     (components/is-description? component)
     (contains? *chosen-descriptions* component)
     (components/is-characteristic? component)

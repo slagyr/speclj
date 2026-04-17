@@ -189,10 +189,20 @@ $ lein spec spec/sample/core_spec.clj:10            # run all specs under the de
 $ lein spec spec/sample/core_spec.clj:1             # line above any form → run every spec in the file
 $ lein spec spec/a_spec.clj:10 spec/b_spec.clj:20   # multiple targets are allowed
 $ clj -M:spec spec/sample/core_spec.clj:42          # same syntax under deps.edn / clj
-$ bb spec    spec/sample/core_spec.clj:42           # works under Babashka
 ```
 
-When a `file:line` target is active it overrides any stray `focus-it`/`focus-describe` in the code.  A target whose file is not found is reported as a warning and speclj exits non-zero.
+Spec arguments union together: a bare directory runs every spec beneath it, a bare file runs the whole file, and a `file:line` target narrows only the one file.  A `file:line` that falls inside a bare directory arg is **ignored** — the directory already asks for everything under it.
+
+#### `--focus` / `-F`
+Wrappers like `lein spec` or `bb spec` typically inject default spec directories before your args, which means a plain `bb spec foo_spec.clj:42` would run the full suite (the injected dirs cover `foo_spec.clj`).  Use `--focus` to bypass other spec args:
+
+```bash
+$ bb spec    --focus spec/sample/core_spec.clj:42   # runs ONLY line 42 of that file
+$ lein spec  --focus spec/sample/core_spec.clj      # runs ONLY that file
+$ clj -M:spec -F spec/sample/                        # runs ONLY specs under spec/sample/
+```
+
+When a `file:line` target is active it overrides any stray `focus-it`/`focus-describe` in the file.  A target whose file is not found is reported as a warning and speclj exits non-zero.
 
 ### Options
 There are several options for the runners.  Use the `--help` options to see them all.

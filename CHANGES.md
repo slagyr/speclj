@@ -1,5 +1,8 @@
 # 3.13.0
-* Adds `file:line` CLI argument syntax for running a single spec by line number (e.g. `lein spec spec/foo_spec.clj:42`).  The line walks upward until it hits an enclosing `it`, `context`, or `describe`; if none is found, all specs in the file run.  Line targets override any `focus-it`/`focus-describe` markers left in the code, and an unresolved target warns + exits non-zero.
+* Adds `file:line` CLI argument syntax for running a single spec by line number (e.g. `lein spec spec/foo_spec.clj:42`).  The line walks upward until it hits an enclosing `it`, `context`, or `describe`; if none is found, all specs in the file run.
+* Spec args union together — a bare directory runs everything under it, so a `file:line` that falls inside a bare directory arg is ignored (the directory already asks for everything).
+* Adds `--focus` / `-F` to bypass other spec args (including default spec dirs injected by `lein spec` or `bb spec`) and run only the given dir, file, or `file:line` target.
+* Line targets override any `focus-it`/`focus-describe` markers in the targeted file, and an unresolved target warns + exits non-zero.
 
 # 3.12.3
 * Spec failures and pending markers now report the user's source line under Babashka and ClojureScript.  Previously they showed `sci/lang/Var.clj:NNN` (bb) or a `cljs.core.js` frame (cljs).

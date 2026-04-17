@@ -38,9 +38,10 @@
     (not any-sibling-focused?)))
 
 (defn can-run? [component]
-  (if (line-filter/active?)
-    ;; Line-filter wins over focus when active, so explicit CLI selection
-    ;; overrides any stray focus-it/focus-describe left in the code.
+  (if (and (line-filter/active?)
+           (line-filter/filtered-file? component))
+    ;; Component lives in a file targeted by --focus or file:line, so line-filter
+    ;; drives the decision and overrides any focus-it/focus-describe in that file.
     (line-filter/pass-line-filter? component)
     (cond
       (focused? component) true
@@ -76,10 +77,20 @@
     description))
 
 (defn filter-focused [descriptions]
-  (if (line-filter/active?)
-    descriptions
-    (do (run! scan-for-focus! descriptions)
-        (or (seq (filter focus-mode? descriptions)) descriptions))))
+  (run! scan-for-focus! descriptions)
+  (let [focused (filter focus-mode? descriptions)]
+    (if (seq focused)
+      ;; Focus narrows the top-level list, but when line-filter is also active
+      ;; we keep line-targeted descriptions too so a stray focus-it in an
+      ;; untargeted file can't shadow the explicit CLI target.
+      (let [line-descs (when (line-filter/active?)
+                         (set (filter #(contains? line-filter/*chosen-descriptions* %) descriptions)))]
+        (filter #(or (focus-mode? %)
+                     (contains? line-descs %))
+                descriptions))
+      ;; No focus: every top-level description traverses. Untargeted files
+      ;; run normally; targeted-file characteristics are narrowed by can-run?.
+      descriptions)))
 
 (defn descriptions-with-namespaces [descriptions namespaces]
   (cond->> descriptions namespaces (filter #(namespaces (.-ns %)))))
