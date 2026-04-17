@@ -29,7 +29,7 @@
      clojure.lang.Seqable
      (install [this description] (doseq [component (seq this)] (install component description)))))
 
-(deftype Description [name is-focused? has-focus? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls]
+(deftype Description [name is-focused? has-focus? ns parent children characteristics tags befores before-alls afters after-alls withs with-alls arounds around-alls loc]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -37,8 +37,10 @@
   Object
   (#?(:cljr ToString :default toString) [_this] (str "Description: " \" name \")))
 
-(defn new-description [name is-focused? ns]
-  (Description. name (atom is-focused?) (atom false) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom [])))
+(defn new-description
+  ([name is-focused? ns] (new-description name is-focused? ns nil))
+  ([name is-focused? ns loc]
+   (Description. name (atom is-focused?) (atom false) ns (atom nil) (atom []) (atom []) (atom #{}) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) (atom []) loc)))
 
 (defn is-description? [component]
   (instance? Description component))
@@ -48,7 +50,7 @@
 
 (def ^:dynamic *source-loc* nil)
 
-(deftype Characteristic [name parent body is-focused?]
+(deftype Characteristic [name parent body is-focused? loc]
   SpecComponent
   (install [this description]
     (reset! (.-parent this) description)
@@ -57,8 +59,10 @@
   (#?(:cljr ToString :default toString) [_this] (str \" name \")))
 
 (defn new-characteristic
-  ([name body is-focused?] (Characteristic. name (atom nil) body (atom is-focused?)))
-  ([name description body is-focused?] (Characteristic. name (atom description) body (atom is-focused?))))
+  ([name body is-focused?] (new-characteristic name nil body is-focused? nil))
+  ([name description body is-focused?] (new-characteristic name description body is-focused? nil))
+  ([name description body is-focused? loc]
+   (Characteristic. name (atom description) body (atom is-focused?) loc)))
 
 (defn is-characteristic? [component]
   (instance? Characteristic component))

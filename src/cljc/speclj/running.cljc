@@ -2,6 +2,7 @@
   (:require [speclj.components :as components]
             [speclj.config :refer [active-reporters]]
             [speclj.error :refer [pending?]]
+            [speclj.line-filter :as line-filter]
             [speclj.platform :refer [current-time secs-since]]
             [speclj.reporting :refer [report-description* report-run]]
             [speclj.results :refer [error-result fail-result pass-result pending-result]]
@@ -37,11 +38,15 @@
     (not any-sibling-focused?)))
 
 (defn can-run? [component]
-  (cond
-    (focused? component) true
-    (has-focus? component) true
-    (focus-mode? component) (no-siblings-focused? component)
-    :else true))
+  (if (line-filter/active?)
+    ;; Line-filter wins over focus when active, so explicit CLI selection
+    ;; overrides any stray focus-it/focus-describe left in the code.
+    (line-filter/pass-line-filter? component)
+    (cond
+      (focused? component) true
+      (has-focus? component) true
+      (focus-mode? component) (no-siblings-focused? component)
+      :else true)))
 
 (defn focus! [component]
   (reset! (.-is-focused? component) true))
@@ -71,8 +76,10 @@
     description))
 
 (defn filter-focused [descriptions]
-  (run! scan-for-focus! descriptions)
-  (or (seq (filter focus-mode? descriptions)) descriptions))
+  (if (line-filter/active?)
+    descriptions
+    (do (run! scan-for-focus! descriptions)
+        (or (seq (filter focus-mode? descriptions)) descriptions))))
 
 (defn descriptions-with-namespaces [descriptions namespaces]
   (cond->> descriptions namespaces (filter #(namespaces (.-ns %)))))

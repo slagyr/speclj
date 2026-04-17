@@ -67,25 +67,27 @@
                             speclj.components/*source-loc*)))
 
 (defmacro ^:no-doc help-it [name focused? & body]
-  (if (seq body)
-    `(speclj.components/new-characteristic ~name (fn [] ~@body) ~focused?)
-    ;; Body-less it/focus-it: synthesize a (pending) call carrying the user's
-    ;; call-site metadata so the pending location reports the it/focus-it line
-    ;; instead of sci internals.
-    (let [pending-form (with-meta `(pending) (meta &form))]
-      `(speclj.components/new-characteristic ~name (fn [] ~pending-form) ~focused?))))
+  (let [loc (-capture-loc &form *file*)]
+    (if (seq body)
+      `(speclj.components/new-characteristic ~name nil (fn [] ~@body) ~focused? ~loc)
+      ;; Body-less it/focus-it: synthesize a (pending) call carrying the user's
+      ;; call-site metadata so the pending location reports the it/focus-it line
+      ;; instead of sci internals.
+      (let [pending-form (with-meta `(pending) (meta &form))]
+        `(speclj.components/new-characteristic ~name nil (fn [] ~pending-form) ~focused? ~loc)))))
 
 (defmacro ^:no-doc help-describe [name focused? & components]
-  `(let [description# (speclj.components/new-description ~name ~focused? ~(clojure.core/name (speclj.platform/get-name *ns*)))]
-     (binding [speclj.config/*parent-description* description#]
-       ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
-       (doseq [component# (vector ~@components)]
-         (speclj.components/install component# description#)))
-     (when-not (if-cljs
-                 speclj.config/*parent-description*
-                 (bound? #'speclj.config/*parent-description*))
-       (speclj.running/submit-description (speclj.config/active-runner) description#))
-     description#))
+  (let [loc (-capture-loc &form *file*)]
+    `(let [description# (speclj.components/new-description ~name ~focused? ~(clojure.core/name (speclj.platform/get-name *ns*)) ~loc)]
+       (binding [speclj.config/*parent-description* description#]
+         ; MDM - use a vector below - cljs generates a warning because def/declares don't eval immediately
+         (doseq [component# (vector ~@components)]
+           (speclj.components/install component# description#)))
+       (when-not (if-cljs
+                   speclj.config/*parent-description*
+                   (bound? #'speclj.config/*parent-description*))
+         (speclj.running/submit-description (speclj.config/active-runner) description#))
+       description#)))
 
 (defmacro ^:no-doc with-source-loc
   "Binds speclj.components/*source-loc* to `loc` for the duration of `body` so
@@ -140,7 +142,8 @@
 
   Declares a new spec.  The body can contain any forms that evaluate to spec components (it, before, after, with ...)."
   [name & components]
-  `(help-describe ~name false ~@components))
+  ;; Propagate user's &form meta to help-describe so -capture-loc sees the user's line.
+  (with-meta `(help-describe ~name false ~@components) (meta &form)))
 
 (defmacro focus-describe
   "Same as 'describe', but it is meant to facilitate temporary debugging.
@@ -148,13 +151,13 @@
    other components thus defined, but all other sibling components defined
    with 'describe' will be ignored."
   [name & components]
-  `(help-describe ~name true ~@components))
+  (with-meta `(help-describe ~name true ~@components) (meta &form)))
 
 (defmacro context
   "Same as describe, but should be used to nest testing contexts inside the outer describe.
   Contexts can be nested any number of times."
   [name & components]
-  `(describe ~name ~@components))
+  (with-meta `(describe ~name ~@components) (meta &form)))
 
 (defmacro focus-context
   "Same as 'context', but it is meant to facilitate temporary debugging.
@@ -162,7 +165,7 @@
    other components thus defined, but all other sibling components defined
    with 'context' will be ignored."
   [name & components]
-  `(focus-describe ~name ~@components))
+  (with-meta `(focus-describe ~name ~@components) (meta &form)))
 
 (defmacro before
   "Declares a function that is invoked before each characteristic in the containing describe scope is evaluated. The body

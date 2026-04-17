@@ -1,8 +1,10 @@
 (ns speclj.run.standard-spec
-  (:require [speclj.config :as config]
+  (:require [speclj.components :as components]
+            [speclj.config :as config]
             [speclj.core :refer :all]
             [speclj.freshener :as fresh]
             [speclj.io :as io]
+            [speclj.line-filter :as line-filter]
             [speclj.report.silent :as silent]
             [speclj.run.standard :as sut]
             [speclj.running :as running]
@@ -60,4 +62,49 @@
 
   (spec-helper/test-get-descriptions sut/new-standard-runner)
   (spec-helper/test-description-filtering sut/new-standard-runner)
+
+  (context "line-filter integration"
+
+    (defn- char-names [runner]
+      (->> @(.-results runner)
+           (map #(.-name (.-characteristic %)))
+           sort))
+
+    (it "runs only the chosen characteristic when a file:line target matches"
+      (let [r         (sut/new-standard-runner)
+            d         (components/new-description "top" false "speclj.run.standard-spec" {:file "foo.clj" :line 3})
+            c1        (components/new-characteristic "first"  nil (fn [] :ok) false {:file "foo.clj" :line 10})
+            c2        (components/new-characteristic "second" nil (fn [] :ok) false {:file "foo.clj" :line 20})]
+        (components/install c1 d)
+        (components/install c2 d)
+        (running/submit-description r d)
+        (binding [config/*line-targets* {"foo.clj" 20}]
+          (running/run-and-report r [(silent/new-silent-reporter)]))
+        (should= ["second"] (char-names r))))
+
+    (it "line-filter wins over focus-it when both are present"
+      (let [r  (sut/new-standard-runner)
+            d  (components/new-description "top" false "speclj.run.standard-spec" {:file "foo.clj" :line 3})
+            c1 (components/new-characteristic "target"  nil (fn [] :ok) false {:file "foo.clj" :line 10})
+            c2 (components/new-characteristic "focused" nil (fn [] :ok) true  {:file "foo.clj" :line 20})]
+        (components/install c1 d)
+        (components/install c2 d)
+        (running/submit-description r d)
+        (binding [config/*line-targets* {"foo.clj" 10}]
+          (running/run-and-report r [(silent/new-silent-reporter)]))
+        (should= ["target"] (char-names r))))
+
+    (it "warns via *run-unmatched* when a file:line target doesn't match"
+      (let [r         (sut/new-standard-runner)
+            d         (components/new-description "top" false "speclj.run.standard-spec" {:file "foo.clj" :line 3})
+            c         (components/new-characteristic "only" nil (fn [] :ok) false {:file "foo.clj" :line 10})
+            unmatched (atom [])]
+        (components/install c d)
+        (running/submit-description r d)
+        (binding [config/*line-targets*       {"bogus.clj" 10}
+                  line-filter/*run-unmatched* unmatched]
+          (running/run-and-report r [(silent/new-silent-reporter)]))
+        (should= ["bogus.clj:10"] @unmatched)
+        (should= [] (char-names r))))
+    )
   )

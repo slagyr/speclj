@@ -1,8 +1,11 @@
 (ns speclj.cli
   (:require #?(:clj [trptcolin.versioneer.core :as version])
+            #?@(:cljs    []
+                :default [[clojure.java.io :as jio]])
             [speclj.args :as args]
             [clojure.set :as set]
             [speclj.config :as config]
+            [speclj.line-filter :as line-filter]
             [speclj.platform :refer [endl print-stack-trace]]
             [speclj.reporting :refer [report-message* stack-trace-str]]
             [speclj.run.standard]
@@ -17,7 +20,7 @@
 
 (def arg-spec
   (-> (args/create-args)
-      (args/add-multi-parameter "specs" "directories/files specifying which specs to run (default: [spec]).")
+      (args/add-multi-parameter "specs" "directories/files specifying which specs to run (default: [spec]). Append ':N' to a file path (e.g. foo_spec.clj:42) to run only the enclosing it/context/describe at line N.")
       (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
@@ -79,25 +82,73 @@
 (defn print-version []
   (println (str "speclj " (get-version))))
 
+(defn- split-line-targets
+  "Partitions a seq of :specs entries into [paths, line-targets-map].
+   Each entry is probed with `split-line-spec`: entries of the form
+   path:N become both a path (added to `paths`) and a {path N} entry in
+   line-targets; others pass through unchanged as paths."
+  [specs]
+  (reduce
+    (fn [[paths targets] entry]
+      (let [[path line] (line-filter/split-line-spec entry)]
+        (if line
+          [(conj paths path) (assoc targets path line)]
+          [(conj paths entry) targets])))
+    [[] {}]
+    specs))
+
 (defn parse-args [& args]
   (let [options (resolve-aliases (args/parse arg-spec args))
         options (if (:specs options)
                   options
-                  (set/rename-keys options {:default-spec-dirs :specs}))]
+                  (set/rename-keys options {:default-spec-dirs :specs}))
+        options (if-let [specs (:specs options)]
+                  (let [[paths targets] (split-line-targets specs)]
+                    (cond-> (assoc options :specs paths)
+                      (seq targets) (assoc :line-targets targets)))
+                  options)]
     (merge config/default-config options)))
+
+(defn- path-exists? [path]
+  #?(:cljs true
+     :default (try (.exists (jio/as-file path))
+                   (catch #?(:cljr Exception :default Exception) _ true))))
+
+(defn- prune-missing-targets
+  "Returns [remaining-specs remaining-targets missing-target-strings].
+   Any :line-targets entry whose file isn't present on disk is removed from
+   the spec list and returned in the missing seq so the runner can report it
+   as an unmatched target without triggering a hard load error."
+  [specs line-targets]
+  (let [missing-paths (filter (fn [p] (not (path-exists? p))) (keys line-targets))
+        missing-set   (set missing-paths)
+        missing-strs  (map (fn [p] (str p ":" (get line-targets p))) missing-paths)]
+    [(remove missing-set specs)
+     (apply dissoc line-targets missing-paths)
+     missing-strs]))
 
 (defn do-specs [config]
   (config/with-config config
     (fn []
-      (try
-        (when-let [filter-msg (describe-filter)]
-          (report-message* config/*reporters* filter-msg))
-        (let [directories (concat config/*sources* config/*specs*)]
-          (run-directories config/*runner* directories config/*reporters*))
-        (catch #?(:cljs :default :default Exception) e
-          (print-stack-trace e)
-          (println (stack-trace-str e))
-          -1)))))
+      (let [unmatched (atom [])]
+        (binding [line-filter/*run-unmatched* unmatched]
+          (let [[specs targets missing] (prune-missing-targets config/*specs* config/*line-targets*)]
+            (swap! unmatched into missing)
+            (binding [config/*specs*        specs
+                      config/*line-targets* targets]
+              (try
+                (when-let [filter-msg (describe-filter)]
+                  (report-message* config/*reporters* filter-msg))
+                (let [directories (concat config/*sources* config/*specs*)
+                      failures    (run-directories config/*runner* directories config/*reporters*)]
+                  (doseq [target @unmatched]
+                    (report-message* config/*reporters*
+                                     (str "WARNING: file:line target did not match any loaded spec: " target)))
+                  (+ (or failures 0) (count @unmatched)))
+                (catch #?(:cljs :default :default Exception) e
+                  (print-stack-trace e)
+                  (println (stack-trace-str e))
+                  -1)))))))))
 
 (defn run
   "Runs specs with the given command-line args. Returns the number of test failures"

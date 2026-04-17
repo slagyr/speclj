@@ -138,5 +138,43 @@
       (should= ["src/one" "src/two"] (:sources (sut/parse-args "--sources=src/one" "--sources=src/two")))
       (should= ["src/one" "src/two"] (:sources (sut/parse-args "-s" "src/one" "--sources" "src/two")))
       (should= ["src/one" "src/two"] (:sources (sut/parse-args "--sources" "src/one" "-s" "src/two"))))
+
+    (context "file:line targets"
+
+      (it "splits a single file:line target"
+        (let [options (sut/parse-args "spec/foo_spec.clj:42")]
+          (should= ["spec/foo_spec.clj"] (:specs options))
+          (should= {"spec/foo_spec.clj" 42} (:line-targets options))))
+
+      (it "leaves bare paths alone"
+        (let [options (sut/parse-args "spec/foo_spec.clj")]
+          (should= ["spec/foo_spec.clj"] (:specs options))
+          (should= nil (:line-targets options))))
+
+      (it "leaves directory paths alone"
+        (let [options (sut/parse-args "spec")]
+          (should= ["spec"] (:specs options))
+          (should= nil (:line-targets options))))
+
+      (it "preserves Windows-style drive letters"
+        (let [options (sut/parse-args "C:\\spec\\foo.clj:42")]
+          (should= ["C:\\spec\\foo.clj"] (:specs options))
+          (should= {"C:\\spec\\foo.clj" 42} (:line-targets options))))
+
+      (it "does not parse non-numeric :suffixes as line numbers"
+        (let [options (sut/parse-args "foo.clj:bar")]
+          (should= ["foo.clj:bar"] (:specs options))
+          (should= nil (:line-targets options))))
+
+      (it "combines multiple targets with bare dirs"
+        (let [options (sut/parse-args "a.clj:10" "b.clj:20" "spec/")]
+          (should= ["a.clj" "b.clj" "spec/"] (:specs options))
+          (should= {"a.clj" 10 "b.clj" 20} (:line-targets options))))
+
+      (it "binds *line-targets* through with-config"
+        (config/with-config {:runner "standard" :reporter "progress"
+                             :line-targets {"foo.clj" 42}}
+          #(should= {"foo.clj" 42} config/*line-targets*)))
+      )
     )
   )

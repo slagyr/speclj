@@ -61,6 +61,13 @@
     (should= ["a.bb"] (map io/file-name (sut/clj-files-in [sample-dir] bb-platform)))
     (should= ["a.cljc"] (map io/file-name (sut/clj-files-in [sample-dir] cljs-platform))))
 
+  (it "accepts a single file path (not just a directory)"
+    (write-file sample-dir "a.clj" "(ns sample.a)")
+    (write-file sample-dir "b.clj" "(ns sample.b)")
+    (let [target (io/as-file sample-dir "a.clj")
+          found  (sut/clj-files-in [target] clj-platform)]
+      (should= ["a.clj"] (map io/file-name found))))
+
   (it "new files are detected and added to tracker"
     (write-file sample-dir "a.clj" "(ns sample.a)")
     (write-file sample-dir "b.cljc" "(ns sample.b)")

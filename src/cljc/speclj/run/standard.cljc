@@ -3,6 +3,7 @@
                           [speclj.components :as components]]
                 :default [[speclj.freshener :as fresh]])
             [speclj.config :as config]
+            [speclj.line-filter :as line-filter]
             [speclj.reporting :as reporting]
             [speclj.results :as results]
             [speclj.running :as running]
@@ -45,8 +46,11 @@
       (swap! results into run-results)))
 
   (run-and-report [this reporters]
-    (doseq [description (running/filter-focused @descriptions)]
-      (running/run-description this description reporters))
+    (line-filter/with-chosen
+      @descriptions
+      (fn []
+        (doseq [description (running/filter-focused @descriptions)]
+          (running/run-description this description reporters))))
     (reporting/report-runs* reporters @results)))
 
 #?(:cljs

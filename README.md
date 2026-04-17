@@ -180,6 +180,20 @@ The `-a` options invokes the "vigilant" auto-runner.  This command will run all 
 $ lein spec -a
 ```
 
+### Running a single spec by line
+Append `:N` to a spec file path to run only the scope at or enclosing line `N`.  The line walks upward through the file until it hits an `it`, `context`, or `describe` form.
+
+```bash
+$ lein spec spec/sample/core_spec.clj:42            # run the it at/containing line 42
+$ lein spec spec/sample/core_spec.clj:10            # run all specs under the describe/context at line 10
+$ lein spec spec/sample/core_spec.clj:1             # line above any form → run every spec in the file
+$ lein spec spec/a_spec.clj:10 spec/b_spec.clj:20   # multiple targets are allowed
+$ clj -M:spec spec/sample/core_spec.clj:42          # same syntax under deps.edn / clj
+$ bb spec    spec/sample/core_spec.clj:42           # works under Babashka
+```
+
+When a `file:line` target is active it overrides any stray `focus-it`/`focus-describe` in the code.  A target whose file is not found is reported as a warning and speclj exits non-zero.
+
 ### Options
 There are several options for the runners.  Use the `--help` options to see them all.
 

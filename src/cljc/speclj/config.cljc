@@ -35,6 +35,7 @@
 (def ^:dynamic *color?* false)
 (def ^:dynamic *full-stack-trace?* false)
 (def ^:dynamic *tag-filter* {:include #{} :exclude #{}})
+(def ^:dynamic *line-targets* {})
 
 (def default-config
   {:specs        ["spec"]
@@ -108,7 +109,8 @@
       #'*profile?*          (:profile config)
       #'*omit-pending?*     (:omit-pending config)
       #'*full-stack-trace?* (some? (:stacktrace config))
-      #'*tag-filter*        (parse-tags (:tags config))})
+      #'*tag-filter*        (parse-tags (:tags config))
+      #'*line-targets*      (or (:line-targets config) {})})
 
    )
 
@@ -125,5 +127,6 @@
             *profile?*          (:profile config)
             *omit-pending?*     (:omit-pending config)
             *full-stack-trace?* (some? (:stacktrace config))
-            *tag-filter*        (parse-tags (:tags config))]
+            *tag-filter*        (parse-tags (:tags config))
+            *line-targets*      (or (:line-targets config) {})]
     (action)))
