@@ -1,7 +1,7 @@
 (ns speclj.cli
   (:require #?(:clj [trptcolin.versioneer.core :as version])
             #?@(:cljs    []
-                :default [[clojure.java.io :as jio]])
+                :default [[speclj.io :as io]])
             [speclj.args :as args]
             [clojure.set :as set]
             [speclj.config :as config]
@@ -104,7 +104,7 @@
 
 (defn- dir-path? [p]
   #?(:cljs false
-     :default (try (.isDirectory (jio/as-file p))
+     :default (try (-> p io/as-file io/directory?)
                    (catch #?(:cljr Exception :default Exception) _ false))))
 
 (defn- covers-file?
@@ -115,11 +115,11 @@
   #?(:cljs false
      :default
      (try
-       (let [t (.getCanonicalPath (jio/as-file target))
-             b (.getCanonicalPath (jio/as-file bare))]
+       (let [t (-> target io/as-file io/canonical-path)
+             b (-> bare io/as-file io/canonical-path)]
          (if (dir-path? bare)
            (or (= t b)
-               (clojure.string/starts-with? t (str b (java.io.File/separator))))
+               (clojure.string/starts-with? t (str b io/file-separator)))
            (= t b)))
        (catch #?(:cljr Exception :default Exception) _ false))))
 
@@ -176,7 +176,7 @@
 
 (defn- path-exists? [path]
   #?(:cljs true
-     :default (try (.exists (jio/as-file path))
+     :default (try (-> path io/as-file io/exists?)
                    (catch #?(:cljr Exception :default Exception) _ true))))
 
 (defn- prune-missing-targets

@@ -3,6 +3,8 @@
   (:import (clojure.lang LineNumberingPushbackReader)
            (java.io File StringReader StringWriter)))
 
+(def file-separator java.io.File/separator)
+
 (defn as-file
   ([parent child] (io/file parent child))
   ([file] (io/as-file file)))
@@ -15,6 +17,7 @@
 (defn exists? [file] (.exists file))
 (defn parent-file [file] (.getParentFile file))
 (defn delete [file] (io/delete-file file))
+(defn directory? [file] (.isDirectory file))
 
 (defn ->LineNumberingReader [reader] (LineNumberingPushbackReader. reader))
 (defn ->StringReader [s] (StringReader. s))

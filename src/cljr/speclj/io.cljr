@@ -1,7 +1,9 @@
 (ns speclj.io
   (:require [clojure.clr.io :as io])
-  (:import (System.IO Directory File DirectoryInfo FileAttributes StringReader StringWriter)
+  (:import (System.IO Directory File Path DirectoryInfo FileAttributes StringReader StringWriter)
            (clojure.lang LineNumberingTextReader)))
+
+(def file-separator Path/DirectorySeparatorChar)
 
 (defn as-file
   ([parent child] (io/file-info parent child))
@@ -21,7 +23,8 @@
 
 (defn file-name [file] (.-Name file))
 (defn full-name [file] (.-FullName file))
-(defn exists? [file] (or (.-Exists file) (Directory/Exists (full-name file))))
+(defn directory? [file] (Directory/Exists (full-name file)))
+(defn exists? [file] (or (.-Exists file) (directory? file)))
 (defn parent-file [file] (.-Directory file))
 (defn delete [file] (File/Delete (str file)))
 
