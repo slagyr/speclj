@@ -15,21 +15,24 @@
 
 (def speclj-invocation
   #?(:clj     (or (System/getProperty "speclj.invocation")
-                  "java -cp [...] speclj.main")
+                  "speclj")
      :default ""))
 
 (def arg-spec
   (-> (args/create-args)
-      (args/add-multi-parameter "spec targets" "[dir|file|file:line]... The union of all targeted specs get run. (default: [spec]).")
+      (args/add-multi-parameter "spec targets" (str "[dir|file|file:line]... The union of all targeted specs get run. (default: [spec]).\n"
+                                                    "                dir       all files in the directory\n"
+                                                    "                file      all specs in the file\n"
+                                                    "                file:line a single spec | a context | a describe | all the specs in the file"))
       (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
       (args/add-switch-option "C" "no-color" "Disable colored output (helpful for writing to file).")
-      (args/add-multi-option "F" "focus" "FOCUS" "Run only these spec targets; ignore positional targets and --default fallbacks. Repeatable. Escape hatch for build wrappers: clj -M:spec -F myspec.clj:42")
+      (args/add-multi-option "F" "focus" "SPEC TARGET" "Run only these spec targets. Repeatable. Escape hatch for build wrappers: clj -M:spec -F myspec.clj:42")
       (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
-      (args/add-multi-option "D" "default" "DEFAULT" "Default spec targets.  Used when no other targets are provided.")
+      (args/add-multi-option "D" "default" "DEFAULT" "Default spec targets to be used when no other targets are provided. Repeatable.")
       (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Output will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                             "  [c]lojure-test:   Reporting via clojure.test/report" endl
                                                             "  [d]ocumentation:  Includes description/context and characteristic\n                    names" endl
