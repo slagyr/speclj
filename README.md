@@ -32,8 +32,8 @@ Include speclj in your `:dev` profile `:dependencies` and`:plugins`. Then change
 ```clojure
 ; - snip
 :dependencies [[org.clojure/clojure "1.12.0"]]
-:profiles     {:dev {:dependencies [[speclj "3.12.3"]]}}
-:plugins      [[speclj "3.12.3"]]
+:profiles     {:dev {:dependencies [[speclj "3.13.0"]]}}
+:plugins      [[speclj "3.13.0"]]
 :test-paths   ["spec"]
 ```
 
@@ -139,7 +139,7 @@ Add a `spec` alias to your `deps.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {speclj/speclj {:mvn/version "3.12.3"}}
+                  :extra-deps  {speclj/speclj {:mvn/version "3.13.0"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -335,7 +335,7 @@ Add a `spec` alias to your `deps-clr.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.12.3" :git/sha "bbd9ae3"}}
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.13.0" :git/sha "3546a39"}}
                   :extra-paths ["spec"]}}
  }
 ```
@@ -355,7 +355,7 @@ Add a `spec` task to your `bb.edn`.
 
 ```clojure
 {:paths ["src/bb" "spec/bb"]
- :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.12.3"}}
+ :tasks {spec {:extra-deps {speclj/speclj {:mvn/version "3.13.0"}}
                :requires   ([speclj.main :as main])
                :task       (apply main/-main "-c" "spec/bb" *command-line-args*)}}
 }
