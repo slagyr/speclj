@@ -20,16 +20,16 @@
 
 (def arg-spec
   (-> (args/create-args)
-      (args/add-multi-parameter "specs" "directory|file|file:line targets to run (default: [spec]). Arguments are unioned: a bare directory runs every spec under it, and a file:line target only narrows when its file is not already covered by a directory arg. Use --focus to bypass other args.")
+      (args/add-multi-parameter "spec targets" "[dir|file|file:line]... The union of all targeted specs get run. (default: [spec]).")
       (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
       (args/add-switch-option "C" "no-color" "Disable colored output (helpful for writing to file).")
-      (args/add-value-option "F" "focus" "FOCUS" "Run only this dir|file|file:line and ignore other spec args. Use when a wrapper (lein spec / bb spec) injects default spec dirs you want to skip.")
+      (args/add-multi-option "F" "focus" "FOCUS" "Run only these spec targets; ignore positional targets and --default fallbacks. Repeatable. Escape hatch for build wrappers: clj -M:spec -F myspec.clj:42")
       (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
-      (args/add-multi-option "D" "default-spec-dirs" "DEFAULT_SPEC_DIRS" "[INTERNAL USE] Default spec directories (overridden by specs given separately).")
+      (args/add-multi-option "D" "default" "DEFAULT" "Default spec targets.  Used when no other targets are provided.")
       (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Output will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                             "  [c]lojure-test:   Reporting via clojure.test/report" endl
                                                             "  [d]ocumentation:  Includes description/context and characteristic\n                    names" endl
@@ -130,22 +130,35 @@
     targets))
 
 (defn- apply-focus
-  "`--focus <dir|file|file:line>` overrides :specs and :line-targets so only
-   the focused target is considered. Bypasses default-spec-dirs and any
-   positional specs."
+  "`--focus` values replace :specs and :line-targets entirely. Each value may
+   be a dir, file, or file:line target; they combine under the same union /
+   prune rules as positional specs (a dir covers files beneath it, so a
+   file:line target inside a --focus dir is dropped)."
   [options]
-  (let [focus-val   (:focus options)
-        [path line] (line-filter/split-line-spec focus-val)
-        options     (-> options
-                        (dissoc :focus :default-spec-dirs)
-                        (assoc :specs [path]))]
-    (if line
-      (assoc options :line-targets {path line})
+  (let [focus-vals            (:focus options)
+        [paths bares targets] (split-line-targets focus-vals)
+        targets               (prune-covered-targets targets bares)
+        options               (-> options
+                                  (dissoc :focus :default-spec-dirs)
+                                  (assoc :specs paths))]
+    (if (seq targets)
+      (assoc options :line-targets targets)
       (dissoc options :line-targets))))
 
+(defn- normalize-keys
+  "The parameter label 'spec targets' and the option full-name 'default'
+   are user-facing. Remap them to the stable internal keys (:specs /
+   :default-spec-dirs) so downstream code doesn't depend on what the CLI
+   labels happen to be."
+  [options]
+  (set/rename-keys options {(keyword "spec targets") :specs
+                            :default                 :default-spec-dirs}))
+
 (defn parse-args [& args]
-  (let [options (resolve-aliases (args/parse arg-spec args))
-        options (if (:focus options)
+  (let [options (-> (args/parse arg-spec args)
+                    normalize-keys
+                    resolve-aliases)
+        options (if (seq (:focus options))
                   (apply-focus options)
                   (let [options (if (:specs options)
                                   options

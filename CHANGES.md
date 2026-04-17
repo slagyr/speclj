@@ -1,7 +1,8 @@
 # 3.13.0
 * Adds `file:line` CLI argument syntax for running a single spec by line number (e.g. `lein spec spec/foo_spec.clj:42`).  The line walks upward until it hits an enclosing `it`, `context`, or `describe`; if none is found, all specs in the file run.
 * Spec args union together — a bare directory runs everything under it, so a `file:line` that falls inside a bare directory arg is ignored (the directory already asks for everything).
-* Adds `--focus` / `-F` to bypass other spec args (including default spec dirs injected by `lein spec` or `bb spec`) and run only the given dir, file, or `file:line` target.
+* Adds `--focus` / `-F` to bypass other spec args (including `--default` fallbacks from `lein spec` or `bb spec`) and run only the given dir/file/`file:line` targets.  Repeatable: multiple `-F` args combine under the same union/prune rules as positional specs.
+* Renames the internal `--default-spec-dirs` flag to `--default` (the `-D` short form is unchanged).
 * Line targets override any `focus-it`/`focus-describe` markers in the targeted file, and an unresolved target warns + exits non-zero.
 
 # 3.12.3

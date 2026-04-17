@@ -35,12 +35,12 @@
       (should= ["april" "mj"] (:reporters (sut/parse-args "--reporter=april" "--reporter=mj")))
       (should= ["mj" "april"] (:reporters (sut/parse-args "-f" "mj" "-f" "april"))))
 
-    (it "uses default-spec-dirs argument as a default for specs"
-      (should= ["april"] (:specs (sut/parse-args "--default-spec-dirs=april")))
+    (it "uses --default argument as a default for specs"
+      (should= ["april"] (:specs (sut/parse-args "--default=april")))
       (should= ["mary-jane"] (:specs (sut/parse-args "-D" "mary-jane")))
-      (should= ["april" "mj"] (:specs (sut/parse-args "--default-spec-dirs=april" "--default-spec-dirs=mj")))
+      (should= ["april" "mj"] (:specs (sut/parse-args "--default=april" "--default=mj")))
       (should= ["mj" "april"] (:specs (sut/parse-args "-D" "mj" "-D" "april")))
-      (should= ["foo/bar/baz"] (:specs (sut/parse-args "--default-spec-dirs=april" "foo/bar/baz"))))
+      (should= ["foo/bar/baz"] (:specs (sut/parse-args "--default=april" "foo/bar/baz"))))
 
     (it "uses formatter as an alias to reporter"
       (should= ["silent"] (:reporters (sut/parse-args "--format" "silent")))
@@ -209,6 +209,23 @@
       (it "accepts the -F short form"
         (let [options (sut/parse-args "-F" "only.clj:5")]
           (should= ["only.clj"] (:specs options))
-          (should= {"only.clj" 5} (:line-targets options)))))
+          (should= {"only.clj" 5} (:line-targets options))))
+
+      (it "is repeatable — unions multiple --focus values"
+        (let [options (sut/parse-args "-F" "a.clj:10" "-F" "b.clj:20")]
+          (should= ["a.clj" "b.clj"] (:specs options))
+          (should= {"a.clj" 10 "b.clj" 20} (:line-targets options))))
+
+      #?(:clj
+         (it "prunes file:line targets covered by a --focus dir"
+           (let [options (sut/parse-args "-F" "examples" "-F" "examples/focus/focus.clj:5")]
+             (should= ["examples" "examples/focus/focus.clj"] (:specs options))
+             (should= nil (:line-targets options)))))
+
+      #?(:clj
+         (it "combines a dir focus with a sibling file:line focus"
+           (let [options (sut/parse-args "-F" "examples" "-F" "spec/cljc/speclj/cli_spec.cljc:11")]
+             (should= ["examples" "spec/cljc/speclj/cli_spec.cljc"] (:specs options))
+             (should= {"spec/cljc/speclj/cli_spec.cljc" 11} (:line-targets options))))))
     )
   )

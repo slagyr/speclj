@@ -194,12 +194,13 @@ $ clj -M:spec spec/sample/core_spec.clj:42          # same syntax under deps.edn
 Spec arguments union together: a bare directory runs every spec beneath it, a bare file runs the whole file, and a `file:line` target narrows only the one file.  A `file:line` that falls inside a bare directory arg is **ignored** — the directory already asks for everything under it.
 
 #### `--focus` / `-F`
-Wrappers like `lein spec` or `bb spec` typically inject default spec directories before your args, which means a plain `bb spec foo_spec.clj:42` would run the full suite (the injected dirs cover `foo_spec.clj`).  Use `--focus` to bypass other spec args:
+Wrappers like `lein spec` or `bb spec` typically inject default spec directories before your args, which means a plain `bb spec foo_spec.clj:42` would run the full suite (the injected dirs cover `foo_spec.clj`).  Use `--focus` to bypass other spec args.  The flag is repeatable and combines multiple targets the same way positional args do:
 
 ```bash
-$ bb spec    --focus spec/sample/core_spec.clj:42   # runs ONLY line 42 of that file
-$ lein spec  --focus spec/sample/core_spec.clj      # runs ONLY that file
-$ clj -M:spec -F spec/sample/                        # runs ONLY specs under spec/sample/
+$ bb spec    --focus spec/sample/core_spec.clj:42       # runs ONLY line 42 of that file
+$ lein spec  --focus spec/sample/core_spec.clj          # runs ONLY that file
+$ clj -M:spec -F spec/sample/                           # runs ONLY specs under spec/sample/
+$ bb spec -F a_spec.clj:10 -F b_spec.clj:20             # runs both targeted specs, nothing else
 ```
 
 When a `file:line` target is active it overrides any stray `focus-it`/`focus-describe` in the file.  A target whose file is not found is reported as a warning and speclj exits non-zero.
