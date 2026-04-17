@@ -108,7 +108,8 @@
       (let [char-a (mk-char "a" "foo.clj" 10)
             desc   (mk-desc "top" "foo.clj" 3)
             _      (install-all desc char-a)]
-        (binding [sut/*chosen-characteristics* nil]
+        (binding [sut/*chosen-characteristics* nil
+                  sut/*chosen-descriptions*    nil]
           (should= true (sut/pass-line-filter? char-a))
           (should= true (sut/pass-line-filter? desc)))))
 
@@ -117,14 +118,25 @@
             char-b (mk-char "b" "foo.clj" 20)
             desc   (mk-desc "top" "foo.clj" 3)
             _      (install-all desc char-a char-b)]
-        (binding [sut/*chosen-characteristics* #{char-a}]
+        (binding [sut/*chosen-characteristics* #{char-a}
+                  sut/*chosen-descriptions*    #{desc}]
           (should= true (sut/pass-line-filter? char-a))
           (should-not (sut/pass-line-filter? char-b)))))
 
-    (it "always passes descriptions when active"
+    (it "passes descriptions on the chosen-characteristic ancestor chain"
       (let [char-a (mk-char "a" "foo.clj" 10)
             desc   (mk-desc "top" "foo.clj" 3)
             _      (install-all desc char-a)]
-        (binding [sut/*chosen-characteristics* #{char-a}]
-          (should= true (sut/pass-line-filter? desc))))))
+        (binding [sut/*chosen-characteristics* #{char-a}
+                  sut/*chosen-descriptions*    #{desc}]
+          (should= true (sut/pass-line-filter? desc)))))
+
+    (it "skips descriptions with no chosen descendants"
+      (let [char-a     (mk-char "a" "foo.clj" 10)
+            chosen-ctx (mk-desc "chosen" "foo.clj" 3)
+            _          (install-all chosen-ctx char-a)
+            unrelated  (mk-desc "unrelated" "bar.clj" 3)]
+        (binding [sut/*chosen-characteristics* #{char-a}
+                  sut/*chosen-descriptions*    #{chosen-ctx}]
+          (should-not (sut/pass-line-filter? unrelated))))))
   )

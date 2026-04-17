@@ -5,6 +5,11 @@
 
 (def ^:dynamic *chosen-characteristics* nil)
 
+;; Descriptions on the ancestor chain of at least one chosen characteristic.
+;; When line-filter is active, these are the only descriptions we let the
+;; runner traverse — so reporters don't print headers for unrelated files.
+(def ^:dynamic *chosen-descriptions* nil)
+
 ;; Bound (to an atom) by speclj.cli/do-specs so unmatched file:line targets can
 ;; surface as warnings + non-zero exit after the run. nil means nobody cares.
 (def ^:dynamic *run-unmatched* nil)
@@ -110,14 +115,29 @@
   []
   (some? *chosen-characteristics*))
 
+(defn- ancestors-of
+  "Walks up each chosen characteristic's parent chain and returns the set of
+   Description instances we pass through."
+  [chosen]
+  (reduce
+    (fn [acc characteristic]
+      (loop [desc @(.-parent characteristic)
+             acc  acc]
+        (if desc
+          (recur @(.-parent desc) (conj acc desc))
+          acc)))
+    #{}
+    chosen))
+
 (defn pass-line-filter?
   "True when the filter is inactive, or when `component` participates in the
-   chosen set. Descriptions always pass so the runner can traverse into
-   chosen characteristics."
+   chosen run — either as a chosen Characteristic or as a Description on the
+   ancestor chain of one."
   [component]
   (cond
     (not (active?)) true
-    (components/is-description? component) true
+    (components/is-description? component)
+    (contains? *chosen-descriptions* component)
     (components/is-characteristic? component)
     (contains? *chosen-characteristics* component)
     :else true))
@@ -125,13 +145,14 @@
 (defn with-chosen
   "If `*line-targets*` is non-empty, resolves them against `descriptions`,
    records any unmatched targets into `*run-unmatched*` (when bound), and
-   invokes body-fn with `*chosen-characteristics*` bound to the chosen
-   Characteristic set. Otherwise just invokes body-fn."
+   invokes body-fn with `*chosen-characteristics*` and
+   `*chosen-descriptions*` bound. Otherwise just invokes body-fn."
   [descriptions body-fn]
   (if (seq *line-targets*)
     (let [{:keys [chosen unmatched]} (resolve-targets descriptions *line-targets*)]
       (when (and *run-unmatched* (seq unmatched))
         (swap! *run-unmatched* into unmatched))
-      (binding [*chosen-characteristics* chosen]
+      (binding [*chosen-characteristics* chosen
+                *chosen-descriptions*    (ancestors-of chosen)]
         (body-fn)))
     (body-fn)))
