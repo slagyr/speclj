@@ -9,9 +9,9 @@
 
   (it "installs Clojure.Main"
     (sut/-main)
-    (should-have-invoked :shell/sh {:with ["dotnet" "tool" "install" "--global" "Clojure.Main" "--version" "1.12.0-alpha10"]}))
+    (should-have-invoked :shell/sh {:with ["dotnet" "tool" "install" "--global" "Clojure.Main" "--version" "1.12.3-alpha4"]}))
 
   (it "installs Clojure.Cljr"
     (sut/-main)
-    (should-have-invoked :shell/sh {:with ["dotnet" "tool" "install" "--global" "Clojure.Cljr" "--version" "0.1.0-alpha5"]}))
+    (should-have-invoked :shell/sh {:with ["dotnet" "tool" "install" "--global" "Clojure.Cljr" "--version" "0.1.0-alpha10"]}))
   )

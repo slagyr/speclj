@@ -7,6 +7,13 @@
 (defmacro which-env []
   (if-cljs :cljs :clj))
 
+(defmacro result-or-ex [& body]
+  `(try (do ~@body)
+        (catch #?(:cljs :default
+                  :cljr Exception
+                  :default Throwable)
+               e# e#)))
+
 (defmacro current-line
   "Macroexpands to the line number of the call site under bb/JVM. Returns nil
    under cljs because same-file defmacros don't receive a useful &form there.
@@ -33,8 +40,7 @@
 (defn caught
   "Evaluates `thunk` and returns the thrown exception, or nil if nothing is thrown."
   [thunk]
-  (try (thunk) nil
-       (catch #?(:cljs :default :default Throwable) e e)))
+  (result-or-ex (thunk) nil))
 
 (describe "platform-specific bits"
   #?(:cljs
@@ -87,8 +93,7 @@
     ;; that over the JVM/sci stack trace, otherwise babashka users see
     ;; sci/lang/Var.clj instead of their own source line.
     (let [base (current-line ::mark)
-          ex   (try (should= 1 2)        ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should= 1 2))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))
       (should-contain "speclj/platform_spec" (sut/failure-source-str ex))))
@@ -97,8 +102,7 @@
     ;; The pending macro embeds its &form loc directly in the ex-info; without
     ;; this, babashka users see sci/lang/Var.clj instead of the pending line.
     (let [base (current-line ::mark)
-          ex   (try (speclj.core/pending "TODO")  ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (speclj.core/pending "TODO"))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))
       (should-contain "speclj/platform_spec" (sut/failure-source-str ex))))
@@ -132,23 +136,20 @@
     ;; The propagated meta is what makes should=' &form see the user's
     ;; should-be-nil call site instead of the syntax-generated form.
     (let [base (current-line ::mark)
-          ex   (try (should-be-nil 42)   ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should-be-nil 42))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
 
   (it "delegating should-not-be-nil reports its own call site"
     (let [base (current-line ::mark)
-          ex   (try (should-not-be-nil nil)   ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should-not-be-nil nil))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
 
   (it "0-arg should-fail propagates loc to the 1-arg arity"
     ;; (should-fail) is the (with-meta `(should-fail "Forced failure") ...) path.
     (let [base (current-line ::mark)
-          ex   (try (should-fail)        ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should-fail))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
 
@@ -158,8 +159,7 @@
     ;; merges *source-loc* (bound by the surrounding help-should) into ex-data.
     ;; This is the only path that exercises -new-failure rather than -fail.
     (let [base (current-line ::mark)
-          ex   (try (should-throw sut/throwable :nothing-thrown)  ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should-throw sut/throwable :nothing-thrown))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
 
@@ -168,10 +168,9 @@
     ;; so the inner should=/should-not-be-nil delegations report the user's
     ;; should-throw call site rather than nothing at all.
     (let [base (current-line ::mark)
-          ex   (try (should-throw sut/throwable
-                                  #"completely-different-message"
-                                  (throw (ex-info "actual" {})))   ; line = base + 3
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (should-throw sut/throwable
+                                           #"completely-different-message"
+                                           (throw (ex-info "actual" {}))))   ; line = base + 3
           d    (ex-data ex)]
       ;; The wrapped body's location is the should-throw line itself (base+1),
       ;; because with-source-loc binds *source-loc* at expansion of should-throw.
@@ -182,8 +181,7 @@
     ;; When called outside a help-should wrapper, *source-loc* is unbound, so
     ;; -fail must rely on its own (meta &form) to embed file/line.
     (let [base (current-line ::mark)
-          ex   (try (speclj.core/-fail "boom")    ; line = base + 1
-                    (catch #?(:cljs :default :default Throwable) e e))
+          ex   (result-or-ex (speclj.core/-fail "boom"))   ; line = base + 1
           d    (ex-data ex)]
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
 
@@ -194,8 +192,7 @@
     (let [base    (current-line ::mark)
           chr     (it "auto-pending sentinel")    ; line = base + 1
           body-fn (.-body chr)
-          ex      (try (body-fn) nil
-                       (catch #?(:cljs :default :default Throwable) e e))
+          ex      (result-or-ex (body-fn) nil)
           d       (ex-data ex)]
       (should-not-be-nil ex)
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
@@ -204,8 +201,7 @@
     (let [base    (current-line ::mark)
           chr     (xit "skipped sentinel")        ; line = base + 1
           body-fn (.-body chr)
-          ex      (try (body-fn) nil
-                       (catch #?(:cljs :default :default Throwable) e e))
+          ex      (result-or-ex (body-fn) nil)
           d       (ex-data ex)]
       (should-not-be-nil ex)
       (assert-loc-at d #?(:cljs :any :default (+ base 1)))))
