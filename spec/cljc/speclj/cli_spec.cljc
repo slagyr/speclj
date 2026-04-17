@@ -3,8 +3,7 @@
             [speclj.config :as config]
             [speclj.core #?(:cljs :refer-macros :default :refer) [context describe it should= should-contain should-not-be-nil]]
             [speclj.platform :refer [endl]]
-            [clojure.string :as str]
-            #?(:clj [trptcolin.versioneer.core :as version])))
+            [clojure.string :as str]))
 
 (describe "CLI"
 
@@ -52,11 +51,10 @@
       (should= "on" (:version (sut/parse-args "-v"))))
 
     (it "handles the --version switch"
-      (let [version #?(:clj (version/get-version "speclj" "speclj") :default "")
-            result          (atom nil)
-            out             (with-out-str (reset! result (sut/run "--version")))]
+      (let [result (atom nil)
+            out    (with-out-str (reset! result (sut/run "--version")))]
         (should= 0 @result)
-        (should= (str "speclj " version endl) out)))
+        (should= (str "speclj " (sut/get-version) endl) out)))
 
     (it "parses the --help switch"
       (should= nil (:help (sut/parse-args "")))

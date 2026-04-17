@@ -1,7 +1,8 @@
 (ns speclj.cli
-  (:require #?(:clj [trptcolin.versioneer.core :as version])
-            #?@(:cljs    []
-                :default [[speclj.io :as io]])
+  (:require #?@(:cljs    []
+                :default [[clojure.java.io :as jio]
+                          [clojure.string :as str]
+                          [speclj.io :as io]])
             [speclj.args :as args]
             [clojure.set :as set]
             [speclj.config :as config]
@@ -65,12 +66,18 @@
     (:tag options) (recur (dissoc (assoc options :tags (:tag options)) :tag))
     :else options))
 
+(defn get-version []
+  #?(:cljs ""
+     :default (or (some-> (jio/resource "speclj/VERSION") slurp str/trim) "")))
+
 (defn usage [errors]
   (when (seq errors)
     (println "ERROR!!!")
     (run! println errors))
   (println)
-  (println "Speclj - pronounced \"speckle\": a TDD/BDD framework for Clojure.")
+  (println (str "Speclj"
+                (when-let [v (not-empty (get-version))] (str " " v))
+                " - pronounced \"speckle\": a TDD/BDD framework for Clojure."))
   (println "Copyright (c) 2010-2026 Micah Martin under The MIT Licenses.")
   (println)
   (println "Usage: " speclj-invocation (args/arg-string arg-spec))
@@ -78,10 +85,6 @@
   (println (args/parameters-string arg-spec))
   (println (args/options-string arg-spec))
   (if (seq errors) -1 0))
-
-(defn get-version []
-  #?(:clj     (version/get-version "speclj" "speclj")
-     :default ""))
 
 (defn print-version []
   (println (str "speclj " (get-version))))

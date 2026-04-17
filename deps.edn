@@ -1,8 +1,7 @@
 {
- :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/cljr" "src/bb"]
+ :paths   ["src/clj" "src/cljc" "src/cljvm" "src/cljs" "src/cljr" "src/bb" "resources"]
  :deps    {
            org.clojure/clojure         {:mvn/version "1.12.1"}
-           trptcolin/versioneer        {:mvn/version "0.2.0"}
            org.clojure/tools.namespace {:mvn/version "1.5.0"}
            }
  :aliases {

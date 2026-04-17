@@ -7,8 +7,10 @@ The release artifacts live in three places:
   `CLOJARS_PASSWORD` env vars)
 - The codox docs on the `gh-pages` branch (pushed by `bin/doc.sh`)
 
-The `VERSION` file is the canonical version source — `dev/build.clj` reads it
-for both the jar and the git tag.
+The `resources/speclj/VERSION` file is the canonical version source. It ships
+inside the jar and is read both by `dev/build.clj` (for the jar version and
+the git tag) and at runtime by `speclj.cli/get-version` (for `--help` and
+`--version`).
 
 ClojureCLR is intentionally **not** part of the release checks: cljr is hard
 to set up on dev machines and rarely used by clients.
@@ -24,7 +26,7 @@ to set up on dev machines and rarely used by clients.
    This runs the suite under babashka, Clojure JVM, and ClojureScript and
    aggregates failures. Do not proceed if any runtime fails.
 
-2. Bump `VERSION` to the new release number.
+2. Bump `resources/speclj/VERSION` to the new release number.
 
 3. Update `CHANGES.md` with the user-visible changes for this version.
 
@@ -54,7 +56,7 @@ to set up on dev machines and rarely used by clients.
 
    This task:
    - Aborts if the working tree is dirty.
-   - Creates the git tag `X.Y.Z` from `VERSION` and pushes it.
+   - Creates the git tag `X.Y.Z` from `resources/speclj/VERSION` and pushes it.
    - Builds the jar and pushes to Clojars (requires `CLOJARS_USERNAME` and
      `CLOJARS_PASSWORD` env vars).
 

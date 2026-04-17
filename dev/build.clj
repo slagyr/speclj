@@ -10,7 +10,7 @@
 (def basis (b/create-basis {:project "deps.edn"}))
 (def src-dirs (:paths basis))
 (def lib (symbol group-name lib-name))
-(def version (str/trim (slurp "VERSION")))
+(def version (str/trim (slurp "resources/speclj/VERSION")))
 (def class-dir "target/classes")
 (def jar-file (format "target/%s-%s.jar" lib-name version))
 (def deploy-config {:coordinates       [lib version]
