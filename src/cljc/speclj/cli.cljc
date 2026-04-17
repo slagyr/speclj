@@ -24,27 +24,27 @@
                                                     "                dir       all files in the directory\n"
                                                     "                file      all specs in the file\n"
                                                     "                file:line a single spec | a context | a describe | all the specs in the file"))
-      (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
       (args/add-switch-option "a" "autotest" "Alias to use the 'vigilant' runner and 'documentation' reporter.")
       (args/add-switch-option "b" "stacktrace" "Output full stacktrace")
       (args/add-switch-option "c" "color" "Show colored (red/green) output.")
       (args/add-switch-option "C" "no-color" "Disable colored output (helpful for writing to file).")
-      (args/add-multi-option "F" "focus" "SPEC TARGET" "Run only these spec targets. Repeatable. Escape hatch for build wrappers: clj -M:spec -F myspec.clj:42")
-      (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
-      (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
-      (args/add-multi-option "D" "default" "DEFAULT" "Default spec targets to be used when no other targets are provided. Repeatable.")
+      (args/add-multi-option "D" "default" "TARGET" "Default spec targets to be used when no other targets are provided. Repeatable.")
+      (args/add-multi-option "f" "format" "FORMAT" "An alias for reporter.")
       (args/add-multi-option "f" "reporter" "REPORTER" (str "Specifies how to report spec results. Output will be written to *out*. Multiple reporters are allowed.  Builtin reporters:" endl
                                                             "  [c]lojure-test:   Reporting via clojure.test/report" endl
                                                             "  [d]ocumentation:  Includes description/context and characteristic\n                    names" endl
                                                             "  [p]rogress:       (default) Dots" endl
                                                             "  [s]ilent:         No output" endl))
-      (args/add-multi-option "f" "format" "FORMAT" "An alias for reporter.")
+      (args/add-multi-option "F" "focus" "TARGET" "Run only these spec targets. Repeatable. Escape hatch for build wrappers: clj -M:spec -F myspec.clj:42")
+      (args/add-switch-option "h" "help" "You're looking at it.")
+      (args/add-switch-option "p" "omit-pending" "Disable messages about pending specs. The number of pending specs and progress meter will still be shown.")
+      (args/add-switch-option "P" "profile" "Shows execution time for each test (documentation reporter).")
       (args/add-value-option "r" "runner" "RUNNER" (str "Specifies the spec runner.  Builtin runners:" endl
                                                         "  [s]tandard:  (default) Runs all the specs once" endl
                                                         "  [v]igilant:  Watches for file changes and re-runs affected specs (used\n               by autotest)" endl))
-      (args/add-multi-option "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nTo exclude characteristics, prefix the tag with ~ (eg ~slow).  Use this option multiple times to filter multiple tags.")
-      (args/add-switch-option "v" "version" "Shows the current speclj version.")
-      (args/add-switch-option "h" "help" "You're looking at it.")))
+      (args/add-multi-option "s" "sources" "SOURCES" "directories specifying which sources to refresh (default: [src]).")
+      (args/add-multi-option "t" "tag" "TAG" "Run only the characteristics with the specified tag(s).\nUse ~ prefix to exclude tags (eg ~slow).  Repeatable.")
+      (args/add-switch-option "v" "version" "Shows the current speclj version.")))
 
 (defn- resolve-reporter-alias [name]
   (case name
