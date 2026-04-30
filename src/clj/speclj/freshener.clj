@@ -17,6 +17,7 @@
     'speclj.results
     'speclj.core
     'speclj.components
+    'speclj.line-filter
     'speclj.reporting
     'speclj.report.progress
     'speclj.report.silent
