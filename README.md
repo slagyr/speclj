@@ -9,7 +9,7 @@ It's a TDD/BDD framework for [Clojure](http://clojure.org/) and [Clojurescript](
 # Installation
 [![Clojars Project](https://img.shields.io/clojars/v/speclj.svg)](https://clojars.org/speclj)
 
-NOTE: Speclj 3.3+ requires Clojure 1.7+.
+NOTE: Speclj 3.4.8+ requires Clojure 1.11+.
 
 ## From Scratch
 
