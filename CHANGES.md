@@ -1,3 +1,10 @@
+# 3.13.1
+* Upgrades dependencies: GitHub Actions, deps.edn, puppeteer, and ClojureCLR
+* Removes versioneer from dependencies
+* Replaces xt0rted with official dotnet-setup
+* Fixes CLJS and CLR unit tests
+* Updates min versions note in README
+
 # 3.13.0
 * Adds `file:line` CLI argument syntax for running a single spec by line number (e.g. `lein spec spec/foo_spec.clj:42`).  The line walks upward until it hits an enclosing `it`, `context`, or `describe`; if none is found, all specs in the file run.
 * Spec args union together — a bare directory runs everything under it, so a `file:line` that falls inside a bare directory arg is ignored (the directory already asks for everything).
