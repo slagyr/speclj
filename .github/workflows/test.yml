@@ -61,3 +61,5 @@ jobs:
 
       - name: Run ClojureScript Tests
         run: clojure -M:test:cljs ci
+        env:
+          PUPPETEER_DANGEROUS_NO_SANDBOX: 'true'
