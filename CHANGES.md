@@ -3,6 +3,7 @@
 * Removes versioneer from dependencies
 * Replaces xt0rted with official dotnet-setup
 * Fixes CLJS and CLR unit tests
+* Fixes leiningen: updates spec argument from old `--default-spec-dirs` to `--default`
 * Updates min versions note in README
 
 # 3.13.0
