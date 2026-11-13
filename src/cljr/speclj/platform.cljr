@@ -110,5 +110,5 @@
     (let [file   (io/as-file file)
           reader (file->pushback-reader file)
           path   (io/full-name file)]
-      (clojure.lang.Compiler/load reader path path nil))
+      (clojure.lang.Compiler/load reader path path path))
     (catch Exception _)))

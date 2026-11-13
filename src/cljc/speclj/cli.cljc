@@ -1,8 +1,9 @@
 (ns speclj.cli
   (:require #?@(:cljs    []
-                :default [[clojure.java.io :as jio]
+                :clj     [[clojure.java.io :as jio]
                           [clojure.string :as str]
-                          [speclj.io :as io]])
+                          [speclj.io :as io]]
+                :default [[speclj.io :as io]])
             [speclj.args :as args]
             [clojure.set :as set]
             [speclj.config :as config]
@@ -67,8 +68,8 @@
     :else options))
 
 (defn get-version []
-  #?(:cljs ""
-     :default (or (some-> (jio/resource "speclj/VERSION") slurp str/trim) "")))
+  #?(:clj     (or (some-> (jio/resource "speclj/VERSION") slurp str/trim) "")
+     :default ""))
 
 (defn usage [errors]
   (when (seq errors)

@@ -10,6 +10,11 @@
      ~@body :pass
      (catch e# e#)))
 
+(defmacro result-or-ex [& body]
+  `(try-catch-anything
+     ~@body
+     (catch e# e#)))
+
 (defmacro should-pass! [& body]
   `(let [result# (run-result ~@body)]
      (when-not (= :pass result#)

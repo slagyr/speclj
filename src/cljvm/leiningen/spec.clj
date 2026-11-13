@@ -13,7 +13,7 @@
        (~exit-fn (min 255 failures#)))))
 
 (defn- with-paths [args project]
-  (concat (interleave (repeat "--default-spec-dirs")
+  (concat (interleave (repeat "--default")
                       (:test-paths project))
           args))
 

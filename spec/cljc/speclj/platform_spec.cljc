@@ -2,17 +2,11 @@
   (:require #?@(:cljs [] :default [[clojure.tools.namespace.find :as find]])
             [speclj.core #?(:cljs :refer-macros :default :refer) [describe should should-not should-be it should-not-be should-contain should= should-not= should-be-nil should-not-be-nil should-have-count should-throw should-fail xit]]
             [speclj.platform :as sut #?(:cljs :refer-macros :default :refer) [if-cljs try-catch-anything]]
-            [speclj.run.standard :as standard]))
+            [speclj.run.standard :as standard]
+            [speclj.spec-helper #?(:cljs :refer-macros :default :refer) [result-or-ex]]))
 
 (defmacro which-env []
   (if-cljs :cljs :clj))
-
-(defmacro result-or-ex [& body]
-  `(try (do ~@body)
-        (catch #?(:cljs :default
-                  :cljr Exception
-                  :default Throwable)
-               e# e#)))
 
 (defmacro current-line
   "Macroexpands to the line number of the call site under bb/JVM. Returns nil
