@@ -335,7 +335,7 @@ Add a `spec` alias to your `deps-clr.edn`.
 ```clojure
 {
  :aliases {:spec {:main-opts   ["-m" "speclj.main" "-c"]
-                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.13.0" :git/sha "3546a39"}}
+                  :extra-deps  {io.github.slagyr/speclj {:git/tag "3.13.1" :git/sha "bfd70a0"}}
                   :extra-paths ["spec"]}}
  }
 ```
